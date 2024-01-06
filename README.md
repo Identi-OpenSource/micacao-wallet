@@ -1,6 +1,6 @@
 ## MiCacao Wallet Concept
 
-Esta es una app que funcionará como prueba de concepto de una billetera para el manejo de todo el proceso productivo del cacao, haciendo uso de la plataforma Open-Food-Chain
+Esta es una app que funcionará como prueba de concepto de una billetera para el manejo de todo el proceso productivo del cacao, haciendo uso de la plataforma Open-Food-Chain.
 
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
