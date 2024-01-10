@@ -1,3 +1,3 @@
 export const LABELS = {
-  createAccount: 'Nueva cuenta',
+  createAccount: 'Comienza a crear tu perfil',
 }

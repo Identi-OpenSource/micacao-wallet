@@ -1,29 +1,23 @@
 import React from 'react'
-import {
-  StyleProp,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  ViewStyle,
-} from 'react-native'
-import {THEME_DF} from '../../config/themes/default'
+import {Text, TouchableOpacity} from 'react-native'
+import {BTN_THEME} from '../../config/themes/default'
+import {BtnProps} from '../../config/themes/interfaces'
 
 interface ButtonProps {
   title: string
+  theme?: 'primary' | 'secondary' | 'white'
   onPress: () => void
   disabled?: boolean
-  style?: {
-    container?: StyleProp<ViewStyle>
-    label?: StyleProp<TextStyle>
-  }
+  style?: BtnProps
 }
 
-export const BtnPrimary = (props: ButtonProps) => {
+export const Btn = (props: ButtonProps) => {
+  const theme = props.theme || 'primary'
   return (
     <TouchableOpacity
       onPress={props.onPress}
-      style={[THEME_DF.btnPri, props.style?.container]}>
-      <Text style={[THEME_DF.btnPriLab, props.style?.label]}>
+      style={[BTN_THEME[theme]?.container, props.style?.container]}>
+      <Text style={[BTN_THEME[theme]?.label, props.style?.label]}>
         {props.title}
       </Text>
     </TouchableOpacity>

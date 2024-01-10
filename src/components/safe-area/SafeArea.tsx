@@ -1,9 +1,13 @@
 import React from 'react'
-import {View, ViewProps, ViewStyle} from 'react-native'
+import {StatusBar, View, ViewProps, ViewStyle} from 'react-native'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
-import {COLORS_DF, MARGIN_DF} from '../../config/themes/default'
+import {COLORS_DF} from '../../config/themes/default'
 
-export const SafeArea = (props: ViewProps) => {
+interface SafeAreaProps extends ViewProps {
+  bg?: string
+}
+
+export const SafeArea = (props: SafeAreaProps) => {
   const insets = useSafeAreaInsets()
   const {children} = props
   const styles = {
@@ -13,10 +17,15 @@ export const SafeArea = (props: ViewProps) => {
     // Paddings to handle safe area
     paddingTop: insets.top,
     paddingBottom: insets.bottom,
-    paddingLeft: insets.left + MARGIN_DF.medium,
-    paddingRight: insets.right + MARGIN_DF.medium,
-    backgroundColor: COLORS_DF.lightGray,
+    paddingLeft: insets.left,
+    paddingRight: insets.right,
+    backgroundColor: props.bg || COLORS_DF.lightGray,
   } as ViewStyle
 
-  return <View style={styles}>{children}</View>
+  return (
+    <View style={styles}>
+      <StatusBar translucent backgroundColor={'transparent'} />
+      {children}
+    </View>
+  )
 }
