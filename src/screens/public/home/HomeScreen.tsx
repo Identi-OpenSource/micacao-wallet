@@ -9,6 +9,7 @@ import {
 } from '../../../config/themes/default'
 import {Btn} from '../../../components/button/Button'
 import {LABELS} from '../../../config/texts/texts'
+import {useNavigation} from '@react-navigation/native'
 
 const TEXTS = {
   textA: 'Conecta tu cosecha con el futuro:',
@@ -16,6 +17,7 @@ const TEXTS = {
 }
 
 export const HomeScreen = () => {
+  const navigation = useNavigation()
   return (
     <SafeArea bg={COLORS_DF.primary}>
       <View style={styles.container}>
@@ -23,7 +25,11 @@ export const HomeScreen = () => {
           <Text style={[styles.text]}>{TEXTS.textA}</Text>
           <Text style={[styles.text, styles.op]}>{TEXTS.textB}</Text>
         </View>
-        <Btn title={LABELS.createAccount} theme="white" onPress={() => {}} />
+        <Btn
+          title={LABELS.createAccount}
+          theme="white"
+          onPress={() => navigation.navigate('RegisterScreen')}
+        />
       </View>
     </SafeArea>
   )

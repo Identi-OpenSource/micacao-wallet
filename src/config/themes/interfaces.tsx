@@ -1,9 +1,4 @@
-import {StyleProp, TextStyle, ViewStyle} from 'react-native'
-
-export interface BtnProps {
-  container: StyleProp<ViewStyle>
-  label: StyleProp<TextStyle>
-}
+import {BtnProps} from '../../components/button/interfaces'
 
 export interface ButtonTheme {
   primary?: BtnProps

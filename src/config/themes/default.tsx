@@ -56,54 +56,47 @@ export const THEME_DF = StyleSheet.create({
   },
 })
 
-const STYLE_BTN = {
-  container: {
-    width: '100%',
-    height: 60,
-    justifyContent: 'center',
-    borderRadius: BORDER_RADIUS_DF.medium,
-    paddingHorizontal: MP_DF.large * 1.5,
-    paddingVertical: MP_DF.large * 0.75,
-    marginVertical: MP_DF.medium,
-  },
-  label: {
-    color: COLORS_DF.light,
-    textAlign: 'center',
-    fontSize: FONT_SIZES.large,
-    fontWeight: '600',
-    lineHeight: FONT_SIZES.large,
-  },
+const STYLE_BTN = (theme: 'primary' | 'secondary' | 'white') => {
+  let CL: [string, string]
+
+  switch (theme) {
+    case 'primary':
+      CL = [COLORS_DF.primary, COLORS_DF.secondary]
+      break
+    case 'secondary':
+      CL = [COLORS_DF.secondary, COLORS_DF.primary]
+      break
+    case 'white':
+      CL = [COLORS_DF.white, COLORS_DF.primary]
+      break
+    default:
+      CL = [COLORS_DF.primary, COLORS_DF.secondary]
+      break
+  }
+
+  return {
+    container: {
+      width: '100%',
+      height: 60,
+      justifyContent: 'center',
+      borderRadius: BORDER_RADIUS_DF.medium,
+      paddingHorizontal: MP_DF.large * 1.5,
+      paddingVertical: MP_DF.large * 0.75,
+      marginVertical: MP_DF.medium,
+      backgroundColor: CL[0],
+    },
+    label: {
+      textAlign: 'center',
+      fontSize: FONT_SIZES.large,
+      fontWeight: '600',
+      lineHeight: FONT_SIZES.large,
+      color: CL[1],
+    },
+  }
 }
 
 export const BTN_THEME = {
-  primary: {
-    container: {
-      ...STYLE_BTN.container,
-      backgroundColor: COLORS_DF.primary,
-    },
-    label: {
-      ...STYLE_BTN.label,
-      color: COLORS_DF.light,
-    },
-  },
-  secondary: {
-    container: {
-      ...STYLE_BTN.container,
-      backgroundColor: COLORS_DF.secondary,
-    },
-    label: {
-      ...STYLE_BTN.label,
-      color: COLORS_DF.light,
-    },
-  },
-  white: {
-    container: {
-      ...STYLE_BTN.container,
-      backgroundColor: COLORS_DF.white,
-    },
-    label: {
-      ...STYLE_BTN.label,
-      color: COLORS_DF.primary,
-    },
-  },
+  primary: STYLE_BTN('primary'),
+  secondary: STYLE_BTN('secondary'),
+  white: STYLE_BTN('white'),
 } as ButtonTheme
