@@ -1,8 +1,11 @@
 import {Dimensions, PixelRatio, StyleSheet} from 'react-native'
 import {ButtonTheme} from './interfaces'
+import {BtnProps} from '../../components/button/interfaces'
 
 const fontScale = PixelRatio.getFontScale()
 export const getFontSize = (size: number) => size / fontScale
+
+export type Colors = keyof typeof COLORS_DF
 
 export const DWH = {
   width: Dimensions.get('window').width,
@@ -13,39 +16,41 @@ export const COLORS_DF = {
   primary: '#1E4A47',
   secondary: '#a2ad84',
   light: '#f2f2db',
-  lightGray: '#EAEAE1',
+  lightGray: '#F1F1F1',
   lightGreen: '#e3d8b8',
   lightBrown: '#b38e6c',
   yellowBrown: '#be6426',
   darkBrown: '#733c18',
-  black: '#333333',
+  gray: '#C8C8C8',
+  black: '#404040',
   white: '#ffffff',
-}
+  warning: '#d32e28',
+} as const
 
 export const FONT_FAMILIES = {
   primary: 'Inter-Medium',
   secondary: 'Roboto',
-}
+} as const
 
 export const FONT_SIZES = {
   small: getFontSize(14),
   medium: getFontSize(16),
   large: getFontSize(18),
-  xlarge: getFontSize(32),
+  xlarge: getFontSize(36),
   xxlarge: getFontSize(48),
-}
+} as const
 
 export const BORDER_RADIUS_DF = {
   small: 5,
   medium: 10,
   large: 20,
-}
+} as const
 
 export const MP_DF = {
   small: 5,
   medium: 10,
   large: 20,
-}
+} as const
 
 export const THEME_DF = StyleSheet.create({
   // Text styles
@@ -61,7 +66,7 @@ const STYLE_BTN = (theme: 'primary' | 'secondary' | 'white') => {
 
   switch (theme) {
     case 'primary':
-      CL = [COLORS_DF.primary, COLORS_DF.secondary]
+      CL = [COLORS_DF.primary, COLORS_DF.white]
       break
     case 'secondary':
       CL = [COLORS_DF.secondary, COLORS_DF.primary]
@@ -88,11 +93,10 @@ const STYLE_BTN = (theme: 'primary' | 'secondary' | 'white') => {
     label: {
       textAlign: 'center',
       fontSize: FONT_SIZES.large,
-      fontWeight: '600',
       lineHeight: FONT_SIZES.large,
       color: CL[1],
     },
-  }
+  } as BtnProps
 }
 
 export const BTN_THEME = {

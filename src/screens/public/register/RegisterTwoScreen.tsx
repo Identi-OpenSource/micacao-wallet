@@ -12,29 +12,24 @@ import {
   INPUTS,
   RegisterSchema,
   ValuesInterface,
-} from './Interfaces'
+} from './InterfacesTwo'
 import {Text, View} from 'react-native'
 import {Btn} from '../../../components/button/Button'
 
 import {LABELS} from '../../../config/texts/labels'
 import {TEXTS} from '../../../config/texts/texts'
-import {useNavigation} from '@react-navigation/native'
 import {styles} from './styles'
 
-export const RegisterScreen = () => {
-  const navigation = useNavigation()
+export const RegisterTwoScreen = () => {
   const onSubmit = (values: ValuesInterface) => {
     console.log(values)
-    /**
-     * Falta lógica de registro
-     */
-    navigation.navigate('RegisterTwoScreen')
   }
 
   return (
     <SafeArea>
       <View style={styles.container}>
-        <Text style={styles.title}>{TEXTS.textC}</Text>
+        <Text style={styles.title}>{TEXTS.textD}</Text>
+        {/* <Text style={styles.subtitle}>{TEXTS.textE}</Text> */}
         <Formik
           initialValues={INIT_VALUES}
           onSubmit={values => onSubmit(values)}

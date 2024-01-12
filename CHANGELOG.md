@@ -1,5 +1,7 @@
 ## <small>0.0.1 (2024-1-11)</small>
 
+* feat: :sparkles: add navigation and config ([68776bf](https://github.com/identi-digital/micacao-wallet-concept/commit/68776bf))
+* fix: :sparkles: nuevas configuraciones agregadas ([a61a2c8](https://github.com/identi-digital/micacao-wallet-concept/commit/a61a2c8))
 * Home Ok 86dr4jgkj ([429de14](https://github.com/identi-digital/micacao-wallet-concept/commit/429de14))
 * Init ([96317f3](https://github.com/identi-digital/micacao-wallet-concept/commit/96317f3))
 * Initial commit ([9ab8cd6](https://github.com/identi-digital/micacao-wallet-concept/commit/9ab8cd6))

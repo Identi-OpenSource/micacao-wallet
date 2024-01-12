@@ -1,8 +1,8 @@
-/*
- * @Author: Braudin Laya
- * @Date: 2021-01-19 11:59:57
- * @Summary:componente de entrada a la aplicación y su navegación
- */
+/**
+ * @author : Braudin Laya
+ * @since : 15/09/2021
+ * @summary : Main component of the application
+ **/
 import React from 'react'
 import {NavigationContainer} from '@react-navigation/native'
 import {Router} from './src/routers/Router'

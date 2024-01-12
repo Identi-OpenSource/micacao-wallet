@@ -1,3 +1,9 @@
+/**
+ * @author : Braudin Laya
+ * @since : 15/09/2021
+ * @summary : View of entry point of the application
+ */
+
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {StyleSheet, Text, View} from 'react-native'
@@ -8,18 +14,15 @@ import {
   getFontSize,
 } from '../../../config/themes/default'
 import {Btn} from '../../../components/button/Button'
-import {LABELS} from '../../../config/texts/texts'
-import {useNavigation} from '@react-navigation/native'
+import {TEXTS} from '../../../config/texts/texts'
 
-const TEXTS = {
-  textA: 'Conecta tu cosecha con el futuro:',
-  textB: 'Registra, organiza y mejora cada paso de tu producción con BeanTrip',
-}
+import {useNavigation} from '@react-navigation/native'
+import {LABELS} from '../../../config/texts/labels'
 
 export const HomeScreen = () => {
   const navigation = useNavigation()
   return (
-    <SafeArea bg={COLORS_DF.primary}>
+    <SafeArea bg={'primary'} barStyle="light-content">
       <View style={styles.container}>
         <View style={styles.textContainer}>
           <Text style={[styles.text]}>{TEXTS.textA}</Text>
