@@ -1,4 +1,7 @@
 {
   "name": "MiCacao",
-  "displayName": "MiCacao"
+  "displayName": "MiCacao",
+  "plugins": [
+    "expo-secure-store"
+  ]
 }

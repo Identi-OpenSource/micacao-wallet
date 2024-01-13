@@ -9,6 +9,7 @@ import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {StyleSheet, Text, View} from 'react-native'
 import {
   COLORS_DF,
+  DWH,
   FONT_FAMILIES,
   MP_DF,
   getFontSize,
@@ -21,6 +22,7 @@ import {LABELS} from '../../../config/texts/labels'
 
 export const HomeScreen = () => {
   const navigation = useNavigation()
+
   return (
     <SafeArea bg={'primary'} barStyle="light-content">
       <View style={styles.container}>
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
     padding: MP_DF.large,
   },
   textContainer: {
-    alignItems: 'flex-start',
+    height: DWH.height * 0.6 + 36,
   },
   text: {
     fontFamily: FONT_FAMILIES.primary,

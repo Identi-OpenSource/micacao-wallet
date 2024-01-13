@@ -3,5 +3,6 @@ module.exports = {
   extends: '@react-native',
   rules: {
     semi: ['error', 'never'],
+    'react-hooks/exhaustive-deps': 'off',
   },
 }

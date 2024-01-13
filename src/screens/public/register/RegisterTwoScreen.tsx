@@ -14,22 +14,40 @@ import {
   ValuesInterface,
 } from './InterfacesTwo'
 import {Text, View} from 'react-native'
-import {Btn} from '../../../components/button/Button'
+import {Btn, BtnIcon} from '../../../components/button/Button'
 
 import {LABELS} from '../../../config/texts/labels'
-import {TEXTS} from '../../../config/texts/texts'
 import {styles} from './styles'
+import {TEXTS} from '../../../config/texts/texts'
+import {useNavigation, useRoute} from '@react-navigation/native'
+import {useSecureOffline} from '../../../hooks/useSecureOffline'
+import {dbConfig} from '../../../config/db-encript'
+import {UserInterface} from '../../../states/UserContext'
 
 export const RegisterTwoScreen = () => {
-  const onSubmit = (values: ValuesInterface) => {
-    console.log(values)
+  const navigation = useNavigation()
+  const route = useRoute()
+  const saveOffline = useSecureOffline(dbConfig.keyData)
+
+  const onSubmit = async (values: ValuesInterface) => {
+    const data: UserInterface = {
+      ...(route.params as UserInterface),
+      pin: values.pin,
+    }
+    await saveOffline.save(data)
+    navigation.navigate('RegisterThreeScreen')
   }
 
   return (
     <SafeArea>
       <View style={styles.container}>
+        <BtnIcon
+          icon={'arrow-left-long'}
+          theme="transparent"
+          size={32}
+          onPress={() => navigation.goBack()}
+        />
         <Text style={styles.title}>{TEXTS.textD}</Text>
-        {/* <Text style={styles.subtitle}>{TEXTS.textE}</Text> */}
         <Formik
           initialValues={INIT_VALUES}
           onSubmit={values => onSubmit(values)}

@@ -14,7 +14,7 @@ import {
   ValuesInterface,
 } from './Interfaces'
 import {Text, View} from 'react-native'
-import {Btn} from '../../../components/button/Button'
+import {Btn, BtnIcon} from '../../../components/button/Button'
 
 import {LABELS} from '../../../config/texts/labels'
 import {TEXTS} from '../../../config/texts/texts'
@@ -24,16 +24,18 @@ import {styles} from './styles'
 export const RegisterScreen = () => {
   const navigation = useNavigation()
   const onSubmit = (values: ValuesInterface) => {
-    console.log(values)
-    /**
-     * Falta lógica de registro
-     */
-    navigation.navigate('RegisterTwoScreen')
+    navigation.navigate('RegisterTwoScreen', values)
   }
 
   return (
     <SafeArea>
       <View style={styles.container}>
+        <BtnIcon
+          icon={'arrow-left-long'}
+          theme="transparent"
+          size={32}
+          onPress={() => navigation.goBack()}
+        />
         <Text style={styles.title}>{TEXTS.textC}</Text>
         <Formik
           initialValues={INIT_VALUES}

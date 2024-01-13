@@ -1,6 +1,9 @@
 import {Dimensions, PixelRatio, StyleSheet} from 'react-native'
-import {ButtonTheme} from './interfaces'
-import {BtnProps} from '../../components/button/interfaces'
+import {
+  BTN_THEME_DF,
+  BTN_THEME_ICON_DF,
+  BtnProps,
+} from '../../components/button/interfaces'
 
 const fontScale = PixelRatio.getFontScale()
 export const getFontSize = (size: number) => size / fontScale
@@ -25,11 +28,12 @@ export const COLORS_DF = {
   black: '#404040',
   white: '#ffffff',
   warning: '#d32e28',
+  transparent: 'transparent',
 } as const
 
 export const FONT_FAMILIES = {
   primary: 'Inter-Medium',
-  secondary: 'Roboto',
+  secondary: 'Inter-Regular',
 } as const
 
 export const FONT_SIZES = {
@@ -61,7 +65,9 @@ export const THEME_DF = StyleSheet.create({
   },
 })
 
-const STYLE_BTN = (theme: 'primary' | 'secondary' | 'white') => {
+// Button
+
+const STYLE_BTN = (theme: BTN_THEME_DF) => {
   let CL: [string, string]
 
   switch (theme) {
@@ -96,6 +102,9 @@ const STYLE_BTN = (theme: 'primary' | 'secondary' | 'white') => {
       lineHeight: FONT_SIZES.large,
       color: CL[1],
     },
+    const: {
+      opacity: 0.9,
+    },
   } as BtnProps
 }
 
@@ -103,4 +112,39 @@ export const BTN_THEME = {
   primary: STYLE_BTN('primary'),
   secondary: STYLE_BTN('secondary'),
   white: STYLE_BTN('white'),
-} as ButtonTheme
+  warning: STYLE_BTN('white'),
+  transparent: STYLE_BTN('transparent'),
+} as const
+
+// Icon button
+
+export const STYLE_BTN_ICON = (theme: BTN_THEME_ICON_DF) => {
+  let CL: [string, string]
+
+  switch (theme) {
+    case 'transparent':
+      CL = [COLORS_DF.transparent, COLORS_DF.primary]
+      break
+    default:
+      CL = [COLORS_DF.primary, COLORS_DF.secondary]
+      break
+  }
+
+  return {
+    container: {
+      backgroundColor: CL[0],
+    },
+    const: {
+      opacity: 0.7,
+      color: CL[1],
+    },
+  } as BtnProps
+}
+
+export const BTN_THEME_ICON = {
+  primary: STYLE_BTN_ICON('primary'),
+  secondary: STYLE_BTN_ICON('primary'),
+  white: STYLE_BTN_ICON('primary'),
+  warning: STYLE_BTN_ICON('primary'),
+  transparent: STYLE_BTN_ICON('transparent'),
+} as const

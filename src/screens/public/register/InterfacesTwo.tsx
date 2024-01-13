@@ -1,4 +1,4 @@
-import {object, string} from 'yup'
+import {object, ref, string} from 'yup'
 import {REGEX} from '../../../config/const'
 import {MSG_ERROR} from '../../../config/texts/erros'
 import {InputTextProps} from '../../../components/input-text/interfaces'
@@ -6,39 +6,39 @@ import {InputText} from '../../../components/input-text/InputText'
 import {LABELS} from '../../../config/texts/labels'
 
 export interface ValuesInterface {
-  password: string
-  rePassword: string
+  pin: string
+  rePin: string
 }
 
 export const INIT_VALUES: ValuesInterface = {
-  password: '',
-  rePassword: '',
+  pin: '',
+  rePin: '',
 }
 
 export const INPUTS = [
   {
-    name: 'password',
-    label: LABELS.password,
-    placeholder: LABELS.password,
-    keyboardType: 'default',
+    name: 'pin',
+    label: LABELS.pin,
+    placeholder: '******',
+    keyboardType: 'numeric',
     secureTextEntry: true,
     component: InputText,
   },
   {
-    name: 'rePassword',
-    label: LABELS.rePassword,
-    placeholder: LABELS.rePassword,
-    keyboardType: 'default',
+    name: 'rePin',
+    label: LABELS.rePin,
+    placeholder: '******',
+    keyboardType: 'numeric',
     secureTextEntry: true,
     component: InputText,
   },
 ] as InputTextProps[]
 
 export let RegisterSchema = object({
-  password: string()
-    .matches(REGEX.phone, {message: MSG_ERROR.matches})
+  pin: string()
+    .matches(REGEX.pin, {message: MSG_ERROR.pin})
     .required(MSG_ERROR.required),
-  rePassword: string()
-    .matches(REGEX.phone, {message: MSG_ERROR.matches})
+  rePin: string()
+    .oneOf([ref('pin')], MSG_ERROR.rePin)
     .required(MSG_ERROR.required),
 })

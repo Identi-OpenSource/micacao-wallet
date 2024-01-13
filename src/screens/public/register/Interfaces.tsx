@@ -34,7 +34,9 @@ export const INPUTS = [
 ] as InputTextProps[]
 
 export let RegisterSchema = object({
-  name: string().required(MSG_ERROR.required),
+  name: string()
+    .matches(REGEX.namePropio, {message: MSG_ERROR.matches})
+    .required(MSG_ERROR.required),
   phone: string()
     .matches(REGEX.phone, {message: MSG_ERROR.matches})
     .required(MSG_ERROR.required),

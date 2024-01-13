@@ -9,5 +9,8 @@ export const MSG_ERROR = {
   504: 'Gateway Timeout',
   default: 'Erro desconocido',
   matches: 'Formato invalido',
+  pin: 'El PIN debe tener mínimo 6 dígitos',
+  rePin: 'El PIN no coincide',
   required: 'Requerido',
+  errorGeneric: 'Error desconocido, intente de nuevo',
 }

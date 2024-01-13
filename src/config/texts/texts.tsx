@@ -4,4 +4,6 @@ export const TEXTS = {
   textC: 'Paso 1 de 2',
   textD: 'Paso 2 de 2',
   textE: 'Crea una contraseña',
+  textF: '¡Todo listo para empezar!',
+  textG: 'Lo primero que debemos hacer es registrar tu parcela.',
 }

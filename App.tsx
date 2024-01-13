@@ -6,12 +6,20 @@
 import React from 'react'
 import {NavigationContainer} from '@react-navigation/native'
 import {Router} from './src/routers/Router'
+import {library} from '@fortawesome/fontawesome-svg-core'
+
+import {faArrowLeftLong, faTree} from '@fortawesome/free-solid-svg-icons'
+import {UserProvider} from './src/states/UserContext'
 
 function App(): React.JSX.Element {
+  // biblioteca de iconos
+  library.add(faArrowLeftLong, faTree)
   return (
-    <NavigationContainer>
-      <Router />
-    </NavigationContainer>
+    <UserProvider>
+      <NavigationContainer>
+        <Router />
+      </NavigationContainer>
+    </UserProvider>
   )
 }
 
