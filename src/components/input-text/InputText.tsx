@@ -9,14 +9,17 @@ import {
 } from '../../config/themes/default'
 import {InputTextProps} from './interfaces'
 import {formatPhone} from '../../utils/formatPhone'
+import {formatPin} from '../../utils/formatPin'
 
 export const InputText = (props: InputTextProps) => {
+  console.log('InputText', props)
   const {
     label,
     keyboardType,
     placeholder,
     preFormate,
     secureTextEntry,
+    ref,
     field: {name, value},
     form: {handleChange, handleBlur, touched, errors},
   } = props
@@ -26,9 +29,14 @@ export const InputText = (props: InputTextProps) => {
     if (preFormate === 'phone') {
       textFormate = formatPhone(text)
     }
+    if (preFormate === 'pin') {
+      textFormate = formatPin(text)
+    }
 
     handleChange(name)(textFormate)
   }
+
+  console.log('InputText', ref)
 
   return (
     <View style={styles.container}>
@@ -42,6 +50,7 @@ export const InputText = (props: InputTextProps) => {
         placeholder={placeholder}
         placeholderTextColor={COLORS_DF.gray}
         secureTextEntry={secureTextEntry || false}
+        {...props}
       />
       {touched[name] && errors[name] && (
         <Text style={styles.error}>{errors[name]?.toString()}</Text>

@@ -30,4 +30,25 @@ export const styles = StyleSheet.create({
     height: DWH.height * 0.6,
   },
   containerBtn: {},
+  oculto: {
+    opacity: 0,
+    height: 0,
+  },
+  pin: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  pinText: {
+    fontFamily: FONT_FAMILIES.primary,
+    fontSize: FONT_SIZES.xxlarge,
+    fontWeight: 'bold',
+    color: COLORS_DF.primary,
+    textAlign: 'center',
+    marginHorizontal: MP_DF.medium,
+    paddingHorizontal: MP_DF.small,
+    borderBottomWidth: 3,
+    borderBottomColor: COLORS_DF.primary,
+    width: DWH.width / 10,
+  },
 })

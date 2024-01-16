@@ -4,12 +4,12 @@
  * @summary : Register screen of the application
  */
 
-import React from 'react'
+import React, {useRef} from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {Field, Formik} from 'formik'
 import {
   INIT_VALUES,
-  INPUTS,
+  INPUT,
   RegisterSchema,
   ValuesInterface,
 } from './InterfacesTwo'
@@ -28,6 +28,7 @@ export const RegisterTwoScreen = () => {
   const navigation = useNavigation()
   const route = useRoute()
   const saveOffline = useSecureOffline(dbConfig.keyData)
+  const refs = useRef(null)
 
   const onSubmit = async (values: ValuesInterface) => {
     const data: UserInterface = {
@@ -48,16 +49,25 @@ export const RegisterTwoScreen = () => {
           onPress={() => navigation.goBack()}
         />
         <Text style={styles.title}>{TEXTS.textD}</Text>
+        <Text style={styles.subtitle}>{LABELS.pin}</Text>
         <Formik
           initialValues={INIT_VALUES}
           onSubmit={values => onSubmit(values)}
           validationSchema={RegisterSchema}>
-          {({handleSubmit}) => (
+          {({handleSubmit, values}) => (
             <>
               <View style={styles.containerForm}>
-                {INPUTS.map(i => (
-                  <Field key={i.name} {...i} />
-                ))}
+                <View style={styles.oculto}>
+                  <Field {...INPUT} key={INPUT.name} ref={refs} />
+                </View>
+                <View style={styles.pin}>
+                  <Text style={styles.pinText}>{values.pin[0]}</Text>
+                  <Text style={styles.pinText}>{values.pin[1]}</Text>
+                  <Text style={styles.pinText}>{values.pin[2]}</Text>
+                  <Text style={styles.pinText}>{values.pin[3]}</Text>
+                  <Text style={styles.pinText}>{values.pin[4]}</Text>
+                  <Text style={styles.pinText}>{values.pin[5]}</Text>
+                </View>
               </View>
               <View style={styles.containerBtn}>
                 <Btn

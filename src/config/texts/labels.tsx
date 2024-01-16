@@ -6,9 +6,11 @@ export const LABELS = {
   next: 'Siguiente',
   password: 'Contraseña',
   rePassword: 'Repite tu contraseña',
-  pin: 'Crea tu PIN',
+  pin: 'Crea tu PIN de seguridad',
   rePin: 'Repite tu PIN',
   name: 'Nombre',
+  namePersonal: 'Escribe tu nombre completo',
+  phonePersonal: 'Escribe tu número de celular',
   phone: 'Teléfono',
   error: 'Error',
 }

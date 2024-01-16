@@ -18,14 +18,14 @@ export const INIT_VALUES: ValuesInterface = {
 export const INPUTS = [
   {
     name: 'name',
-    label: LABELS.name,
+    label: LABELS.namePersonal,
     placeholder: LABELS.name,
     keyboardType: 'default',
     component: InputText,
   },
   {
     name: 'phone',
-    label: LABELS.phone,
+    label: LABELS.phonePersonal,
     placeholder: LABELS.phone,
     preFormate: 'phone',
     keyboardType: 'phone-pad',
