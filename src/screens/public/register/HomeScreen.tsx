@@ -6,33 +6,34 @@
 
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {StyleSheet, Text, View} from 'react-native'
-import {
-  COLORS_DF,
-  DWH,
-  FONT_FAMILIES,
-  MP_DF,
-  getFontSize,
-} from '../../../config/themes/default'
+import {Image, StyleSheet, Text, View} from 'react-native'
+import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
 import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 
 import {useNavigation} from '@react-navigation/native'
 import {LABELS} from '../../../config/texts/labels'
+import {imgProd} from '../../../assets/imgs'
+import {
+  horizontalScale,
+  moderateScale,
+  verticalScale,
+} from '../../../config/themes/metrics'
 
 export const HomeScreen = () => {
   const navigation = useNavigation()
 
   return (
-    <SafeArea bg={'primary'} barStyle="light-content">
+    <SafeArea bg={'neutral'}>
+      <Image source={imgProd} style={styles.img} />
       <View style={styles.container}>
         <View style={styles.textContainer}>
-          <Text style={[styles.text]}>{TEXTS.textA}</Text>
-          <Text style={[styles.text, styles.op]}>{TEXTS.textB}</Text>
+          <Text style={[styles.textA]}>{TEXTS.textA}</Text>
+          <Text style={[styles.textB]}>{TEXTS.textB}</Text>
         </View>
         <Btn
           title={LABELS.createAccount}
-          theme="white"
+          theme="agrayu"
           onPress={() => navigation.navigate('RegisterScreen')}
         />
       </View>
@@ -45,16 +46,29 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
-    padding: MP_DF.large,
+    paddingHorizontal: horizontalScale(MP_DF.large),
+    paddingVertical: verticalScale(MP_DF.medium),
   },
-  textContainer: {
-    height: DWH.height * 0.6 + 36,
+  img: {
+    width: horizontalScale(306),
+    height: verticalScale(306),
+    alignSelf: 'center',
   },
-  text: {
+  textContainer: {},
+  textA: {
     fontFamily: FONT_FAMILIES.primary,
-    fontSize: getFontSize(42),
-    fontWeight: '600',
-    color: COLORS_DF.white,
+    fontSize: moderateScale(32),
+    fontWeight: '700',
+    textAlign: 'center',
+    color: COLORS_DF.cacao,
+    paddingHorizontal: horizontalScale(MP_DF.large),
+    paddingVertical: verticalScale(MP_DF.medium),
   },
-  op: {opacity: 0.5},
+  textB: {
+    fontFamily: FONT_FAMILIES.primary,
+    fontSize: moderateScale(24),
+    fontWeight: '500',
+    textAlign: 'center',
+    color: COLORS_DF.cacao,
+  },
 })

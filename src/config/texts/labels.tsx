@@ -1,5 +1,5 @@
 export const LABELS = {
-  createAccount: 'Comienza a crear tu perfil',
+  createAccount: 'Crea tu cuenta personal',
   email: 'Correo electrónico',
   phoneRegister: 'Escribe tu número de celular',
   nameRegister: 'Escribe tu nombre completo',

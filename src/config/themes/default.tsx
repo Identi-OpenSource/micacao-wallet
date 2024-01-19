@@ -4,6 +4,7 @@ import {
   BTN_THEME_ICON_DF,
   BtnProps,
 } from '../../components/button/interfaces'
+import {moderateScale, verticalScale} from './metrics'
 
 const fontScale = PixelRatio.getFontScale()
 export const getFontSize = (size: number) => size / fontScale
@@ -29,6 +30,10 @@ export const COLORS_DF = {
   white: '#ffffff',
   warning: '#d32e28',
   transparent: 'transparent',
+  // Nuevos colores
+  neutral: '#DCD4D0',
+  cacao: '#4A0000',
+  greenAgrayu: '#BDEF12',
 } as const
 
 export const FONT_FAMILIES = {
@@ -51,9 +56,9 @@ export const BORDER_RADIUS_DF = {
 } as const
 
 export const MP_DF = {
-  small: 5,
+  small: 6,
   medium: 10,
-  large: 20,
+  large: 24,
 } as const
 
 export const THEME_DF = StyleSheet.create({
@@ -80,6 +85,9 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
     case 'white':
       CL = [COLORS_DF.white, COLORS_DF.primary]
       break
+    case 'agrayu':
+      CL = [COLORS_DF.greenAgrayu, COLORS_DF.cacao]
+      break
     default:
       CL = [COLORS_DF.primary, COLORS_DF.secondary]
       break
@@ -88,19 +96,20 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
   return {
     container: {
       width: '100%',
-      height: 60,
+      height: 62,
       justifyContent: 'center',
-      borderRadius: BORDER_RADIUS_DF.medium,
-      paddingHorizontal: MP_DF.large * 1.5,
-      paddingVertical: MP_DF.large * 0.75,
-      marginVertical: MP_DF.medium,
       backgroundColor: CL[0],
+      borderColor: CL[1],
+      borderWidth: 2,
+      borderRadius: BORDER_RADIUS_DF.medium,
     },
     label: {
-      textAlign: 'center',
-      fontSize: FONT_SIZES.large,
-      lineHeight: FONT_SIZES.large,
       color: CL[1],
+      fontFamily: FONT_FAMILIES.primary,
+      textAlign: 'center',
+      fontSize: moderateScale(20),
+      fontWeight: '700',
+      lineHeight: verticalScale(28),
     },
     const: {
       opacity: 0.9,
@@ -114,6 +123,7 @@ export const BTN_THEME = {
   white: STYLE_BTN('white'),
   warning: STYLE_BTN('white'),
   transparent: STYLE_BTN('transparent'),
+  agrayu: STYLE_BTN('agrayu'),
 } as const
 
 // Icon button
@@ -147,4 +157,5 @@ export const BTN_THEME_ICON = {
   white: STYLE_BTN_ICON('primary'),
   warning: STYLE_BTN_ICON('primary'),
   transparent: STYLE_BTN_ICON('transparent'),
+  agrayu: STYLE_BTN_ICON('agrayu'),
 } as const

@@ -10,10 +10,17 @@ import {
 } from '../../../config/themes/default'
 import {UsersContext} from '../../../states/UserContext'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {Btn} from '../../../components/button/Button'
+import {LABELS} from '../../../config/texts/labels'
 
 export const HomeProvScreen = () => {
   const user = useContext(UsersContext)
   const firstName = user.name.split(' ')[0]
+
+  const prueba = () => {
+    // crear la wallet
+  }
+
   return (
     <SafeArea>
       <View style={styles.container}>
@@ -34,6 +41,7 @@ export const HomeProvScreen = () => {
             </Text>
           </View>
         </View>
+        <Btn title={LABELS.createAccount} theme="white" onPress={prueba} />
       </View>
     </SafeArea>
   )

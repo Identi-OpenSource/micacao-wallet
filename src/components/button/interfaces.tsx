@@ -7,6 +7,7 @@ export const BTN_THEME = {
   white: 'white',
   warning: 'warning',
   transparent: 'transparent',
+  agrayu: 'agrayu',
 }
 
 export type BTN_THEME_DF = keyof typeof BTN_THEME
