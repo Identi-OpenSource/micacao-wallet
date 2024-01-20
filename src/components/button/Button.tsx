@@ -8,6 +8,7 @@ export const Btn = (props: ButtonProps) => {
   const theme = props.theme || 'primary'
   return (
     <TouchableOpacity
+      {...props}
       onPress={props.onPress}
       activeOpacity={BTN_THEME[theme]?.const?.opacity}
       style={[BTN_THEME[theme]?.container, props.style?.container]}>

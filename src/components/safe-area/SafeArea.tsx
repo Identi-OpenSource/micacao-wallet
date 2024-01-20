@@ -1,12 +1,22 @@
 import React from 'react'
-import {StatusBar, View, ViewStyle} from 'react-native'
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  StatusBar,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle,
+} from 'react-native'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {COLORS_DF} from '../../config/themes/default'
 import {SafeAreaProps} from './interfaces'
 
-export const SafeArea = (props: SafeAreaProps) => {
+export const SafeArea = ({
+  isForm = false,
+  children,
+  ...props
+}: SafeAreaProps) => {
   const insets = useSafeAreaInsets()
-  const {children} = props
   const styles = {
     flex: 1,
     justifyContent: 'space-between',
@@ -19,14 +29,26 @@ export const SafeArea = (props: SafeAreaProps) => {
     backgroundColor: COLORS_DF[props.bg || 'lightGray'],
   } as ViewStyle
 
-  return (
-    <View style={styles}>
-      <StatusBar
-        translucent
-        backgroundColor={'transparent'}
-        barStyle={props.barStyle || 'dark-content'}
-      />
-      {children}
-    </View>
+  const renderChildren = () => {
+    return (
+      <View style={styles}>
+        <StatusBar
+          translucent
+          backgroundColor={'transparent'}
+          barStyle={props.barStyle || 'dark-content'}
+        />
+        {children}
+      </View>
+    )
+  }
+
+  return isForm ? (
+    <KeyboardAvoidingView behavior={'padding'} style={{flex: 1}}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        {renderChildren()}
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+  ) : (
+    renderChildren()
   )
 }

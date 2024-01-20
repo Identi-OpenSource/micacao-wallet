@@ -1,9 +1,9 @@
 export const TEXTS = {
   textA: 'Conecta tu campo con el mundo',
   textB: 'Registra tu campo y gana más dinero por tu cosecha',
-  textC: 'Paso 1 de 2',
-  textD: 'Paso 2 de 2',
-  textE: 'Crea una contraseña',
-  textF: '¡Todo listo para empezar!',
-  textG: 'Lo primero que debemos hacer es registrar tu parcela.',
+  textC: 'Paso 1 de 4',
+  textD: 'Paso 2 de 4',
+  textE: 'Paso 3 de 4',
+  textF: 'Paso 4 de 4',
+  textG: 'Paso 5 de 4',
 }

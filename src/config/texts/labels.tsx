@@ -1,6 +1,8 @@
 export const LABELS = {
   createAccount: 'Crea tu cuenta personal',
   email: 'Correo electrónico',
+  registerDni: 'Escribe tu DNI',
+  dni: 'DNI',
   phoneRegister: 'Escribe tu número de celular',
   nameRegister: 'Escribe tu nombre completo',
   next: 'Siguiente',

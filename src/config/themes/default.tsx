@@ -25,15 +25,16 @@ export const COLORS_DF = {
   lightBrown: '#b38e6c',
   yellowBrown: '#be6426',
   darkBrown: '#733c18',
-  gray: '#C8C8C8',
+  gray: '#929292',
   black: '#404040',
   white: '#ffffff',
-  warning: '#d32e28',
+  warning: '#EF4444',
   transparent: 'transparent',
   // Nuevos colores
   neutral: '#DCD4D0',
   cacao: '#4A0000',
   greenAgrayu: '#BDEF12',
+  greenAgrayuDisabled: '#F8FDE7',
 } as const
 
 export const FONT_FAMILIES = {
@@ -59,6 +60,8 @@ export const MP_DF = {
   small: 6,
   medium: 10,
   large: 24,
+  xlarge: 32,
+  xxlarge: 38,
 } as const
 
 export const THEME_DF = StyleSheet.create({
@@ -87,6 +90,9 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
       break
     case 'agrayu':
       CL = [COLORS_DF.greenAgrayu, COLORS_DF.cacao]
+      break
+    case 'agrayuDisabled':
+      CL = [COLORS_DF.greenAgrayuDisabled, COLORS_DF.gray]
       break
     default:
       CL = [COLORS_DF.primary, COLORS_DF.secondary]
@@ -124,6 +130,7 @@ export const BTN_THEME = {
   warning: STYLE_BTN('white'),
   transparent: STYLE_BTN('transparent'),
   agrayu: STYLE_BTN('agrayu'),
+  agrayuDisabled: STYLE_BTN('agrayuDisabled'),
 } as const
 
 // Icon button
@@ -133,7 +140,7 @@ export const STYLE_BTN_ICON = (theme: BTN_THEME_ICON_DF) => {
 
   switch (theme) {
     case 'transparent':
-      CL = [COLORS_DF.transparent, COLORS_DF.primary]
+      CL = [COLORS_DF.transparent, COLORS_DF.cacao]
       break
     default:
       CL = [COLORS_DF.primary, COLORS_DF.secondary]
@@ -143,6 +150,7 @@ export const STYLE_BTN_ICON = (theme: BTN_THEME_ICON_DF) => {
   return {
     container: {
       backgroundColor: CL[0],
+      alignItems: 'flex-start',
     },
     const: {
       opacity: 0.7,
@@ -158,4 +166,5 @@ export const BTN_THEME_ICON = {
   warning: STYLE_BTN_ICON('primary'),
   transparent: STYLE_BTN_ICON('transparent'),
   agrayu: STYLE_BTN_ICON('agrayu'),
+  agrayuDisabled: STYLE_BTN_ICON('agrayuDisabled'),
 } as const

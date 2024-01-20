@@ -4,15 +4,14 @@ import {
   BORDER_RADIUS_DF,
   COLORS_DF,
   FONT_FAMILIES,
-  FONT_SIZES,
   MP_DF,
 } from '../../config/themes/default'
 import {InputTextProps} from './interfaces'
 import {formatPhone} from '../../utils/formatPhone'
 import {formatPin} from '../../utils/formatPin'
+import {moderateScale} from '../../config/themes/metrics'
 
 export const InputText = (props: InputTextProps) => {
-  console.log('InputText', props)
   const {
     label,
     keyboardType,
@@ -36,12 +35,11 @@ export const InputText = (props: InputTextProps) => {
     handleChange(name)(textFormate)
   }
 
-  console.log('InputText', ref)
-
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
+        ref={ref}
         onChangeText={onChangeText}
         onBlur={handleBlur(name)}
         value={value}
@@ -49,6 +47,7 @@ export const InputText = (props: InputTextProps) => {
         keyboardType={keyboardType || 'default'}
         placeholder={placeholder}
         placeholderTextColor={COLORS_DF.gray}
+        cursorColor={COLORS_DF.gray}
         secureTextEntry={secureTextEntry || false}
         {...props}
       />
@@ -61,28 +60,32 @@ export const InputText = (props: InputTextProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 100,
+    height: 120,
   },
   label: {
     fontFamily: FONT_FAMILIES.primary,
-    fontSize: FONT_SIZES.medium,
-    marginBottom: MP_DF.small,
-    color: COLORS_DF.primary,
+    fontSize: moderateScale(16),
+    fontWeight: '600',
+    marginBottom: MP_DF.medium,
+    color: COLORS_DF.cacao,
   },
   error: {
     fontFamily: FONT_FAMILIES.primary,
-    fontSize: FONT_SIZES.small * 0.85,
+    fontSize: moderateScale(12),
+    fontWeight: '600',
+    lineHeight: moderateScale(20),
     color: COLORS_DF.warning,
-    opacity: 0.5,
+    textAlign: 'right',
   },
   input: {
-    height: 40,
+    height: 48,
     padding: MP_DF.medium,
     borderWidth: 1,
     borderColor: COLORS_DF.gray,
     borderRadius: BORDER_RADIUS_DF.small,
     fontFamily: FONT_FAMILIES.primary,
-    fontSize: FONT_SIZES.medium,
+    fontSize: moderateScale(18),
+    fontWeight: '600',
     backgroundColor: COLORS_DF.white,
   },
 })

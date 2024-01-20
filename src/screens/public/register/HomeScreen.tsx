@@ -31,11 +31,13 @@ export const HomeScreen = () => {
           <Text style={[styles.textA]}>{TEXTS.textA}</Text>
           <Text style={[styles.textB]}>{TEXTS.textB}</Text>
         </View>
-        <Btn
-          title={LABELS.createAccount}
-          theme="agrayu"
-          onPress={() => navigation.navigate('RegisterScreen')}
-        />
+        <View style={styles.formBtn}>
+          <Btn
+            title={LABELS.createAccount}
+            theme="agrayu"
+            onPress={() => navigation.navigate('RegisterScreen')}
+          />
+        </View>
       </View>
     </SafeArea>
   )
@@ -44,17 +46,14 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-around',
-    alignItems: 'center',
     paddingHorizontal: horizontalScale(MP_DF.large),
-    paddingVertical: verticalScale(MP_DF.medium),
   },
   img: {
     width: horizontalScale(306),
     height: verticalScale(306),
     alignSelf: 'center',
   },
-  textContainer: {},
+  textContainer: {flex: 1},
   textA: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(32),
@@ -70,5 +69,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     color: COLORS_DF.cacao,
+  },
+  formBtn: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: verticalScale(MP_DF.xlarge),
   },
 })
