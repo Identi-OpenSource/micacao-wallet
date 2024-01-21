@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  Dimensions,
   Keyboard,
   KeyboardAvoidingView,
   StatusBar,
@@ -43,7 +44,9 @@ export const SafeArea = ({
   }
 
   return isForm ? (
-    <KeyboardAvoidingView behavior={'padding'} style={{flex: 1}}>
+    <KeyboardAvoidingView
+      behavior={'padding'}
+      style={{height: Dimensions.get('window').height}}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         {renderChildren()}
       </TouchableWithoutFeedback>

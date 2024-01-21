@@ -6,6 +6,7 @@
 import React, {useContext, useEffect} from 'react'
 import {
   NativeStackNavigationOptions,
+  NativeStackScreenProps,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack'
 import {HomeScreen} from '../screens/public/register/HomeScreen'
@@ -14,12 +15,30 @@ import {HomeProvScreen} from '../screens/public/home/HomeProvScreen'
 import {UserDispatchContext, UsersContext} from '../states/UserContext'
 import {useSecureOffline} from '../hooks/useSecureOffline'
 import {dbConfig} from '../config/db-encript'
+import {RegisterSecondScreen} from '../screens/public/register/RegisterSecondScreen'
+import {RegisterThirdScreen} from '../screens/public/register/RegisterThirdScreen'
+import {CompositeScreenProps} from '@react-navigation/native'
+import {RegisterFourthScreen} from '../screens/public/register/RegisterFourthScreen'
+import {RegisterOkScreen} from '../screens/public/register/RegisterOkScreen'
 
-export type RootStackParamList = {
+type RootStackParamList = {
   HomeScreen: undefined
-  RegisterScreen: undefined
   HomeProvScreen: undefined
+  RegisterScreen: undefined
+  RegisterSecondScreen: {dni: string}
+  RegisterThirdScreen: {dni: string; phone: string}
+  RegisterFourthScreen: {dni: string; phone: string; name: string}
+  RegisterOkScreen: {dni: string; phone: string; name: string; pin: string}
 }
+
+export type RootStackScreenProps<T extends keyof RootStackParamList> =
+  NativeStackScreenProps<RootStackParamList, T>
+
+export type ScreenProps<T extends keyof RootStackParamList> =
+  CompositeScreenProps<
+    NativeStackScreenProps<RootStackParamList, T>,
+    RootStackScreenProps<keyof RootStackParamList>
+  >
 
 declare global {
   namespace ReactNavigation {
@@ -39,7 +58,7 @@ const slideFromRight = {
 
 export const Router = () => {
   const getOffline = useSecureOffline(dbConfig.keyData)
-  const Stack = createNativeStackNavigator()
+  const Stack = createNativeStackNavigator<RootStackParamList>()
   const users = useContext(UsersContext)
   const dispatch = useContext(UserDispatchContext)
   // const [loading, setLoading] = useState(true)
@@ -62,11 +81,20 @@ export const Router = () => {
     <Stack.Navigator screenOptions={{...slideFromRight}}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
-      {/* <Stack.Screen name="RegisterTwoScreen" component={RegisterTwoScreen} />
       <Stack.Screen
-        name="RegisterThreeScreen"
-        component={RegisterThreeScreen}
-      /> */}
+        name="RegisterSecondScreen"
+        component={RegisterSecondScreen}
+        initialParams={{dni: ''}}
+      />
+      <Stack.Screen
+        name="RegisterThirdScreen"
+        component={RegisterThirdScreen}
+      />
+      <Stack.Screen
+        name="RegisterFourthScreen"
+        component={RegisterFourthScreen}
+      />
+      <Stack.Screen name="RegisterOkScreen" component={RegisterOkScreen} />
     </Stack.Navigator>
   )
 

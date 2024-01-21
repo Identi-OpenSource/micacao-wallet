@@ -4,6 +4,14 @@ import {MSG_ERROR} from '../../../config/texts/erros'
 import {InputTextProps} from '../../../components/input-text/interfaces'
 import {InputText} from '../../../components/input-text/InputText'
 import {LABELS} from '../../../config/texts/labels'
+import {NavigationProp} from '@react-navigation/native'
+import {InputOTP} from '../../../components/input-otp/InputOTP'
+
+// interface header
+export interface InterfaceHeader {
+  navigation: NavigationProp<ReactNavigation.RootParamList>
+  title: string
+}
 
 // first step
 export interface InterfaceOne {
@@ -47,6 +55,7 @@ export const INPUTS_TWO = [
     placeholder: LABELS.phone,
     preFormate: 'phone',
     keyboardType: 'phone-pad',
+    autoFocus: true,
     component: InputText,
   },
 ] as InputTextProps[]
@@ -59,24 +68,51 @@ export let SCHEMA_TWO = object({
 
 // third step
 export interface InterfaceThree {
-  pin: string
+  name: string
 }
 
 export const INIT_VALUES_THREE: InterfaceThree = {
-  pin: '',
+  name: '',
 }
 
 export const INPUTS_THREE = [
   {
-    name: 'pin',
-    label: LABELS.pin,
-    placeholder: LABELS.pin,
-    keyboardType: 'numeric',
+    name: 'name',
+    label: LABELS.namePersonal,
+    placeholder: LABELS.name,
+    keyboardType: 'default',
+    autoFocus: true,
     component: InputText,
   },
 ] as InputTextProps[]
 
 export let SCHEMA_THREE = object({
+  name: string()
+    .matches(REGEX.namePropio, {message: MSG_ERROR.namePropio})
+    .required(MSG_ERROR.required),
+})
+
+// fourth step
+export interface InterfaceFourth {
+  pin: string
+}
+
+export const INIT_VALUES_FOURTH: InterfaceFourth = {
+  pin: '',
+}
+
+export const INPUTS_FOURTH = [
+  {
+    name: 'pin',
+    label: LABELS.pin,
+    placeholder: LABELS.pin,
+    keyboardType: 'numeric',
+    autoFocus: true,
+    component: InputOTP,
+  },
+] as InputTextProps[]
+
+export let SCHEMA_FOURTH = object({
   pin: string()
     .matches(REGEX.pin, {message: MSG_ERROR.pin})
     .required(MSG_ERROR.required),

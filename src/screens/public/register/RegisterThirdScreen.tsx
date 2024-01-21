@@ -6,42 +6,44 @@
 
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {useNavigation} from '@react-navigation/native'
-import {Text, View} from 'react-native'
-import {Btn, BtnIcon} from '../../../components/button/Button'
-import {moderateScale} from '../../../config/themes/metrics'
+import {View} from 'react-native'
+import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 import {Field, Formik} from 'formik'
 import {
-  INIT_VALUES_ONE,
-  INPUTS_ONE,
-  InterfaceHeader,
-  InterfaceOne,
-  SCHEMA_ONE,
+  INIT_VALUES_THREE,
+  INPUTS_THREE,
+  InterfaceThree,
+  SCHEMA_THREE,
 } from './Interfaces'
 import {LABELS} from '../../../config/texts/labels'
 import {styles} from './styles'
+import {ScreenProps} from '../../../routers/Router'
+import {Header} from './RegisterScreen'
 
-export const RegisterScreen = () => {
-  const navigation = useNavigation()
+export const RegisterThirdScreen = ({
+  route,
+  navigation,
+}: ScreenProps<'RegisterThirdScreen'>) => {
+  const params = route.params
 
-  const onSubmit = (values: InterfaceOne) => {
-    navigation.navigate('RegisterSecondScreen', values)
+  const onSubmit = (values: InterfaceThree) => {
+    navigation.navigate('RegisterFourthScreen', {...params, ...values})
   }
 
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={TEXTS.textC} />
+        <Header navigation={navigation} title={TEXTS.textE} />
         <Formik
-          initialValues={INIT_VALUES_ONE}
+          initialValues={INIT_VALUES_THREE}
           onSubmit={values => onSubmit(values)}
-          validationSchema={SCHEMA_ONE}>
+          validationSchema={SCHEMA_THREE}>
           {({handleSubmit, isValid, dirty}) => (
             <>
               <View style={styles.formContainer}>
                 <View style={styles.formInput}>
-                  {INPUTS_ONE.map(i => (
+                  {INPUTS_THREE.map(i => (
                     <Field key={i.name} {...i} />
                   ))}
                 </View>
@@ -59,23 +61,5 @@ export const RegisterScreen = () => {
         </Formik>
       </View>
     </SafeArea>
-  )
-}
-
-// Componente Header
-
-export const Header = (props: InterfaceHeader) => {
-  const {navigation, title} = props
-  return (
-    <View style={styles.header}>
-      <BtnIcon
-        theme="transparent"
-        icon="angle-left"
-        size={moderateScale(30)}
-        style={{container: styles.btnIcon}}
-        onPress={() => navigation.goBack()}
-      />
-      <Text style={styles.title}>{title}</Text>
-    </View>
   )
 }
