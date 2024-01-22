@@ -1,11 +1,6 @@
 import React, {useRef} from 'react'
 import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
-import {
-  BORDER_RADIUS_DF,
-  COLORS_DF,
-  FONT_FAMILIES,
-  MP_DF,
-} from '../../config/themes/default'
+import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../config/themes/default'
 import {InputTextProps} from './interfaces'
 import {moderateScale} from '../../config/themes/metrics'
 
@@ -77,8 +72,7 @@ const styles = StyleSheet.create({
     marginHorizontal: MP_DF.medium,
     borderBottomWidth: 1,
     borderBottomColor: COLORS_DF.cacao,
-    width: 40,
-    height: 40,
+    width: 36,
   },
   oculto: {
     height: 0,
@@ -100,15 +94,5 @@ const styles = StyleSheet.create({
     color: COLORS_DF.warning,
     textAlign: 'right',
   },
-  input: {
-    height: 48,
-    padding: MP_DF.medium,
-    borderWidth: 1,
-    borderColor: COLORS_DF.gray,
-    borderRadius: BORDER_RADIUS_DF.small,
-    fontFamily: FONT_FAMILIES.primary,
-    fontSize: moderateScale(18),
-    fontWeight: '600',
-    backgroundColor: COLORS_DF.white,
-  },
+  input: {},
 })
