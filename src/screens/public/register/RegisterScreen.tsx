@@ -7,7 +7,7 @@
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {useNavigation} from '@react-navigation/native'
-import {Text, View} from 'react-native'
+import {Keyboard, Text, View} from 'react-native'
 import {Btn, BtnIcon} from '../../../components/button/Button'
 import {moderateScale} from '../../../config/themes/metrics'
 import {TEXTS} from '../../../config/texts/texts'
@@ -26,7 +26,10 @@ export const RegisterScreen = () => {
   const navigation = useNavigation()
 
   const onSubmit = (values: InterfaceOne) => {
-    navigation.navigate('RegisterSecondScreen', values)
+    Keyboard.dismiss()
+    setTimeout(() => {
+      navigation.navigate('RegisterSecondScreen', values)
+    }, 100)
   }
 
   return (

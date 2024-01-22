@@ -6,7 +6,7 @@
 
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {View} from 'react-native'
+import {Keyboard, View} from 'react-native'
 import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 import {Field, Formik} from 'formik'
@@ -28,7 +28,10 @@ export const RegisterFourthScreen = ({
   const params = route.params
 
   const onSubmit = (values: InterfaceFourth) => {
-    navigation.navigate('RegisterOkScreen', {...params, ...values})
+    Keyboard.dismiss()
+    setTimeout(() => {
+      navigation.navigate('RegisterOkScreen', {...params, ...values})
+    }, 100)
   }
 
   return (
@@ -49,7 +52,7 @@ export const RegisterFourthScreen = ({
                 </View>
                 <View style={styles.formBtn}>
                   <Btn
-                    title={LABELS.next}
+                    title={LABELS.confirm}
                     theme={isValid && dirty ? 'agrayu' : 'agrayuDisabled'}
                     onPress={handleSubmit}
                     disabled={!isValid || !dirty}

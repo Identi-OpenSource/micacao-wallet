@@ -11,15 +11,14 @@ import {
 } from '@react-navigation/native-stack'
 import {HomeScreen} from '../screens/public/register/HomeScreen'
 import {RegisterScreen} from '../screens/public/register/RegisterScreen'
-import {HomeProvScreen} from '../screens/public/home/HomeProvScreen'
 import {UserDispatchContext, UsersContext} from '../states/UserContext'
-import {useSecureOffline} from '../hooks/useSecureOffline'
-import {dbConfig} from '../config/db-encript'
 import {RegisterSecondScreen} from '../screens/public/register/RegisterSecondScreen'
 import {RegisterThirdScreen} from '../screens/public/register/RegisterThirdScreen'
 import {CompositeScreenProps} from '@react-navigation/native'
 import {RegisterFourthScreen} from '../screens/public/register/RegisterFourthScreen'
 import {RegisterOkScreen} from '../screens/public/register/RegisterOkScreen'
+import {HomeProvScreen} from '../screens/private/home/HomeProvScreen'
+import {storage} from '../config/store/db'
 
 type RootStackParamList = {
   HomeScreen: undefined
@@ -57,23 +56,19 @@ const slideFromRight = {
 } as NativeStackNavigationOptions
 
 export const Router = () => {
-  const getOffline = useSecureOffline(dbConfig.keyData)
   const Stack = createNativeStackNavigator<RootStackParamList>()
   const users = useContext(UsersContext)
   const dispatch = useContext(UserDispatchContext)
-  // const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     getIsLogin()
   }, [])
 
   const getIsLogin = async () => {
-    getOffline.get().then(data => {
-      data && dispatch({type: 'login', payload: data})
-    }) /*
-      .finally(() => {
-        setLoading(false)
-      }) */
+    const user = storage.getString('user')
+    if (user) {
+      dispatch({type: 'login', payload: JSON.parse(user)})
+    }
   }
 
   // create Stack

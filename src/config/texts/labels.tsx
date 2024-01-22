@@ -6,6 +6,7 @@ export const LABELS = {
   phoneRegister: 'Escribe tu número de celular',
   nameRegister: 'Escribe tu nombre completo',
   next: 'Siguiente',
+  confirm: 'Confirmar',
   password: 'Contraseña',
   rePassword: 'Repite tu contraseña',
   pin: 'Crea tu PIN de seguridad',
@@ -15,6 +16,7 @@ export const LABELS = {
   phonePersonal: 'Escribe tu número de celular',
   phone: 'Teléfono',
   error: 'Error',
+  continue: 'Continuar',
 }
 
 export const PLACEHOLDERS = {

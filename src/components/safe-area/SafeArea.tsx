@@ -30,28 +30,29 @@ export const SafeArea = ({
     backgroundColor: COLORS_DF[props.bg || 'lightGray'],
   } as ViewStyle
 
-  const renderChildren = () => {
-    return (
-      <View style={styles}>
-        <StatusBar
-          translucent
-          backgroundColor={'transparent'}
-          barStyle={props.barStyle || 'dark-content'}
-        />
-        {children}
-      </View>
-    )
-  }
-
   return isForm ? (
-    <KeyboardAvoidingView
-      behavior={'padding'}
-      style={{height: Dimensions.get('window').height}}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        {renderChildren()}
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    <View style={styles}>
+      <StatusBar
+        translucent
+        backgroundColor={'transparent'}
+        barStyle={props.barStyle || 'dark-content'}
+      />
+      <KeyboardAvoidingView
+        behavior={'height'}
+        style={{height: Dimensions.get('window').height}}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          {children}
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </View>
   ) : (
-    renderChildren()
+    <View style={styles}>
+      <StatusBar
+        translucent
+        backgroundColor={'transparent'}
+        barStyle={props.barStyle || 'dark-content'}
+      />
+      {children}
+    </View>
   )
 }

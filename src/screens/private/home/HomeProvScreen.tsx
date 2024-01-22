@@ -9,39 +9,26 @@ import {
   getFontSize,
 } from '../../../config/themes/default'
 import {UsersContext} from '../../../states/UserContext'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {Btn} from '../../../components/button/Button'
-import {LABELS} from '../../../config/texts/labels'
+import {storage} from '../../../config/store/db'
+import useInternetConnection from '../../../hooks/useInternetConnection'
 
 export const HomeProvScreen = () => {
   const user = useContext(UsersContext)
-  const firstName = user.name.split(' ')[0]
+  const isConnected = useInternetConnection()
 
-  const prueba = () => {
-    // crear la wallet
-  }
+  console.log('user', user)
 
+  const dataLOcal = storage.getString('user') || '{}'
+  const userLocalObject = JSON.parse(dataLOcal)
+  const userLocal = JSON.stringify(userLocalObject, null, 2)
   return (
     <SafeArea>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.titleHeader}>Hola, {firstName}</Text>
-          <Text style={styles.textHeader}>
-            Selecciona la opción que deseas realizar
-          </Text>
-        </View>
-        <View style={styles.body}>
-          <View style={styles.cardContainer}>
-            <View style={styles.icon}>
-              <FontAwesomeIcon icon="tree" size={36} color={COLORS_DF.black} />
-            </View>
-            <Text style={styles.cardTitle}>Registrar mi parcela</Text>
-            <Text style={styles.cardText}>
-              Quiero hacer visible mi parcela al mundo y empezar a vender.
-            </Text>
-          </View>
-        </View>
-        <Btn title={LABELS.createAccount} theme="white" onPress={prueba} />
+        <Text style={styles.titleHeader}>Home</Text>
+        <Text style={styles.textHeader}>
+          Online: {isConnected ? 'true' : 'false'}
+        </Text>
+        <Text style={styles.textHeader}>Local-OffLine: {userLocal}</Text>
       </View>
     </SafeArea>
   )

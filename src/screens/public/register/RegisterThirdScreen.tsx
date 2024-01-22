@@ -6,7 +6,7 @@
 
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {View} from 'react-native'
+import {Keyboard, View} from 'react-native'
 import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 import {Field, Formik} from 'formik'
@@ -28,7 +28,10 @@ export const RegisterThirdScreen = ({
   const params = route.params
 
   const onSubmit = (values: InterfaceThree) => {
-    navigation.navigate('RegisterFourthScreen', {...params, ...values})
+    Keyboard.dismiss()
+    setTimeout(() => {
+      navigation.navigate('RegisterFourthScreen', {...params, ...values})
+    }, 100)
   }
 
   return (

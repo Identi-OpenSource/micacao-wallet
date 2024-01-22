@@ -4,46 +4,111 @@
  * @summary : View of entry point of the application
  */
 
-import React from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {Image, StyleSheet, Text, View} from 'react-native'
+import {
+  ActivityIndicator,
+  Animated,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
 import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 
 import {LABELS} from '../../../config/texts/labels'
-import {imgProd} from '../../../assets/imgs'
+import {imgCheque} from '../../../assets/imgs'
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
 import {ScreenProps} from '../../../routers/Router'
+import {storage} from '../../../config/store/db'
+import {UserDispatchContext} from '../../../states/UserContext'
 
-export const RegisterOkScreen = ({
-  route,
-  navigation,
-}: ScreenProps<'RegisterOkScreen'>) => {
+export const RegisterOkScreen = ({route}: ScreenProps<'RegisterOkScreen'>) => {
   const params = route.params
+  const [step, setStep] = useState(0)
+  const dispatch = useContext(UserDispatchContext)
+  const fadeAnim = useRef(new Animated.Value(0)).current
 
-  console.log(params)
+  // Save data
+  useEffect(() => {
+    storage.set('user', JSON.stringify({...params, isLogin: true}))
+  }, [])
+
+  // Login
+  const isLogin = () => {
+    dispatch({type: 'login', payload: {...params, isLogin: true}})
+  }
+
+  // Animation
+  useEffect(() => {
+    if (step === 0) {
+      // Fade in
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 2000,
+        useNativeDriver: true,
+      }).start(() => {
+        // Fade out after fade in is complete
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 500,
+          delay: 1500,
+          useNativeDriver: true,
+        }).start(() => {
+          // nimero aleatorio ente 500 y 2500
+          setStep(1)
+        })
+      })
+    } else if (step === 1) {
+      fadeAnim.setValue(0)
+      // Fade in
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start()
+    }
+  }, [fadeAnim, step])
+
+  console.log('params', params)
 
   return (
     <SafeArea bg={'neutral'}>
-      <Image source={imgProd} style={styles.img} />
-      <View style={styles.container}>
-        <View style={styles.textContainer}>
-          <Text style={[styles.textA]}>{'RegisterOkScreen'}</Text>
-          <Text style={[styles.textB]}>{TEXTS.textB}</Text>
-        </View>
-        <View style={styles.formBtn}>
-          <Btn
-            title={LABELS.createAccount}
-            theme="agrayu"
-            onPress={() => navigation.navigate('RegisterScreen')}
+      {step === 0 && (
+        <>
+          <ActivityIndicator
+            size={moderateScale(86)}
+            color={COLORS_DF.cacao}
+            style={styles.indicador}
           />
-        </View>
-      </View>
+          <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
+            <View style={styles.textContainer}>
+              <Text style={[styles.textA]}>{TEXTS.textG}</Text>
+              <Text style={[styles.textB]}>{TEXTS.textH}</Text>
+            </View>
+          </Animated.View>
+        </>
+      )}
+      {step === 1 && (
+        <>
+          <Image source={imgCheque} style={[styles.img, styles.indicador]} />
+          <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
+            <View style={styles.textContainer}>
+              <Text style={[styles.textA]}>{TEXTS.textI}</Text>
+              <Text style={[styles.textB]}>{TEXTS.textJ}</Text>
+            </View>
+            <View style={styles.formBtn}>
+              <Btn title={LABELS.continue} theme="agrayu" onPress={isLogin} />
+            </View>
+          </Animated.View>
+        </>
+      )}
     </SafeArea>
   )
 }
@@ -53,9 +118,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: horizontalScale(MP_DF.large),
   },
+  indicador: {
+    marginTop: verticalScale(MP_DF.xxlarge * 2),
+    marginBottom: verticalScale(MP_DF.large),
+  },
   img: {
-    width: horizontalScale(306),
-    height: verticalScale(306),
+    width: 120,
+    height: 120,
     alignSelf: 'center',
   },
   textContainer: {flex: 1},
