@@ -34,9 +34,11 @@ export interface ButtonIconProps {
 }
 
 export interface BtnProps {
-  container: StyleProp<ViewStyle>
+  containerPrincipal?: StyleProp<ViewStyle>
+  container?: StyleProp<ViewStyle>
   label?: StyleProp<TextStyle>
   icon?: StyleProp<TextStyle>
+  iconColor?: string
   const?: {
     opacity?: number
     color?: string

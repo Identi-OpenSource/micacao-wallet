@@ -1,6 +1,10 @@
 import React from 'react'
-import {Text, TouchableOpacity} from 'react-native'
-import {BTN_THEME, BTN_THEME_ICON} from '../../config/themes/default'
+import {Text, TouchableOpacity, View} from 'react-native'
+import {
+  BTN_THEME,
+  BTN_THEME_ICON,
+  BTN_THEME_SMALL,
+} from '../../config/themes/default'
 import {ButtonIconProps, ButtonProps} from './interfaces'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 
@@ -35,5 +39,32 @@ export const BtnIcon = (props: ButtonIconProps) => {
         color={BTN_THEME_ICON[theme].const?.color || 'black'}
       />
     </TouchableOpacity>
+  )
+}
+
+export const BtnSmall = (props: ButtonProps) => {
+  const theme = props.theme || 'primary'
+  return (
+    <View style={BTN_THEME_SMALL[theme]?.containerPrincipal}>
+      <TouchableOpacity
+        {...props}
+        onPress={props.onPress}
+        activeOpacity={BTN_THEME_SMALL[theme]?.const?.opacity}
+        style={[BTN_THEME_SMALL[theme]?.container, props.style?.container]}>
+        {props.icon && (
+          <Text style={BTN_THEME_SMALL[theme]?.icon}>
+            <FontAwesomeIcon
+              icon={props.icon}
+              color={BTN_THEME_SMALL[theme]?.iconColor}
+            />
+          </Text>
+        )}
+        {props.title && (
+          <Text style={[BTN_THEME_SMALL[theme]?.label, props.style?.label]}>
+            {props.title}
+          </Text>
+        )}
+      </TouchableOpacity>
+    </View>
   )
 }

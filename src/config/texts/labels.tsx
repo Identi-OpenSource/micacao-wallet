@@ -17,6 +17,13 @@ export const LABELS = {
   phone: 'Teléfono',
   error: 'Error',
   continue: 'Continuar',
+  offline: 'Offline',
+  online: 'Online',
+  offlineMessage: '(No tienes conexión a internet)',
+  asyncData: 'Sincronizar datos',
+  viewMyParcels: 'Ver mis parcelas',
+  registerCosecha: 'Registrar cosecha',
+  registerVenta: 'Registrar una venta',
 }
 
 export const PLACEHOLDERS = {

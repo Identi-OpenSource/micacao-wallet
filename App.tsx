@@ -11,13 +11,15 @@ import {library} from '@fortawesome/fontawesome-svg-core'
 import {
   faAngleLeft,
   faArrowLeftLong,
+  faCircle,
+  faRotate,
   faTree,
 } from '@fortawesome/free-solid-svg-icons'
 import {UserProvider} from './src/states/UserContext'
 
 function App(): React.JSX.Element {
   // biblioteca de iconos
-  library.add(faArrowLeftLong, faTree, faAngleLeft)
+  library.add(faArrowLeftLong, faTree, faAngleLeft, faCircle, faRotate)
   return (
     <UserProvider>
       <NavigationContainer>
