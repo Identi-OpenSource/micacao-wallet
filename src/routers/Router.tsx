@@ -19,6 +19,10 @@ import {RegisterFourthScreen} from '../screens/public/register/RegisterFourthScr
 import {RegisterOkScreen} from '../screens/public/register/RegisterOkScreen'
 import {HomeProvScreen} from '../screens/private/home/HomeProvScreen'
 import {storage} from '../config/store/db'
+import {
+  BottomTabNavigationOptions,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs'
 
 type RootStackParamList = {
   HomeScreen: undefined
@@ -55,8 +59,17 @@ const slideFromRight = {
   presentation: 'card',
 } as NativeStackNavigationOptions
 
+const tabConfig = {
+  headerShown: false,
+  animation: 'slide_from_right',
+  shouldShowHintSearchIcon: true,
+  statusBarTranslucent: true,
+  statusBarColor: 'transparent',
+  statusBarStyle: 'dark',
+  presentation: 'card',
+} as BottomTabNavigationOptions
+
 export const Router = () => {
-  const Stack = createNativeStackNavigator<RootStackParamList>()
   const users = useContext(UsersContext)
   const dispatch = useContext(UserDispatchContext)
 
@@ -71,8 +84,32 @@ export const Router = () => {
     }
   }
 
-  // create Stack
-  const StackPublic = (
+  const Tab = createBottomTabNavigator()
+  const TabPrivate = (
+    <Tab.Navigator screenOptions={{...tabConfig}}>
+      <Tab.Screen name="Home1" component={HomeStackPrivate} />
+      <Tab.Screen name="Home2" component={HomeStackPrivate} />
+      <Tab.Screen name="Home3" component={HomeStackPrivate} />
+    </Tab.Navigator>
+  )
+
+  return !users.isLogin ? StackPublic : TabPrivate
+}
+
+// create Stack home
+const HomeStackPrivate = () => {
+  const Stack = createNativeStackNavigator<RootStackParamList>()
+  return (
+    <Stack.Navigator screenOptions={{...slideFromRight}}>
+      <Stack.Screen name="HomeProvScreen" component={HomeProvScreen} />
+    </Stack.Navigator>
+  )
+}
+
+// create Stack
+const StackPublic = () => {
+  const Stack = createNativeStackNavigator<RootStackParamList>()
+  return (
     <Stack.Navigator screenOptions={{...slideFromRight}}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
@@ -92,12 +129,4 @@ export const Router = () => {
       <Stack.Screen name="RegisterOkScreen" component={RegisterOkScreen} />
     </Stack.Navigator>
   )
-
-  const StackPrivate = (
-    <Stack.Navigator screenOptions={{...slideFromRight}}>
-      <Stack.Screen name="HomeProvScreen" component={HomeProvScreen} />
-    </Stack.Navigator>
-  )
-
-  return !users.isLogin ? StackPublic : StackPrivate
 }
