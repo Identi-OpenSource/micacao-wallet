@@ -9,4 +9,6 @@ export const TEXTS = {
   textH: 'Estamos preparando algunas cosas para conectar tu campo con el mundo',
   textI: '¡Listo!',
   textJ: 'Información guardada',
+  textK: '¿Qué deseas hacer hoy?',
+  textL: 'Hola',
 }

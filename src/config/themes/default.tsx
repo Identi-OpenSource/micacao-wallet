@@ -26,6 +26,7 @@ export const COLORS_DF = {
   yellowBrown: '#be6426',
   darkBrown: '#733c18',
   gray: '#929292',
+  grayLight: '#ADADAD',
   black: '#404040',
   white: '#ffffff',
   warning: '#EF4444',
@@ -43,11 +44,12 @@ export const FONT_FAMILIES = {
 } as const
 
 export const FONT_SIZES = {
-  small: getFontSize(14),
-  medium: getFontSize(16),
-  large: getFontSize(18),
-  xlarge: getFontSize(36),
-  xxlarge: getFontSize(48),
+  small: moderateScale(14),
+  medium: moderateScale(16),
+  large: moderateScale(18),
+  xslarge: moderateScale(24),
+  xlarge: moderateScale(36),
+  xxlarge: moderateScale(48),
 } as const
 
 export const BORDER_RADIUS_DF = {
@@ -118,7 +120,7 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
       lineHeight: verticalScale(28),
     },
     const: {
-      opacity: 0.9,
+      opacity: 0.7,
     },
   } as BtnProps
 }
@@ -167,4 +169,74 @@ export const BTN_THEME_ICON = {
   transparent: STYLE_BTN_ICON('transparent'),
   agrayu: STYLE_BTN_ICON('agrayu'),
   agrayuDisabled: STYLE_BTN_ICON('agrayuDisabled'),
+} as const
+
+// Button
+
+const STYLE_BTN_SMALL = (theme: BTN_THEME_DF) => {
+  let CL: [string, string]
+
+  switch (theme) {
+    case 'primary':
+      CL = [COLORS_DF.primary, COLORS_DF.white]
+      break
+    case 'secondary':
+      CL = [COLORS_DF.secondary, COLORS_DF.primary]
+      break
+    case 'white':
+      CL = [COLORS_DF.white, COLORS_DF.primary]
+      break
+    case 'agrayu':
+      CL = [COLORS_DF.greenAgrayu, COLORS_DF.cacao]
+      break
+    case 'agrayuDisabled':
+      CL = [COLORS_DF.greenAgrayuDisabled, COLORS_DF.gray]
+      break
+    default:
+      CL = [COLORS_DF.primary, COLORS_DF.secondary]
+      break
+  }
+
+  return {
+    containerPrincipal: {
+      flex: 1,
+      alignItems: 'flex-end',
+    },
+    container: {
+      height: 34,
+      justifyContent: 'center',
+      paddingHorizontal: MP_DF.small,
+      backgroundColor: CL[0],
+      borderColor: CL[1],
+      borderWidth: 2,
+      borderRadius: BORDER_RADIUS_DF.medium,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    icon: {
+      marginRight: MP_DF.small,
+    },
+    iconColor: CL[1],
+    label: {
+      color: CL[1],
+      fontFamily: FONT_FAMILIES.primary,
+      textAlign: 'center',
+      fontSize: moderateScale(14),
+      fontWeight: '500',
+      lineHeight: verticalScale(14),
+    },
+    const: {
+      opacity: 0.7,
+    },
+  } as BtnProps
+}
+
+export const BTN_THEME_SMALL = {
+  primary: STYLE_BTN_SMALL('primary'),
+  secondary: STYLE_BTN_SMALL('secondary'),
+  white: STYLE_BTN_SMALL('white'),
+  warning: STYLE_BTN_SMALL('white'),
+  transparent: STYLE_BTN_SMALL('transparent'),
+  agrayu: STYLE_BTN_SMALL('agrayu'),
+  agrayuDisabled: STYLE_BTN_SMALL('agrayuDisabled'),
 } as const
