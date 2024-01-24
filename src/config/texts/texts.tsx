@@ -1,4 +1,5 @@
 export const TEXTS = {
+  welcome: '¡Bienvenido!',
   textA: 'Conecta tu campo con el mundo',
   textB: 'Registra tu campo y gana más dinero por tu cosecha',
   textC: 'Paso 1 de 4',
@@ -11,4 +12,5 @@ export const TEXTS = {
   textJ: 'Información guardada',
   textK: '¿Qué deseas hacer hoy?',
   textL: 'Hola',
+  textM: '¡Es momento de presentar tu parcela al mundo!',
 }

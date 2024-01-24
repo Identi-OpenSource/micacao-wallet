@@ -7,6 +7,7 @@ export const LABELS = {
   nameRegister: 'Escribe tu nombre completo',
   next: 'Siguiente',
   confirm: 'Confirmar',
+  addParcel: 'Registrar mi parcela',
   password: 'Contraseña',
   rePassword: 'Repite tu contraseña',
   pin: 'Crea tu PIN de seguridad',
