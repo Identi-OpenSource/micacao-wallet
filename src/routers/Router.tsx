@@ -23,6 +23,7 @@ import {
   BottomTabNavigationOptions,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs'
+import {RegisterParcelScreen} from '../screens/private/parcel/RegisterParcelScreen'
 
 type RootStackParamList = {
   HomeScreen: undefined
@@ -32,6 +33,10 @@ type RootStackParamList = {
   RegisterThirdScreen: {dni: string; phone: string}
   RegisterFourthScreen: {dni: string; phone: string; name: string}
   RegisterOkScreen: {dni: string; phone: string; name: string; pin: string}
+  // Private
+  RegisterParcelStack: undefined
+  TabPrivate: undefined
+  RegisterParcelScreen: undefined
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -70,7 +75,7 @@ const tabConfig = {
 } as BottomTabNavigationOptions
 
 export const Router = () => {
-  const users = useContext(UsersContext)
+  const user = useContext(UsersContext)
   const dispatch = useContext(UserDispatchContext)
 
   useEffect(() => {
@@ -78,22 +83,54 @@ export const Router = () => {
   }, [])
 
   const getIsLogin = async () => {
-    const user = storage.getString('user')
-    if (user) {
-      dispatch({type: 'login', payload: JSON.parse(user)})
+    const userLogin = storage.getString('user')
+    if (userLogin) {
+      dispatch({type: 'login', payload: JSON.parse(userLogin)})
     }
   }
+  const Stack = createNativeStackNavigator<RootStackParamList>()
 
+  const IRN = user?.parcel?.length === 0 ? 'RegisterParcelStack' : 'TabPrivate'
+
+  return !user.isLogin ? (
+    <StackPublic />
+  ) : (
+    <Stack.Navigator initialRouteName={IRN} screenOptions={{...slideFromRight}}>
+      {/* Visible solo si no tiene parcelas */}
+      <Stack.Screen
+        name="RegisterParcelStack"
+        component={RegisterParcelStack}
+      />
+      {/* Tab Principal */}
+      <Stack.Screen
+        name="TabPrivate"
+        component={TabPrivate}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
+  )
+}
+
+const TabPrivate = () => {
   const Tab = createBottomTabNavigator()
-  const TabPrivate = (
+  return (
     <Tab.Navigator screenOptions={{...tabConfig}}>
       <Tab.Screen name="Home1" component={HomeStackPrivate} />
-      <Tab.Screen name="Home2" component={HomeStackPrivate} />
-      <Tab.Screen name="Home3" component={HomeStackPrivate} />
     </Tab.Navigator>
   )
+}
 
-  return !users.isLogin ? StackPublic : TabPrivate
+// Create Stack RegisterParcel
+const RegisterParcelStack = () => {
+  const Stack = createNativeStackNavigator<RootStackParamList>()
+  return (
+    <Stack.Navigator screenOptions={{...slideFromRight}}>
+      <Stack.Screen
+        name="RegisterParcelScreen"
+        component={RegisterParcelScreen}
+      />
+    </Stack.Navigator>
+  )
 }
 
 // create Stack home

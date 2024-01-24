@@ -5,6 +5,7 @@ export interface UserInterface {
   phone: string
   pin: string
   isLogin?: boolean
+  parcel?: string[]
 }
 
 export const userInicialState: UserInterface = {
@@ -12,6 +13,7 @@ export const userInicialState: UserInterface = {
   phone: '',
   pin: '',
   isLogin: false,
+  parcel: [],
 }
 
 export type UserActions = 'login' | 'logout' | 'getLogin'
@@ -32,10 +34,10 @@ export const UserDispatchContext = createContext(
 )
 
 export const UserProvider = ({children}: {children: React.ReactNode}) => {
-  const [tasks, dispatch] = useReducer(usersReducer, userInicialState)
+  const [user, dispatch] = useReducer(usersReducer, userInicialState)
 
   return (
-    <UsersContext.Provider value={tasks}>
+    <UsersContext.Provider value={user}>
       <UserDispatchContext.Provider value={dispatch}>
         {children}
       </UserDispatchContext.Provider>
@@ -48,18 +50,14 @@ export const usersReducer = (user: UserInterface, action: ActionsInterface) => {
     case 'getLogin': {
       return {
         ...user,
-        name: action.payload.name,
-        phone: action.payload.phone,
-        pin: action.payload.pin,
+        ...action.payload,
         isLogin: true,
       }
     }
     case 'login': {
       return {
         ...user,
-        name: action.payload.name,
-        phone: action.payload.phone,
-        pin: action.payload.pin,
+        ...action.payload,
         isLogin: true,
       }
     }
