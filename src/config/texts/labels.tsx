@@ -5,6 +5,7 @@ export const LABELS = {
   dni: 'DNI',
   phoneRegister: 'Escribe tu número de celular',
   nameParcel: '¿Cómo se llama tu parcela?',
+  hectaresParcel: '¿Cuántas hectáreas tiene tu parcela?',
   nameRegister: 'Escribe tu nombre completo',
   next: 'Siguiente',
   confirm: 'Confirmar',

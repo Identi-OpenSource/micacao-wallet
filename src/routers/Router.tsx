@@ -25,6 +25,7 @@ import {
 } from '@react-navigation/bottom-tabs'
 import {RegisterParcelScreen} from '../screens/private/parcel/register/RegisterParcelScreen'
 import {RegisterOneScreen} from '../screens/private/parcel/register/RegisterOneScreen'
+import {RegisterTwoScreen} from '../screens/private/parcel/register/RegisterTwoScreen'
 
 type RootStackParamList = {
   HomeScreen: undefined
@@ -38,6 +39,7 @@ type RootStackParamList = {
   RegisterParcelScreen: undefined
   TabPrivate: undefined
   RegisterOneScreen: undefined
+  RegisterTwoScreen: {name: string}
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -102,6 +104,7 @@ export const Router = () => {
         name="RegisterParcelStack"
         component={RegisterParcelStack}
       />
+      <Stack.Screen name="RegisterTwoScreen" component={RegisterTwoScreen} />
 
       {/* Tab Principal */}
       <Stack.Screen

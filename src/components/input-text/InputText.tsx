@@ -31,6 +31,10 @@ export const InputText = (props: InputTextProps) => {
     if (preFormate === 'pin') {
       textFormate = formatPin(text)
     }
+    if (preFormate === 'decimal') {
+      textFormate = textFormate.replace(/,/g, '.')
+      textFormate = textFormate.replace(/(\d*\.\d\d).*/, '$1')
+    }
 
     handleChange(name)(textFormate)
   }

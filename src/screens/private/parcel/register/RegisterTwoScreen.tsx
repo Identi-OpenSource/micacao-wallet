@@ -10,7 +10,7 @@ import {ScreenProps} from '../../../../routers/Router'
 import {LABELS} from '../../../../config/texts/labels'
 import {InputText} from '../../../../components/input-text/InputText'
 import {InputTextProps} from '../../../../components/input-text/interfaces'
-import {object, string} from 'yup'
+import {number, object} from 'yup'
 import {MSG_ERROR} from '../../../../config/texts/erros'
 import {Field, Formik} from 'formik'
 import {Btn} from '../../../../components/button/Button'
@@ -18,36 +18,40 @@ import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
 
 // firs step
 export interface Interface {
-  name: string
+  hectares: number | ''
 }
 export const VALUES: Interface = {
-  name: '',
+  hectares: '',
 }
 
 export const INPUTS = [
   {
-    name: 'name',
-    label: LABELS.nameParcel,
+    name: 'hectares',
+    label: LABELS.hectaresParcel,
     component: InputText,
+    keyboardType: 'numeric',
+    preFormate: 'decimal',
   },
 ] as InputTextProps[]
 
 export let SCHEMA = object({
-  name: string().min(3, MSG_ERROR.minString(3)).required(MSG_ERROR.required),
+  hectares: number()
+    .typeError(MSG_ERROR.noIsNumber)
+    .min(0.1, MSG_ERROR.minNumber(0.1))
+    .required(MSG_ERROR.required),
 })
 
-export const RegisterOneScreen = ({
+export const RegisterTwoScreen = ({
   navigation,
-}: ScreenProps<'RegisterOneScreen'>) => {
+}: ScreenProps<'RegisterTwoScreen'>) => {
   const onSubmit = (values: Interface) => {
-    navigation.navigate('RegisterTwoScreen', {name: values.name})
     console.log(values)
   }
 
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
-        <HeaderActions title={TEXTS.textC} navigation={navigation} />
+        <HeaderActions title={TEXTS.textD} navigation={navigation} />
         <Formik
           initialValues={VALUES}
           onSubmit={values => onSubmit(values)}
