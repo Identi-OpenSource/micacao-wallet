@@ -15,4 +15,5 @@ export const MSG_ERROR = {
   rePin: 'El PIN no coincide',
   required: 'Requerido',
   errorGeneric: 'Error desconocido, intente de nuevo',
+  minString: (n: number) => `Mínimo ${n} caracteres`,
 }

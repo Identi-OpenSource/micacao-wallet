@@ -64,6 +64,7 @@ export const MP_DF = {
   large: 24,
   xlarge: 32,
   xxlarge: 38,
+  xxxlarge: 48,
 } as const
 
 export const THEME_DF = StyleSheet.create({

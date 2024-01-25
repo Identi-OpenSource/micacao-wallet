@@ -23,7 +23,8 @@ import {
   BottomTabNavigationOptions,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs'
-import {RegisterParcelScreen} from '../screens/private/parcel/RegisterParcelScreen'
+import {RegisterParcelScreen} from '../screens/private/parcel/register/RegisterParcelScreen'
+import {RegisterOneScreen} from '../screens/private/parcel/register/RegisterOneScreen'
 
 type RootStackParamList = {
   HomeScreen: undefined
@@ -33,10 +34,10 @@ type RootStackParamList = {
   RegisterThirdScreen: {dni: string; phone: string}
   RegisterFourthScreen: {dni: string; phone: string; name: string}
   RegisterOkScreen: {dni: string; phone: string; name: string; pin: string}
-  // Private
   RegisterParcelStack: undefined
-  TabPrivate: undefined
   RegisterParcelScreen: undefined
+  TabPrivate: undefined
+  RegisterOneScreen: undefined
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -101,6 +102,7 @@ export const Router = () => {
         name="RegisterParcelStack"
         component={RegisterParcelStack}
       />
+
       {/* Tab Principal */}
       <Stack.Screen
         name="TabPrivate"
@@ -124,11 +126,14 @@ const TabPrivate = () => {
 const RegisterParcelStack = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>()
   return (
-    <Stack.Navigator screenOptions={{...slideFromRight}}>
+    <Stack.Navigator
+      initialRouteName="RegisterOneScreen"
+      screenOptions={{...slideFromRight}}>
       <Stack.Screen
         name="RegisterParcelScreen"
         component={RegisterParcelScreen}
       />
+      <Stack.Screen name="RegisterOneScreen" component={RegisterOneScreen} />
     </Stack.Navigator>
   )
 }

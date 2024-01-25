@@ -4,6 +4,7 @@ export const LABELS = {
   registerDni: 'Escribe tu DNI',
   dni: 'DNI',
   phoneRegister: 'Escribe tu número de celular',
+  nameParcel: '¿Cómo se llama tu parcela?',
   nameRegister: 'Escribe tu nombre completo',
   next: 'Siguiente',
   confirm: 'Confirmar',

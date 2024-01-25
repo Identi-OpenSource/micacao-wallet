@@ -1,22 +1,22 @@
 import React from 'react'
 import {Image, StyleSheet, Text, View} from 'react-native'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {ScreenProps} from '../../../routers/Router'
-import {TEXTS} from '../../../config/texts/texts'
+import {SafeArea} from '../../../../components/safe-area/SafeArea'
+import {ScreenProps} from '../../../../routers/Router'
+import {TEXTS} from '../../../../config/texts/texts'
 import {
   COLORS_DF,
   DWH,
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
-} from '../../../config/themes/default'
-import {imgCampo} from '../../../assets/imgs'
-import {Btn} from '../../../components/button/Button'
-import {LABELS} from '../../../config/texts/labels'
+} from '../../../../config/themes/default'
+import {imgCampo} from '../../../../assets/imgs'
+import {Btn} from '../../../../components/button/Button'
+import {LABELS} from '../../../../config/texts/labels'
 
 export const RegisterParcelScreen = ({
   navigation,
-}: ScreenProps<'RegisterOkScreen'>) => {
+}: ScreenProps<'RegisterParcelScreen'>) => {
   return (
     <SafeArea bg="neutral">
       <View style={styles.container}>
@@ -27,7 +27,7 @@ export const RegisterParcelScreen = ({
           <Btn
             title={LABELS.addParcel}
             theme="agrayu"
-            onPress={() => navigation.navigate('HomeScreen')}
+            onPress={() => navigation.navigate('RegisterOneScreen')}
           />
         </View>
       </View>
