@@ -25,7 +25,9 @@ import {
 } from '@react-navigation/bottom-tabs'
 import {RegisterParcelScreen} from '../screens/private/parcel/register/RegisterParcelScreen'
 import {RegisterOneScreen} from '../screens/private/parcel/register/RegisterOneScreen'
-import {RegisterTwoScreen} from '../screens/private/parcel/register/RegisterTwoScreen'
+import {RegisterParcelTwoScreen} from '../screens/private/parcel/register/RegisterParcelTwoScreen'
+import {RegisterParcelThirdScreen} from '../screens/private/parcel/register/RegisterParcelThirdScreen'
+import {RegisterParcelFourthScreen} from '../screens/private/parcel/register/RegisterParcelFourthScreen'
 
 type RootStackParamList = {
   HomeScreen: undefined
@@ -39,7 +41,9 @@ type RootStackParamList = {
   RegisterParcelScreen: undefined
   TabPrivate: undefined
   RegisterOneScreen: undefined
-  RegisterTwoScreen: {name: string}
+  RegisterParcelTwoScreen: {name: string}
+  RegisterParcelThirdScreen: {name: string; hectares: number}
+  RegisterParcelFourthScreen: {name: string; hectares: number}
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -93,18 +97,31 @@ export const Router = () => {
   }
   const Stack = createNativeStackNavigator<RootStackParamList>()
 
-  const IRN = user?.parcel?.length === 0 ? 'RegisterParcelStack' : 'TabPrivate'
+  // const IRN = user?.parcel?.length === 0 ? 'RegisterParcelStack' : 'TabPrivate'
 
   return !user.isLogin ? (
     <StackPublic />
   ) : (
-    <Stack.Navigator initialRouteName={IRN} screenOptions={{...slideFromRight}}>
+    <Stack.Navigator
+      initialRouteName={'RegisterParcelFourthScreen' /* IRN */}
+      screenOptions={{...slideFromRight}}>
       {/* Visible solo si no tiene parcelas */}
       <Stack.Screen
         name="RegisterParcelStack"
         component={RegisterParcelStack}
       />
-      <Stack.Screen name="RegisterTwoScreen" component={RegisterTwoScreen} />
+      <Stack.Screen
+        name="RegisterParcelTwoScreen"
+        component={RegisterParcelTwoScreen}
+      />
+      <Stack.Screen
+        name="RegisterParcelThirdScreen"
+        component={RegisterParcelThirdScreen}
+      />
+      <Stack.Screen
+        name="RegisterParcelFourthScreen"
+        component={RegisterParcelFourthScreen}
+      />
 
       {/* Tab Principal */}
       <Stack.Screen

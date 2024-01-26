@@ -13,4 +13,5 @@ export const TEXTS = {
   textK: '¿Qué deseas hacer hoy?',
   textL: 'Hola',
   textM: '¡Es momento de presentar tu parcela al mundo!',
+  textN: 'Ahora guarda la ubicación de tu entrada',
 }

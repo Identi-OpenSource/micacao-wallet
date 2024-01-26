@@ -16,9 +16,8 @@ import {Field, Formik} from 'formik'
 import {Btn} from '../../../../components/button/Button'
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
 
-// firs step
 export interface Interface {
-  hectares: number | ''
+  hectares: string
 }
 export const VALUES: Interface = {
   hectares: '',
@@ -31,6 +30,7 @@ export const INPUTS = [
     component: InputText,
     keyboardType: 'numeric',
     preFormate: 'decimal',
+    inputMode: 'numeric',
   },
 ] as InputTextProps[]
 
@@ -41,11 +41,16 @@ export let SCHEMA = object({
     .required(MSG_ERROR.required),
 })
 
-export const RegisterTwoScreen = ({
+export const RegisterParcelTwoScreen = ({
   navigation,
-}: ScreenProps<'RegisterTwoScreen'>) => {
+  route,
+}: ScreenProps<'RegisterParcelTwoScreen'>) => {
   const onSubmit = (values: Interface) => {
-    console.log(values)
+    const hectares = Number(values.hectares)
+    navigation.navigate('RegisterParcelThirdScreen', {
+      ...route.params,
+      hectares,
+    })
   }
 
   return (

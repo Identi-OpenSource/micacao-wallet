@@ -16,7 +16,6 @@ import {Field, Formik} from 'formik'
 import {Btn} from '../../../../components/button/Button'
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
 
-// firs step
 export interface Interface {
   name: string
 }
@@ -40,7 +39,7 @@ export const RegisterOneScreen = ({
   navigation,
 }: ScreenProps<'RegisterOneScreen'>) => {
   const onSubmit = (values: Interface) => {
-    navigation.navigate('RegisterTwoScreen', {name: values.name})
+    navigation.navigate('RegisterParcelTwoScreen', {name: values.name})
     console.log(values)
   }
 
