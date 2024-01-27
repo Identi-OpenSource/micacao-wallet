@@ -3,8 +3,15 @@ import {
   HeaderActions,
   SafeArea,
 } from '../../../../components/safe-area/SafeArea'
-import {StyleSheet, View} from 'react-native'
-import {BORDER_RADIUS_DF, DWH, MP_DF} from '../../../../config/themes/default'
+import {StyleSheet, Text, View} from 'react-native'
+import {
+  BORDER_RADIUS_DF,
+  COLORS_DF,
+  DWH,
+  FONT_FAMILIES,
+  FONT_SIZES,
+  MP_DF,
+} from '../../../../config/themes/default'
 import {TEXTS} from '../../../../config/texts/texts'
 import {ScreenProps} from '../../../../routers/Router'
 import {Btn} from '../../../../components/button/Button'
@@ -28,7 +35,9 @@ export const RegisterParcelFourthScreen = ({
   route,
 }: ScreenProps<'RegisterParcelFourthScreen'>) => {
   const [location, setLocation] = useState([0, 0])
+  const [locationUser, setLocationUser] = useState([0, 0])
   const [save, setSave] = useState(false)
+  const [steep, setSteep] = useState(0)
   const pointAnnotation = useRef<PointAnnotation>(null)
   const onSubmit = () => {
     setSave(true)
@@ -58,6 +67,10 @@ export const RegisterParcelFourthScreen = ({
                       newLocation.coords.longitude,
                       newLocation.coords.latitude,
                     ])
+                    setLocationUser([
+                      newLocation.coords.longitude,
+                      newLocation.coords.latitude,
+                    ])
                   }}
                 />
                 <Camera zoomLevel={16} centerCoordinate={location} />
@@ -83,22 +96,17 @@ export const RegisterParcelFourthScreen = ({
                   <PointAnnotation
                     ref={pointAnnotation}
                     id="uniqueId"
-                    draggable={false}
-                    selected={false}
+                    draggable={true}
+                    selected={true}
                     onSelected={() => {
-                      console.log('onSelected')
+                      setSteep(1)
                     }}
                     onDeselected={() => {
-                      console.log('onDeselected')
+                      setSteep(0)
                     }}
-                    onDrag={() => {
-                      console.log('onDrag')
-                    }}
-                    onDragEnd={() => {
+                    onDragEnd={e => {
                       console.log('onDragEnd')
-                    }}
-                    onDragStart={() => {
-                      console.log('onDragStart')
+                      setLocationUser(e.geometry.coordinates)
                     }}
                     coordinate={location}
                     children={<></>}
@@ -106,6 +114,18 @@ export const RegisterParcelFourthScreen = ({
                 )}
               </MapboxGL.MapView>
             </View>
+            {steep === 0 && (
+              <Text style={styles.textSteep}>
+                Si el pin rojo no esta en el punto exacto de tu entrada, tócalo
+                por favor
+              </Text>
+            )}
+            {steep === 1 && (
+              <Text style={styles.textSteep}>
+                Ahora mantén presionado el pin rojo y sin soltarlo arrástralo
+                para colócalo en el lugar exacto tu entrada
+              </Text>
+            )}
           </View>
           <View style={STYLES_GLOBALS.formBtn}>
             <Btn
@@ -120,7 +140,7 @@ export const RegisterParcelFourthScreen = ({
           msg={TEXTS.textO}
           onPress={() =>
             navigation.navigate('RegisterParcelFifthScreen', {
-              firstPoint: location,
+              firstPoint: locationUser,
               ...route.params,
             })
           }
@@ -150,5 +170,14 @@ const styles = StyleSheet.create({
     width: DWH.width * 0.9,
     height: DWH.height * 0.5,
     borderRadius: BORDER_RADIUS_DF.large,
+  },
+  textSteep: {
+    fontFamily: FONT_FAMILIES.primary,
+    fontSize: FONT_SIZES.large,
+    fontWeight: 'bold',
+    lineHeight: FONT_SIZES.large * 1.3,
+    color: COLORS_DF.cacao,
+    marginTop: MP_DF.large,
+    textAlign: 'center',
   },
 })
