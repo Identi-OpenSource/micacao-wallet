@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xslarge,
     fontWeight: '700',
     color: COLORS_DF.cacao,
-    marginHorizontal: MP_DF.large,
+    marginHorizontal: MP_DF.medium,
     marginTop: MP_DF.xxlarge * 1.5,
     textAlign: 'center',
   },

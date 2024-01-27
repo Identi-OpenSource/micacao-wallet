@@ -28,6 +28,8 @@ import {RegisterOneScreen} from '../screens/private/parcel/register/RegisterOneS
 import {RegisterParcelTwoScreen} from '../screens/private/parcel/register/RegisterParcelTwoScreen'
 import {RegisterParcelThirdScreen} from '../screens/private/parcel/register/RegisterParcelThirdScreen'
 import {RegisterParcelFourthScreen} from '../screens/private/parcel/register/RegisterParcelFourthScreen'
+import {RegisterParcelFifthScreen} from '../screens/private/parcel/register/RegisterParcelFifthScreen'
+import {RegisterParcelSixthScreen} from '../screens/private/parcel/register/RegisterParcelSixthScreen'
 
 type RootStackParamList = {
   HomeScreen: undefined
@@ -44,6 +46,16 @@ type RootStackParamList = {
   RegisterParcelTwoScreen: {name: string}
   RegisterParcelThirdScreen: {name: string; hectares: number}
   RegisterParcelFourthScreen: {name: string; hectares: number}
+  RegisterParcelFifthScreen: {
+    name: string
+    hectares: number
+    firstPoint: number[]
+  }
+  RegisterParcelSixthScreen: {
+    name: string
+    hectares: number
+    firstPoint: number[]
+  }
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -97,32 +109,19 @@ export const Router = () => {
   }
   const Stack = createNativeStackNavigator<RootStackParamList>()
 
-  // const IRN = user?.parcel?.length === 0 ? 'RegisterParcelStack' : 'TabPrivate'
+  const IRN = user?.parcel?.length === 0 ? 'RegisterParcelStack' : 'TabPrivate'
 
   return !user.isLogin ? (
     <StackPublic />
   ) : (
     <Stack.Navigator
-      initialRouteName={'RegisterParcelFourthScreen' /* IRN */}
+      initialRouteName={/* 'RegisterParcelFourthScreen' */ IRN}
       screenOptions={{...slideFromRight}}>
       {/* Visible solo si no tiene parcelas */}
       <Stack.Screen
         name="RegisterParcelStack"
         component={RegisterParcelStack}
       />
-      <Stack.Screen
-        name="RegisterParcelTwoScreen"
-        component={RegisterParcelTwoScreen}
-      />
-      <Stack.Screen
-        name="RegisterParcelThirdScreen"
-        component={RegisterParcelThirdScreen}
-      />
-      <Stack.Screen
-        name="RegisterParcelFourthScreen"
-        component={RegisterParcelFourthScreen}
-      />
-
       {/* Tab Principal */}
       <Stack.Screen
         name="TabPrivate"
@@ -146,14 +145,32 @@ const TabPrivate = () => {
 const RegisterParcelStack = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>()
   return (
-    <Stack.Navigator
-      initialRouteName="RegisterOneScreen"
-      screenOptions={{...slideFromRight}}>
+    <Stack.Navigator screenOptions={{...slideFromRight}}>
       <Stack.Screen
         name="RegisterParcelScreen"
         component={RegisterParcelScreen}
       />
       <Stack.Screen name="RegisterOneScreen" component={RegisterOneScreen} />
+      <Stack.Screen
+        name="RegisterParcelTwoScreen"
+        component={RegisterParcelTwoScreen}
+      />
+      <Stack.Screen
+        name="RegisterParcelThirdScreen"
+        component={RegisterParcelThirdScreen}
+      />
+      <Stack.Screen
+        name="RegisterParcelFourthScreen"
+        component={RegisterParcelFourthScreen}
+      />
+      <Stack.Screen
+        name="RegisterParcelFifthScreen"
+        component={RegisterParcelFifthScreen}
+      />
+      <Stack.Screen
+        name="RegisterParcelSixthScreen"
+        component={RegisterParcelSixthScreen}
+      />
     </Stack.Navigator>
   )
 }

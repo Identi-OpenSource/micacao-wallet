@@ -12,6 +12,8 @@ export const TEXTS = {
   textJ: 'Información guardada',
   textK: '¿Qué deseas hacer hoy?',
   textL: 'Hola',
-  textM: '¡Es momento de presentar tu parcela al mundo!',
-  textN: 'Ahora guarda la ubicación de tu entrada',
+  textM: 'Ahora, mostrarás tu parcela al mundo. ¿Estás listo(a)?',
+  textN: '¡Perfecto! Guarda la ubicación de tu entrada.',
+  textO: 'Guardando ubicación',
+  textP: '¡Excelente! Guarda la ubicación del centro',
 }

@@ -42,8 +42,9 @@ export const RegisterParcelThirdScreen = ({
             />
             {/* Texto único */}
             <Text style={styles.textUnique}>
-              Camina a la <Text style={styles.textUniqueUPPER}>ENTRADA</Text> de
-              tu parcela para guardarla.
+              Camina hacia la{' '}
+              <Text style={styles.textUniqueUPPER}>ENTRADA</Text>
+              de tu parcela para guardarla.
             </Text>
           </View>
           <View style={STYLES_GLOBALS.formBtn}>

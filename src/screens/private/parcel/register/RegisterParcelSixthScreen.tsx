@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react'
+import React, {useContext, useRef, useState} from 'react'
 import {
   HeaderActions,
   SafeArea,
@@ -19,18 +19,34 @@ import MapboxGL, {
 import Config from 'react-native-config'
 import {LABELS} from '../../../../config/texts/labels'
 import {Loading} from '../../../../components/loading/Loading'
+import {storage} from '../../../../config/store/db'
+import {UserDispatchContext} from '../../../../states/UserContext'
 
 MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN || '')
 // MapboxGL.setConnected(false)
 
-export const RegisterParcelFourthScreen = ({
+export const RegisterParcelSixthScreen = ({
   navigation,
   route,
-}: ScreenProps<'RegisterParcelFourthScreen'>) => {
+}: ScreenProps<'RegisterParcelSixthScreen'>) => {
   const [location, setLocation] = useState([0, 0])
+  const dispatch = useContext(UserDispatchContext)
   const [save, setSave] = useState(false)
   const pointAnnotation = useRef<PointAnnotation>(null)
   const onSubmit = () => {
+    const data = storage.getString('user')
+    const user = JSON.parse(data || '{}')
+    const userLogin = {
+      ...user,
+      parcel: [{...route.params, secondPoint: location}],
+    }
+
+    storage.set('user', JSON.stringify(userLogin))
+
+    if (userLogin) {
+      dispatch({type: 'login', payload: userLogin})
+    }
+
     setSave(true)
   }
 
@@ -38,7 +54,7 @@ export const RegisterParcelFourthScreen = ({
     <SafeArea bg="neutral" isForm>
       {!save ? (
         <View style={styles.container}>
-          <HeaderActions title={TEXTS.textN} navigation={navigation} />
+          <HeaderActions title={TEXTS.textP} navigation={navigation} />
           <View style={styles.formInput}>
             <View style={styles.containerMap}>
               <MapboxGL.MapView
@@ -118,12 +134,7 @@ export const RegisterParcelFourthScreen = ({
       ) : (
         <Loading
           msg={TEXTS.textO}
-          onPress={() =>
-            navigation.navigate('RegisterParcelFifthScreen', {
-              firstPoint: location,
-              ...route.params,
-            })
-          }
+          onPress={() => navigation.navigate('TabPrivate')}
         />
       )}
     </SafeArea>

@@ -1,6 +1,8 @@
 import React from 'react'
 import {
+  Dimensions,
   Keyboard,
+  KeyboardAvoidingView,
   Pressable,
   StatusBar,
   StyleSheet,
@@ -44,13 +46,13 @@ export const SafeArea = ({
         backgroundColor={'transparent'}
         barStyle={props.barStyle || 'dark-content'}
       />
-      {/* <KeyboardAvoidingView
+      <KeyboardAvoidingView
         behavior={'height'}
-        style={{height: Dimensions.get('window').height}}> */}
-      <Pressable onPress={Keyboard.dismiss} style={{flex: 1}}>
-        {children}
-      </Pressable>
-      {/* </KeyboardAvoidingView> */}
+        style={{height: Dimensions.get('window').height}}>
+        <Pressable onPress={Keyboard.dismiss} style={{flex: 1}}>
+          {children}
+        </Pressable>
+      </KeyboardAvoidingView>
     </View>
   ) : (
     <View style={styles}>

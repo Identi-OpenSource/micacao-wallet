@@ -40,7 +40,6 @@ export const RegisterOneScreen = ({
 }: ScreenProps<'RegisterOneScreen'>) => {
   const onSubmit = (values: Interface) => {
     navigation.navigate('RegisterParcelTwoScreen', {name: values.name})
-    console.log(values)
   }
 
   return (

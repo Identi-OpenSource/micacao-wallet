@@ -19,12 +19,12 @@ import {Btn} from '../../../../components/button/Button'
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
 import {imgProductorGif} from '../../../../assets/imgs'
 
-export const RegisterParcelThirdScreen = ({
+export const RegisterParcelFifthScreen = ({
   navigation,
   route,
-}: ScreenProps<'RegisterParcelThirdScreen'>) => {
+}: ScreenProps<'RegisterParcelFifthScreen'>) => {
   const onSubmit = () => {
-    navigation.navigate('RegisterParcelFourthScreen', {
+    navigation.navigate('RegisterParcelSixthScreen', {
       ...route.params,
     })
   }
@@ -32,7 +32,7 @@ export const RegisterParcelThirdScreen = ({
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
-        <HeaderActions title={TEXTS.textE} navigation={navigation} />
+        <HeaderActions title={TEXTS.textF} navigation={navigation} />
 
         <View style={styles.formContainer}>
           <View style={styles.formInput}>
@@ -42,13 +42,13 @@ export const RegisterParcelThirdScreen = ({
             />
             {/* Texto único */}
             <Text style={styles.textUnique}>
-              Camina a la <Text style={styles.textUniqueUPPER}>ENTRADA</Text> de
-              tu parcela para guardarla.
+              Ahora, camina hacia el{' '}
+              <Text style={styles.textUniqueUPPER}>CENTRO</Text> de tu parcela.
             </Text>
           </View>
           <View style={STYLES_GLOBALS.formBtn}>
             <Btn
-              title={LABELS.imAlreadyEntrance}
+              title={LABELS.imAlreadyCenter}
               theme={'agrayu'}
               onPress={() => onSubmit()}
             />
@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
     height: DWH.height * 0.4,
     borderRadius: BORDER_RADIUS_DF.large,
     overflow: 'hidden',
+    transform: [{rotateY: '180deg'}],
   },
   textUnique: {
     fontFamily: FONT_FAMILIES.primary,

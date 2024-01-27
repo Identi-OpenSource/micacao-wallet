@@ -16,14 +16,14 @@ import {LABELS} from '../../../config/texts/labels'
 import {BtnSmall} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 import {imgFrame, imgIllustration, imgLayer} from '../../../assets/imgs'
+import {storage} from '../../../config/store/db'
 
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext)
   // const isConnected = useInternetConnection()
 
-  console.log('user', user)
-
-  // const dataLOcal = storage.getString('user') || '{}'
+  const dataLOcal = storage.getString('user') || '{}'
+  console.log('dataLOcal', JSON.parse(dataLOcal))
   // const userLocalObject = JSON.parse(dataLOcal)
   //  const userLocal = JSON.stringify(userLocalObject, null, 2)
   return (
