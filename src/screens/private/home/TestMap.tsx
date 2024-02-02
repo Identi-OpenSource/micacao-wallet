@@ -1,14 +1,7 @@
-import {
-  Camera,
-  MapView,
-  PointAnnotation,
-  StyleURL,
-  UserLocation,
-} from '@rnmapbox/maps'
+import {Camera, MapView, PointAnnotation, StyleURL} from '@rnmapbox/maps'
 import React, {useContext, useEffect, useState} from 'react'
-import {Dimensions, StyleSheet, Text, View} from 'react-native'
+import {Dimensions, StyleSheet, View} from 'react-native'
 import {UsersContext} from '../../../states/UserContext'
-import Config from 'react-native-config'
 
 export const TestMap = () => {
   const user = useContext(UsersContext)
@@ -39,13 +32,13 @@ export const TestMap = () => {
             key="pointAnnotation1"
             id="pointAnnotation1"
             coordinate={first}>
-            <Text style={styles.pinC}>Entrada</Text>
+            <View style={styles.pinR} />
           </PointAnnotation>
           <PointAnnotation
             key="pointAnnotation2"
             id="pointAnnotation2"
             coordinate={second}>
-            <Text style={styles.pinC}>Centro</Text>
+            <View style={styles.pinA} />
           </PointAnnotation>
         </MapView>
       </View>
@@ -66,12 +59,16 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  pinC: {
+  pinR: {
     height: 20,
-    width: 60,
-    textAlign: 'center',
+    width: 20,
     backgroundColor: 'red',
-    color: 'white',
-    fontWeight: 'bold',
+    borderRadius: 20 / 2,
+  },
+  pinA: {
+    height: 20,
+    width: 20,
+    backgroundColor: 'blue',
+    borderRadius: 20 / 2,
   },
 })

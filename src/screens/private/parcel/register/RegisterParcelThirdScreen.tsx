@@ -83,8 +83,7 @@ export const RegisterParcelThirdScreen = ({
       },
       {
         enableHighAccuracy: true,
-        timeout: 60000,
-        maximumAge: 20000,
+        maximumAge: 0,
       },
     )
   }

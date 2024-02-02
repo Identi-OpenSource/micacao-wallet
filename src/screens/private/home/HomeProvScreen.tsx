@@ -22,13 +22,17 @@ import {useNavigation} from '@react-navigation/native'
 export const HomeProvScreen = () => {
   const navigation = useNavigation()
   const user: UserInterface = useContext(UsersContext)
+  const firstPoint =
+    user?.parcel[0]?.firstPoint[0] + ', ' + user?.parcel[0]?.firstPoint[1]
+  const centerPoint =
+    user?.parcel[0]?.secondPoint[0] + ', ' + user?.parcel[0]?.secondPoint[1]
   // const isConnected = useInternetConnection()
 
   useEffect(() => {
     if (user.parcel?.length === 0) {
       setTimeout(() => {
         navigation.navigate('RegisterParcelScreen')
-      }, 1000)
+      }, 100)
     }
   }, [])
 
@@ -43,6 +47,8 @@ export const HomeProvScreen = () => {
         <ConnectionStatus />
         <Header {...user} />
         <Body />
+        <Text> Entrada: {firstPoint} </Text>
+        <Text> Centro: {centerPoint} </Text>
         <View style={{marginTop: MP_DF.large}}>
           <Btn
             title={'Prueba de puntos GPS'}
