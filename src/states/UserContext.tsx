@@ -5,7 +5,7 @@ export interface UserInterface {
   phone: string
   pin: string
   isLogin?: boolean
-  parcel?: string[]
+  parcel?: any[]
 }
 
 export const userInicialState: UserInterface = {

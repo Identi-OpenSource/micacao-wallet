@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {
@@ -13,25 +13,43 @@ import {UserInterface, UsersContext} from '../../../states/UserContext'
 import useInternetConnection from '../../../hooks/useInternetConnection'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {LABELS} from '../../../config/texts/labels'
-import {BtnSmall} from '../../../components/button/Button'
+import {Btn, BtnSmall} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
-import {imgFrame, imgIllustration, imgLayer} from '../../../assets/imgs'
+import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {storage} from '../../../config/store/db'
+import {useNavigation} from '@react-navigation/native'
 
 export const HomeProvScreen = () => {
+  const navigation = useNavigation()
   const user: UserInterface = useContext(UsersContext)
   // const isConnected = useInternetConnection()
+
+  useEffect(() => {
+    if (user.parcel?.length === 0) {
+      setTimeout(() => {
+        navigation.navigate('RegisterParcelScreen')
+      }, 1000)
+    }
+  }, [])
 
   const dataLOcal = storage.getString('user') || '{}'
   console.log('dataLOcal', JSON.parse(dataLOcal))
   // const userLocalObject = JSON.parse(dataLOcal)
   //  const userLocal = JSON.stringify(userLocalObject, null, 2)
+
   return (
     <SafeArea>
       <View style={styles.container}>
         <ConnectionStatus />
         <Header {...user} />
         <Body />
+        <View style={{marginTop: MP_DF.large}}>
+          <Btn
+            title={'Prueba de puntos GPS'}
+            theme="agrayu"
+            onPress={() => navigation.navigate('TestMap')}
+          />
+        </View>
       </View>
     </SafeArea>
   )
@@ -47,7 +65,9 @@ const ConnectionStatus = () => {
           size={14}
           color={!isConnected ? COLORS_DF.grayLight : COLORS_DF.greenAgrayu}
         />
-        <Text style={styles.connectionTitle}>{LABELS.offline}</Text>
+        <Text style={styles.connectionTitle}>
+          {isConnected ? LABELS.online : LABELS.offline}
+        </Text>
       </View>
       {!isConnected && (
         <Text style={styles.connectionSubTitle}>{LABELS.offlineMessage}</Text>
@@ -80,19 +100,19 @@ const Body = () => {
   return (
     <View style={styles.bodyContainer}>
       {/* Primer card */}
-      <View style={[styles.bodyCardContainer]}>
+      <View style={[styles.bodyCardContainerFull]}>
         <TouchableOpacity style={[styles.bodyCard]} activeOpacity={0.9}>
           <Image source={imgLayer} />
           <Text style={styles.titleCard}>{LABELS.viewMyParcels}</Text>
         </TouchableOpacity>
       </View>
       {/* Segundo card */}
-      <View style={[styles.bodyCardContainer]}>
+      {/* <View style={[styles.bodyCardContainer]}>
         <TouchableOpacity style={[styles.bodyCard]} activeOpacity={0.9}>
           <Image source={imgIllustration} />
           <Text style={styles.titleCard}>{LABELS.registerCosecha}</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
       {/* Tercer card */}
       <View style={[styles.bodyCardContainerFull]}>
         <TouchableOpacity style={[styles.bodyCard]} activeOpacity={0.9}>
@@ -157,6 +177,7 @@ const styles = StyleSheet.create({
   bodyContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    marginTop: MP_DF.large,
   },
   bodyCardContainer: {
     width: '50%',
@@ -166,6 +187,7 @@ const styles = StyleSheet.create({
   bodyCardContainerFull: {
     width: '100%',
     padding: MP_DF.small,
+    marginTop: MP_DF.medium,
   },
   bodyCard: {
     maxHeight: 200,

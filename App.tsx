@@ -20,6 +20,24 @@ import {UserProvider} from './src/states/UserContext'
 function App(): React.JSX.Element {
   // biblioteca de iconos
   library.add(faArrowLeftLong, faTree, faAngleLeft, faCircle, faRotate)
+
+  // useEffect(() => {
+  //   getPermission()
+  // }, [])
+
+  // const getPermission = async () => {
+  //   try {
+  //     if (Platform.OS === 'android') {
+  //       await PermissionsAndroid.requestMultiple([
+  //         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //         PermissionsAndroid.PERMISSIONS.CAMERA,
+  //       ])
+  //     }
+  //   } catch (err) {
+  //     console.warn(err)
+  //   }
+  // }
+
   return (
     <UserProvider>
       <NavigationContainer>

@@ -1,5 +1,6 @@
 export const LABELS = {
   createAccount: 'Crea tu cuenta personal',
+  initial: 'INICIAR',
   email: 'Correo electrónico',
   registerDni: 'Escribe tu DNI',
   dni: 'DNI',
@@ -9,6 +10,7 @@ export const LABELS = {
   nameRegister: 'Escribe tu nombre completo',
   next: 'SIGUIENTE',
   imAlreadyEntrance: 'ESTOY EN LA ENTRADA',
+  capturePhoto: 'TOMAR FOTOGRAFÍA',
   imAlreadyCenter: 'ESTOY EN EL CENTRO',
   confirm: 'Confirmar',
   saveGps: 'GUARDAR UBICACIÓN',
@@ -22,15 +24,20 @@ export const LABELS = {
   phonePersonal: 'Escribe tu número de celular',
   phone: 'Teléfono',
   error: 'Error',
+  cancel: 'Cancelar',
+  AskMeLater: 'Pregúntame Luego',
+  permission: 'Permitir',
   continue: 'CONTINUAR',
-  offline: 'Offline',
-  online: 'Online',
+  offline: 'DESCONECTADO',
+  online: 'CONECTADO',
   offlineMessage: '(No tienes conexión a internet)',
-  asyncData: 'Sincronizar datos',
+  asyncData: 'Guardar datos',
   myEntrance: 'Mi entrada',
   viewMyParcels: 'Ver mis parcelas',
   registerCosecha: 'Registrar cosecha',
   registerVenta: 'Registrar una venta',
+  requestPermissionLocation: 'PERMISO DE UBICACIÓN',
+  requestPermissionCamera: 'PERMISO DE CÁMARA',
 }
 
 export const PLACEHOLDERS = {

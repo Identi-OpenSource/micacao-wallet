@@ -7,7 +7,6 @@ import {
   MP_DF,
 } from '../../config/themes/default'
 import {InputTextProps} from './interfaces'
-import {formatPhone} from '../../utils/formatPhone'
 import {formatPin} from '../../utils/formatPin'
 import {moderateScale} from '../../config/themes/metrics'
 
@@ -25,9 +24,9 @@ export const InputText = (props: InputTextProps) => {
 
   const onChangeText = (text: string) => {
     let textFormate = text
-    if (preFormate === 'phone') {
-      textFormate = formatPhone(text)
-    }
+    // if (preFormate === 'phone') {
+    //   textFormate = formatPhone(text)
+    // }
     if (preFormate === 'pin') {
       textFormate = formatPin(text)
     }

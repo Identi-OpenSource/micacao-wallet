@@ -76,8 +76,6 @@ export const RegisterOkScreen = ({route}: ScreenProps<'RegisterOkScreen'>) => {
     }
   }, [fadeAnim, step])
 
-  console.log('params', params)
-
   return (
     <SafeArea bg={'neutral'}>
       {step === 0 && (

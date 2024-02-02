@@ -18,4 +18,6 @@ export const MSG_ERROR = {
   errorGeneric: 'Error desconocido, intente de nuevo',
   minString: (n: number) => `Mínimo ${n} caracteres`,
   minNumber: (n: number) => `Mínimo ${n}`,
+  notGps:
+    'No se ha podido obtener la ubicación GPS de la imagen, por favor intente de nuevo',
 }
