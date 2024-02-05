@@ -7,7 +7,7 @@ export interface InputTextProps extends FieldProps, TextInputProps {
   label?: string
   keyboardType?: KeyboardTypeOptions
   placeholder?: string
-  preFormate?: 'phone' | 'pin'
+  preFormate?: 'phone' | 'pin' | 'decimal'
   valueInitial?: string
   secureTextEntry?: boolean
   component: <T>(props: T) => JSX.Element

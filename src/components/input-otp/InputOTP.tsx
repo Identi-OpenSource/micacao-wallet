@@ -42,6 +42,7 @@ export const InputOTP = (props: InputTextProps) => {
         value={value}
         style={styles.oculto}
         keyboardType={'numeric'}
+        autoFocus={true}
         {...props}
       />
       {touched[name] && errors[name] && (
@@ -66,13 +67,14 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(32),
     fontWeight: '600',
-    lineHeight: moderateScale(35),
+    lineHeight: moderateScale(32),
     color: COLORS_DF.black,
     textAlign: 'center',
     marginHorizontal: MP_DF.medium,
     borderBottomWidth: 1,
     borderBottomColor: COLORS_DF.cacao,
     width: 36,
+    height: 40,
   },
   oculto: {
     height: 0,

@@ -3,14 +3,23 @@ import {
   Dimensions,
   Keyboard,
   KeyboardAvoidingView,
+  Pressable,
   StatusBar,
-  TouchableWithoutFeedback,
+  StyleSheet,
+  Text,
   View,
   ViewStyle,
 } from 'react-native'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
-import {COLORS_DF} from '../../config/themes/default'
+import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../config/themes/default'
 import {SafeAreaProps} from './interfaces'
+import {BtnIcon} from '../button/Button'
+import {NavigationProp} from '@react-navigation/native'
+import {
+  horizontalScale,
+  moderateScale,
+  verticalScale,
+} from '../../config/themes/metrics'
 
 export const SafeArea = ({
   isForm = false,
@@ -40,9 +49,9 @@ export const SafeArea = ({
       <KeyboardAvoidingView
         behavior={'height'}
         style={{height: Dimensions.get('window').height}}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <Pressable onPress={Keyboard.dismiss} style={{flex: 1}}>
           {children}
-        </TouchableWithoutFeedback>
+        </Pressable>
       </KeyboardAvoidingView>
     </View>
   ) : (
@@ -56,3 +65,49 @@ export const SafeArea = ({
     </View>
   )
 }
+
+// Componente Header
+
+export const HeaderActions = (props: InterfaceHeader) => {
+  const {navigation, title} = props
+  return (
+    <View style={styles.header}>
+      <BtnIcon
+        theme="transparent"
+        icon="angle-left"
+        size={moderateScale(30)}
+        style={{container: styles.btnIcon}}
+        onPress={() => navigation.goBack()}
+      />
+      <Text style={styles.title}>{title}</Text>
+    </View>
+  )
+}
+
+interface InterfaceHeader {
+  navigation: NavigationProp<ReactNavigation.RootParamList>
+  title: string
+}
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: horizontalScale(MP_DF.large),
+    paddingTop: verticalScale(MP_DF.medium),
+  },
+  header: {
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  btnIcon: {
+    alignSelf: 'flex-start',
+    marginLeft: -6,
+  },
+  title: {
+    fontFamily: FONT_FAMILIES.primary,
+    fontSize: moderateScale(28),
+    fontWeight: '700',
+    color: COLORS_DF.cacao,
+    marginTop: verticalScale(MP_DF.medium),
+  },
+})

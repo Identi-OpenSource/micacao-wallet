@@ -55,7 +55,6 @@ export const INPUTS_TWO = [
     placeholder: LABELS.phone,
     preFormate: 'phone',
     keyboardType: 'phone-pad',
-
     component: InputText,
   },
 ] as InputTextProps[]
@@ -80,7 +79,6 @@ export const INPUTS_THREE = [
     name: 'name',
     label: LABELS.namePersonal,
     placeholder: LABELS.name,
-
     component: InputText,
   },
 ] as InputTextProps[]
