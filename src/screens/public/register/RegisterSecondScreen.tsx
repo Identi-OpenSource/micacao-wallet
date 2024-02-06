@@ -1,9 +1,3 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : Register screen of the application
- */
-
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {View} from 'react-native'
@@ -26,11 +20,11 @@ export const RegisterSecondScreen = ({
   navigation,
 }: ScreenProps<'RegisterSecondScreen'>) => {
   const user = JSON.parse(storage.getString('user') || '{}')
-  console.log('user', user)
 
   const submit = (values: InterfaceTwo) => {
-    storage.set('user', JSON.stringify({...user, ...values}))
-    navigation.navigate('RegisterSecondScreen')
+    const phone = user?.country?.phoneCode + '-' + values.phone
+    storage.set('user', JSON.stringify({...user, phone}))
+    navigation.navigate('RegisterThirdScreen')
   }
 
   return (

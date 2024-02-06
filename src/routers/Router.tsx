@@ -146,9 +146,9 @@ export const Router = () => {
 
   const getIsLogin = () => {
     const userLogin = storage.getString('user')
-    const user = JSON.parse(userLogin || '{}')
+    const isLogin = JSON.parse(userLogin || '{}')
     if (user?.isLogin) {
-      dispatch({type: 'login', payload: JSON.parse(user)})
+      dispatch({type: 'login', payload: JSON.parse(isLogin)})
     }
   }
 

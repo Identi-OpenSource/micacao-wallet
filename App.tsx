@@ -10,6 +10,7 @@ import {library} from '@fortawesome/fontawesome-svg-core'
 
 import {
   faAngleLeft,
+  faAngleRight,
   faArrowLeftLong,
   faCircle,
   faRotate,
@@ -19,7 +20,14 @@ import {UserProvider} from './src/states/UserContext'
 
 function App(): React.JSX.Element {
   // biblioteca de iconos
-  library.add(faArrowLeftLong, faTree, faAngleLeft, faCircle, faRotate)
+  library.add(
+    faArrowLeftLong,
+    faTree,
+    faAngleLeft,
+    faAngleRight,
+    faCircle,
+    faRotate,
+  )
 
   // useEffect(() => {
   //   getPermission()

@@ -1,9 +1,3 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : View of entry point of the application
- */
-
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {
@@ -25,24 +19,24 @@ import {
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import {ScreenProps} from '../../../routers/Router'
 import {storage} from '../../../config/store/db'
 import {UserDispatchContext} from '../../../states/UserContext'
 
-export const RegisterOkScreen = ({route}: ScreenProps<'RegisterOkScreen'>) => {
-  const params = route.params
+export const RegisterOkScreen = () => {
   const [step, setStep] = useState(0)
   const dispatch = useContext(UserDispatchContext)
   const fadeAnim = useRef(new Animated.Value(0)).current
+  const user = JSON.parse(storage.getString('user') || '{}')
 
   // Save data
   useEffect(() => {
-    storage.set('user', JSON.stringify({...params, isLogin: true}))
+    storage.set('user', JSON.stringify({...user, isLogin: true}))
   }, [])
 
   // Login
   const isLogin = () => {
-    dispatch({type: 'login', payload: {...params, isLogin: true}})
+    const login = JSON.parse(storage.getString('user') || '{}')
+    dispatch({type: 'login', payload: login})
   }
 
   // Animation

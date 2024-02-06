@@ -6,7 +6,7 @@
 
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {Keyboard, View} from 'react-native'
+import {View} from 'react-native'
 import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 import {Field, Formik} from 'formik'
@@ -20,18 +20,14 @@ import {LABELS} from '../../../config/texts/labels'
 import {styles} from './styles'
 import {ScreenProps} from '../../../routers/Router'
 import {Header} from './RegisterScreen'
+import {storage} from '../../../config/store/db'
 
 export const RegisterFourthScreen = ({
-  route,
   navigation,
 }: ScreenProps<'RegisterFourthScreen'>) => {
-  const params = route.params
-
-  const onSubmit = (values: InterfaceFourth) => {
-    Keyboard.dismiss()
-    setTimeout(() => {
-      navigation.navigate('RegisterOkScreen', {...params, ...values})
-    }, 100)
+  const submit = (values: InterfaceFourth) => {
+    storage.set('security', JSON.stringify({values}))
+    navigation.navigate('RegisterOkScreen')
   }
 
   return (
@@ -40,7 +36,7 @@ export const RegisterFourthScreen = ({
         <Header navigation={navigation} title={TEXTS.textF} />
         <Formik
           initialValues={INIT_VALUES_FOURTH}
-          onSubmit={values => onSubmit(values)}
+          onSubmit={values => submit(values)}
           validationSchema={SCHEMA_FOURTH}>
           {({handleSubmit, isValid, dirty}) => (
             <>

@@ -18,13 +18,11 @@ import {
   BORDER_RADIUS_DF,
   BTN_THEME,
   COLORS_DF,
-  DWH,
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
 } from '../../../config/themes/default'
 import {TEXTS} from '../../../config/texts/texts'
-
 import {useNavigation} from '@react-navigation/native'
 import {
   horizontalScale,
@@ -35,6 +33,7 @@ import {Header} from './RegisterScreen'
 import {imgCO, imgPE} from '../../../assets/imgs'
 import {COUNTRY} from '../../../config/const'
 import {storage} from '../../../config/store/db'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 
 export const IamFromScreen = () => {
   const navigation = useNavigation()
@@ -54,9 +53,11 @@ export const IamFromScreen = () => {
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
         <Header navigation={navigation} title={TEXTS.textAD} />
-        {cards.map((c, i) => (
-          <Card img={c.img} title={c.title} value={c.value} key={i} />
-        ))}
+        <View style={styles.bodyContainer}>
+          {cards.map((c, i) => (
+            <Card img={c.img} title={c.title} value={c.value} key={i} />
+          ))}
+        </View>
       </View>
     </SafeArea>
   )
@@ -80,6 +81,9 @@ const Card = (props: {
         activeOpacity={BTN_THEME.primary?.const?.opacity}>
         <Image source={props.img} style={styles.img} />
         <Text style={styles.titleCard}>{props.title}</Text>
+        <View style={styles.icon}>
+          <FontAwesomeIcon icon="angle-right" size={32} />
+        </View>
       </TouchableOpacity>
     </View>
   )
@@ -93,40 +97,40 @@ const styles = StyleSheet.create({
   bodyContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: MP_DF.large,
+    marginTop: MP_DF.xlarge,
   },
   bodyCardContainerFull: {
     width: '100%',
     padding: MP_DF.small,
-    marginTop: MP_DF.large,
+    marginTop: MP_DF.small,
   },
   bodyCard: {
-    maxHeight: DWH.height / 3,
-    paddingHorizontal: MP_DF.small,
-    paddingVertical: MP_DF.large,
+    paddingHorizontal: MP_DF.large,
+    paddingVertical: MP_DF.medium,
     backgroundColor: COLORS_DF.white,
     borderRadius: BORDER_RADIUS_DF.medium,
     elevation: 5,
-    alignItems: 'center',
-    overflow: 'hidden',
     borderColor: COLORS_DF.cacao,
     borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   titleCard: {
-    paddingHorizontal: MP_DF.medium,
-    marginTop: MP_DF.medium,
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.large,
     fontWeight: 'bold',
     color: COLORS_DF.cacao,
-    textAlign: 'center',
   },
   img: {
-    width: horizontalScale(100),
-    height: verticalScale(100),
+    width: horizontalScale(32),
+    height: verticalScale(32),
     resizeMode: 'contain',
+    marginRight: MP_DF.large,
   },
-  textContainer: {flex: 1},
+  icon: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
   textA: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(32),

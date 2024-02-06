@@ -1,12 +1,6 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : Register screen of the application
- */
-
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {Keyboard, View} from 'react-native'
+import {View} from 'react-native'
 import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 import {Field, Formik} from 'formik'
@@ -20,18 +14,15 @@ import {LABELS} from '../../../config/texts/labels'
 import {styles} from './styles'
 import {ScreenProps} from '../../../routers/Router'
 import {Header} from './RegisterScreen'
+import {storage} from '../../../config/store/db'
 
 export const RegisterThirdScreen = ({
-  route,
   navigation,
 }: ScreenProps<'RegisterThirdScreen'>) => {
-  const params = route.params
-
-  const onSubmit = (values: InterfaceThree) => {
-    Keyboard.dismiss()
-    setTimeout(() => {
-      navigation.navigate('RegisterFourthScreen', {...params, ...values})
-    }, 100)
+  const submit = (values: InterfaceThree) => {
+    const user = JSON.parse(storage.getString('user') || '{}')
+    storage.set('user', JSON.stringify({...user, values}))
+    navigation.navigate('RegisterFourthScreen')
   }
 
   return (
@@ -40,7 +31,7 @@ export const RegisterThirdScreen = ({
         <Header navigation={navigation} title={TEXTS.textE} />
         <Formik
           initialValues={INIT_VALUES_THREE}
-          onSubmit={values => onSubmit(values)}
+          onSubmit={values => submit(values)}
           validationSchema={SCHEMA_THREE}>
           {({handleSubmit, isValid, dirty}) => (
             <>
