@@ -21,7 +21,6 @@ import {styles} from './styles'
 import {ScreenProps} from '../../../routers/Router'
 import {Header} from './RegisterScreen'
 import {storage} from '../../../config/store/db'
-import {InputText} from '../../../components/input-text/InputText'
 
 export const RegisterSecondScreen = ({
   navigation,
