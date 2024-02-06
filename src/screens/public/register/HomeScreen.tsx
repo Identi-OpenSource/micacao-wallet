@@ -35,7 +35,7 @@ export const HomeScreen = () => {
           <Btn
             title={LABELS.createAccount}
             theme="agrayu"
-            onPress={() => navigation.navigate('RegisterScreen')}
+            onPress={() => navigation.navigate('IamScreen')}
           />
         </View>
       </View>

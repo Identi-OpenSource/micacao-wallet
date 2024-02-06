@@ -6,7 +6,7 @@
 
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {Keyboard, View} from 'react-native'
+import {View} from 'react-native'
 import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 import {Field, Formik} from 'formik'
@@ -20,18 +20,18 @@ import {LABELS} from '../../../config/texts/labels'
 import {styles} from './styles'
 import {ScreenProps} from '../../../routers/Router'
 import {Header} from './RegisterScreen'
+import {storage} from '../../../config/store/db'
+import {InputText} from '../../../components/input-text/InputText'
 
 export const RegisterSecondScreen = ({
-  route,
   navigation,
 }: ScreenProps<'RegisterSecondScreen'>) => {
-  const params = route.params
+  const user = JSON.parse(storage.getString('user') || '{}')
+  console.log('user', user)
 
-  const onSubmit = (values: InterfaceTwo) => {
-    Keyboard.dismiss()
-    setTimeout(() => {
-      navigation.navigate('RegisterThirdScreen', {...params, ...values})
-    }, 100)
+  const submit = (values: InterfaceTwo) => {
+    storage.set('user', JSON.stringify({...user, ...values}))
+    navigation.navigate('RegisterSecondScreen')
   }
 
   return (
@@ -40,13 +40,13 @@ export const RegisterSecondScreen = ({
         <Header navigation={navigation} title={TEXTS.textD} />
         <Formik
           initialValues={INIT_VALUES_TWO}
-          onSubmit={values => onSubmit(values)}
+          onSubmit={values => submit(values)}
           validationSchema={SCHEMA_TWO}>
           {({handleSubmit, isValid, dirty}) => (
             <>
               <View style={styles.formContainer}>
                 <View style={styles.formInput}>
-                  {INPUTS_TWO.map(i => (
+                  {INPUTS_TWO(user?.country?.phoneCode).map(i => (
                     <Field key={i.name} {...i} />
                   ))}
                 </View>

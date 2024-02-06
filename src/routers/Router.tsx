@@ -14,11 +14,7 @@ import {RegisterScreen} from '../screens/public/register/RegisterScreen'
 import {UserDispatchContext, UsersContext} from '../states/UserContext'
 import {RegisterSecondScreen} from '../screens/public/register/RegisterSecondScreen'
 import {RegisterThirdScreen} from '../screens/public/register/RegisterThirdScreen'
-import {
-  CompositeScreenProps,
-  NavigationContainer,
-  useNavigation,
-} from '@react-navigation/native'
+import {CompositeScreenProps, useNavigation} from '@react-navigation/native'
 import {RegisterFourthScreen} from '../screens/public/register/RegisterFourthScreen'
 import {RegisterOkScreen} from '../screens/public/register/RegisterOkScreen'
 import {HomeProvScreen} from '../screens/private/home/HomeProvScreen'
@@ -38,24 +34,27 @@ import {PermissionsOneScreen} from '../screens/public/permissions/PermissionsOne
 import {PermissionsTwoScreen} from '../screens/public/permissions/PermissionsTwoScreen'
 import {PermissionsThreeScreen} from '../screens/public/permissions/PermissionsThreeScreen'
 import {PermissionsFourScreen} from '../screens/public/permissions/PermissionsFourScreen'
-import {SplashScreen} from '../screens/SplashScreen'
 import {PermissionsAndroid, Platform} from 'react-native'
 import {TestMap} from '../screens/private/home/TestMap'
+import {IamScreen} from '../screens/public/register/IamScreen'
+import {IamFromScreen} from '../screens/public/register/IamFromScreen'
 
 export type RootStackParamList = {
   SplashScreen: undefined
   StackPermissions: undefined
-  HomeScreen: undefined
-  HomeProvScreen: undefined
-  RegisterScreen: undefined
   PermissionsOneScreen: undefined
   PermissionsTwoScreen: undefined
   PermissionsThreeScreen: undefined
   PermissionsFourScreen: undefined
-  RegisterSecondScreen: {dni: string}
-  RegisterThirdScreen: {dni: string; phone: string}
-  RegisterFourthScreen: {dni: string; phone: string; name: string}
-  RegisterOkScreen: {dni: string; phone: string; name: string; pin: string}
+  HomeScreen: undefined
+  HomeProvScreen: undefined
+  IamScreen: undefined
+  IamFromScreen: undefined
+  RegisterScreen: undefined
+  RegisterSecondScreen: undefined
+  RegisterThirdScreen: undefined
+  RegisterFourthScreen: undefined
+  RegisterOkScreen: undefined
   RegisterParcelStack: undefined
   RegisterParcelScreen: undefined
   TabPrivate: undefined
@@ -147,8 +146,9 @@ export const Router = () => {
 
   const getIsLogin = () => {
     const userLogin = storage.getString('user')
-    if (userLogin) {
-      dispatch({type: 'login', payload: JSON.parse(userLogin)})
+    const user = JSON.parse(userLogin || '{}')
+    if (user?.isLogin) {
+      dispatch({type: 'login', payload: JSON.parse(user)})
     }
   }
 
@@ -160,11 +160,12 @@ export const Router = () => {
         /* Public */
         <>
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="IamScreen" component={IamScreen} />
+          <Stack.Screen name="IamFromScreen" component={IamFromScreen} />
           <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
           <Stack.Screen
             name="RegisterSecondScreen"
             component={RegisterSecondScreen}
-            initialParams={{dni: ''}}
           />
           <Stack.Screen
             name="RegisterThirdScreen"

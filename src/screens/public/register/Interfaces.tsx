@@ -6,6 +6,7 @@ import {InputText} from '../../../components/input-text/InputText'
 import {LABELS} from '../../../config/texts/labels'
 import {NavigationProp} from '@react-navigation/native'
 import {InputOTP} from '../../../components/input-otp/InputOTP'
+import {InputPhone} from '../../../components/input-text/InputPhone'
 
 // interface header
 export interface InterfaceHeader {
@@ -48,16 +49,18 @@ export const INIT_VALUES_TWO: InterfaceTwo = {
   phone: '',
 }
 
-export const INPUTS_TWO = [
-  {
-    name: 'phone',
-    label: LABELS.phoneRegister,
-    placeholder: LABELS.phone,
-    preFormate: 'phone',
-    keyboardType: 'phone-pad',
-    component: InputText,
-  },
-] as InputTextProps[]
+export const INPUTS_TWO = (code: string) =>
+  [
+    {
+      name: 'phone',
+      label: LABELS.phoneRegister,
+      placeholder: LABELS.phone,
+      preFormate: 'phone',
+      keyboardType: 'phone-pad',
+      code,
+      component: InputPhone,
+    },
+  ] as InputTextProps[]
 
 export let SCHEMA_TWO = object({
   phone: string()

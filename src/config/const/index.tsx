@@ -6,3 +6,21 @@ export const REGEX = {
   namePropio: /^[a-zA-ZÀ-ÿ,-.'\s]+$/,
   dniPeruOColombia: /^\d{8}$|^\d{6,10}$/,
 }
+
+export const GENDER = {
+  man: 'Hombre',
+  woman: 'Mujer',
+}
+
+export const COUNTRY = {
+  peru: {
+    name: 'Perú',
+    code: 'PE',
+    phoneCode: '+51',
+  },
+  colombia: {
+    name: 'Colombia',
+    code: 'CO',
+    phoneCode: '+57',
+  },
+}

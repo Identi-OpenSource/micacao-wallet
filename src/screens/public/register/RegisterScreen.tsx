@@ -7,7 +7,7 @@
 import React from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {useNavigation} from '@react-navigation/native'
-import {Keyboard, Text, View} from 'react-native'
+import {Text, View} from 'react-native'
 import {Btn, BtnIcon} from '../../../components/button/Button'
 import {moderateScale} from '../../../config/themes/metrics'
 import {TEXTS} from '../../../config/texts/texts'
@@ -21,15 +21,15 @@ import {
 } from './Interfaces'
 import {LABELS} from '../../../config/texts/labels'
 import {styles} from './styles'
+import {storage} from '../../../config/store/db'
 
 export const RegisterScreen = () => {
   const navigation = useNavigation()
 
-  const onSubmit = (values: InterfaceOne) => {
-    Keyboard.dismiss()
-    setTimeout(() => {
-      navigation.navigate('RegisterSecondScreen', values)
-    }, 100)
+  const submit = (values: InterfaceOne) => {
+    const user = JSON.parse(storage.getString('user') || '{}')
+    storage.set('user', JSON.stringify({...user, ...values}))
+    navigation.navigate('RegisterSecondScreen')
   }
 
   return (
@@ -38,7 +38,7 @@ export const RegisterScreen = () => {
         <Header navigation={navigation} title={TEXTS.textC} />
         <Formik
           initialValues={INIT_VALUES_ONE}
-          onSubmit={values => onSubmit(values)}
+          onSubmit={values => submit(values)}
           validationSchema={SCHEMA_ONE}>
           {({handleSubmit, isValid, dirty}) => (
             <>

@@ -31,4 +31,8 @@ export const TEXTS = {
     'Presiona el botón PERMISO DE UBICACIÓN\n\nAparecerá una ventana donde deberás seleccionar "Permitir mientras se usa la app" o "Permitir siempre"',
   textZ:
     'Presiona el botón PERMISO DE CÁMARA\n\nAparecerá una ventana donde deberás seleccionar "Permitir"',
+  textAA: 'Yo soy...',
+  textAB: 'Hombre',
+  textAC: 'Mujer',
+  textAD: 'Vivo en...',
 }
