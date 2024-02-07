@@ -15,6 +15,7 @@ import {MSG_ERROR} from '../../../../config/texts/erros'
 import {Field, Formik} from 'formik'
 import {Btn} from '../../../../components/button/Button'
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
+import {storage} from '../../../../config/store/db'
 
 export interface Interface {
   name: string
@@ -39,7 +40,8 @@ export const RegisterOneScreen = ({
   navigation,
 }: ScreenProps<'RegisterOneScreen'>) => {
   const onSubmit = (values: Interface) => {
-    navigation.navigate('RegisterParcelTwoScreen', {name: values.name})
+    storage.set('parcelTemp', JSON.stringify({...values}))
+    navigation.navigate('RegisterParcelTwoScreen')
   }
 
   return (

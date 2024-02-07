@@ -17,6 +17,7 @@ import {TEXTS} from '../../config/texts/texts'
 import {LABELS} from '../../config/texts/labels'
 import {Btn} from '../button/Button'
 import {imgCheque} from '../../assets/imgs'
+import {storage} from '../../config/store/db'
 
 interface loading {
   msg: string
@@ -26,6 +27,8 @@ interface loading {
 export const Loading = (props: loading) => {
   const [step, setStep] = useState(0)
   const fadeAnim = useRef(new Animated.Value(0)).current
+  const user = JSON.parse(storage.getString('user') || '{}')
+  const welcome = user.gender === 'M' ? TEXTS.welcomeM : TEXTS.welcomeF
   // Animation
   useEffect(() => {
     if (step === 0) {
@@ -75,7 +78,7 @@ export const Loading = (props: loading) => {
           <Image source={imgCheque} style={[styles.img, styles.indicador]} />
           <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
             <View style={styles.textContainer}>
-              <Text style={[styles.textA]}>{TEXTS.textI}</Text>
+              <Text style={[styles.textA]}>{welcome}</Text>
               <Text style={[styles.textB]}>{TEXTS.textJ}</Text>
             </View>
             <View style={styles.formBtn}>

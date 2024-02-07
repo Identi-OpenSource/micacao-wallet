@@ -15,6 +15,7 @@ import {MSG_ERROR} from '../../../../config/texts/erros'
 import {Field, Formik} from 'formik'
 import {Btn} from '../../../../components/button/Button'
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
+import {storage} from '../../../../config/store/db'
 
 export interface Interface {
   hectares: string
@@ -43,14 +44,12 @@ export let SCHEMA = object({
 
 export const RegisterParcelTwoScreen = ({
   navigation,
-  route,
 }: ScreenProps<'RegisterParcelTwoScreen'>) => {
   const onSubmit = (values: Interface) => {
     const hectares = Number(values.hectares)
-    navigation.navigate('RegisterParcelThirdScreen', {
-      ...route.params,
-      hectares,
-    })
+    const parcelTemp = JSON.parse(storage.getString('parcelTemp') || '{}')
+    storage.set('parcelTemp', JSON.stringify({...parcelTemp, hectares}))
+    navigation.navigate('RegisterParcelThirdScreen')
   }
 
   return (

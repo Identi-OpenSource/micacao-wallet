@@ -1,5 +1,6 @@
 export const TEXTS = {
-  welcome: '¡Bienvenido!',
+  welcomeF: '¡BIENVENIDO!',
+  welcomeM: '¡BIENVENIDO!',
   textA: 'Conecta tu campo con el mundo',
   textB: 'Registra tu campo y gana más dinero por tu cosecha',
   textC: 'Paso 1 de 4',
@@ -8,7 +9,6 @@ export const TEXTS = {
   textF: 'Paso 4 de 4',
   textG: '¡Un momento!',
   textH: 'Estamos preparando algunas cosas para conectar tu campo con el mundo',
-  textI: '¡BIENVENIDO(A)!',
   textJ: 'Cuenta creada con éxito',
   textK: '¿Qué deseas hacer hoy?',
   textL: 'Hola',
@@ -35,4 +35,6 @@ export const TEXTS = {
   textAB: 'Hombre',
   textAC: 'Mujer',
   textAD: 'Vivo en...',
+  textAE: 'Tienes información pendiente para guardar',
+  textAF: 'Guardando datos',
 }

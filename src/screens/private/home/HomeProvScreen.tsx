@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useCallback, useContext, useState} from 'react'
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {
@@ -17,52 +17,86 @@ import {Btn, BtnSmall} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {storage} from '../../../config/store/db'
-import {useNavigation} from '@react-navigation/native'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import {Alert} from '../../../components/alert/Alert'
+import {LoadingSave} from '../../../components/loading/LoadinSave'
 
 export const HomeProvScreen = () => {
   const navigation = useNavigation()
   const user: UserInterface = useContext(UsersContext)
-  const firstPoint =
-    user?.parcel[0]?.firstPoint[0] + ', ' + user?.parcel[0]?.firstPoint[1]
-  const centerPoint =
-    user?.parcel[0]?.secondPoint[0] + ', ' + user?.parcel[0]?.secondPoint[1]
-  // const isConnected = useInternetConnection()
+  const isConnected = useInternetConnection()
+  const [syncUp, setSyncUp] = useState(false)
+  const [loadinSync, setLoadingSync] = useState(false)
 
-  useEffect(() => {
-    if (user.parcel?.length === 0) {
-      setTimeout(() => {
-        navigation.navigate('RegisterParcelScreen')
-      }, 100)
+  useFocusEffect(
+    useCallback(() => {
+      verifySyncUp()
+      // if not parcels, go to register parcel
+      const parcels = JSON.parse(storage.getString('parcels') || '[]')
+      if (parcels.length === 0) {
+        setTimeout(() => {
+          navigation.navigate('RegisterParcelScreen')
+        }, 1000)
+      }
+    }, [isConnected]),
+  )
+
+  const verifySyncUp = () => {
+    // asyncData if not syncUp in the last 4 hours
+    const sync = JSON.parse(storage.getString('syncUp') || '{}')
+    if (
+      isConnected &&
+      sync.isSyncUp &&
+      sync.lastSyncUp + 14400000 < Date.now()
+    ) {
+      setSyncUp(sync.isSyncUp)
     }
-  }, [])
+  }
 
-  const dataLOcal = storage.getString('user') || '{}'
-  console.log('dataLOcal', JSON.parse(dataLOcal))
-  // const userLocalObject = JSON.parse(dataLOcal)
-  //  const userLocal = JSON.stringify(userLocalObject, null, 2)
+  const dataSyncUp = () => {
+    setLoadingSync(true)
+    setTimeout(() => {
+      const newSync = {isSyncUp: false, lastSyncUp: Date.now()}
+      storage.set('syncUp', JSON.stringify(newSync))
+      setSyncUp(false)
+      setLoadingSync(false)
+    }, 2500)
+  }
 
   return (
     <SafeArea>
-      <View style={styles.container}>
-        <ConnectionStatus />
-        <Header {...user} />
-        <Body />
-        <Text> Entrada: {firstPoint} </Text>
-        <Text> Centro: {centerPoint} </Text>
-        <View style={{marginTop: MP_DF.large}}>
-          <Btn
-            title={'Prueba de puntos GPS'}
-            theme="agrayu"
-            onPress={() => navigation.navigate('TestMap')}
+      {!loadinSync ? (
+        <View style={styles.container}>
+          <ConnectionStatus
+            syncUp={syncUp}
+            isConnected={isConnected}
+            dataSyncUp={dataSyncUp}
           />
+          <Header {...user} />
+          <Body syncUp={syncUp} />
+          <View style={{marginTop: MP_DF.large}}>
+            <Btn
+              title={'Prueba de puntos GPS'}
+              theme="agrayu"
+              onPress={() => navigation.navigate('TestMap')}
+            />
+          </View>
         </View>
-      </View>
+      ) : (
+        <LoadingSave msg={TEXTS.textAF} />
+      )}
     </SafeArea>
   )
 }
 
-const ConnectionStatus = () => {
-  const isConnected = useInternetConnection()
+const ConnectionStatus = (props: {
+  syncUp: boolean
+  isConnected: boolean
+  dataSyncUp: Function
+}) => {
+  const isConnected = props.isConnected
+  const syncUp = props.syncUp
+  const dataSyncUp = props.dataSyncUp
   return (
     <View style={styles.containerConnection}>
       <View style={styles.containerConnectionTitle}>
@@ -78,12 +112,12 @@ const ConnectionStatus = () => {
       {!isConnected && (
         <Text style={styles.connectionSubTitle}>{LABELS.offlineMessage}</Text>
       )}
-      {isConnected && (
+      {isConnected && syncUp && (
         <BtnSmall
           theme={'agrayu'}
           title={LABELS.asyncData}
           icon={'rotate'}
-          onPress={() => console.log('asyncData')}
+          onPress={() => dataSyncUp()}
         />
       )}
     </View>
@@ -102,28 +136,44 @@ const Header = ({name}: UserInterface) => {
   )
 }
 
-const Body = () => {
+const Body = (props: {syncUp: boolean}) => {
+  const [alert, setAlert] = useState(false)
+  const syncUp = props.syncUp
+  const onPress = () => {
+    if (syncUp) {
+      setAlert(true)
+      return
+    }
+  }
   return (
     <View style={styles.bodyContainer}>
+      <Alert
+        visible={alert}
+        onVisible={setAlert}
+        icon={'exclamation-triangle'}
+        title={TEXTS.textAE}
+      />
       {/* Primer card */}
       <View style={[styles.bodyCardContainerFull]}>
-        <TouchableOpacity style={[styles.bodyCard]} activeOpacity={0.9}>
-          <Image source={imgLayer} />
-          <Text style={styles.titleCard}>{LABELS.viewMyParcels}</Text>
+        <TouchableOpacity
+          style={[styles.bodyCard]}
+          activeOpacity={0.9}
+          onPress={onPress}>
+          <Image source={imgLayer} style={syncUp && styles.filter} />
+          <Text style={[styles.titleCard, syncUp && styles.filter]}>
+            {LABELS.viewMyParcels}
+          </Text>
         </TouchableOpacity>
       </View>
-      {/* Segundo card */}
-      {/* <View style={[styles.bodyCardContainer]}>
-        <TouchableOpacity style={[styles.bodyCard]} activeOpacity={0.9}>
-          <Image source={imgIllustration} />
-          <Text style={styles.titleCard}>{LABELS.registerCosecha}</Text>
-        </TouchableOpacity>
-      </View> */}
-      {/* Tercer card */}
       <View style={[styles.bodyCardContainerFull]}>
-        <TouchableOpacity style={[styles.bodyCard]} activeOpacity={0.9}>
-          <Image source={imgFrame} />
-          <Text style={styles.titleCard}>{LABELS.registerVenta}</Text>
+        <TouchableOpacity
+          style={[styles.bodyCard]}
+          activeOpacity={0.9}
+          onPress={onPress}>
+          <Image source={imgFrame} style={syncUp && styles.filter} />
+          <Text style={[styles.titleCard, syncUp && styles.filter]}>
+            {LABELS.registerVenta}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -131,6 +181,9 @@ const Body = () => {
 }
 
 const styles = StyleSheet.create({
+  filter: {
+    opacity: 0.3,
+  },
   container: {
     flex: 1,
     paddingHorizontal: MP_DF.large,

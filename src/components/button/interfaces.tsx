@@ -21,7 +21,7 @@ export interface ButtonProps {
   onPress: () => void
   disabled?: boolean
   style?: BtnProps
-  icon?: IconProp
+  icon?: string
 }
 
 export interface ButtonIconProps {
@@ -29,7 +29,7 @@ export interface ButtonIconProps {
   onPress: () => void
   disabled?: boolean
   style?: BtnProps
-  icon: IconProp
+  icon: IconProp | string
   size?: number
 }
 

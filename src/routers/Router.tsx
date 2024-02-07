@@ -1,8 +1,3 @@
-/**
- * @author :  Braudin Laya
- * @since :  15/09/2021
- * @summary : Router principal de l'application
- */
 import React, {useContext, useEffect} from 'react'
 import {
   NativeStackNavigationOptions,
@@ -14,7 +9,12 @@ import {RegisterScreen} from '../screens/public/register/RegisterScreen'
 import {UserDispatchContext, UsersContext} from '../states/UserContext'
 import {RegisterSecondScreen} from '../screens/public/register/RegisterSecondScreen'
 import {RegisterThirdScreen} from '../screens/public/register/RegisterThirdScreen'
-import {CompositeScreenProps, useNavigation} from '@react-navigation/native'
+import {
+  CompositeScreenProps,
+  getFocusedRouteNameFromRoute,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
 import {RegisterFourthScreen} from '../screens/public/register/RegisterFourthScreen'
 import {RegisterOkScreen} from '../screens/public/register/RegisterOkScreen'
 import {HomeProvScreen} from '../screens/private/home/HomeProvScreen'
@@ -28,20 +28,34 @@ import {RegisterOneScreen} from '../screens/private/parcel/register/RegisterOneS
 import {RegisterParcelTwoScreen} from '../screens/private/parcel/register/RegisterParcelTwoScreen'
 import {RegisterParcelThirdScreen} from '../screens/private/parcel/register/RegisterParcelThirdScreen'
 import {RegisterParcelFourthScreen} from '../screens/private/parcel/register/RegisterParcelFourthScreen'
-import {RegisterParcelFifthScreen} from '../screens/private/parcel/register/RegisterParcelFifthScreen'
-import {RegisterParcelSixthScreen} from '../screens/private/parcel/register/RegisterParcelSixthScreen'
 import {PermissionsOneScreen} from '../screens/public/permissions/PermissionsOneScreen'
 import {PermissionsTwoScreen} from '../screens/public/permissions/PermissionsTwoScreen'
 import {PermissionsThreeScreen} from '../screens/public/permissions/PermissionsThreeScreen'
 import {PermissionsFourScreen} from '../screens/public/permissions/PermissionsFourScreen'
-import {PermissionsAndroid, Platform} from 'react-native'
+import {PermissionsAndroid, Platform, StyleSheet} from 'react-native'
 import {TestMap} from '../screens/private/home/TestMap'
 import {IamScreen} from '../screens/public/register/IamScreen'
 import {IamFromScreen} from '../screens/public/register/IamFromScreen'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {IconProp} from '@fortawesome/fontawesome-svg-core'
+import {BORDER_RADIUS_DF, COLORS_DF, MP_DF} from '../config/themes/default'
+import {HelpScreen} from '../screens/private/help/HelpScreen'
+
+const styles = StyleSheet.create({
+  tabBarStyle: {
+    backgroundColor: COLORS_DF.white,
+    paddingBottom: MP_DF.small,
+    height: 60,
+    borderTopEndRadius: BORDER_RADIUS_DF.medium,
+    borderTopStartRadius: BORDER_RADIUS_DF.medium,
+  },
+  tabBarLabelStyle: {
+    fontWeight: 'bold',
+  },
+})
 
 export type RootStackParamList = {
   SplashScreen: undefined
-  StackPermissions: undefined
   PermissionsOneScreen: undefined
   PermissionsTwoScreen: undefined
   PermissionsThreeScreen: undefined
@@ -55,28 +69,14 @@ export type RootStackParamList = {
   RegisterThirdScreen: undefined
   RegisterFourthScreen: undefined
   RegisterOkScreen: undefined
-  RegisterParcelStack: undefined
   RegisterParcelScreen: undefined
   TabPrivate: undefined
   RegisterOneScreen: undefined
-  RegisterParcelTwoScreen: {name: string}
-  RegisterParcelThirdScreen: {name: string; hectares: number}
-  RegisterParcelFourthScreen: {
-    name: string
-    hectares: number
-    firstPoint: number[]
-    imgP1: string
-  }
-  RegisterParcelFifthScreen: {
-    name: string
-    hectares: number
-    firstPoint: number[]
-  }
-  RegisterParcelSixthScreen: {
-    name: string
-    hectares: number
-    firstPoint: number[]
-  }
+  RegisterParcelTwoScreen: undefined
+  RegisterParcelThirdScreen: undefined
+  RegisterParcelFourthScreen: undefined
+  HelpScreen: undefined
+  // Solo pruebas
   TestMap: undefined
 }
 
@@ -113,6 +113,11 @@ const tabConfig = {
   statusBarColor: 'transparent',
   statusBarStyle: 'dark',
   presentation: 'card',
+  initialRouteName: 'HomeProvScreen',
+  tabBarActiveTintColor: COLORS_DF.cacao,
+  tabBarInactiveTintColor: COLORS_DF.gray,
+  tabBarStyle: styles.tabBarStyle,
+  tabBarLabelStyle: styles.tabBarLabelStyle,
 } as BottomTabNavigationOptions
 
 export const Router = () => {
@@ -145,10 +150,10 @@ export const Router = () => {
   }
 
   const getIsLogin = () => {
-    const userLogin = storage.getString('user')
-    const isLogin = JSON.parse(userLogin || '{}')
-    if (user?.isLogin) {
-      dispatch({type: 'login', payload: JSON.parse(isLogin)})
+    const userLogin = JSON.parse(storage.getString('user') || '{}')
+
+    if (userLogin?.isLogin) {
+      dispatch({type: 'login', payload: userLogin})
     }
   }
 
@@ -204,14 +209,6 @@ export const Router = () => {
             name="RegisterParcelFourthScreen"
             component={RegisterParcelFourthScreen}
           />
-          <Stack.Screen
-            name="RegisterParcelFifthScreen"
-            component={RegisterParcelFifthScreen}
-          />
-          <Stack.Screen
-            name="RegisterParcelSixthScreen"
-            component={RegisterParcelSixthScreen}
-          />
         </>
       )}
       {/* Permission */}
@@ -241,9 +238,40 @@ export const Router = () => {
 const TabPrivate = () => {
   const Tab = createBottomTabNavigator()
   return (
-    <Tab.Navigator screenOptions={{...tabConfig}}>
-      <Tab.Screen name="Home" component={HomeStackPrivate} />
+    <Tab.Navigator screenOptions={{...tabConfig}} initialRouteName="inicio">
+      <Tab.Screen
+        name="perfil"
+        component={HomeStackPrivate}
+        options={{
+          tabBarLabel: 'PERFIL',
+          tabBarIcon: ({color}) =>
+            tab_icon({icon: 'circle-user', size: 24, color}),
+        }}
+      />
+      <Tab.Screen
+        name="inicio"
+        component={HomeStackPrivate}
+        options={{
+          tabBarLabel: 'INICIO',
+          tabBarIcon: ({color}) => tab_icon({icon: 'house', size: 24, color}),
+        }}
+      />
+      <Tab.Screen
+        name="ayuda"
+        component={HelpStackPrivate}
+        options={{
+          tabBarLabel: 'AYUDA',
+          tabBarIcon: ({color}) =>
+            tab_icon({icon: 'circle-question', size: 24, color}),
+        }}
+      />
     </Tab.Navigator>
+  )
+}
+
+const tab_icon = (props: {icon: IconProp; size: number; color: string}) => {
+  return (
+    <FontAwesomeIcon icon={props.icon} size={props.size} color={props.color} />
   )
 }
 
@@ -255,5 +283,46 @@ const HomeStackPrivate = () => {
       <HomeStack.Screen name="HomeProvScreen" component={HomeProvScreen} />
       <HomeStack.Screen name="TestMap" component={TestMap} />
     </HomeStack.Navigator>
+  )
+}
+
+// create Stack Help
+const HelpStackPrivate = () => {
+  const HelpStack = createNativeStackNavigator<RootStackParamList>()
+  const route = useRoute()
+
+  function getHeaderTitle() {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? 'HelpScreen'
+
+    switch (routeName) {
+      case 'HelpScreen':
+        return 'Ayuda'
+      case 'Profile':
+        return 'My profile'
+      case 'Account':
+        return 'My account'
+    }
+  }
+
+  const screenOptions = () => {
+    return {
+      ...slideFromRight,
+      statusBarStyle: 'light',
+      headerShown: true,
+      headerBackVisible: true,
+      headerTitle: getHeaderTitle(),
+      headerStyle: {
+        backgroundColor: COLORS_DF.cacao,
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    } as NativeStackNavigationOptions
+  }
+  return (
+    <HelpStack.Navigator screenOptions={screenOptions}>
+      <HelpStack.Screen name="HelpScreen" component={HelpScreen} />
+    </HelpStack.Navigator>
   )
 }

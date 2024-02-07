@@ -6,6 +6,8 @@ export interface UserInterface {
   pin: string
   isLogin?: boolean
   parcel?: any[]
+  syncUp?: boolean
+  lastSyncUp?: number
 }
 
 export const userInicialState: UserInterface = {

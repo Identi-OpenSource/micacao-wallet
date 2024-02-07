@@ -7,6 +7,7 @@ import {
 } from '../../config/themes/default'
 import {ButtonIconProps, ButtonProps} from './interfaces'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {IconProp} from '@fortawesome/fontawesome-svg-core'
 
 export const Btn = (props: ButtonProps) => {
   const theme = props.theme || 'primary'
@@ -16,7 +17,15 @@ export const Btn = (props: ButtonProps) => {
       onPress={props.onPress}
       activeOpacity={BTN_THEME[theme]?.const?.opacity}
       style={[BTN_THEME[theme]?.container, props.style?.container]}>
-      {/* {props.icon && <FontAwesomeIcon icon={props.icon} size={32} />} */}
+      {props.icon && (
+        <View style={BTN_THEME[theme]?.icon}>
+          <FontAwesomeIcon
+            icon={props.icon as IconProp}
+            size={24}
+            color={BTN_THEME[theme]?.iconColor}
+          />
+        </View>
+      )}
       {props.title && (
         <Text style={[BTN_THEME[theme]?.label, props.style?.label]}>
           {props.title}
@@ -34,7 +43,7 @@ export const BtnIcon = (props: ButtonIconProps) => {
       activeOpacity={BTN_THEME_ICON[theme]?.const?.opacity}
       style={[BTN_THEME_ICON[theme]?.container, props.style?.container]}>
       <FontAwesomeIcon
-        icon={props.icon}
+        icon={props.icon as IconProp}
         size={props.size || 16}
         color={BTN_THEME_ICON[theme].const?.color || 'black'}
       />
@@ -54,7 +63,7 @@ export const BtnSmall = (props: ButtonProps) => {
         {props.icon && (
           <Text style={BTN_THEME_SMALL[theme]?.icon}>
             <FontAwesomeIcon
-              icon={props.icon}
+              icon={props.icon as IconProp}
               color={BTN_THEME_SMALL[theme]?.iconColor}
             />
           </Text>

@@ -12,21 +12,38 @@ import {
   faAngleLeft,
   faAngleRight,
   faArrowLeftLong,
+  faArrowRight,
   faCircle,
+  faCircleQuestion,
+  faCircleUser,
+  faExclamation,
+  faHouse,
   faRotate,
   faTree,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons'
 import {UserProvider} from './src/states/UserContext'
+import {faWhatsapp, fab} from '@fortawesome/free-brands-svg-icons'
+import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle'
 
 function App(): React.JSX.Element {
   // biblioteca de iconos
   library.add(
+    fab,
     faArrowLeftLong,
     faTree,
     faAngleLeft,
     faAngleRight,
     faCircle,
     faRotate,
+    faUser,
+    faCircleUser,
+    faHouse,
+    faArrowRight,
+    faCircleQuestion,
+    faWhatsapp,
+    faExclamation,
+    faExclamationTriangle,
   )
 
   // useEffect(() => {

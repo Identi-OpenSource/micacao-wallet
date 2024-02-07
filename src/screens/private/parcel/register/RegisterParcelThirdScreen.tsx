@@ -31,16 +31,15 @@ import {
   PhotoQuality,
   launchCamera,
 } from 'react-native-image-picker'
-import Geolocation, {
-  GeolocationResponse,
-} from '@react-native-community/geolocation'
+
+import Geolocation from 'react-native-geolocation-service'
 import {MSG_ERROR} from '../../../../config/texts/erros'
+import {storage} from '../../../../config/store/db'
 
 export const RegisterParcelThirdScreen = ({
   navigation,
-  route,
 }: ScreenProps<'RegisterParcelThirdScreen'>) => {
-  const [gps, setGps] = useState<GeolocationResponse | null>(null)
+  const [gps, setGps] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [imgP1, setImgP1] = useState('')
 
@@ -108,11 +107,12 @@ export const RegisterParcelThirdScreen = ({
   const onSubmit = () => {
     if (gps?.coords) {
       const firstPoint = [gps?.coords?.latitude, gps?.coords.longitude]
-      navigation.navigate('RegisterParcelFourthScreen', {
-        ...route.params,
-        firstPoint,
-        imgP1,
-      })
+      const parcelTemp = JSON.parse(storage.getString('parcelTemp') || '{}')
+      storage.set(
+        'parcelTemp',
+        JSON.stringify({...parcelTemp, firstPoint, imgP1}),
+      )
+      navigation.navigate('RegisterParcelFourthScreen')
     }
   }
 

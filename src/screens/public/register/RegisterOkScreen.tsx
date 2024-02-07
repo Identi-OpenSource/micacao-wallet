@@ -27,10 +27,12 @@ export const RegisterOkScreen = () => {
   const dispatch = useContext(UserDispatchContext)
   const fadeAnim = useRef(new Animated.Value(0)).current
   const user = JSON.parse(storage.getString('user') || '{}')
+  const welcome = user.gender === 'M' ? TEXTS.welcomeM : TEXTS.welcomeF
 
   // Save data
   useEffect(() => {
     storage.set('user', JSON.stringify({...user, isLogin: true}))
+    storage.set('syncUp', JSON.stringify({isSyncUp: true, lastSyncUp: 0}))
   }, [])
 
   // Login
@@ -92,7 +94,7 @@ export const RegisterOkScreen = () => {
           <Image source={imgCheque} style={[styles.img, styles.indicador]} />
           <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
             <View style={styles.textContainer}>
-              <Text style={[styles.textA]}>{TEXTS.textI}</Text>
+              <Text style={[styles.textA]}>{welcome}</Text>
               <Text style={[styles.textB]}>{TEXTS.textJ}</Text>
             </View>
             <View style={styles.formBtn}>

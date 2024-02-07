@@ -29,10 +29,11 @@ export const COLORS_DF = {
   grayLight: '#ADADAD',
   black: '#404040',
   white: '#ffffff',
-  warning: '#EF4444',
+  warning: '#F59E0B',
   transparent: 'transparent',
   // Nuevos colores
   neutral: '#DCD4D0',
+  neutralLight: '#F7F3F0',
   cacao: '#4A0000',
   greenAgrayu: '#BDEF12',
   greenAgrayuDisabled: '#F8FDE7',
@@ -111,6 +112,8 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
       borderColor: CL[1],
       borderWidth: 2,
       borderRadius: BORDER_RADIUS_DF.medium,
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     label: {
       color: CL[1],
@@ -123,6 +126,10 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
     const: {
       opacity: 0.7,
     },
+    icon: {
+      marginRight: MP_DF.small,
+    },
+    iconColor: CL[1],
   } as BtnProps
 }
 

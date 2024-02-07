@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useState} from 'react'
 import {
   HeaderActions,
   SafeArea,
@@ -31,23 +31,16 @@ import {
   PhotoQuality,
   launchCamera,
 } from 'react-native-image-picker'
-import Geolocation, {
-  GeolocationResponse,
-} from '@react-native-community/geolocation'
+import Geolocation from 'react-native-geolocation-service'
 import {MSG_ERROR} from '../../../../config/texts/erros'
 import {storage} from '../../../../config/store/db'
-import {UserDispatchContext} from '../../../../states/UserContext'
-import {Loading} from '../../../../components/loading/Loading'
 
 export const RegisterParcelFourthScreen = ({
   navigation,
-  route,
 }: ScreenProps<'RegisterParcelFourthScreen'>) => {
-  const [gps, setGps] = useState<GeolocationResponse | null>(null)
-  const dispatch = useContext(UserDispatchContext)
+  const [gps, setGps] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [imgP2, setImgP2] = useState('')
-  const [save, setSave] = useState(false)
 
   // capture photo
   const photo = async () => {
@@ -110,68 +103,52 @@ export const RegisterParcelFourthScreen = ({
   }
 
   const onSubmit = () => {
-    const data = storage.getString('user')
-    const user = JSON.parse(data || '{}')
+    const parcelTemp = JSON.parse(storage.getString('parcelTemp') || '{}')
+    const parcels = JSON.parse(storage.getString('parcels') || '[{}]')
     const secondPoint = [gps?.coords?.latitude, gps?.coords.longitude]
-    const userLogin = {
-      ...user,
-      parcel: [{...route.params, secondPoint, imgP2}],
-    }
-    storage.set('user', JSON.stringify(userLogin))
-    if (userLogin) {
-      dispatch({type: 'login', payload: userLogin})
-    }
-    setSave(true)
+    const addParcel = [...parcels, {...parcelTemp, imgP2, secondPoint}]
+    storage.set('parcels', JSON.stringify(addParcel))
+    navigation.navigate('TabPrivate')
   }
 
   return (
     <SafeArea bg="neutral" isForm>
-      {!save ? (
-        <View style={styles.container}>
-          <HeaderActions title={TEXTS.textF} navigation={navigation} />
-          <View style={styles.formContainer}>
-            <View style={styles.formInput}>
-              {!loading ? (
-                <ImageBackground
-                  source={imgCentro}
-                  style={styles.containerImg}
-                />
-              ) : (
-                <View style={styles.containerImg}>
-                  <ActivityIndicator size={100} color={COLORS_DF.cacao} />
-                </View>
-              )}
+      <View style={styles.container}>
+        <HeaderActions title={TEXTS.textF} navigation={navigation} />
+        <View style={styles.formContainer}>
+          <View style={styles.formInput}>
+            {!loading ? (
+              <ImageBackground source={imgCentro} style={styles.containerImg} />
+            ) : (
+              <View style={styles.containerImg}>
+                <ActivityIndicator size={100} color={COLORS_DF.cacao} />
+              </View>
+            )}
 
-              {!loading && gps === null && (
-                <Text style={styles.textUnique}>
-                  Ahora camina hacia el{' '}
-                  <Text style={styles.textUniqueUPPER}>CENTRO</Text> de tu
-                  parcela y toma una foto.
-                </Text>
-              )}
-              {loading && gps === null && (
-                <Text style={styles.textUnique}>Guardando foto</Text>
-              )}
-              {!loading && gps !== null && (
-                <Text style={styles.textUnique}>Foto guardada con éxito</Text>
-              )}
-            </View>
-            <View style={STYLES_GLOBALS.formBtn}>
-              <Btn
-                title={gps === null ? LABELS.capturePhoto : LABELS.next}
-                theme={!loading ? 'agrayu' : 'agrayuDisabled'}
-                disabled={loading}
-                onPress={gps === null ? photo : onSubmit}
-              />
-            </View>
+            {!loading && gps === null && (
+              <Text style={styles.textUnique}>
+                Ahora camina hacia el{' '}
+                <Text style={styles.textUniqueUPPER}>CENTRO</Text> de tu parcela
+                y toma una foto.
+              </Text>
+            )}
+            {loading && gps === null && (
+              <Text style={styles.textUnique}>Guardando foto</Text>
+            )}
+            {!loading && gps !== null && (
+              <Text style={styles.textUnique}>Foto guardada con éxito</Text>
+            )}
+          </View>
+          <View style={STYLES_GLOBALS.formBtn}>
+            <Btn
+              title={gps === null ? LABELS.capturePhoto : LABELS.next}
+              theme={!loading ? 'agrayu' : 'agrayuDisabled'}
+              disabled={loading}
+              onPress={gps === null ? photo : onSubmit}
+            />
           </View>
         </View>
-      ) : (
-        <Loading
-          msg={TEXTS.textH}
-          onPress={() => navigation.navigate('TabPrivate')}
-        />
-      )}
+      </View>
     </SafeArea>
   )
 }
