@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(18),
     fontWeight: '600',
     backgroundColor: COLORS_DF.white,
+    color: COLORS_DF.black,
     flex: 1,
   },
 })
