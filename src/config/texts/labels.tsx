@@ -4,6 +4,7 @@ export const LABELS = {
   email: 'Correo electrónico',
   registerDni: 'NUMERO DE DNI / CÉDULA',
   dni: 'DNI / CÉDULA',
+  myParcels: 'Mis parcelas',
   phoneRegister: 'NÚMERO DE CELULAR',
   nameParcel: '¿NOMBRE DE TU PARCELA?',
   hectaresParcel: '¿NÚMERO DE HECTÁREAS?',

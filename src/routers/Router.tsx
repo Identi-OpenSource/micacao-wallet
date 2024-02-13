@@ -40,6 +40,10 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {IconProp} from '@fortawesome/fontawesome-svg-core'
 import {BORDER_RADIUS_DF, COLORS_DF, MP_DF} from '../config/themes/default'
 import {HelpScreen} from '../screens/private/help/HelpScreen'
+import {MyParcelsScreen} from '../screens/private/parcel/my-parcels/MyParcelsScreen'
+import {LABELS} from '../config/texts/labels'
+import {PolygonScreen} from '../screens/private/parcel/draw-polygon/PolygonScreen'
+import {DrawPolygonScreen} from '../screens/private/parcel/draw-polygon/DrawPolygonScreen'
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -76,6 +80,9 @@ export type RootStackParamList = {
   RegisterParcelThirdScreen: undefined
   RegisterParcelFourthScreen: undefined
   HelpScreen: undefined
+  MyParcelsScreen: undefined
+  PolygonScreen: undefined
+  DrawPolygonScreen: undefined
   // Solo pruebas
   TestMap: undefined
 }
@@ -119,6 +126,19 @@ const tabConfig = {
   tabBarStyle: styles.tabBarStyle,
   tabBarLabelStyle: styles.tabBarLabelStyle,
 } as BottomTabNavigationOptions
+
+const optionsHeadersCacao = {
+  statusBarStyle: 'light',
+  headerShown: true,
+  headerBackVisible: true,
+  headerStyle: {
+    backgroundColor: COLORS_DF.cacao,
+  },
+  headerTintColor: '#fff',
+  headerTitleStyle: {
+    fontWeight: 'bold',
+  },
+} as NativeStackNavigationOptions
 
 export const Router = () => {
   const navigation = useNavigation()
@@ -281,6 +301,30 @@ const HomeStackPrivate = () => {
   return (
     <HomeStack.Navigator screenOptions={{...slideFromRight}}>
       <HomeStack.Screen name="HomeProvScreen" component={HomeProvScreen} />
+      {/* parcels */}
+      <HomeStack.Group screenOptions={optionsHeadersCacao}>
+        <HomeStack.Screen
+          name="MyParcelsScreen"
+          component={MyParcelsScreen}
+          options={{
+            title: LABELS.myParcels,
+          }}
+        />
+        <HomeStack.Screen
+          name="PolygonScreen"
+          component={PolygonScreen}
+          options={{
+            title: 'Dibujar Parcela',
+          }}
+        />
+        <HomeStack.Screen
+          name="DrawPolygonScreen"
+          component={DrawPolygonScreen}
+          options={{
+            title: 'Dibujar Parcela',
+          }}
+        />
+      </HomeStack.Group>
       <HomeStack.Screen name="TestMap" component={TestMap} />
     </HomeStack.Navigator>
   )

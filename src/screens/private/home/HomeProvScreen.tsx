@@ -138,6 +138,7 @@ const Header = ({name}: UserInterface) => {
 
 const Body = (props: {syncUp: boolean}) => {
   const [alert, setAlert] = useState(false)
+  const navigation = useNavigation()
   const syncUp = props.syncUp
   const onPress = () => {
     if (syncUp) {
@@ -158,7 +159,7 @@ const Body = (props: {syncUp: boolean}) => {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={onPress}>
+          onPress={() => navigation.navigate('MyParcelsScreen')}>
           <Image source={imgLayer} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.viewMyParcels}

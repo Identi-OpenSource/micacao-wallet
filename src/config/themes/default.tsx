@@ -90,13 +90,16 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
       CL = [COLORS_DF.secondary, COLORS_DF.primary]
       break
     case 'white':
-      CL = [COLORS_DF.white, COLORS_DF.primary]
+      CL = [COLORS_DF.warning, COLORS_DF.white]
       break
     case 'agrayu':
       CL = [COLORS_DF.greenAgrayu, COLORS_DF.cacao]
       break
     case 'agrayuDisabled':
       CL = [COLORS_DF.greenAgrayuDisabled, COLORS_DF.gray]
+      break
+    case 'transparent':
+      CL = [COLORS_DF.transparent, COLORS_DF.cacao]
       break
     default:
       CL = [COLORS_DF.primary, COLORS_DF.secondary]
@@ -109,8 +112,8 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
       height: 62,
       justifyContent: 'center',
       backgroundColor: CL[0],
-      borderColor: CL[1],
-      borderWidth: 2,
+      borderColor: theme !== 'transparent' ? CL[1] : null,
+      borderWidth: theme !== 'transparent' ? 2 : null,
       borderRadius: BORDER_RADIUS_DF.medium,
       flexDirection: 'row',
       alignItems: 'center',

@@ -17,6 +17,7 @@ import {
   faCircleQuestion,
   faCircleUser,
   faExclamation,
+  faHandPointer,
   faHouse,
   faRotate,
   faTree,
@@ -44,6 +45,7 @@ function App(): React.JSX.Element {
     faWhatsapp,
     faExclamation,
     faExclamationTriangle,
+    faHandPointer,
   )
 
   // useEffect(() => {

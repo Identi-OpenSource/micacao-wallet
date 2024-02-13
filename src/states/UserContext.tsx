@@ -9,6 +9,15 @@ export interface UserInterface {
   syncUp?: boolean
   lastSyncUp?: number
 }
+export interface Parcel {
+  id?: string
+  name?: string
+  hectares?: number
+  location?: {
+    latitude: number
+    longitude: number
+  }
+}
 
 export const userInicialState: UserInterface = {
   name: '',
