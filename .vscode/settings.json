@@ -6,6 +6,8 @@
     "formik",
     "Formik",
     "guión",
-    "Pressable"
+    "Mapbox",
+    "Pressable",
+    "rnmapbox"
   ]
 }

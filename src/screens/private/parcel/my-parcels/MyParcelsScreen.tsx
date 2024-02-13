@@ -48,7 +48,7 @@ const CardParcel = (props: Parcel) => {
       <Btn
         title="Presione para ver más"
         icon={'hand-pointer'}
-        onPress={() => {}}
+        onPress={() => navigation.navigate('DrawPolyline')}
         theme="transparent"
         style={containerBTN}
       />

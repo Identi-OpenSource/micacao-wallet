@@ -44,6 +44,9 @@ import {MyParcelsScreen} from '../screens/private/parcel/my-parcels/MyParcelsScr
 import {LABELS} from '../config/texts/labels'
 import {PolygonScreen} from '../screens/private/parcel/draw-polygon/PolygonScreen'
 import {DrawPolygonScreen} from '../screens/private/parcel/draw-polygon/DrawPolygonScreen'
+import DrawPolyline from '../screens/private/parcel/draw-polygon/DrawPolyline'
+import GradientLine from '../screens/private/parcel/draw-polygon/GradientLine'
+import ThirdPartyVectorSource from '../screens/private/parcel/draw-polygon/ThirdPartyVectorSource'
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -85,6 +88,9 @@ export type RootStackParamList = {
   DrawPolygonScreen: undefined
   // Solo pruebas
   TestMap: undefined
+  DrawPolyline: undefined
+  GradientLine: undefined
+  ThirdPartyVectorSource: undefined
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -322,6 +328,27 @@ const HomeStackPrivate = () => {
           component={DrawPolygonScreen}
           options={{
             title: 'Dibujar Parcela',
+          }}
+        />
+        <HomeStack.Screen
+          name="DrawPolyline"
+          component={DrawPolyline}
+          options={{
+            title: 'Test DrawPolyline',
+          }}
+        />
+        <HomeStack.Screen
+          name="GradientLine"
+          component={GradientLine}
+          options={{
+            title: 'Test GradientLine',
+          }}
+        />
+        <HomeStack.Screen
+          name="ThirdPartyVectorSource"
+          component={ThirdPartyVectorSource}
+          options={{
+            title: 'Test ThirdPartyVectorSource',
           }}
         />
       </HomeStack.Group>
