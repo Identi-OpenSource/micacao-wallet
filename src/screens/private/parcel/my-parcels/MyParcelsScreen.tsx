@@ -14,12 +14,27 @@ import {storage} from '../../../../config/store/db'
 import {useNavigation} from '@react-navigation/native'
 
 export const MyParcelsScreen = () => {
+  const navigation = useNavigation()
   const parcels: Parcel[] = JSON.parse(storage.getString('parcels') || '[]')
+
+  console.log('parcels', parcels[0].name)
 
   return (
     <SafeArea>
       <View style={styles.container}>
         {parcels.map(parcel => CardParcel(parcel))}
+        <Btn
+          title="Polígono de prueba A"
+          onPress={() => navigation.navigate('DrawPolyline')}
+          theme="primary"
+          style={containerBTN}
+        />
+        <Btn
+          title="Polígono de prueba B"
+          onPress={() => navigation.navigate('GradientLine')}
+          theme="primary"
+          style={containerBTN}
+        />
       </View>
     </SafeArea>
   )
@@ -48,7 +63,7 @@ const CardParcel = (props: Parcel) => {
       <Btn
         title="Presione para ver más"
         icon={'hand-pointer'}
-        onPress={() => navigation.navigate('DrawPolyline')}
+        onPress={() => {}}
         theme="transparent"
         style={containerBTN}
       />

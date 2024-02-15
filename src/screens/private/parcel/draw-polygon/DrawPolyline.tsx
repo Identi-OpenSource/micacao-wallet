@@ -62,9 +62,9 @@ const CrosshairOverlay = ({
 }) => {
   const ref = useRef<View>(null)
 
-  if (ref.current != null) {
-    console.log('=> ref.current', ref.current != null)
-  }
+  // if (ref.current != null) {
+  //   console.log('=> ref.current', ref.current != null)
+  // }
   return (
     <View
       style={{
@@ -112,7 +112,7 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
       ],
     }
   }, [coordinates])
-  console.log('=> features', JSON.stringify(features))
+  // console.log('=> features', JSON.stringify(features))
   return (
     <ShapeSource id={'shape-source-id-0'} shape={features}>
       <LineLayer id={'line-layer'} style={lineLayerStyle} />
@@ -122,6 +122,7 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
 
 const DrawPolyline = () => {
   const parcel = JSON.parse(storage.getString('parcels') || '[]')
+  // console.log('parcel', parcel)
   const firstPoint = [
     Number(parcel[0].firstPoint[1]),
     Number(parcel[0].firstPoint[0]),
@@ -140,7 +141,7 @@ const DrawPolyline = () => {
   const newLocal = 'row'
   return (
     <View style={{flex: 1}}>
-      <View>
+      {/* <View>
         {!started ? (
           <Button
             title="start"
@@ -163,7 +164,7 @@ const DrawPolyline = () => {
             <Button title="stop" onPress={() => setStarted(false)} />
           </View>
         )}
-      </View>
+      </View> */}
       <View style={{flex: 1}}>
         <MapView
           ref={map}
@@ -195,11 +196,11 @@ const DrawPolyline = () => {
           <Camera
             defaultSettings={{
               centerCoordinate: firstPoint,
-              zoomLevel: 12,
+              zoomLevel: 17,
             }}
           />
           {coordinatesWithLast.map((c, i) => {
-            console.log('ssc', c)
+            // console.log('ssc', c)
             return (
               <PointAnnotation
                 key={i + 'a'}

@@ -104,7 +104,7 @@ export const RegisterParcelFourthScreen = ({
 
   const onSubmit = () => {
     const parcelTemp = JSON.parse(storage.getString('parcelTemp') || '{}')
-    const parcels = JSON.parse(storage.getString('parcels') || '[{}]')
+    const parcels = JSON.parse(storage.getString('parcels') || '[]')
     const secondPoint = [gps?.coords?.latitude, gps?.coords.longitude]
     const addParcel = [...parcels, {...parcelTemp, imgP2, secondPoint}]
     storage.set('parcels', JSON.stringify(addParcel))

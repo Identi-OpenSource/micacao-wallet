@@ -7,6 +7,7 @@ import React, {
   useMemo,
   forwardRef,
 } from 'react'
+import {storage} from '../../../../config/store/db'
 
 type Position = [number, number]
 
@@ -56,7 +57,7 @@ const CrosshairOverlay = ({
   const ref = useRef<View>(null)
 
   if (ref.current != null) {
-    console.log('=> ref.current', ref.current != null)
+    // console.log('=> ref.current', ref.current != null)
   }
   return (
     <View
@@ -105,7 +106,7 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
       ],
     }
   }, [coordinates])
-  console.log('=> features', JSON.stringify(features))
+  // console.log('=> features', JSON.stringify(features))
   return (
     <ShapeSource id={'shape-source-id-0'} shape={features}>
       <LineLayer id={'line-layer'} style={lineLayerStyle} />
@@ -114,10 +115,15 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
 }
 
 const GradientLine = () => {
+  const parcel = JSON.parse(storage.getString('parcels') || '[]')
+  const firstPoint = [
+    Number(parcel[0].firstPoint[1]),
+    Number(parcel[0].firstPoint[0]),
+  ]
   const [coordinates, setCoordinates] = useState<Position[]>([])
-  const [lastCoordinate, setLastCoordinate] = useState<Position>([0, 0])
+  const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
   const [started, setStarted] = useState(false)
-  const [crosshairPos, setCrosshairPos] = useState([0, 0])
+  const [crosshairPos, setCrosshairPos] = useState(firstPoint)
 
   const coordinatesWithLast = useMemo(() => {
     return [...coordinates, lastCoordinate]
@@ -131,7 +137,7 @@ const GradientLine = () => {
       <View>
         {!started ? (
           <Button
-            title="start"
+            title="Iniciar poligono"
             onPress={() => {
               setStarted(true)
               setCoordinates([lastCoordinate])
@@ -145,10 +151,10 @@ const GradientLine = () => {
               gap: 10,
             }}>
             <Button
-              title="add"
+              title="Agregar Punto"
               onPress={() => setCoordinates([...coordinates, lastCoordinate])}
             />
-            <Button title="stop" onPress={() => setStarted(false)} />
+            <Button title="Listo" onPress={() => setStarted(false)} />
           </View>
         )}
       </View>
@@ -160,26 +166,19 @@ const GradientLine = () => {
             const crosshairCoords = await map.current?.getCoordinateFromView(
               crosshairPos,
             )
-            console.log(
-              'Crosshair coords: ',
-              crosshairCoords,
-              'camera center:',
-              e.properties.center,
-            )
-            setLastCoordinate(crosshairCoords as Position)
             if (crosshairCoords && started) {
               setLastCoordinate(crosshairCoords as Position)
             }
           }}>
-          {started && <Polygon coordinates={coordinatesWithLast} />}
+          {<Polygon coordinates={coordinatesWithLast} />}
           <Camera
             defaultSettings={{
-              centerCoordinate: [-73.970895, 40.723279],
-              zoomLevel: 12,
+              centerCoordinate: firstPoint,
+              zoomLevel: 17,
             }}
           />
         </MapView>
-        <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />
+        {started && <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />}
       </View>
     </View>
   )
