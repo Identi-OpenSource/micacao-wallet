@@ -20,6 +20,7 @@ import {storage} from '../../../config/store/db'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {Alert} from '../../../components/alert/Alert'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
+import {fundingWallet, newWallet} from '../../../OCC/occ'
 
 export const HomeProvScreen = () => {
   const navigation = useNavigation()
@@ -27,6 +28,8 @@ export const HomeProvScreen = () => {
   const isConnected = useInternetConnection()
   const [syncUp, setSyncUp] = useState(false)
   const [loadinSync, setLoadingSync] = useState(false)
+
+  const [wa, setWa] = useState(null)
 
   useFocusEffect(
     useCallback(() => {
@@ -63,6 +66,22 @@ export const HomeProvScreen = () => {
     }, 2500)
   }
 
+  const createWallet = () => {
+    const wallet = newWallet()
+    console.log(wallet)
+    setWa(wallet)
+  }
+
+  const getFundingWallet = async () => {
+    await fundingWallet(wa)
+    //console.log(f)
+  }
+
+  const newTransaction = async () => {
+    await fundingWallet(wa)
+    //console.log(f)
+  }
+
   return (
     <SafeArea>
       {!loadinSync ? (
@@ -79,6 +98,21 @@ export const HomeProvScreen = () => {
               title={'Prueba de puntos GPS'}
               theme="agrayu"
               onPress={() => navigation.navigate('TestMap')}
+            />
+            <Btn
+              title={'Nueva Wallet'}
+              theme="agrayu"
+              onPress={() => createWallet()}
+            />
+            <Btn
+              title={'Funding Wallet'}
+              theme="agrayu"
+              onPress={() => getFundingWallet()}
+            />
+            <Btn
+              title={'Transaction de prueba a la wallet'}
+              theme="agrayu"
+              onPress={() => newTransaction()}
             />
           </View>
         </View>
