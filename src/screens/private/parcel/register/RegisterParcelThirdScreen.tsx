@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import {
   HeaderActions,
   SafeArea,
@@ -24,7 +24,7 @@ import {ScreenProps} from '../../../../routers/Router'
 import {LABELS} from '../../../../config/texts/labels'
 import {Btn} from '../../../../components/button/Button'
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
-import {imgEntrada} from '../../../../assets/imgs'
+import {imgEntrada, imgEntradaF} from '../../../../assets/imgs'
 import {
   CameraType,
   MediaType,
@@ -35,10 +35,12 @@ import {
 import Geolocation from 'react-native-geolocation-service'
 import {MSG_ERROR} from '../../../../config/texts/erros'
 import {storage} from '../../../../config/store/db'
+import {UserInterface, UsersContext} from '../../../../states/UserContext'
 
 export const RegisterParcelThirdScreen = ({
   navigation,
 }: ScreenProps<'RegisterParcelThirdScreen'>) => {
+  const user: UserInterface = useContext(UsersContext)
   const [gps, setGps] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [imgP1, setImgP1] = useState('')
@@ -124,7 +126,7 @@ export const RegisterParcelThirdScreen = ({
           <View style={styles.formInput}>
             {!loading ? (
               <ImageBackground
-                source={imgEntrada}
+                source={user.gender === 'Mujer' ? imgEntradaF : imgEntrada}
                 style={styles.containerImg}
               />
             ) : (
@@ -149,7 +151,7 @@ export const RegisterParcelThirdScreen = ({
           <View style={STYLES_GLOBALS.formBtn}>
             {
               <Btn
-                title={gps === null ? LABELS.capturePhoto : LABELS.next}
+                title={gps === null ? LABELS?.capturePhoto : LABELS.next}
                 theme={!loading ? 'agrayu' : 'agrayuDisabled'}
                 disabled={loading}
                 onPress={gps === null ? photo : onSubmit}

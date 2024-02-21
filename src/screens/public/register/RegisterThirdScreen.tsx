@@ -21,7 +21,7 @@ export const RegisterThirdScreen = ({
 }: ScreenProps<'RegisterThirdScreen'>) => {
   const submit = (values: InterfaceThree) => {
     const user = JSON.parse(storage.getString('user') || '{}')
-    storage.set('user', JSON.stringify({...user, values}))
+    storage.set('user', JSON.stringify({...user, ...values}))
     navigation.navigate('RegisterFourthScreen')
   }
 

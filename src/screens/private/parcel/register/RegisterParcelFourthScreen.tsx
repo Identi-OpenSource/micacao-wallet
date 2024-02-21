@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import {
   HeaderActions,
   SafeArea,
@@ -24,7 +24,7 @@ import {ScreenProps} from '../../../../routers/Router'
 import {LABELS} from '../../../../config/texts/labels'
 import {Btn} from '../../../../components/button/Button'
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
-import {imgCentro} from '../../../../assets/imgs'
+import {imgCentro, imgCentroF} from '../../../../assets/imgs'
 import {
   CameraType,
   MediaType,
@@ -34,10 +34,12 @@ import {
 import Geolocation from 'react-native-geolocation-service'
 import {MSG_ERROR} from '../../../../config/texts/erros'
 import {storage} from '../../../../config/store/db'
+import {UserInterface, UsersContext} from '../../../../states/UserContext'
 
 export const RegisterParcelFourthScreen = ({
   navigation,
 }: ScreenProps<'RegisterParcelFourthScreen'>) => {
+  const user: UserInterface = useContext(UsersContext)
   const [gps, setGps] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [imgP2, setImgP2] = useState('')
@@ -118,7 +120,10 @@ export const RegisterParcelFourthScreen = ({
         <View style={styles.formContainer}>
           <View style={styles.formInput}>
             {!loading ? (
-              <ImageBackground source={imgCentro} style={styles.containerImg} />
+              <ImageBackground
+                source={user.gender === 'Mujer' ? imgCentroF : imgCentro}
+                style={styles.containerImg}
+              />
             ) : (
               <View style={styles.containerImg}>
                 <ActivityIndicator size={100} color={COLORS_DF.cacao} />

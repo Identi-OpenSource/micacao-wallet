@@ -21,13 +21,20 @@ import {styles} from './styles'
 import {ScreenProps} from '../../../routers/Router'
 import {Header} from './RegisterScreen'
 import {storage} from '../../../config/store/db'
+import {sha256} from 'react-native-sha256'
 
 export const RegisterFourthScreen = ({
   navigation,
 }: ScreenProps<'RegisterFourthScreen'>) => {
   const submit = (values: InterfaceFourth) => {
-    storage.set('security', JSON.stringify({values}))
-    navigation.navigate('RegisterOkScreen')
+    sha256(values.pin)
+      .then(pinHash => {
+        storage.set('security', JSON.stringify({pin: pinHash}))
+        navigation.navigate('RegisterOkScreen')
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   return (

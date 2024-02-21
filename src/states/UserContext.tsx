@@ -8,6 +8,7 @@ export interface UserInterface {
   parcel?: any[]
   syncUp?: boolean
   lastSyncUp?: number
+  gender?: string
 }
 export interface Parcel {
   id?: string

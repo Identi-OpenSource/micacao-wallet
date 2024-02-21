@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import {Image, StyleSheet, Text, View} from 'react-native'
 import {SafeArea} from '../../../../components/safe-area/SafeArea'
 import {ScreenProps} from '../../../../routers/Router'
@@ -13,19 +13,20 @@ import {
 import {imgCampo} from '../../../../assets/imgs'
 import {Btn} from '../../../../components/button/Button'
 import {LABELS} from '../../../../config/texts/labels'
-import {storage} from '../../../../config/store/db'
+import {UserInterface, UsersContext} from '../../../../states/UserContext'
 
 export const RegisterParcelScreen = ({
   navigation,
 }: ScreenProps<'RegisterParcelScreen'>) => {
-  const user = JSON.parse(storage.getString('user') || '{}')
-  const welcome = user.gender === 'M' ? TEXTS.welcomeM : TEXTS.welcomeF
+  const user: UserInterface = useContext(UsersContext)
+  const welcome = user.gender === 'Mujer' ? TEXTS.welcomeF : TEXTS.welcomeM
+  const subTitle = user.gender === 'Mujer' ? TEXTS.textMF : TEXTS.textMM
   return (
     <SafeArea bg="neutral">
       <View style={styles.container}>
         <Text style={styles.title}>{welcome}</Text>
         <Image source={imgCampo} style={styles.containerImg} />
-        <Text style={styles.subTitle}>{TEXTS.textM}</Text>
+        <Text style={styles.subTitle}>{subTitle}</Text>
         <View style={styles.btn}>
           <Btn
             title={LABELS.addParcel}
