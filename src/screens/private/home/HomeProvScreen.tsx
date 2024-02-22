@@ -1,5 +1,14 @@
 import React, {useCallback, useContext, useState} from 'react'
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert as Alerts,
+  Linking,
+} from 'react-native'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {
   BORDER_RADIUS_DF,
@@ -18,9 +27,9 @@ import {TEXTS} from '../../../config/texts/texts'
 import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {storage} from '../../../config/store/db'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
-import {Alert} from '../../../components/alert/Alert'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
-import {fundingWallet, newWallet} from '../../../OCC/occ'
+import {fundingWallet, newWallet, verificarWallet} from '../../../OCC/occ'
+import {Alert} from '../../../components/alert/Alert'
 
 export const HomeProvScreen = () => {
   const navigation = useNavigation()
@@ -68,57 +77,135 @@ export const HomeProvScreen = () => {
 
   const createWallet = () => {
     const wallet = newWallet()
-    console.log(wallet)
     setWa(wallet)
+    Alerts.alert('Wallet Creada', wallet)
   }
 
   const getFundingWallet = async () => {
     await fundingWallet(wa)
+      .then(() => {
+        Alerts.alert(
+          'Fondos Agregados',
+          'Se han agregado fondos a su wallet.' + wa,
+        )
+      })
+      .catch(() => {
+        Alerts.alert(
+          'Error',
+          'No se han podido agregar fondos a su wallet. Parece que la red OCC no está disponible. Intente más tarde.',
+        )
+      })
     //console.log(f)
   }
 
-  const newTransaction = async () => {
+  /*  const newTransaction = async () => {
     await fundingWallet(wa)
     //console.log(f)
-  }
+  } */
 
   return (
     <SafeArea>
-      {!loadinSync ? (
-        <View style={styles.container}>
-          <ConnectionStatus
-            syncUp={syncUp}
-            isConnected={isConnected}
-            dataSyncUp={dataSyncUp}
-          />
-          <Header {...user} />
-          <Body syncUp={syncUp} />
-          <View style={{marginTop: MP_DF.large}}>
-            <Btn
-              title={'Prueba de puntos GPS'}
-              theme="agrayu"
-              onPress={() => navigation.navigate('TestMap')}
+      <ScrollView>
+        {!loadinSync ? (
+          <View style={styles.container}>
+            <ConnectionStatus
+              syncUp={syncUp}
+              isConnected={isConnected}
+              dataSyncUp={dataSyncUp}
             />
-            <Btn
-              title={'Nueva Wallet'}
-              theme="agrayu"
-              onPress={() => createWallet()}
-            />
-            <Btn
-              title={'Funding Wallet'}
-              theme="agrayu"
-              onPress={() => getFundingWallet()}
-            />
-            <Btn
-              title={'Transaction de prueba a la wallet'}
-              theme="agrayu"
-              onPress={() => newTransaction()}
-            />
+            <Header {...user} />
+            <Body syncUp={syncUp} />
+            <View style={{marginTop: MP_DF.large}}>
+              <Text style={styles.titleHeader}>Pruebas Polígono</Text>
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Muestra puntos en el mapa
+              </Text>
+              <Btn
+                title={'Prueba de puntos GPS'}
+                theme="agrayu"
+                onPress={() => navigation.navigate('TestMap')}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Capturar polígono primera opción
+              </Text>
+              <Btn
+                title={'Polígono A'}
+                theme="agrayu"
+                onPress={() => navigation.navigate('DrawPolyline')}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Capturar polígono segunda opción
+              </Text>
+              <Btn
+                title={'Polígono B'}
+                theme="agrayu"
+                onPress={() => navigation.navigate('GradientLine')}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Capturar polígono tercera opción
+              </Text>
+              <Btn
+                title={'Polígono C'}
+                theme="agrayuDisabled"
+                disabled={true}
+                onPress={() => navigation.navigate('')}
+              />
+              <Text style={[styles.titleHeader, {marginVertical: 10}]}>
+                Pruebas Wallet
+              </Text>
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Crea una wallet compatible con OCC
+              </Text>
+              <Btn
+                title={'Nueva Wallet'}
+                theme="agrayu"
+                onPress={() => createWallet()}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Agrega fondos a la wallet
+              </Text>
+              <Btn
+                title={'Funding Wallet'}
+                theme="agrayu"
+                onPress={() => getFundingWallet()}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Verificar wallet
+              </Text>
+              <Btn
+                title={'Revisar Wallet Online OFC'}
+                theme="agrayu"
+                onPress={() => verificarWallet(wa)}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Post Transaction de prueba a la wallet
+              </Text>
+              <Btn
+                title={'Escribir en red OCC'}
+                theme="agrayuDisabled"
+                disabled={true}
+                onPress={() => verificarWallet(wa)}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Get Transaction de prueba a la wallet
+              </Text>
+              <Btn
+                title={'Leer de la red OCC'}
+                theme="agrayuDisabled"
+                disabled={true}
+                onPress={() => verificarWallet(wa)}
+              />
+              {/* <Btn
+                title={'Transaction de prueba a la wallet'}
+                theme="agrayu"
+                onPress={() => newTransaction()}
+              /> */}
+            </View>
           </View>
-        </View>
-      ) : (
-        <LoadingSave msg={TEXTS.textAF} />
-      )}
+        ) : (
+          <LoadingSave msg={TEXTS.textAF} />
+        )}
+      </ScrollView>
     </SafeArea>
   )
 }

@@ -1,4 +1,4 @@
-import {Camera, LineLayer, MapView, ShapeSource} from '@rnmapbox/maps'
+import {Camera, LineLayer, MapView, ShapeSource, StyleURL} from '@rnmapbox/maps'
 import {Button, View} from 'react-native'
 import React, {
   useState,
@@ -31,8 +31,8 @@ const Crosshair = forwardRef<View, CrosshairProps>(
           left: size,
           top: 0,
           bottom: 0,
-          borderColor: 'red',
-          borderWidth: w / 2.0,
+          borderColor: 'white',
+          borderWidth: w,
         }}
       />
       <View
@@ -41,8 +41,8 @@ const Crosshair = forwardRef<View, CrosshairProps>(
           top: size,
           left: 0,
           right: 0,
-          borderColor: 'red',
-          borderWidth: w / 2.0,
+          borderColor: 'white',
+          borderWidth: w,
         }}
       />
     </View>
@@ -67,6 +67,7 @@ const CrosshairOverlay = ({
         left: 0,
         right: 0,
         bottom: 0,
+        zIndex: 100,
         alignContent: 'center',
         alignItems: 'center',
         justifyContent: 'center',
@@ -86,7 +87,8 @@ const CrosshairOverlay = ({
 }
 
 const lineLayerStyle = {
-  lineColor: '#ff0000',
+  lineColor: '#fff',
+  lineWidth: 3,
 }
 
 const Polygon = ({coordinates}: {coordinates: Position[]}) => {
@@ -151,7 +153,7 @@ const GradientLine = () => {
               gap: 10,
             }}>
             <Button
-              title="Agregar Punto"
+              title="Marcar Punto"
               onPress={() => setCoordinates([...coordinates, lastCoordinate])}
             />
             <Button title="Listo" onPress={() => setStarted(false)} />
@@ -161,6 +163,7 @@ const GradientLine = () => {
       <View style={{flex: 1}}>
         <MapView
           ref={map}
+          styleURL={StyleURL.Satellite}
           style={{flex: 1}}
           onCameraChanged={async e => {
             const crosshairCoords = await map.current?.getCoordinateFromView(

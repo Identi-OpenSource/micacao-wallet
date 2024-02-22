@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {Linking} from 'react-native'
 
 let bitGoUTXO = require('@bitgo/utxo-lib')
 const {networks, ECPair} = require('@bitgo/utxo-lib')
@@ -29,6 +30,12 @@ export const fundingWallet = async wallet => {
   const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
   console.log('Funding Wallet URL', url)
   return await axios.get(url)
+}
+
+export const verificarWallet = async wallet => {
+  console.log('Start testing for Funding Wallet...')
+  const url = `https://blockchain-explorer.occs.openfoodchain.org/address/${wallet}`
+  Linking.openURL(url)
 }
 
 export const transaction = async wallet => {}

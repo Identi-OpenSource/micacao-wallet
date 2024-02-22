@@ -17,49 +17,49 @@ export const TestMap = () => {
   const [second, setSecond] = useState<any>([])
   useEffect(() => {
     const parcels = JSON.parse(storage.getString('parcels') || '[]')
-    const parcel = parcels[1]
+    const parcel = parcels[0]
     if (parcel) {
       setFirst([parcel?.firstPoint[1], parcel?.firstPoint[0]])
       setSecond([parcel?.secondPoint[1], parcel?.secondPoint[0]])
     }
   }, [])
 
-  console.log('first', first)
-
   return (
     <View style={styles.page}>
       <View style={styles.container}>
-        <MapView
-          requestDisallowInterceptTouchEvent={true}
-          styleURL={StyleURL.Satellite}
-          scaleBarEnabled={false}
-          rotateEnabled={false}
-          attributionEnabled={false}
-          compassEnabled={false}
-          logoEnabled={false}
-          style={styles.map}>
-          <Camera
-            defaultSettings={{
-              centerCoordinate: first,
-              zoomLevel: 18,
-            }}
-            followUserLocation={false}
-            followUserMode={UserTrackingMode.Follow}
-            followZoomLevel={18}
-          />
-          <PointAnnotation
-            key="pointAnnotation1"
-            id="pointAnnotation1"
-            coordinate={first}>
-            <View style={styles.pinR} />
-          </PointAnnotation>
-          <PointAnnotation
-            key="pointAnnotation2"
-            id="pointAnnotation2"
-            coordinate={second}>
-            <View style={styles.pinA} />
-          </PointAnnotation>
-        </MapView>
+        {first.length > 0 && second.length > 0 && (
+          <MapView
+            requestDisallowInterceptTouchEvent={true}
+            styleURL={StyleURL.Satellite}
+            scaleBarEnabled={false}
+            rotateEnabled={false}
+            attributionEnabled={false}
+            compassEnabled={false}
+            logoEnabled={false}
+            style={styles.map}>
+            <Camera
+              defaultSettings={{
+                centerCoordinate: first,
+                zoomLevel: 18,
+              }}
+              followUserLocation={false}
+              followUserMode={UserTrackingMode.Follow}
+              followZoomLevel={18}
+            />
+            <PointAnnotation
+              key="pointAnnotation1"
+              id="pointAnnotation1"
+              coordinate={first}>
+              <View style={styles.pinR} />
+            </PointAnnotation>
+            <PointAnnotation
+              key="pointAnnotation2"
+              id="pointAnnotation2"
+              coordinate={second}>
+              <View style={styles.pinA} />
+            </PointAnnotation>
+          </MapView>
+        )}
       </View>
     </View>
   )

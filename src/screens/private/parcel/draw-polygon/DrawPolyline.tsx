@@ -4,6 +4,7 @@ import {
   MapView,
   PointAnnotation,
   ShapeSource,
+  StyleURL,
 } from '@rnmapbox/maps'
 import {Button, View} from 'react-native'
 import React, {
@@ -92,7 +93,7 @@ const CrosshairOverlay = ({
 }
 
 const lineLayerStyle = {
-  lineColor: '#ff0000',
+  lineColor: '#fff',
 }
 
 const Polygon = ({coordinates}: {coordinates: Position[]}) => {
@@ -168,6 +169,7 @@ const DrawPolyline = () => {
       <View style={{flex: 1}}>
         <MapView
           ref={map}
+          styleURL={StyleURL.Satellite}
           style={{flex: 1}}
           onPress={async e => {
             const lastCoor = [
@@ -210,7 +212,7 @@ const DrawPolyline = () => {
                   style={{
                     height: 10,
                     width: 10,
-                    backgroundColor: 'blue',
+                    backgroundColor: 'white',
                     borderRadius: 5,
                   }}
                 />
