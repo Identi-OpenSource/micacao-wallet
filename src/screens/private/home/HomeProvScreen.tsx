@@ -28,8 +28,14 @@ import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {storage} from '../../../config/store/db'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
-import {fundingWallet, newWallet, verificarWallet} from '../../../OCC/occ'
+import {
+  fundingWallet,
+  newWallet,
+  verificarWallet,
+  writeTransaction,
+} from '../../../OCC/occ'
 import {Alert} from '../../../components/alert/Alert'
+import axios from 'axios'
 
 export const HomeProvScreen = () => {
   const navigation = useNavigation()
@@ -78,6 +84,7 @@ export const HomeProvScreen = () => {
   const createWallet = () => {
     const wallet = newWallet()
     setWa(wallet)
+    console.log(wallet)
     Alerts.alert('Wallet Creada', wallet)
   }
 
@@ -182,9 +189,10 @@ export const HomeProvScreen = () => {
               </Text>
               <Btn
                 title={'Escribir en red OCC'}
-                theme="agrayuDisabled"
-                disabled={true}
-                onPress={() => verificarWallet(wa)}
+                theme="agrayu"
+                onPress={() =>
+                  writeTransaction('RLD8KRLzbjH5h84AGbs2AxabW5SKp8e2gN')
+                }
               />
               <Text style={[styles.textHeader, {marginVertical: 10}]}>
                 Get Transaction de prueba a la wallet

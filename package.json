@@ -27,7 +27,7 @@
     "@tradle/react-native-http": "^2.0.1",
     "add": "2.0.6",
     "assert": "^1.5.1",
-    "axios": "1.6.7",
+    "axios": "^1.6.7",
     "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.2",
     "console-browserify": "^1.2.0",

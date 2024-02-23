@@ -20,6 +20,7 @@
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustResize"
         android:screenOrientation="portrait"
+        android:usesCleartextTraffic="true"
         android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
