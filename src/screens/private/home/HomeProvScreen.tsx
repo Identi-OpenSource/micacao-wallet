@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
   Alert as Alerts,
-  Linking,
 } from 'react-native'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {
@@ -35,7 +34,8 @@ import {
   writeTransaction,
 } from '../../../OCC/occ'
 import {Alert} from '../../../components/alert/Alert'
-import axios from 'axios'
+import {Users} from '../../../models/user'
+import {useQuery} from '@realm/react'
 
 export const HomeProvScreen = () => {
   const navigation = useNavigation()
@@ -43,8 +43,11 @@ export const HomeProvScreen = () => {
   const isConnected = useInternetConnection()
   const [syncUp, setSyncUp] = useState(false)
   const [loadinSync, setLoadingSync] = useState(false)
+  const users = useQuery(Users)
 
   const [wa, setWa] = useState(null)
+
+  console.log('users', users)
 
   useFocusEffect(
     useCallback(() => {

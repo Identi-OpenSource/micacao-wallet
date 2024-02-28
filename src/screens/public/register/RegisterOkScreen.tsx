@@ -21,8 +21,12 @@ import {
 } from '../../../config/themes/metrics'
 import {storage} from '../../../config/store/db'
 import {UserDispatchContext} from '../../../states/UserContext'
+import {useRealm} from '@realm/react'
+import {BSON} from 'realm'
+import {Users} from '../../../models/user'
 
 export const RegisterOkScreen = () => {
+  const realm = useRealm()
   const [step, setStep] = useState(0)
   const dispatch = useContext(UserDispatchContext)
   const fadeAnim = useRef(new Animated.Value(0)).current
@@ -33,6 +37,16 @@ export const RegisterOkScreen = () => {
   useEffect(() => {
     storage.set('user', JSON.stringify({...user, isLogin: true}))
     storage.set('syncUp', JSON.stringify({isSyncUp: true, lastSyncUp: 0}))
+    realm.write(() => {
+      realm.create(Users, {
+        _id: new BSON.ObjectId(),
+        dni: user.dni,
+        gender: user.gender,
+        name: user.name,
+        phone: user.phone,
+        createdAt: new Date(),
+      })
+    })
   }, [])
 
   // Login

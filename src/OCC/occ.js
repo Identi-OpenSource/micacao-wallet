@@ -14,20 +14,22 @@ export const newWallet = () => {
   let wallet = bitGoUTXO.ECPair.makeRandom()
   // console.log('New Wallet', wallet)
   let wif = wallet.toWIF()
-  console.log('WIF from Wallet', wif)
+  // console.log('WIF from Wallet', wif)
   let ofc_network = bitGoUTXO.networks.kmd
   //console.log('OF Network', ofc_network)
   let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, ofc_network, true)
+  let wif2 = ec_pairs.toWIF()
+  console.log('WIF2 from Wallet', wif2)
   // console.log('ECPairs from Wallet', ec_pairs)
   // console.log('Address from ECPairs', ec_pairs.getAddress())
 
   // console.log('New Wallet Address', wallet.getAddress())
   // console.log('New Wallet Public KEY', wallet.getPublicKeyBuffer())
   // console.log('New Wallet Private KEY', wallet.getPrivateKeyBuffer())
-  let wallet_confirm = bitGoUTXO.ECPair.fromPrivateKeyBuffer(
-    wallet.getPrivateKeyBuffer(),
-  )
-  console.log('New Wallet Confirm', wallet_confirm.getAddress())
+  // let wallet_confirm = bitGoUTXO.ECPair.fromPrivateKeyBuffer(
+  //   wallet.getPrivateKeyBuffer(),
+  // )
+  // console.log('New Wallet Confirm', wallet_confirm.getAddress())
   return ec_pairs.getAddress()
 }
 
@@ -47,7 +49,7 @@ export const verificarWallet = async wallet => {
 export const writeTransaction = async wallet => {
   //   WIF  L3ytda49ByAPeXnnrytPXYpkDLJiocH4nut3gEfRHk8VLcqZ2ygy
   //  WALLET  RLVJ8JVQFvkuFyvvr8JzLiqkAMbjVZagt5
-  // const wif = 'KyGD4iZf323AvXL9feepvyiTLTKbNFxacKsfcBggChbiQZwUrYQK'
+  // const wif = 'L47wFkgjzENPkVSrTXmfAeCmJcV5jekfUWQL8VD1YEe42CnJvSDN'
   // // sample_batch(wif)
   // // console.log('red', bitGoUTXO.networks.kmd)
   // const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd)
@@ -57,9 +59,12 @@ export const writeTransaction = async wallet => {
   // const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
 
   const tx1 = sample_batch(
-    'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
-    //'L3ytda49ByAPeXnnrytPXYpkDLJiocH4nut3gEfRHk8VLcqZ2ygy',
+    'Us1w7vy1gVj6Tza1pD563V3H6PfdDRXTo421fBAtTuyNwNVz226V',
   )
+  // 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
+  //'L3ytda49ByAPeXnnrytPXYpkDLJiocH4nut3gEfRHk8VLcqZ2ygy',
+  // WIFI: 'UvVKjzgHX7R5dhkY8T2F9M7Hzjqq7McxcbPXuA3kcZ6XdDfSAJgK'
+  // W: RWp9xCAYH4jQjhSvfPDLaWYtF6exSA6toa
   console.log('tx1', tx1)
 }
 
