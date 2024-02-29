@@ -1,8 +1,3 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : Main component of the application
- **/
 import React from 'react'
 import {NavigationContainer} from '@react-navigation/native'
 import {Router} from './src/routers/Router'
@@ -25,17 +20,15 @@ import {
 import {UserProvider} from './src/states/UserContext'
 import {faWhatsapp, fab} from '@fortawesome/free-brands-svg-icons'
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle'
-import {RealmProvider} from '@realm/react'
-import {Users} from './src/models/user'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
 // realm
-const key = new Int8Array(64)
+/* const key = new Int8Array('')
 const config: Realm.Configuration = {
   // Add encryption key to realm configuration
   encryptionKey: key,
   path: Date.now().toString() + '.realm', // :remove
-}
+} */
 
 function App(): React.JSX.Element {
   // biblioteca de iconos
@@ -76,13 +69,13 @@ function App(): React.JSX.Element {
   // }
 
   return (
-    <RealmProvider schema={[Users]} {...config}>
-      <UserProvider>
-        <NavigationContainer>
-          <Router />
-        </NavigationContainer>
-      </UserProvider>
-    </RealmProvider>
+    // <RealmProvider schema={[Users]} {...config}>
+    <UserProvider>
+      <NavigationContainer>
+        <Router />
+      </NavigationContainer>
+    </UserProvider>
+    // </RealmProvider>
   )
 }
 

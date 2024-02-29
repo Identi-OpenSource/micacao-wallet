@@ -36,6 +36,7 @@ import {
 import {Alert} from '../../../components/alert/Alert'
 import {Users} from '../../../models/user'
 import {useQuery} from '@realm/react'
+import Geolocation from '@react-native-community/geolocation'
 
 export const HomeProvScreen = () => {
   const navigation = useNavigation()
@@ -43,15 +44,15 @@ export const HomeProvScreen = () => {
   const isConnected = useInternetConnection()
   const [syncUp, setSyncUp] = useState(false)
   const [loadinSync, setLoadingSync] = useState(false)
-  const users = useQuery(Users)
+  // const users = useQuery(Users)
 
   const [wa, setWa] = useState(null)
 
-  console.log('users', users)
+  // console.log('users', users)
 
   useFocusEffect(
     useCallback(() => {
-      verifySyncUp()
+      // verifySyncUp()
       // if not parcels, go to register parcel
       const parcels = JSON.parse(storage.getString('parcels') || '[]')
       if (parcels.length === 0) {
@@ -62,17 +63,17 @@ export const HomeProvScreen = () => {
     }, [isConnected]),
   )
 
-  const verifySyncUp = () => {
-    // asyncData if not syncUp in the last 4 hours
-    const sync = JSON.parse(storage.getString('syncUp') || '{}')
-    if (
-      isConnected &&
-      sync.isSyncUp &&
-      sync.lastSyncUp + 14400000 < Date.now()
-    ) {
-      setSyncUp(sync.isSyncUp)
-    }
-  }
+  // const verifySyncUp = () => {
+  //   // asyncData if not syncUp in the last 4 hours
+  //   const sync = JSON.parse(storage.getString('syncUp') || '{}')
+  //   if (
+  //     isConnected &&
+  //     sync.isSyncUp &&
+  //     sync.lastSyncUp + 14400000 < Date.now()
+  //   ) {
+  //     setSyncUp(sync.isSyncUp)
+  //   }
+  // }
 
   const dataSyncUp = () => {
     setLoadingSync(true)
@@ -156,9 +157,9 @@ export const HomeProvScreen = () => {
               </Text>
               <Btn
                 title={'Polígono C'}
-                theme="agrayuDisabled"
-                disabled={true}
-                onPress={() => navigation.navigate('')}
+                theme="agrayu"
+                disabled={false}
+                onPress={() => navigation.navigate('GradientLineRecorrer')}
               />
               <Text style={[styles.titleHeader, {marginVertical: 10}]}>
                 Pruebas Wallet

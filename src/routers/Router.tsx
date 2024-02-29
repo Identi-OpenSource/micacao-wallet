@@ -47,6 +47,7 @@ import {DrawPolygonScreen} from '../screens/private/parcel/draw-polygon/DrawPoly
 import DrawPolyline from '../screens/private/parcel/draw-polygon/DrawPolyline'
 import GradientLine from '../screens/private/parcel/draw-polygon/GradientLine'
 import ThirdPartyVectorSource from '../screens/private/parcel/draw-polygon/ThirdPartyVectorSource'
+import GradientLineRecorrer from '../screens/private/parcel/draw-polygon/GradientLineRecorrer'
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -86,6 +87,7 @@ export type RootStackParamList = {
   MyParcelsScreen: undefined
   PolygonScreen: undefined
   DrawPolygonScreen: undefined
+  GradientLineRecorrer: undefined
   // Solo pruebas
   TestMap: undefined
   DrawPolyline: undefined
@@ -342,6 +344,13 @@ const HomeStackPrivate = () => {
           component={GradientLine}
           options={{
             title: 'Test GradientLine',
+          }}
+        />
+        <HomeStack.Screen
+          name="GradientLineRecorrer"
+          component={GradientLineRecorrer}
+          options={{
+            title: 'Test GradientLineRecorrer',
           }}
         />
         <HomeStack.Screen
