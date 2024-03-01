@@ -161,6 +161,15 @@ export const HomeProvScreen = () => {
                 disabled={false}
                 onPress={() => navigation.navigate('GradientLineRecorrer')}
               />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Capturar polígono tercera cuarta opción
+              </Text>
+              <Btn
+                title={'Polígono D'}
+                theme="agrayu"
+                disabled={false}
+                onPress={() => navigation.navigate('GradientLineRecorrerAdd')}
+              />
               <Text style={[styles.titleHeader, {marginVertical: 10}]}>
                 Pruebas Wallet
               </Text>

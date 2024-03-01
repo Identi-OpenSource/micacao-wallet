@@ -1,4 +1,12 @@
-import {Camera, LineLayer, MapView, ShapeSource, StyleURL} from '@rnmapbox/maps'
+import {
+  Camera,
+  LineLayer,
+  Location,
+  MapView,
+  ShapeSource,
+  StyleURL,
+  UserLocation,
+} from '@rnmapbox/maps'
 import {Button, View} from 'react-native'
 import React, {
   useState,
@@ -94,6 +102,7 @@ const lineLayerStyle = {
 }
 
 const Polygon = ({coordinates}: {coordinates: Position[]}) => {
+  console.log('=> coordinatessssss', coordinates)
   const features: GeoJSON.FeatureCollection = useMemo(() => {
     return {
       type: 'FeatureCollection',
@@ -118,17 +127,16 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
   )
 }
 
-const GradientLineRecorrer = () => {
+const GradientLineRecorrerAdd = () => {
   const parcel = JSON.parse(storage.getString('parcels') || '[]')
   const firstPoint = [
     Number(parcel[0].firstPoint[1]),
     Number(parcel[0].firstPoint[0]),
   ] as Position
+  console.log('=> firstPoint', firstPoint)
   const [coordinates, setCoordinates] = useState<Position[]>([firstPoint])
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
-  const [cam, setCam] = useState<Position>(firstPoint)
-  const [started, setStarted] = useState(false)
-  const [crosshairPos, setCrosshairPos] = useState(firstPoint)
+  const [location, setLocation] = useState<Location>()
 
   const coordinatesWithLast = useMemo(() => {
     return [...coordinates, lastCoordinate]
@@ -136,55 +144,38 @@ const GradientLineRecorrer = () => {
 
   const map = useRef<MapView>(null)
 
-  useEffect(() => {
-    let watchId: any = null
-    if (started) {
-      watchId = Geolocation.watchPosition(
-        position => {
-          console.log('=> position', position)
-          setCoordinates((prevPositions: any[]) => [
-            ...prevPositions,
-            [position.coords.longitude, position.coords.latitude],
-          ])
-          setCam([position.coords.longitude, position.coords.latitude])
-        },
-        error => {
-          console.log(error)
-        },
-        {
-          enableHighAccuracy: true,
-          distanceFilter: 1,
-          interval: 1000,
-        },
-      )
-    }
-
-    return () => {
-      watchId !== null && Geolocation.clearWatch(watchId)
-    }
-  }, [started])
-
-  console.log('=> coordinates', coordinates)
+  console.log('=> coordinates', coordinatesWithLast)
 
   return (
     <View style={{flex: 1}}>
       <View>
         <Button
-          title={!started ? 'Iniciar poligono' : 'Detener poligono'}
+          title={'Agregar punto'}
           onPress={() => {
-            setStarted(!started)
+            setCoordinates(precoordinates => [
+              ...precoordinates,
+              [location.coords.longitude, location.coords.latitude],
+            ])
           }}
         />
       </View>
       <View style={{flex: 1}}>
         <MapView ref={map} styleURL={StyleURL.Satellite} style={{flex: 1}}>
           {<Polygon coordinates={coordinatesWithLast} />}
+          <UserLocation
+            visible={true}
+            animated={true}
+            onUpdate={newLocation => {
+              setLocation(newLocation)
+            }}
+          />
           <Camera
             defaultSettings={{
               centerCoordinate: firstPoint,
               zoomLevel: 16,
             }}
-            centerCoordinate={cam}
+            followUserLocation
+            followZoomLevel={16}
           />
         </MapView>
         {/* {<CrosshairOverlay onCenter={c => setCrosshairPos(c)} />} */}
@@ -193,7 +184,7 @@ const GradientLineRecorrer = () => {
   )
 }
 
-export default GradientLineRecorrer
+export default GradientLineRecorrerAdd
 
 /* end-example-doc */
 
@@ -215,4 +206,4 @@ const metadata = {
   The \`ShapeSource\` is updated with the new coordinates and the \`LineLayer\` is updated with the new coordinates.`,
 }
 
-GradientLineRecorrer.metadata = metadata
+GradientLineRecorrerAdd.metadata = metadata
