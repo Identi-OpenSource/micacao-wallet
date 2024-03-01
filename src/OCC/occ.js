@@ -19,7 +19,7 @@ export const newWallet = () => {
   //console.log('OF Network', ofc_network)
   let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, ofc_network, true)
   let wif2 = ec_pairs.toWIF()
-  console.log('WIF2 from Wallet', wif2)
+  // console.log('WIF2 from Wallet', wif2)
   // console.log('ECPairs from Wallet', ec_pairs)
   // console.log('Address from ECPairs', ec_pairs.getAddress())
 
@@ -30,14 +30,39 @@ export const newWallet = () => {
   //   wallet.getPrivateKeyBuffer(),
   // )
   // console.log('New Wallet Confirm', wallet_confirm.getAddress())
-  return ec_pairs.getAddress()
+  return {walletOFC: ec_pairs.getAddress(), wifi: wif2, ec_pairs: ec_pairs}
 }
 
 export const fundingWallet = async wallet => {
-  console.log('Start testing for Funding Wallet...')
   const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
-  console.log('Funding Wallet URL', url)
   return await axios.get(url)
+}
+
+export const fundingWalletOff = async (baseAddy, baseWIF) => {
+  console.log('Start testing for Funding Wallet Offline...')
+  //name_ecpair, baseAddy, baseWIF
+  const test_batch = {
+    anfp: '11000011',
+    dfp: 'Description here Braudin',
+    pds: '2020-03-01',
+    pde: '2020-03-05',
+    jds: 2,
+    jde: 7,
+    bbd: '2020-05-05',
+    pc: 'DE',
+    pl: 'Herrath',
+    rmn: '11200100520',
+    pon: '123072',
+    pop: '164',
+    mass: 1.0,
+    percentage: null,
+  }
+  const res = bitGoUTXO.ECPair.fromWIF(baseWIF, bitGoUTXO.networks.kmd)
+  const name_ecpair = get_all_ecpairs(test_batch, res)
+  console.log('name_ecpair')
+  const resp = await fund_offline_wallets(name_ecpair, baseAddy, baseWIF)
+  console.log('Funding Wallet Offline', resp)
+  return resp
 }
 
 export const verificarWallet = async wallet => {

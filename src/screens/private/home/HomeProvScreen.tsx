@@ -29,6 +29,7 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
 import {
   fundingWallet,
+  fundingWalletOff,
   newWallet,
   verificarWallet,
   writeTransaction,
@@ -46,7 +47,7 @@ export const HomeProvScreen = () => {
   const [loadinSync, setLoadingSync] = useState(false)
   // const users = useQuery(Users)
 
-  const [wa, setWa] = useState(null)
+  const [wa, setWa] = useState(null) as any
 
   // console.log('users', users)
 
@@ -88,12 +89,11 @@ export const HomeProvScreen = () => {
   const createWallet = () => {
     const wallet = newWallet()
     setWa(wallet)
-    console.log(wallet)
-    Alerts.alert('Wallet Creada', wallet)
+    Alerts.alert('Wallet Creada', wallet.walletOFC)
   }
 
   const getFundingWallet = async () => {
-    await fundingWallet(wa)
+    await fundingWallet(wa.walletOFC)
       .then(() => {
         Alerts.alert(
           'Fondos Agregados',
@@ -107,6 +107,20 @@ export const HomeProvScreen = () => {
         )
       })
     //console.log(f)
+  }
+
+  const fundingWalletOffline = async () => {
+    await fundingWalletOff(wa.ec_pairs, wa.walletOFC, wa.wifi)
+      .then(resp => {
+        console.log('fundingWalletOff', resp)
+        Alerts.alert(
+          'Fondos Fuera de linea Agregados',
+          'Se han agregado fondos a su wallet.' + wa,
+        )
+      })
+      .catch(() => {
+        Alerts.alert('Error', 'No se han podido agregar fondos a su wallet.')
+      })
   }
 
   /*  const newTransaction = async () => {
@@ -195,9 +209,17 @@ export const HomeProvScreen = () => {
               <Btn
                 title={'Revisar Wallet Online OFC'}
                 theme="agrayu"
-                onPress={() => verificarWallet(wa)}
+                onPress={() => verificarWallet(wa.walletOFC)}
               />
               <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Agregar fondos fuera de linea a la wallet
+              </Text>
+              <Btn
+                title={'Funding Wallet Offline OFC'}
+                theme="agrayu"
+                onPress={() => fundingWalletOffline()}
+              />
+              {/* <Text style={[styles.textHeader, {marginVertical: 10}]}>
                 Post Transaction de prueba a la wallet
               </Text>
               <Btn
@@ -216,7 +238,7 @@ export const HomeProvScreen = () => {
                 disabled={true}
                 onPress={() => verificarWallet(wa)}
               />
-              {/* <Btn
+               <Btn
                 title={'Transaction de prueba a la wallet'}
                 theme="agrayu"
                 onPress={() => newTransaction()}
