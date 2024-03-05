@@ -49,6 +49,9 @@ import GradientLine from '../screens/private/parcel/draw-polygon/GradientLine'
 import ThirdPartyVectorSource from '../screens/private/parcel/draw-polygon/ThirdPartyVectorSource'
 import GradientLineRecorrer from '../screens/private/parcel/draw-polygon/GradientLineRecorrer'
 import GradientLineRecorrerAdd from '../screens/private/parcel/draw-polygon/GradientLineRecorrerAdd'
+import {NewSaleOneScreen} from '../screens/private/sale/NewSaleOneScreen'
+import {NewSaleTwoScreen} from '../screens/private/sale/NewSaleTwoScreen'
+import {NewSaleThreeScreen} from '../screens/private/sale/NewSaleThreeScreen'
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -89,6 +92,9 @@ export type RootStackParamList = {
   PolygonScreen: undefined
   DrawPolygonScreen: undefined
   GradientLineRecorrer: undefined
+  NewSaleOneScreen: undefined
+  NewSaleTwoScreen: undefined
+  NewSaleThreeScreen: undefined
   // Solo pruebas
   TestMap: undefined
   DrawPolyline: undefined
@@ -219,26 +225,42 @@ export const Router = () => {
             name="TabPrivate"
             component={TabPrivate} /* Private OK */
           />
-          <Stack.Screen
-            name="RegisterParcelScreen"
-            component={RegisterParcelScreen}
-          />
-          <Stack.Screen
-            name="RegisterOneScreen"
-            component={RegisterOneScreen}
-          />
-          <Stack.Screen
-            name="RegisterParcelTwoScreen"
-            component={RegisterParcelTwoScreen}
-          />
-          <Stack.Screen
-            name="RegisterParcelThirdScreen"
-            component={RegisterParcelThirdScreen}
-          />
-          <Stack.Screen
-            name="RegisterParcelFourthScreen"
-            component={RegisterParcelFourthScreen}
-          />
+          <Stack.Group>
+            <Stack.Screen
+              name="RegisterParcelScreen"
+              component={RegisterParcelScreen}
+            />
+            <Stack.Screen
+              name="RegisterOneScreen"
+              component={RegisterOneScreen}
+            />
+            <Stack.Screen
+              name="RegisterParcelTwoScreen"
+              component={RegisterParcelTwoScreen}
+            />
+            <Stack.Screen
+              name="RegisterParcelThirdScreen"
+              component={RegisterParcelThirdScreen}
+            />
+            <Stack.Screen
+              name="RegisterParcelFourthScreen"
+              component={RegisterParcelFourthScreen}
+            />
+          </Stack.Group>
+          <Stack.Group>
+            <Stack.Screen
+              name="NewSaleOneScreen"
+              component={NewSaleOneScreen}
+            />
+            <Stack.Screen
+              name="NewSaleTwoScreen"
+              component={NewSaleTwoScreen}
+            />
+            <Stack.Screen
+              name="NewSaleThreeScreen"
+              component={NewSaleThreeScreen}
+            />
+          </Stack.Group>
         </>
       )}
       {/* Permission */}

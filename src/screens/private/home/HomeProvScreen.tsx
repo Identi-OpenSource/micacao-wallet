@@ -29,15 +29,15 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
 import {
   fundingWallet,
-  fundingWalletOff,
+  // fundingWalletOff,
   newWallet,
   verificarWallet,
-  writeTransaction,
+  // writeTransaction,
 } from '../../../OCC/occ'
 import {Alert} from '../../../components/alert/Alert'
-import {Users} from '../../../models/user'
+/* import {Users} from '../../../models/user'
 import {useQuery} from '@realm/react'
-import Geolocation from '@react-native-community/geolocation'
+import Geolocation from '@react-native-community/geolocation' */
 
 export const HomeProvScreen = () => {
   const navigation = useNavigation()
@@ -109,7 +109,7 @@ export const HomeProvScreen = () => {
     //console.log(f)
   }
 
-  const fundingWalletOffline = async () => {
+  /*  const fundingWalletOffline = async () => {
     await fundingWalletOff(wa.ec_pairs, wa.walletOFC, wa.wifi)
       .then(resp => {
         console.log('fundingWalletOff', resp)
@@ -121,7 +121,7 @@ export const HomeProvScreen = () => {
       .catch(() => {
         Alerts.alert('Error', 'No se han podido agregar fondos a su wallet.')
       })
-  }
+  } */
 
   /*  const newTransaction = async () => {
     await fundingWallet(wa)
@@ -184,6 +184,7 @@ export const HomeProvScreen = () => {
                 disabled={false}
                 onPress={() => navigation.navigate('GradientLineRecorrerAdd')}
               />
+              {/*
               <Text style={[styles.titleHeader, {marginVertical: 10}]}>
                 Pruebas Wallet
               </Text>
@@ -211,7 +212,7 @@ export const HomeProvScreen = () => {
                 theme="agrayu"
                 onPress={() => verificarWallet(wa.walletOFC)}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+               <Text style={[styles.textHeader, {marginVertical: 10}]}>
                 Agregar fondos fuera de linea a la wallet
               </Text>
               <Btn
@@ -219,7 +220,7 @@ export const HomeProvScreen = () => {
                 theme="agrayu"
                 onPress={() => fundingWalletOffline()}
               />
-              {/* <Text style={[styles.textHeader, {marginVertical: 10}]}>
+               <Text style={[styles.textHeader, {marginVertical: 10}]}>
                 Post Transaction de prueba a la wallet
               </Text>
               <Btn
@@ -304,12 +305,12 @@ const Body = (props: {syncUp: boolean}) => {
   const [alert, setAlert] = useState(false)
   const navigation = useNavigation()
   const syncUp = props.syncUp
-  const onPress = () => {
-    if (syncUp) {
-      setAlert(true)
-      return
-    }
-  }
+  // const onPress = () => {
+  //   if (syncUp) {
+  //     setAlert(true)
+  //     return
+  //   }
+  // }
   return (
     <View style={styles.bodyContainer}>
       <Alert
@@ -334,7 +335,7 @@ const Body = (props: {syncUp: boolean}) => {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={onPress}>
+          onPress={() => navigation.navigate('NewSaleOneScreen')}>
           <Image source={imgFrame} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.registerVenta}
