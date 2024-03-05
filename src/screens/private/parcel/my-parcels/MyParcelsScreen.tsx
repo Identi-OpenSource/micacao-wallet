@@ -23,18 +23,6 @@ export const MyParcelsScreen = () => {
     <SafeArea>
       <View style={styles.container}>
         {parcels.map(parcel => CardParcel(parcel))}
-        <Btn
-          title="Polígono de prueba A"
-          onPress={() => navigation.navigate('DrawPolyline')}
-          theme="primary"
-          style={containerBTN}
-        />
-        <Btn
-          title="Polígono de prueba B"
-          onPress={() => navigation.navigate('GradientLine')}
-          theme="primary"
-          style={containerBTN}
-        />
       </View>
     </SafeArea>
   )
