@@ -32,6 +32,7 @@ import {
   // fundingWalletOff,
   newWallet,
   verificarWallet,
+  writeTransaction,
   // writeTransaction,
 } from '../../../OCC/occ'
 import {Alert} from '../../../components/alert/Alert'
@@ -88,6 +89,7 @@ export const HomeProvScreen = () => {
 
   const createWallet = () => {
     const wallet = newWallet()
+    console.log('wallet', wallet)
     setWa(wallet)
     Alerts.alert('Wallet Creada', wallet.walletOFC)
   }
@@ -97,7 +99,7 @@ export const HomeProvScreen = () => {
       .then(() => {
         Alerts.alert(
           'Fondos Agregados',
-          'Se han agregado fondos a su wallet.' + wa,
+          'Se han agregado fondos a su wallet.' + wa.walletOFC,
         )
       })
       .catch(() => {
@@ -107,6 +109,15 @@ export const HomeProvScreen = () => {
         )
       })
     //console.log(f)
+  }
+
+  const write = async () => {
+    // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
+    // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
+    // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
+
+    console.log('wa', wa.wif2)
+    await writeTransaction(wa)
   }
 
   /*  const fundingWalletOffline = async () => {
@@ -184,7 +195,7 @@ export const HomeProvScreen = () => {
                 disabled={false}
                 onPress={() => navigation.navigate('GradientLineRecorrerAdd')}
               />
-              {/*
+
               <Text style={[styles.titleHeader, {marginVertical: 10}]}>
                 Pruebas Wallet
               </Text>
@@ -212,6 +223,15 @@ export const HomeProvScreen = () => {
                 theme="agrayu"
                 onPress={() => verificarWallet(wa.walletOFC)}
               />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Post Transaction de prueba a la wallet
+              </Text>
+              <Btn
+                title={'Escribir en red OCC'}
+                theme="agrayu"
+                onPress={() => write()}
+              />
+              {/*
                <Text style={[styles.textHeader, {marginVertical: 10}]}>
                 Agregar fondos fuera de linea a la wallet
               </Text>
@@ -219,16 +239,6 @@ export const HomeProvScreen = () => {
                 title={'Funding Wallet Offline OFC'}
                 theme="agrayu"
                 onPress={() => fundingWalletOffline()}
-              />
-               <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Post Transaction de prueba a la wallet
-              </Text>
-              <Btn
-                title={'Escribir en red OCC'}
-                theme="agrayu"
-                onPress={() =>
-                  writeTransaction('RLD8KRLzbjH5h84AGbs2AxabW5SKp8e2gN')
-                }
               />
               <Text style={[styles.textHeader, {marginVertical: 10}]}>
                 Get Transaction de prueba a la wallet

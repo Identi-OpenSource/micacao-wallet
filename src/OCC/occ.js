@@ -9,15 +9,38 @@ import {
   createRandomJSON,
 } from 'transaction-js'
 
+const test_batch = {
+  id: 'b6c23100-bb41-4477-b0a5-f72e8504c9fb',
+  anfp: '11000011',
+  dfp: 'Description here Braudin Laya ',
+  bnfp: '637893',
+  pds: '2020-03-01',
+  pde: '2020-03-05',
+  jds: 2,
+  jde: 7,
+  bbd: '2020-05-05',
+  pc: 'DE',
+  sol: 'SOOOOO PLANDO',
+  pl: 'Herrath',
+  rmn: '11200100520',
+  pon: '123072',
+  pop: '164',
+  mass: 1.0,
+  raw_json:
+    'eyBcImFuZnBcIjogXCIxMTAwMDAxMVwiLFwiZGZwXCI6IFwiRGVzY3JpcHRpb24gaGVyZVwiLFwiYm5mcFwiOiBcIjYzNzg5M1wiLFwicGRzXCI6IFwiMjAyMC0wMy0xXCIsXCJwZGVcIjogXCIyMDIwLTAzLTVcIixcImpkc1wiOiAyLFwiamRlXCI6IDcsXCJiYmRcIjogXCIyMDIwLTA1LTVcIixcInBjXCI6IFwiREVcIixcInBsXCI6IFwiSGVycmF0aFwiLFwicm1uXCI6IFwiMTEyMDAxMDA1MjBcIixcInBvblwiOiBcIjEyMzA3MlwiLFwicG9wXCI6IFwiMTY0XCIK',
+  integrity_details: null,
+  created_at: '2023-09-25T08:21:45.070925Z',
+  percentage: null,
+}
+
 export const newWallet = () => {
   // console.log('Start testing for New Wallet...')
   let wallet = bitGoUTXO.ECPair.makeRandom()
   // console.log('New Wallet', wallet)
   let wif = wallet.toWIF()
   // console.log('WIF from Wallet', wif)
-  let ofc_network = bitGoUTXO.networks.kmd
   //console.log('OF Network', ofc_network)
-  let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, ofc_network, true)
+  let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
   let wif2 = ec_pairs.toWIF()
   // console.log('WIF2 from Wallet', wif2)
   // console.log('ECPairs from Wallet', ec_pairs)
@@ -30,7 +53,11 @@ export const newWallet = () => {
   //   wallet.getPrivateKeyBuffer(),
   // )
   // console.log('New Wallet Confirm', wallet_confirm.getAddress())
-  return {walletOFC: ec_pairs.getAddress(), wifi: wif2, ec_pairs: ec_pairs}
+  return {
+    walletOFC: ec_pairs.getAddress(),
+    wif,
+    wif2,
+  }
 }
 
 export const fundingWallet = async wallet => {
@@ -72,24 +99,12 @@ export const verificarWallet = async wallet => {
 }
 
 export const writeTransaction = async wallet => {
-  //   WIF  L3ytda49ByAPeXnnrytPXYpkDLJiocH4nut3gEfRHk8VLcqZ2ygy
-  //  WALLET  RLVJ8JVQFvkuFyvvr8JzLiqkAMbjVZagt5
-  // const wif = 'L47wFkgjzENPkVSrTXmfAeCmJcV5jekfUWQL8VD1YEe42CnJvSDN'
-  // // sample_batch(wif)
-  // // console.log('red', bitGoUTXO.networks.kmd)
-  // const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd)
-  // const test_batch = createRandomJSON()
-  // const ec_pairs = get_all_ecpairs(test_batch, res)
-  // console.log('ec_pairs', ec_pairs)
-  // const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
-
-  const tx1 = sample_batch(
-    'Us1w7vy1gVj6Tza1pD563V3H6PfdDRXTo421fBAtTuyNwNVz226V',
-  )
-  // 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
-  //'L3ytda49ByAPeXnnrytPXYpkDLJiocH4nut3gEfRHk8VLcqZ2ygy',
-  // WIFI: 'UvVKjzgHX7R5dhkY8T2F9M7Hzjqq7McxcbPXuA3kcZ6XdDfSAJgK'
-  // W: RWp9xCAYH4jQjhSvfPDLaWYtF6exSA6toa
+  // const wif = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
+  const res = bitGoUTXO.ECPair.fromWIF(wallet.wif2, bitGoUTXO.networks.kmd)
+  console.log('AAAAAAA')
+  const ec_pairs = get_all_ecpairs(test_batch, res)
+  console.log('BBBBB')
+  const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
   console.log('tx1', tx1)
 }
 
