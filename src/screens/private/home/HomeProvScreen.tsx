@@ -115,8 +115,6 @@ export const HomeProvScreen = () => {
     // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
     // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
     // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
-
-    console.log('wa', wa.wif2)
     await writeTransaction(wa)
   }
 

@@ -38,7 +38,7 @@ export const newWallet = () => {
   let wallet = bitGoUTXO.ECPair.makeRandom()
   // console.log('New Wallet', wallet)
   let wif = wallet.toWIF()
-  // console.log('WIF from Wallet', wif)
+  console.log('WIF from Wallet', wif)
   //console.log('OF Network', ofc_network)
   let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
   let wif2 = ec_pairs.toWIF()
@@ -61,7 +61,8 @@ export const newWallet = () => {
 }
 
 export const fundingWallet = async wallet => {
-  const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
+  console.log('Fondear: ', wallet)
+  const url = `https://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
   return await axios.get(url)
 }
 
@@ -100,10 +101,11 @@ export const verificarWallet = async wallet => {
 
 export const writeTransaction = async wallet => {
   // const wif = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
-  const res = bitGoUTXO.ECPair.fromWIF(wallet.wif2, bitGoUTXO.networks.kmd)
-  console.log('AAAAAAA')
+  const res = bitGoUTXO.ECPair.fromWIF(
+    'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
+    bitGoUTXO.networks.kmd,
+  )
   const ec_pairs = get_all_ecpairs(test_batch, res)
-  console.log('BBBBB')
   const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
   console.log('tx1', tx1)
 }
