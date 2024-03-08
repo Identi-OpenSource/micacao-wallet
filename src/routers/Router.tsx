@@ -43,7 +43,6 @@ import {HelpScreen} from '../screens/private/help/HelpScreen'
 import {MyParcelsScreen} from '../screens/private/parcel/my-parcels/MyParcelsScreen'
 import {LABELS} from '../config/texts/labels'
 import {PolygonScreen} from '../screens/private/parcel/draw-polygon/PolygonScreen'
-import {DrawPolygonScreen} from '../screens/private/parcel/draw-polygon/DrawPolygonScreen'
 import DrawPolyline from '../screens/private/parcel/draw-polygon/DrawPolyline'
 import GradientLine from '../screens/private/parcel/draw-polygon/GradientLine'
 import ThirdPartyVectorSource from '../screens/private/parcel/draw-polygon/ThirdPartyVectorSource'
@@ -52,6 +51,7 @@ import GradientLineRecorrerAdd from '../screens/private/parcel/draw-polygon/Grad
 import {NewSaleOneScreen} from '../screens/private/sale/NewSaleOneScreen'
 import {NewSaleTwoScreen} from '../screens/private/sale/NewSaleTwoScreen'
 import {NewSaleThreeScreen} from '../screens/private/sale/NewSaleThreeScreen'
+import {DrawPolygonScreen} from '../screens/private/parcel/draw-polygon/DrawPolygonScreen'
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -227,6 +227,22 @@ export const Router = () => {
           />
           <Stack.Group>
             <Stack.Screen
+              name="PolygonScreen"
+              component={PolygonScreen}
+              options={{
+                title: 'Dibujar Parcela',
+              }}
+            />
+            <Stack.Screen
+              name="DrawPolygonScreen"
+              component={DrawPolygonScreen}
+              options={{
+                title: 'Dibujar Parcela',
+              }}
+            />
+          </Stack.Group>
+          <Stack.Group>
+            <Stack.Screen
               name="RegisterParcelScreen"
               component={RegisterParcelScreen}
             />
@@ -342,20 +358,14 @@ const HomeStackPrivate = () => {
             title: LABELS.myParcels,
           }}
         />
-        <HomeStack.Screen
-          name="PolygonScreen"
-          component={PolygonScreen}
-          options={{
-            title: 'Dibujar Parcela',
-          }}
-        />
+        {/*
         <HomeStack.Screen
           name="DrawPolygonScreen"
           component={DrawPolygonScreen}
           options={{
             title: 'Dibujar Parcela',
           }}
-        />
+        /> */}
         <HomeStack.Screen
           name="DrawPolyline"
           component={DrawPolyline}

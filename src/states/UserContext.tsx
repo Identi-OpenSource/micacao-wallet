@@ -2,6 +2,7 @@ import React, {createContext, useReducer} from 'react'
 
 export interface UserInterface {
   name: string
+  dni: string
   phone: string
   pin: string
   isLogin?: boolean
@@ -18,10 +19,12 @@ export interface Parcel {
     latitude: number
     longitude: number
   }
+  polygon?: any
 }
 
 export const userInicialState: UserInterface = {
   name: '',
+  dni: '',
   phone: '',
   pin: '',
   isLogin: false,
