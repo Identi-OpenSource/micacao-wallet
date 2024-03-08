@@ -1,5 +1,5 @@
 import React, {useContext} from 'react'
-import {Image, StyleSheet, Text, View} from 'react-native'
+import {Image, NativeModules, StyleSheet, Text, View} from 'react-native'
 import {SafeArea} from '../../../../components/safe-area/SafeArea'
 import {
   Parcel,
@@ -22,6 +22,7 @@ import axios from 'axios'
 import Aes from 'react-native-aes-crypto'
 
 const API_KAFE_SISTEMAS = Config.KAFE_SISTEMAS || ''
+const KEY = 'llavesecretakafesistemasidenti12'
 
 export const MyParcelsScreen = () => {
   const parcels: Parcel[] = JSON.parse(storage.getString('parcels') || '[]')
@@ -38,12 +39,9 @@ const CardParcel = (props: Parcel) => {
   const navigation = useNavigation()
   const user: UserInterface = useContext(UsersContext)
 
-  const encryptData = (text: string, key: string) => {
+  const encrypt = (text, key) => {
     return Aes.randomKey(16).then(iv => {
-      return Aes.encrypt(text, key, iv, 'aes-128-cbc').then(cipher => ({
-        cipher,
-        iv,
-      }))
+      return Aes.encrypt(text, key, iv, 'aes-128-cbc').then(cipher => cipher)
     })
   }
 
@@ -51,16 +49,18 @@ const CardParcel = (props: Parcel) => {
     const polygon = `POLYGON((${props.polygon
       .map((coordinate: Position[]) => `${coordinate[0]} ${coordinate[1]}`)
       .join(',')}))`
-    const key = await Aes.randomKey(16)
-    let DNI = await encryptData(user.dni, key)
+
+    // const id = '12345678'
+    // //const KEY = await Aes.randomKey(16)
+    // const encryp = await encrypt(id, KEY)
+    // const hexa = Buffer.from(encryp, 'base64').toString('hex')
+
     const payload = {
-      dni: Buffer.from(DNI.cipher, 'base64').toString('hex'),
+      dni: '9b6e8dd9656f735094b7b9b2fa775a8c',
       polygon,
       departamento: 'San Martin',
     }
-    console.log(payload.dni.length, '086971ab2b6c1d22e239cef071319380'.length)
-    console.log('=> payload', payload)
-    console.log('=> URL', API_KAFE_SISTEMAS)
+
     const resp = await axios.post(API_KAFE_SISTEMAS, payload)
     console.log('=> resp', resp.data)
   }
