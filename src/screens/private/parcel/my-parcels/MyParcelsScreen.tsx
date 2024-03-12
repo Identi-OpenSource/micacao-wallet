@@ -1,5 +1,5 @@
 import React, {useContext} from 'react'
-import {Image, NativeModules, StyleSheet, Text, View} from 'react-native'
+import {Alert, Image, NativeModules, StyleSheet, Text, View} from 'react-native'
 import {SafeArea} from '../../../../components/safe-area/SafeArea'
 import {
   Parcel,
@@ -17,11 +17,11 @@ import {Btn} from '../../../../components/button/Button'
 import {useNavigation} from '@react-navigation/native'
 import {storage} from '../../../../config/store/db'
 import {Position} from '@rnmapbox/maps/lib/typescript/src/types/Position'
-import Config from 'react-native-config'
 import axios from 'axios'
 import Aes from 'react-native-aes-crypto'
 
-const API_KAFE_SISTEMAS = Config.KAFE_SISTEMAS || ''
+const API_KAFE_SISTEMAS =
+  'http://148.113.174.223/api/v1/pe/land-request/polygon'
 const KEY = 'llavesecretakafesistemasidenti12'
 
 export const MyParcelsScreen = () => {
@@ -62,6 +62,7 @@ const CardParcel = (props: Parcel) => {
     }
 
     const resp = await axios.post(API_KAFE_SISTEMAS, payload)
+    Alert.alert('Respuesta', 'Estado de la solicitud: ' + resp.data.State)
     console.log('=> resp', resp.data)
   }
   return (
@@ -90,7 +91,7 @@ const CardParcel = (props: Parcel) => {
       }
       {props.polygon && (
         <Btn
-          title="Solicitar certificado ND"
+          title="Solicitar certificado Propiedad"
           onPress={() => certificateND()}
           theme="agrayu"
           style={containerBTN}

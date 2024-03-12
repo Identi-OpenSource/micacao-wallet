@@ -36,6 +36,7 @@ import {
   // writeTransaction,
 } from '../../../OCC/occ'
 import {Alert} from '../../../components/alert/Alert'
+import axios from 'axios'
 /* import {Users} from '../../../models/user'
 import {useQuery} from '@realm/react'
 import Geolocation from '@react-native-community/geolocation' */
@@ -45,6 +46,8 @@ export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext)
   const isConnected = useInternetConnection()
   const [syncUp, setSyncUp] = useState(false)
+  const [TGFW, setTokenGFW] = useState(null)
+  const [apiKeyGFW, setApiKeyGFW] = useState(null)
   const [loadinSync, setLoadingSync] = useState(false)
   // const users = useQuery(Users)
 
@@ -108,7 +111,6 @@ export const HomeProvScreen = () => {
           'No se han podido agregar fondos a su wallet. Parece que la red OCC no está disponible. Intente más tarde.',
         )
       })
-    //console.log(f)
   }
 
   const write = async () => {
@@ -136,6 +138,118 @@ export const HomeProvScreen = () => {
     await fundingWallet(wa)
     //console.log(f)
   } */
+
+  const tokenGFW = async () => {
+    await axios
+      .post(
+        'https://data-api.globalforestwatch.org/auth/token',
+        {
+          username: 'soporte@braudin.com',
+          password: 'qCd&IbS4&jt8',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      )
+      .then(resp => {
+        // setTokenGFW(resp.data)
+        setTokenGFW(resp.data.data.access_token)
+        Alerts.alert('Token GFW obtenido', resp.data.data.access_token)
+      })
+      .catch(e => {
+        Alerts.alert('Error al intentar obtener el token')
+        console.log('error', e)
+      })
+  }
+
+  const createApiKeyGFW = async () => {
+    const payload = {
+      alias: 'mi-cacao-appss' + Date.now(),
+      organization: 'GFWdata',
+      email: 'soporte@braudin.com',
+      domains: [],
+    }
+    await axios
+      .post('https://data-api.globalforestwatch.org/auth/apikey', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${TGFW}`,
+        },
+      })
+      .then(resp => {
+        setApiKeyGFW(resp.data.data.api_key)
+        Alerts.alert(
+          'Api Key GFW obtenido',
+          'Se genero un api key para el alias: ' + resp.data.data.alias,
+        )
+      })
+      .catch(e => {
+        Alerts.alert('Error al intentar obtener el ApiKey')
+        console.log('error', e)
+      })
+  }
+
+  const testApiKeyGFW = async () => {
+    await axios
+      .get('https://data-api.globalforestwatch.org/datasets', {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKeyGFW,
+        },
+      })
+      .then(resp => {
+        console.log('resp', resp.data.data)
+        Alerts.alert('Api Key GFW Test', 'Api Key GFW valido')
+      })
+      .catch(e => {
+        Alerts.alert('Test Api Key GFW', 'Api Key GFW no valido')
+        console.log('error', e)
+      })
+  }
+
+  const queryPForestal = async () => {
+    const payload = {
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [103.19732666015625, 0.5537709801264608],
+            [103.24882507324219, 0.5647567848663363],
+            [103.21277618408203, 0.5932511181408705],
+            [103.19732666015625, 0.5537709801264608],
+          ],
+        ],
+      },
+      sql: 'SELECT SUM(area__ha) FROM results WHERE umd_tree_cover_loss__year=2022',
+    }
+    await axios
+      .post(
+        'https://data-api.globalforestwatch.org/dataset/umd_tree_cover_loss/latest/query',
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKeyGFW,
+          },
+        },
+      )
+      .then(resp => {
+        console.log('resp', resp.data.data)
+        Alerts.alert(
+          'Perdida forestal',
+          `Hubo una perdida de ${resp.data.data[0].area__ha} hectáreas en 2022 para el polígono test`,
+        )
+      })
+      .catch(e => {
+        Alerts.alert(
+          'Error en la consulta',
+          'No se pudo obtener la información.',
+        )
+        console.log('error', e)
+      })
+  }
 
   return (
     <SafeArea>
@@ -252,7 +366,42 @@ export const HomeProvScreen = () => {
                 theme="agrayu"
                 onPress={() => newTransaction()}
               /> */}
+              <Text style={[styles.titleHeader, {marginVertical: 10}]}>
+                Pruebas Global Forest Watch
+              </Text>
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Obtener token
+              </Text>
+              <Btn
+                title={'Token GFW'}
+                theme="agrayu"
+                onPress={() => tokenGFW()}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Obtener ApiKEY
+              </Text>
+              <Btn
+                title={'Api GFW'}
+                theme="agrayu"
+                onPress={() => createApiKeyGFW()}
+              />
             </View>
+            <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              Test Api Key
+            </Text>
+            <Btn
+              title={'ApiKey Test'}
+              theme="agrayu"
+              onPress={() => testApiKeyGFW()}
+            />
+            <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              Pérdida de cobertura forestal
+            </Text>
+            <Btn
+              title={'Query pérdida forestal'}
+              theme="agrayu"
+              onPress={() => queryPForestal()}
+            />
           </View>
         ) : (
           <LoadingSave msg={TEXTS.textAF} />

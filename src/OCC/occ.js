@@ -82,13 +82,14 @@ export const verificarWallet = async wallet => {
 }
 
 export const writeTransaction = async wif => {
-  const wifs = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
-  //  const res = bitGoUTXO.ECPair.fromWIF(
+  //const wifs = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
+  // const res = bitGoUTXO.ECPair.fromWIF(
   //   'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
   //   bitGoUTXO.networks.kmd,
   // )
+  // console.log('res', res.getAddress())
   // const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
-  const res = bitGoUTXO.ECPair.fromWIF(wifs, bitGoUTXO.networks.kmd, true)
+  const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
   const ec_pairs = get_all_ecpairs(test_batch, res)
   const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
   console.log(`batchtx: ${JSON.stringify(tx1)}`)
