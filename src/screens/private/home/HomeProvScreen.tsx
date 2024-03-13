@@ -299,13 +299,22 @@ export const HomeProvScreen = () => {
                 onPress={() => navigation.navigate('GradientLineRecorrer')}
               />
               <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Capturar polígono tercera cuarta opción
+                Capturar polígono cuarta opción
               </Text>
               <Btn
                 title={'Polígono D'}
                 theme="agrayu"
                 disabled={false}
                 onPress={() => navigation.navigate('GradientLineRecorrerAdd')}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Capturar polígono quinta opción
+              </Text>
+              <Btn
+                title={'Polígono E'}
+                theme="agrayu"
+                disabled={false}
+                onPress={() => navigation.navigate('PoligonJoystick')}
               />
 
               <Text style={[styles.titleHeader, {marginVertical: 10}]}>

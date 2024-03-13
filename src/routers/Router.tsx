@@ -52,6 +52,7 @@ import {NewSaleOneScreen} from '../screens/private/sale/NewSaleOneScreen'
 import {NewSaleTwoScreen} from '../screens/private/sale/NewSaleTwoScreen'
 import {NewSaleThreeScreen} from '../screens/private/sale/NewSaleThreeScreen'
 import {DrawPolygonScreen} from '../screens/private/parcel/draw-polygon/DrawPolygonScreen'
+import PoligonJoystick from '../screens/private/parcel/draw-polygon/PoligonJoystick'
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -101,6 +102,7 @@ export type RootStackParamList = {
   GradientLine: undefined
   ThirdPartyVectorSource: undefined
   GradientLineRecorrerAdd: undefined
+  PoligonJoystick: undefined
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -402,7 +404,15 @@ const HomeStackPrivate = () => {
             title: 'Test ThirdPartyVectorSource',
           }}
         />
+        <HomeStack.Screen
+          name="PoligonJoystick"
+          component={PoligonJoystick}
+          options={{
+            title: 'Poligon Joystick',
+          }}
+        />
       </HomeStack.Group>
+
       <HomeStack.Screen name="TestMap" component={TestMap} />
     </HomeStack.Navigator>
   )
