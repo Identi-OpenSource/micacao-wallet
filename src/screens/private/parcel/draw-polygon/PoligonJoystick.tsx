@@ -8,6 +8,10 @@ import React, {
   forwardRef,
 } from 'react'
 import {storage} from '../../../../config/store/db'
+
+import {GestureHandlerRootView} from 'react-native-gesture-handler'
+// import {JoyStick} from 'react-native-virtual-joystick'
+
 import {ReactNativeJoystick} from '@korsolutions/react-native-joystick'
 
 type Position = [number, number]
@@ -122,7 +126,7 @@ const PoligonJoystick = () => {
   const firstPoint = [
     Number(parcel[0].firstPoint[1]),
     Number(parcel[0].firstPoint[0]),
-  ]
+  ] as Position
   const [coordinates, setCoordinates] = useState<Position[]>([])
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
   const [started, setStarted] = useState(false)
@@ -167,7 +171,7 @@ const PoligonJoystick = () => {
           ref={map}
           styleURL={StyleURL.Satellite}
           style={{flex: 1}}
-          onCameraChanged={async e => {
+          onCameraChanged={async () => {
             const crosshairCoords = await map.current?.getCoordinateFromView(
               crosshairPos,
             )
@@ -188,8 +192,43 @@ const PoligonJoystick = () => {
           style={{
             alignItems: 'center',
             paddingVertical: 10,
+            height: 150,
           }}>
-          <ReactNativeJoystick
+          <GestureHandlerRootView
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <ReactNativeJoystick
+              color="#06b6d4"
+              radius={75}
+              onMove={data => {
+                console.log(data)
+                // const distance = 0.001
+                // // Convertir el ángulo de radianes a coordenadas (x, y)
+                // const radian = (data.angle.degree * Math.PI) / 180
+                // const x = distance * Math.cos(radian)
+                // const y = distance * Math.sin(radian)
+
+                // ref2.current?.setCamera({
+                //   centerCoordinate: [
+                //     lastCoordinate[0] + y,
+                //     lastCoordinate[1] + x,
+                //   ],
+                //   animationDuration: 0,
+                //   animationMode: 'flyTo',
+                //   zoomLevel: 17,
+                // })
+              }}
+              onStart={data => {
+                console.log('start: ', data)
+              }}
+            />
+          </GestureHandlerRootView>
+        </View>
+        {/* <View
+          style={{
+            alignItems: 'center',
+            paddingVertical: 10,
+          }}>
+           <ReactNativeJoystick
             color="#06b6d4"
             radius={75}
             onMove={(data: any) => {
@@ -233,7 +272,7 @@ const PoligonJoystick = () => {
             //   console.log('=> coordinates', coordinates)
             // }}
           />
-        </View>
+        </View>*/}
         {started && <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />}
       </View>
     </View>
