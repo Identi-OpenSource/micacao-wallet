@@ -6,12 +6,11 @@ import React, {
   ComponentProps,
   useMemo,
   forwardRef,
+  useEffect,
 } from 'react'
 import {storage} from '../../../../config/store/db'
 
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
-// import {JoyStick} from 'react-native-virtual-joystick'
-
 import {ReactNativeJoystick} from '@korsolutions/react-native-joystick'
 
 type Position = [number, number]
@@ -130,6 +129,8 @@ const PoligonJoystick = () => {
   const [coordinates, setCoordinates] = useState<Position[]>([])
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
   const [started, setStarted] = useState(false)
+  const [joystickStart, setJoystickStart] = useState(false)
+  const [josAngle, setJosAngle] = useState(0)
   const [crosshairPos, setCrosshairPos] = useState(firstPoint)
 
   const coordinatesWithLast = useMemo(() => {
@@ -138,6 +139,28 @@ const PoligonJoystick = () => {
 
   const map = useRef<MapView>(null)
   const ref2 = useRef<Camera>(null)
+
+  useEffect(() => {
+    let distance = 0.0000001 // Ajusta esta distancia según tus necesidades
+    // setInterval para que se mueva el mapa con el joystick si está activo
+    const interval = setInterval(() => {
+      console.log('=> josAngle', josAngle)
+      if (joystickStart) {
+        distance += 0.00001
+        const dx = distance * Math.cos(josAngle)
+        const dy = distance * Math.sin(josAngle)
+        ref2.current?.setCamera({
+          centerCoordinate: [lastCoordinate[0] + dx, lastCoordinate[1] + dy],
+        })
+      }
+    }, 300)
+
+    if (!joystickStart) {
+      clearInterval(interval)
+    }
+
+    return () => clearInterval(interval)
+  }, [joystickStart, josAngle])
 
   const newLocal = 'row'
   return (
@@ -186,6 +209,7 @@ const PoligonJoystick = () => {
               centerCoordinate: firstPoint,
               zoomLevel: 17,
             }}
+            centerCoordinate={lastCoordinate}
           />
         </MapView>
         <View
@@ -200,25 +224,14 @@ const PoligonJoystick = () => {
               color="#06b6d4"
               radius={75}
               onMove={data => {
-                console.log(data)
-                // const distance = 0.001
-                // // Convertir el ángulo de radianes a coordenadas (x, y)
-                // const radian = (data.angle.degree * Math.PI) / 180
-                // const x = distance * Math.cos(radian)
-                // const y = distance * Math.sin(radian)
-
-                // ref2.current?.setCamera({
-                //   centerCoordinate: [
-                //     lastCoordinate[0] + y,
-                //     lastCoordinate[1] + x,
-                //   ],
-                //   animationDuration: 0,
-                //   animationMode: 'flyTo',
-                //   zoomLevel: 17,
-                // })
+                setJosAngle(data.angle.degree)
               }}
-              onStart={data => {
-                console.log('start: ', data)
+              onStart={() => {
+                setJoystickStart(true)
+              }}
+              onStop={() => {
+                console.log('=> onStop')
+                setJoystickStart(false)
               }}
             />
           </GestureHandlerRootView>
