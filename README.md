@@ -1,49 +1,67 @@
-## MiCacao
+## App MiCacao
 
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+## Requerimientos
 
-# Getting Started
+- Java Development Kit (JDK) versión 17 
+- Node.js versión 20 o superior
+- React Native CLI
+-Solicita el archivo .env
+-Solicitamos el json de Evals 
 
-> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Instalación
 
-## Step 1: Start the Metro Server
+1. Asegúrate de tener React Native instalado en tu sistema. Si aún no lo tienes, sigue las instrucciones en [Instalación de React Native](https://reactnative.dev/docs/environment-setup).
+2. Clonar este repositorio:
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
-
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
 ```
-
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+git clone https://github.com/identi-digital/micacao-app.git
 ```
-
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+3. Ejecuta los siguientes comandos para inicializar tu proyecto:
 ```
-
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
-
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+npm install
+```
+en el caso de dar error usamos el siguiente comando
+```
+npm install -f
+```
+4. A continuación cambiamos el compile de  la linea 47 dede ,\node_modules\react-native-os\android\build.gradle'por:
+```
+implementation
+```
+5.  A continuación cambiamos el compile de  la linea 47 y 48 de ,\node_modules\react-native-tcp\android\build.gradle'por:
+```
+implementation
+```
+6. Colocamos la siguientes lineas de codigo en la consola
+```
+npm install --save-dev rn-nodeify -f 
+```
+desinstalamos
+```
+npm un react-native-tcp -f
+```
+volvemos a instalar
+```
+npm i react-native-tcp -f
+```
+Desinstalamos
+```
+npm un react-native-tcp -f
+```
+Volvemos a instalar
+```
+npm i react-native-tcp -f
+```
+Desinstalamos
+```
+npm un install react-native-udp -f
+```
+Volvemos a instalar
+```
+npm i react-native-udp -f  
+```
+7. Finalmente iniciamos el proyecto con el siguiente comando
+```
+react-native run-android 
+```
+8. Ahora colocamos el json de evals en la carpeta de node modules bitcoin-ops y pegamos el archivo
