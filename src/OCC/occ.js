@@ -8,28 +8,35 @@ const {
 } = require('transaction-js/batch')
 
 const test_batch = {
-  id: 'b6c23100-bb41-4477-b0a5-f72e8504c9fb',
-  anfp: '11000011',
-  dfp: 'Description here Braudin Laya ',
-  bnfp: '637893',
-  pds: '2020-03-01',
-  pde: '2020-03-05',
-  jds: 2,
-  jde: 7,
-  bbd: '2020-05-05',
-  pc: 'DE',
-  sol: 'SOOOOO PLANDO',
-  pl: 'Herrath',
-  kkk: 'PRUEBA KKK',
-  rmn: '11200100520',
-  pon: '123072',
-  pop: '164',
-  mass: 1.0,
-  raw_json:
-    'eyBcImFuZnBcIjogXCIxMTAwMDAxMVwiLFwiZGZwXCI6IFwiRGVzY3JpcHRpb24gaGVyZVwiLFwiYm5mcFwiOiBcIjYzNzg5M1wiLFwicGRzXCI6IFwiMjAyMC0wMy0xXCIsXCJwZGVcIjogXCIyMDIwLTAzLTVcIixcImpkc1wiOiAyLFwiamRlXCI6IDcsXCJiYmRcIjogXCIyMDIwLTA1LTVcIixcInBjXCI6IFwiREVcIixcInBsXCI6IFwiSGVycmF0aFwiLFwicm1uXCI6IFwiMTEyMDAxMDA1MjBcIixcInBvblwiOiBcIjEyMzA3MlwiLFwicG9wXCI6IFwiMTY0XCIK',
-  integrity_details: null,
-  created_at: '2023-09-25T08:21:45.070925Z',
-  percentage: null,
+  user: {
+    id: {value: 1, unique: true},
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    preferences: {
+      theme: 'dark',
+      notifications: {
+        email: true,
+        sms: false,
+        push: {
+          enabled: true,
+          frequency: 'daily',
+        },
+      },
+    },
+    friends: [
+      {
+        id: 2,
+        name: 'Jane Smith',
+        status: 'online',
+      },
+      {
+        id: 3,
+        name: 'Bob Johnson',
+        status: 'offline',
+        lastOnline: '2023-03-08T12:00:00Z',
+      },
+    ],
+  },
 }
 
 export const newWallet = () => {
@@ -82,7 +89,7 @@ export const verificarWallet = async wallet => {
 }
 
 export const writeTransaction = async wif => {
-  //const wifs = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
+  // const wifs = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
   // const res = bitGoUTXO.ECPair.fromWIF(
   //   'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
   //   bitGoUTXO.networks.kmd,
@@ -92,7 +99,7 @@ export const writeTransaction = async wif => {
   const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
   const ec_pairs = get_all_ecpairs(test_batch, res)
   const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
-  console.log(`batchtx: ${JSON.stringify(tx1)}`)
+  console.log(tx1)
 }
 
 export const transaction = async wallet => {}
