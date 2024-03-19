@@ -62,8 +62,8 @@
     "react-native-screens": "3.29.0",
     "react-native-sha256": "^1.4.9",
     "react-native-svg": "14.1.0",
-    "react-native-tcp": "^3.3.2",
-    "react-native-udp": "^2.7.0",
+    "react-native-tcp": "^4.0.0",
+    "react-native-udp": "^4.1.7",
     "react-native-virtual-joystick": "^0.1.7",
     "readable-stream": "^1.0.33",
     "realm": "^12.6.1",
@@ -98,6 +98,7 @@
     "jetifier": "^2.0.0",
     "prettier": "2.8.8",
     "react-test-renderer": "18.2.0",
+    "rn-nodeify": "^10.3.0",
     "typescript": "^5.0.4"
   },
   "engines": {
