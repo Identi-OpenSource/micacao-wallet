@@ -37,6 +37,11 @@ import {
 } from '../../../OCC/occ'
 import {Alert} from '../../../components/alert/Alert'
 import axios from 'axios'
+import CryptoJS from 'crypto-js'
+import DATA_KAFE from './kafe-sistemas.json'
+const key = 'llavesecretakafesistemasidenti12'
+const API_KAFE_SISTEMAS =
+  'http://148.113.174.223/api/v1/pe/land-request/polygon'
 /* import {Users} from '../../../models/user'
 import {useQuery} from '@realm/react'
 import Geolocation from '@react-native-community/geolocation' */
@@ -251,6 +256,56 @@ export const HomeProvScreen = () => {
       })
   }
 
+  const certificateND = async (dni: string) => {
+    const paddedDNI = dni.padStart(16, '0')
+    const utf8Key = CryptoJS.enc.Utf8.parse(key)
+    const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
+
+    const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+    })
+
+    const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
+
+    return hexResult.substr(0, 32)
+  }
+
+  const kafeSistemas = async () => {
+    const resp_kafe: any = []
+    for (let i = 0; i < DATA_KAFE.length; i++) {
+      const dniEncrypted = await certificateND(DATA_KAFE[i].dni)
+      const data = {
+        dni: dniEncrypted,
+        polygon: DATA_KAFE[i].polygon,
+        departamento: 'San Martin',
+      }
+      await axios
+        .post(API_KAFE_SISTEMAS, data)
+        .then(resp => {
+          resp_kafe.push({
+            send: {...data, dni: DATA_KAFE[i].dni, dniEncrypted},
+            resp: resp.data,
+          })
+        })
+        .catch(e => {
+          console.log('error', e)
+        })
+    }
+    // ordenar por dni
+    resp_kafe.sort((a, b) => {
+      if (a.send.dni > b.send.dni) {
+        return 1
+      }
+      if (a.send.dni < b.send.dni) {
+        return -1
+      }
+      return 0
+    })
+
+    console.log('resp_kafe', resp_kafe)
+  }
+
   return (
     <SafeArea>
       <ScrollView>
@@ -410,6 +465,17 @@ export const HomeProvScreen = () => {
               title={'Query pérdida forestal'}
               theme="agrayu"
               onPress={() => queryPForestal()}
+            />
+            <Text style={[styles.titleHeader, {marginVertical: 10}]}>
+              Pruebas Kafe Sistemas
+            </Text>
+            <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              Integración con Kafe Sistemas
+            </Text>
+            <Btn
+              title={'Envió de datos test'}
+              theme="agrayu"
+              onPress={() => kafeSistemas()}
             />
           </View>
         ) : (
