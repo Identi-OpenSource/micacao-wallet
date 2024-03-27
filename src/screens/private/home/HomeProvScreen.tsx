@@ -42,6 +42,9 @@ import DATA_KAFE from './kafe-sistemas.json'
 const key = 'llavesecretakafesistemasidenti12'
 const API_KAFE_SISTEMAS =
   'http://148.113.174.223/api/v1/pe/land-request/polygon'
+const API_KEY =
+  'fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4'
+
 /* import {Users} from '../../../models/user'
 import {useQuery} from '@realm/react'
 import Geolocation from '@react-native-community/geolocation' */
@@ -280,9 +283,19 @@ export const HomeProvScreen = () => {
         polygon: DATA_KAFE[i].polygon,
         departamento: 'San Martin',
       }
+      // axios.interceptors.request.use(request => {
+      //   console.log('Starting Request', JSON.stringify(request, null, 2))
+      //   return request
+      // })
       await axios
-        .post(API_KAFE_SISTEMAS, data)
+        .post(API_KAFE_SISTEMAS, data, {
+          headers: {
+            api_key: API_KEY,
+            // Authorization: `Bearer ${API_KEY}`,
+          },
+        })
         .then(resp => {
+          console.log('resp', resp.data)
           resp_kafe.push({
             send: {...data, dni: DATA_KAFE[i].dni, dniEncrypted},
             resp: resp.data,
@@ -370,6 +383,15 @@ export const HomeProvScreen = () => {
                 theme="agrayu"
                 disabled={false}
                 onPress={() => navigation.navigate('PoligonJoystick')}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Capturar polígono sexta opción
+              </Text>
+              <Btn
+                title={'Polígono F'}
+                theme="agrayu"
+                disabled={false}
+                onPress={() => navigation.navigate('PoligonBTN')}
               />
 
               <Text style={[styles.titleHeader, {marginVertical: 10}]}>

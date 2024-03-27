@@ -1,5 +1,12 @@
-import {Camera, LineLayer, MapView, ShapeSource, StyleURL} from '@rnmapbox/maps'
-import {Button, View} from 'react-native'
+import {
+  Camera,
+  LineLayer,
+  MapView,
+  PointAnnotation,
+  ShapeSource,
+  StyleURL,
+} from '@rnmapbox/maps'
+import {Button, Dimensions, View} from 'react-native'
 import React, {
   useState,
   useRef,
@@ -132,6 +139,8 @@ const PoligonJoystick = () => {
   const [joystickStart, setJoystickStart] = useState(false)
   const [josAngle, setJosAngle] = useState(0)
   const [crosshairPos, setCrosshairPos] = useState(firstPoint)
+  const [centerCoordinate, setCenterCoordinate] = useState(firstPoint)
+  const coorInitRef = useRef(null)
 
   const coordinatesWithLast = useMemo(() => {
     return [...coordinates, lastCoordinate]
@@ -141,26 +150,31 @@ const PoligonJoystick = () => {
   const ref2 = useRef<Camera>(null)
 
   useEffect(() => {
-    let distance = 0.0000001 // Ajusta esta distancia según tus necesidades
-    // setInterval para que se mueva el mapa con el joystick si está activo
-    const interval = setInterval(() => {
-      console.log('=> josAngle', josAngle)
-      if (joystickStart) {
-        distance += 0.00001
-        const dx = distance * Math.cos(josAngle)
-        const dy = distance * Math.sin(josAngle)
-        ref2.current?.setCamera({
-          centerCoordinate: [lastCoordinate[0] + dx, lastCoordinate[1] + dy],
-        })
-      }
-    }, 300)
+    coorInitRef.current = lastCoordinate
+  }, [coordinates])
 
-    if (!joystickStart) {
-      clearInterval(interval)
-    }
+  const moveMap = (angle, force) => {
+    // Supongamos que el mapa tiene un tamaño específico y queremos mapear el rango del joystick al tamaño del mapa
+    const mapWidth = 500 // Ancho del mapa en unidades arbitrarias
+    const mapHeight = 500 // Alto del mapa en unidades arbitrarias
 
-    return () => clearInterval(interval)
-  }, [joystickStart, josAngle])
+    // Convertir el ángulo en radianes
+    const angleRad = angle.radian
+
+    // Calcular las nuevas coordenadas del marcador
+    const deltaX = Math.cos(angleRad) * ((force * mapWidth) / 2)
+    const deltaY = Math.sin(angleRad) * ((force * mapHeight) / 2)
+
+    // Supongamos que las coordenadas iniciales del marcador son el centro del mapa
+    const initialLng = coorInitRef.current[0] // Longitud inicial
+    const initialLat = coorInitRef.current[1] // Latitud inicial
+
+    // Calcular las nuevas coordenadas
+    const newLat = initialLat + deltaY / 111111 // 1 grado de latitud es aproximadamente 111111 metros
+    const newLng =
+      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 180)) // 1 grado de longitud varía dependiendo de la latitud
+    setCenterCoordinate([newLng, newLat])
+  }
 
   const newLocal = 'row'
   return (
@@ -189,11 +203,12 @@ const PoligonJoystick = () => {
           </View>
         )}
       </View>
+
       <View style={{flex: 1}}>
         <MapView
           ref={map}
           styleURL={StyleURL.Satellite}
-          style={{flex: 1}}
+          style={{height: 500, width: 500}}
           onCameraChanged={async () => {
             const crosshairCoords = await map.current?.getCoordinateFromView(
               crosshairPos,
@@ -202,14 +217,34 @@ const PoligonJoystick = () => {
               setLastCoordinate(crosshairCoords as Position)
             }
           }}>
+          {started && <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />}
           {<Polygon coordinates={coordinatesWithLast} />}
+          {coordinatesWithLast.map((c, i) => {
+            return (
+              <PointAnnotation
+                key={i.toString()}
+                id={i.toString()}
+                coordinate={[c[0], c[1]]}>
+                <View
+                  style={{
+                    height: 10,
+                    width: 10,
+                    backgroundColor: 'white',
+                    borderRadius: 5,
+                  }}
+                />
+              </PointAnnotation>
+            )
+          })}
           <Camera
             ref={ref2}
             defaultSettings={{
               centerCoordinate: firstPoint,
               zoomLevel: 17,
             }}
-            centerCoordinate={lastCoordinate}
+            animationMode={'flyTo'}
+            animationDuration={100}
+            centerCoordinate={centerCoordinate}
           />
         </MapView>
         <View
@@ -224,69 +259,21 @@ const PoligonJoystick = () => {
               color="#06b6d4"
               radius={75}
               onMove={data => {
-                setJosAngle(data.angle.degree)
+                console.log('=> data', data)
+                if (data.angle && data.force) {
+                  moveMap(data.angle, data.force)
+                }
+                // moveMarker(data.angle, data.force)
               }}
               onStart={() => {
                 setJoystickStart(true)
               }}
               onStop={() => {
-                console.log('=> onStop')
                 setJoystickStart(false)
               }}
             />
           </GestureHandlerRootView>
         </View>
-        {/* <View
-          style={{
-            alignItems: 'center',
-            paddingVertical: 10,
-          }}>
-           <ReactNativeJoystick
-            color="#06b6d4"
-            radius={75}
-            onMove={(data: any) => {
-              // angle: {
-              //   radian: number;
-              //   degree: number;
-              // }
-              console.log('=> data', data)
-              const distance = 0.001 // Ajusta esta distancia según tus necesidades
-              const dx = distance * Math.cos(data.angle.radian)
-              const dy = distance * Math.sin(data.angle.radian)
-
-              ref2.current?.setCamera({
-                centerCoordinate: [
-                  lastCoordinate[0] + dx,
-                  lastCoordinate[1] + dy,
-                ],
-                animationDuration: 0,
-                animationMode: 'flyTo',
-                zoomLevel: 17,
-              })
-            }}
-            // onMove={(data: any) => {
-            //   // angle: {
-            //   //   radian: number;
-            //   //   degree: number;
-            //   // }
-
-            //   ref2.current?.setCamera({
-            //     centerCoordinate: [
-            //       crosshairPos[0] + data.position.x / 100000,
-            //       crosshairPos[1] + data.position.y / 100000,
-            //     ],
-            //     animationDuration: 0,
-            //     animationMode: 'flyTo',
-            //     zoomLevel: 17,
-            //   })
-
-            //   console.log('=> data', data)
-            //   console.log('=> lastCoordinate', lastCoordinate)
-            //   console.log('=> coordinates', coordinates)
-            // }}
-          />
-        </View>*/}
-        {started && <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />}
       </View>
     </View>
   )

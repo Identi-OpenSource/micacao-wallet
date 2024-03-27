@@ -5,8 +5,11 @@ import {Router} from './src/routers/Router'
 import {
   faAngleLeft,
   faAngleRight,
+  faArrowDown,
+  faArrowLeft,
   faArrowLeftLong,
   faArrowRight,
+  faArrowUp,
   faCircle,
   faCircleQuestion,
   faCircleUser,
@@ -36,6 +39,10 @@ function App(): React.JSX.Element {
   library.add(
     fab,
     faArrowLeftLong,
+    faArrowRight,
+    faArrowLeft,
+    faArrowUp,
+    faArrowDown,
     faTree,
     faAngleLeft,
     faAngleRight,
