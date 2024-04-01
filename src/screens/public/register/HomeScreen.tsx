@@ -10,7 +10,7 @@ import {Image, StyleSheet, Text, View} from 'react-native'
 import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
 import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
-
+import Logo from '../../../assets/svg/initMan.svg'
 import {useNavigation} from '@react-navigation/native'
 import {LABELS} from '../../../config/texts/labels'
 import {imgProd} from '../../../assets/imgs'
@@ -25,7 +25,7 @@ export const HomeScreen = () => {
 
   return (
     <SafeArea bg={'neutral'}>
-      <Image source={imgProd} style={styles.img} />
+      <Logo width={390} height={390} style={styles.svg} />
       <View style={styles.container}>
         <View style={styles.textContainer}>
           <Text style={[styles.textA]}>{TEXTS.textA}</Text>
@@ -74,5 +74,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     paddingBottom: verticalScale(MP_DF.xlarge),
+  },
+  svg: {
+    alignSelf: 'center',
   },
 })
