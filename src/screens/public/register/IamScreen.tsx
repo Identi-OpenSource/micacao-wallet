@@ -4,7 +4,7 @@
  * @summary : View of entry point of the application
  */
 
-import React from 'react'
+import React, { useContext } from 'react'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {
   Image,
@@ -34,20 +34,24 @@ import {
 import {Header} from './RegisterScreen'
 import {imgMan, imgWoman} from '../../../assets/imgs'
 import {GENDER} from '../../../config/const'
-import {storage} from '../../../config/store/db'
+import { UserDispatchContext } from '../../../states/UserContext'
 
 export const IamScreen = () => {
   const navigation = useNavigation()
+
+
   const cards = [
-    {
-      img: imgMan,
-      title: TEXTS.textAB,
-      value: GENDER.man,
-    },
     {
       img: imgWoman,
       title: TEXTS.textAC,
       value: GENDER.woman,
+      id: GENDER.id_woman,
+    },
+    {
+      img: imgMan,
+      title: TEXTS.textAB,
+      value: GENDER.man,
+      id: GENDER.id_man,
     },
   ]
   return (
@@ -55,7 +59,7 @@ export const IamScreen = () => {
       <View style={styles.container}>
         <Header navigation={navigation} title={TEXTS.textAA} />
         {cards.map((c, i) => (
-          <Card img={c.img} title={c.title} value={c.value} key={i} />
+          <Card img={c.img} title={c.title} value={c.value} key={i} id={c.id} />
         ))}
       </View>
     </SafeArea>
@@ -65,10 +69,24 @@ const Card = (props: {
   img: ImageSourcePropType
   title: string
   value: string
+  id: string
 }) => {
   const navigation = useNavigation()
+
+  const dispatch = useContext(UserDispatchContext);
+
+  const setGender = (newGender: string) => {
+    dispatch({
+      type: 'setGender',
+      payload: {
+        gender: newGender,
+      },
+    });
+  };
+
+  
   const submit = () => {
-    storage.set('user', JSON.stringify({gender: props.value}))
+    setGender(props.id)
     navigation.navigate('IamFromScreen')
   }
   return (
@@ -108,7 +126,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     alignItems: 'center',
     overflow: 'hidden',
-    borderColor: COLORS_DF.cacao,
+    borderColor: COLORS_DF.citrine_brown,
     borderWidth: 1,
   },
   titleCard: {
@@ -117,7 +135,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.large,
     fontWeight: 'bold',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     textAlign: 'center',
   },
   img: {

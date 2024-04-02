@@ -1,10 +1,10 @@
 import React, {createContext, useReducer} from 'react'
 
 export interface UserInterface {
-  name: string
-  dni: string
-  phone: string
-  pin: string
+  name?: string
+  dni?: string
+  phone?: string
+  pin?: string
   isLogin?: boolean
   parcel?: any[]
   syncUp?: boolean
@@ -31,7 +31,7 @@ export const userInicialState: UserInterface = {
   parcel: [],
 }
 
-export type UserActions = 'login' | 'logout' | 'getLogin'
+export type UserActions = 'login' | 'logout' | 'getLogin' | 'setGender'
 
 export interface userInicialState {
   type: UserActions
@@ -74,6 +74,13 @@ export const usersReducer = (user: UserInterface, action: ActionsInterface) => {
         ...user,
         ...action.payload,
         isLogin: true,
+      }
+    }
+
+    case 'setGender': {
+      return {
+        ...user,
+        gender: action.payload.gender,
       }
     }
     case 'logout': {

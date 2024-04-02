@@ -4,16 +4,15 @@
  * @summary : View of entry point of the application
  */
 
+import { useNavigation } from '@react-navigation/native'
 import React from 'react'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {Image, StyleSheet, Text, View} from 'react-native'
-import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
-import {Btn} from '../../../components/button/Button'
-import {TEXTS} from '../../../config/texts/texts'
+import { StyleSheet, Text, View } from 'react-native'
 import Logo from '../../../assets/svg/initMan.svg'
-import {useNavigation} from '@react-navigation/native'
-import {LABELS} from '../../../config/texts/labels'
-import {imgProd} from '../../../assets/imgs'
+import { Btn } from '../../../components/button/Button'
+import { SafeArea } from '../../../components/safe-area/SafeArea'
+import { LABELS } from '../../../config/texts/labels'
+import { TEXTS } from '../../../config/texts/texts'
+import { COLORS_DF, FONT_FAMILIES, MP_DF } from '../../../config/themes/default'
 import {
   horizontalScale,
   moderateScale,
@@ -24,7 +23,7 @@ export const HomeScreen = () => {
   const navigation = useNavigation()
 
   return (
-    <SafeArea bg={'neutral'}>
+    <SafeArea bg={'isabelline'}>
       <Logo width={390} height={390} style={styles.svg} />
       <View style={styles.container}>
         <View style={styles.textContainer}>
@@ -55,11 +54,11 @@ const styles = StyleSheet.create({
   },
   textContainer: {flex: 1},
   textA: {
-    fontFamily: FONT_FAMILIES.primary,
+    fontFamily: FONT_FAMILIES.bold,
     fontSize: moderateScale(32),
     fontWeight: '700',
     textAlign: 'center',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     paddingHorizontal: horizontalScale(MP_DF.large),
     paddingVertical: verticalScale(MP_DF.medium),
   },
@@ -68,7 +67,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(24),
     fontWeight: '500',
     textAlign: 'center',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
   },
   formBtn: {
     flex: 1,

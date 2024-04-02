@@ -4,8 +4,9 @@
  * @summary : View of entry point of the application
  */
 
-import React from 'react'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {useNavigation} from '@react-navigation/native'
+import React, {useContext, useEffect} from 'react'
 import {
   Image,
   ImageSourcePropType,
@@ -14,6 +15,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import {imgCO, imgPE} from '../../../assets/imgs'
+import {Iamfrom_m, Iamfrom_w} from '../../../assets/svg'
+import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {COUNTRY} from '../../../config/const'
+import {storage} from '../../../config/store/db'
+import {TEXTS} from '../../../config/texts/texts'
 import {
   BORDER_RADIUS_DF,
   BTN_THEME,
@@ -22,21 +29,17 @@ import {
   FONT_SIZES,
   MP_DF,
 } from '../../../config/themes/default'
-import {TEXTS} from '../../../config/texts/texts'
-import {useNavigation} from '@react-navigation/native'
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
+import {UsersContext} from '../../../states/UserContext'
 import {Header} from './RegisterScreen'
-import {imgCO, imgPE} from '../../../assets/imgs'
-import {COUNTRY} from '../../../config/const'
-import {storage} from '../../../config/store/db'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 
 export const IamFromScreen = () => {
   const navigation = useNavigation()
+  const user = useContext(UsersContext)
   const cards = [
     {
       img: imgCO,
@@ -49,10 +52,18 @@ export const IamFromScreen = () => {
       value: COUNTRY.peru,
     },
   ]
+
+  useEffect(() => {
+    console.log('user', user)
+  }, [])
+  
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={TEXTS.textAD} />
+        <Header navigation={navigation} title={""} />
+        {user.gender == 'M' && <Iamfrom_m />}
+        {user.gender == 'W' && <Iamfrom_w />}
+
         <View style={styles.bodyContainer}>
           {cards.map((c, i) => (
             <Card img={c.img} title={c.title} value={c.value} key={i} />
@@ -130,6 +141,7 @@ const styles = StyleSheet.create({
   icon: {
     flex: 1,
     alignItems: 'flex-end',
+    color: COLORS_DF.citrine_brown,
   },
   textA: {
     fontFamily: FONT_FAMILIES.primary,
