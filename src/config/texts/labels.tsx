@@ -1,5 +1,5 @@
 export const LABELS = {
-  createAccount: 'Crea tu cuenta personal',
+  createAccount: 'Comenzar Ahora',
   initial: 'INICIAR',
   email: 'Correo electrónico',
   registerDni: 'NUMERO DE DNI / CÉDULA',

@@ -10,6 +10,8 @@ export const REGEX = {
 export const GENDER = {
   man: 'Hombre',
   woman: 'Mujer',
+  id_woman: 'W',
+  id_man: 'M',
 }
 
 export const COUNTRY = {

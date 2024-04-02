@@ -25,6 +25,7 @@ export const COLORS_DF = {
   lightBrown: '#b38e6c',
   yellowBrown: '#be6426',
   darkBrown: '#733c18',
+  
   gray: '#929292',
   grayLight: '#ADADAD',
   black: '#404040',
@@ -37,11 +38,16 @@ export const COLORS_DF = {
   cacao: '#4A0000',
   greenAgrayu: '#BDEF12',
   greenAgrayuDisabled: '#F8FDE7',
+  //Nueva gama de colores
+  robin_egg_blue:'#178B83',
+  isabelline:'#F6EEEB',
+  citrine_brown:'#8F3B06'
 } as const
 
 export const FONT_FAMILIES = {
   primary: 'Inter-Medium',
   secondary: 'Inter-Regular',
+  bold:'Inter-Bold'
 } as const
 
 export const FONT_SIZES = {
@@ -93,7 +99,7 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
       CL = [COLORS_DF.warning, COLORS_DF.white]
       break
     case 'agrayu':
-      CL = [COLORS_DF.greenAgrayu, COLORS_DF.cacao]
+      CL = [COLORS_DF.robin_egg_blue, COLORS_DF.lightGray]
       break
     case 'agrayuDisabled':
       CL = [COLORS_DF.greenAgrayuDisabled, COLORS_DF.gray]
@@ -112,7 +118,7 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
       height: 62,
       justifyContent: 'center',
       backgroundColor: CL[0],
-      borderColor: theme !== 'transparent' ? CL[1] : null,
+      borderColor:COLORS_DF.robin_egg_blue,
       borderWidth: theme !== 'transparent' ? 2 : null,
       borderRadius: BORDER_RADIUS_DF.medium,
       flexDirection: 'row',
@@ -153,7 +159,7 @@ export const STYLE_BTN_ICON = (theme: BTN_THEME_ICON_DF) => {
 
   switch (theme) {
     case 'transparent':
-      CL = [COLORS_DF.transparent, COLORS_DF.cacao]
+      CL = [COLORS_DF.transparent, COLORS_DF.citrine_brown]
       break
     default:
       CL = [COLORS_DF.primary, COLORS_DF.secondary]
@@ -198,7 +204,7 @@ const STYLE_BTN_SMALL = (theme: BTN_THEME_DF) => {
       CL = [COLORS_DF.white, COLORS_DF.primary]
       break
     case 'agrayu':
-      CL = [COLORS_DF.greenAgrayu, COLORS_DF.cacao]
+      CL = [COLORS_DF.robin_egg_blue, COLORS_DF.cacao]
       break
     case 'agrayuDisabled':
       CL = [COLORS_DF.greenAgrayuDisabled, COLORS_DF.gray]

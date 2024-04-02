@@ -1,7 +1,7 @@
 export const TEXTS = {
   welcomeF: '¡BIENVENIDA!',
   welcomeM: '¡BIENVENIDO!',
-  textA: 'Conecta tu campo con el mundo',
+  textA: 'MiCacao',
   textB: 'Registra tu campo y gana más dinero por tu cosecha',
   textC: 'Paso 1 de 4',
   textD: 'Paso 2 de 4',
