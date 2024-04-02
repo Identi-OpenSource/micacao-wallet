@@ -231,13 +231,6 @@ export const Router = () => {
           />
           <Stack.Group>
             <Stack.Screen
-              name="PolygonScreen"
-              component={PolygonScreen}
-              options={{
-                title: 'Dibujar Parcela',
-              }}
-            />
-            <Stack.Screen
               name="DrawPolygonScreen"
               component={DrawPolygonScreen}
               options={{
@@ -362,14 +355,13 @@ const HomeStackPrivate = () => {
             title: LABELS.myParcels,
           }}
         />
-        {/*
         <HomeStack.Screen
-          name="DrawPolygonScreen"
-          component={DrawPolygonScreen}
+          name="PolygonScreen"
+          component={PolygonScreen}
           options={{
             title: 'Dibujar Parcela',
           }}
-        /> */}
+        />
         <HomeStack.Screen
           name="DrawPolyline"
           component={DrawPolyline}
@@ -391,7 +383,6 @@ const HomeStackPrivate = () => {
             title: 'Test Poligono Recorrer',
           }}
         />
-
         <HomeStack.Screen
           name="GradientLineRecorrerAdd"
           component={GradientLineRecorrerAdd}

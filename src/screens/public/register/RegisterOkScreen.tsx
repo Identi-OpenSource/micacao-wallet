@@ -11,7 +11,6 @@ import {
 import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
 import {Btn} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
-
 import {LABELS} from '../../../config/texts/labels'
 import {imgCheque} from '../../../assets/imgs'
 import {
@@ -21,102 +20,69 @@ import {
 } from '../../../config/themes/metrics'
 import {storage} from '../../../config/store/db'
 import {UserDispatchContext} from '../../../states/UserContext'
-import {useRealm} from '@realm/react'
-import {BSON} from 'realm'
-import {Users} from '../../../models/user'
+import {fundingWallet, newWallet} from '../../../OCC/occ'
+import CryptoJS from 'crypto-js'
+import Config from 'react-native-config'
 
 export const RegisterOkScreen = () => {
-  // const realm = useRealm()
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState({step: 0, msg: TEXTS.textH})
   const dispatch = useContext(UserDispatchContext)
-  const fadeAnim = useRef(new Animated.Value(0)).current
   const user = JSON.parse(storage.getString('user') || '{}')
-  const welcome = user.gender === 'M' ? TEXTS.welcomeM : TEXTS.welcomeF
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-  // Save data
   useEffect(() => {
-    storage.set('user', JSON.stringify({...user, isLogin: true}))
-    storage.set('syncUp', JSON.stringify({isSyncUp: true, lastSyncUp: 0}))
-    // realm.write(() => {
-    //   realm.create(Users, {
-    //     _id: new BSON.ObjectId(),
-    //     dni: user.dni,
-    //     gender: user.gender,
-    //     name: user.name,
-    //     phone: user.phone,
-    //     createdAt: new Date(),
-    //   })
-    // })
+    initial()
   }, [])
 
-  // Login
-  const isLogin = () => {
+  // Inicializa el proceso de registro
+  const initial = async () => {
+    await delay(1000)
+    setStep({step: 1, msg: 'Encriptando datos...'})
+    const dni = await certificateND(user.dni)
+    await delay(1000)
+    setStep({step: 2, msg: 'Guardando datos...'})
+    storage.set('user', JSON.stringify({...user, ...dni, isLogin: true}))
+    await delay(1000)
+    setStep({step: 3, msg: 'Creando wallet...'})
+    const wallet = newWallet()
+    await delay(1500)
+    setStep({step: 4, msg: 'Agregando fondos...'})
+    const funding = await fundingWallet(wallet.walletOFC)
+    const isFunding = funding.status === 200
+    storage.set('wallet', JSON.stringify({wallet, isFunding}))
+    await delay(2000)
+    setStep({step: 5, msg: 'Inicio de sesión...'})
+    await delay(1500)
     const login = JSON.parse(storage.getString('user') || '{}')
     dispatch({type: 'login', payload: login})
   }
 
-  // Animation
-  useEffect(() => {
-    if (step === 0) {
-      // Fade in
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 2000,
-        useNativeDriver: true,
-      }).start(() => {
-        // Fade out after fade in is complete
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 500,
-          delay: 1500,
-          useNativeDriver: true,
-        }).start(() => {
-          // nimero aleatorio ente 500 y 2500
-          setStep(1)
-        })
-      })
-    } else if (step === 1) {
-      fadeAnim.setValue(0)
-      // Fade in
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start()
-    }
-  }, [fadeAnim, step])
+  // Encripta el DNI
+  const certificateND = async (dni: string) => {
+    const paddedDNI = dni.padStart(16, '0')
+    const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
+    const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
+    const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+    })
+    const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
+    return {dni: hexResult.substr(0, 32), dniAll: hexResult}
+  }
 
   return (
     <SafeArea bg={'neutral'}>
-      {step === 0 && (
-        <>
-          <ActivityIndicator
-            size={moderateScale(86)}
-            color={COLORS_DF.cacao}
-            style={styles.indicador}
-          />
-          <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
-            <View style={styles.textContainer}>
-              <Text style={[styles.textA]}>{TEXTS.textG}</Text>
-              <Text style={[styles.textB]}>{TEXTS.textH}</Text>
-            </View>
-          </Animated.View>
-        </>
-      )}
-      {step === 1 && (
-        <>
-          <Image source={imgCheque} style={[styles.img, styles.indicador]} />
-          <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
-            <View style={styles.textContainer}>
-              <Text style={[styles.textA]}>{welcome}</Text>
-              <Text style={[styles.textB]}>{TEXTS.textJ}</Text>
-            </View>
-            <View style={styles.formBtn}>
-              <Btn title={LABELS.continue} theme="agrayu" onPress={isLogin} />
-            </View>
-          </Animated.View>
-        </>
-      )}
+      <ActivityIndicator
+        size={moderateScale(86)}
+        color={COLORS_DF.cacao}
+        style={styles.indicador}
+      />
+      <View style={[styles.container]}>
+        <View style={styles.textContainer}>
+          <Text style={[styles.textA]}>{TEXTS.textG}</Text>
+          <Text style={[styles.textB]}>{step.msg}</Text>
+        </View>
+      </View>
     </SafeArea>
   )
 }

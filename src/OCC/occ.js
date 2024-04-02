@@ -51,7 +51,6 @@ export const newWallet = () => {
 
 export const fundingWallet = async wallet => {
   const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
-  console.log('Funding Wallet', url)
   return await axios.get(url)
 }
 

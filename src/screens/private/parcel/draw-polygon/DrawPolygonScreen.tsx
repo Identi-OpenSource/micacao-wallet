@@ -104,14 +104,25 @@ export const DrawPolygonScreen = () => {
   const navigation = useNavigation()
 
   useEffect(() => {
+    // eliminar polygonTemp
+    //storage.delete('polygonTemp')
     // si existe el poligono dentro de la parcela
     if (parcel[0].polygon) {
       setCoordinates(parcel[0].polygon)
+    } else {
+      if (storage.getString('polygonTemp')) {
+        const coordinateTemp = JSON.parse(
+          storage.getString('polygonTemp') || '',
+        )
+        console.log('=> polygonTemp', coordinateTemp)
+        setCoordinates(coordinateTemp)
+      }
     }
   }, [])
 
   const coordinatesWithLast = useMemo(() => {
-    return [...coordinates, lastCoordinate]
+    const newCoordinates = [...coordinates, lastCoordinate]
+    return [...newCoordinates]
   }, [coordinates])
   const map = useRef<MapView>(null)
 
@@ -138,6 +149,7 @@ export const DrawPolygonScreen = () => {
       <View style={{flex: 1}}>
         <MapView
           ref={map}
+          // key={coordinates.length}
           styleURL={StyleURL.Satellite}
           scaleBarEnabled={false}
           rotateEnabled={false}
@@ -150,6 +162,7 @@ export const DrawPolygonScreen = () => {
               (e.geometry as GeoJSON.Point).coordinates[0],
               (e.geometry as GeoJSON.Point).coordinates[1],
             ] as Position
+            storage.set('polygonTemp', JSON.stringify([...coordinates, last]))
             setCoordinates([...coordinates, last])
           }}>
           {started && <Polygon coordinates={coordinatesWithLast} />}
@@ -160,16 +173,18 @@ export const DrawPolygonScreen = () => {
             }}
           />
           {coordinatesWithLast.map((c, i) => {
+            // buscar ultimo index en coordinates
+            const lastIndex = coordinates.length - 1
             return (
               <PointAnnotation
-                key={i.toString()}
+                key={i.toString() + coordinates.length}
                 id={i.toString()}
                 coordinate={[c[0], c[1]]}>
                 <View
                   style={{
                     height: 10,
                     width: 10,
-                    backgroundColor: 'white',
+                    backgroundColor: lastIndex === i ? 'red' : 'white',
                     borderRadius: 5,
                   }}
                 />

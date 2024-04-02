@@ -19,7 +19,19 @@ export const PolygonScreen = () => {
           ¡Dibuja tu parcela y gana más dinero por tu cosecha!
         </Text>
         <Btn
-          title="Dibujar parcela"
+          title="Dibuja tu parcela"
+          onPress={() => navigation.navigate('DrawPolygonScreen')}
+          theme="agrayu"
+        />
+        <View style={styles.space} />
+        <Btn
+          title="Recorre tu parcela"
+          onPress={() => navigation.navigate('DrawPolygonScreen')}
+          theme="agrayu"
+        />
+        <View style={styles.space} />
+        <Btn
+          title="Juega y dibujar tu parcela"
           onPress={() => navigation.navigate('DrawPolygonScreen')}
           theme="agrayu"
         />
@@ -42,5 +54,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: MP_DF.xlarge,
     marginTop: MP_DF.xlarge,
+  },
+  space: {
+    height: MP_DF.large,
   },
 })
