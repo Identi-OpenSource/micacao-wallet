@@ -4,8 +4,8 @@
  * @summary : View of entry point of the application
  */
 
-import React, { useContext } from 'react'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
+import React, { useContext } from "react";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
 import {
   Image,
   ImageSourcePropType,
@@ -13,7 +13,7 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native'
+} from "react-native";
 import {
   BORDER_RADIUS_DF,
   BTN_THEME,
@@ -22,23 +22,22 @@ import {
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
-} from '../../../config/themes/default'
-import {TEXTS} from '../../../config/texts/texts'
+} from "../../../config/themes/default";
+import { TEXTS } from "../../../config/texts/texts";
 
-import {useNavigation} from '@react-navigation/native'
+import { useNavigation } from "@react-navigation/native";
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
-} from '../../../config/themes/metrics'
-import {Header} from './RegisterScreen'
-import {imgMan, imgWoman} from '../../../assets/imgs'
-import {GENDER} from '../../../config/const'
-import { UserDispatchContext } from '../../../states/UserContext'
+} from "../../../config/themes/metrics";
+import { Header } from "./RegisterScreen";
+import { imgMan, imgWoman } from "../../../assets/imgs";
+import { GENDER } from "../../../config/const";
+import { UserDispatchContext } from "../../../states/UserContext";
 
 export const IamScreen = () => {
-  const navigation = useNavigation()
-
+  const navigation = useNavigation();
 
   const cards = [
     {
@@ -53,7 +52,7 @@ export const IamScreen = () => {
       value: GENDER.man,
       id: GENDER.id_man,
     },
-  ]
+  ];
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
@@ -63,44 +62,44 @@ export const IamScreen = () => {
         ))}
       </View>
     </SafeArea>
-  )
-}
+  );
+};
 const Card = (props: {
-  img: ImageSourcePropType
-  title: string
-  value: string
-  id: string
+  img: ImageSourcePropType;
+  title: string;
+  value: string;
+  id: string;
 }) => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const dispatch = useContext(UserDispatchContext);
 
   const setGender = (newGender: string) => {
     dispatch({
-      type: 'setGender',
+      type: "setGender",
       payload: {
         gender: newGender,
       },
     });
   };
 
-  
   const submit = () => {
-    setGender(props.id)
-    navigation.navigate('IamFromScreen')
-  }
+    setGender(props.id);
+    navigation.navigate("StartScreen");
+  };
   return (
     <View style={styles.bodyCardContainerFull}>
       <TouchableOpacity
         onPress={submit}
         style={styles.bodyCard}
-        activeOpacity={BTN_THEME.primary?.const?.opacity}>
+        activeOpacity={BTN_THEME.primary?.const?.opacity}
+      >
         <Image source={props.img} style={styles.img} />
         <Text style={styles.titleCard}>{props.title}</Text>
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -108,12 +107,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: horizontalScale(MP_DF.large),
   },
   bodyContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginTop: MP_DF.large,
   },
   bodyCardContainerFull: {
-    width: '100%',
+    width: "100%",
     padding: MP_DF.small,
     marginTop: MP_DF.large,
   },
@@ -124,8 +123,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS_DF.white,
     borderRadius: BORDER_RADIUS_DF.medium,
     elevation: 5,
-    alignItems: 'center',
-    overflow: 'hidden',
+    alignItems: "center",
+    overflow: "hidden",
     borderColor: COLORS_DF.citrine_brown,
     borderWidth: 1,
   },
@@ -134,21 +133,21 @@ const styles = StyleSheet.create({
     marginTop: MP_DF.medium,
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.large,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS_DF.citrine_brown,
-    textAlign: 'center',
+    textAlign: "center",
   },
   img: {
     width: horizontalScale(100),
     height: verticalScale(100),
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
-  textContainer: {flex: 1},
+  textContainer: { flex: 1 },
   textA: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(32),
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
     color: COLORS_DF.cacao,
     paddingHorizontal: horizontalScale(MP_DF.large),
     paddingVertical: verticalScale(MP_DF.medium),
@@ -156,13 +155,13 @@ const styles = StyleSheet.create({
   textB: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(24),
-    fontWeight: '500',
-    textAlign: 'center',
+    fontWeight: "500",
+    textAlign: "center",
     color: COLORS_DF.cacao,
   },
   formBtn: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     paddingBottom: verticalScale(MP_DF.xlarge),
   },
-})
+});
