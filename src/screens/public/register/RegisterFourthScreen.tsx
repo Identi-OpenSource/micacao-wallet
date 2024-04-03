@@ -4,59 +4,64 @@
  * @summary : Register screen of the application
  */
 
-import React from 'react'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {View} from 'react-native'
-import {Btn} from '../../../components/button/Button'
-import {TEXTS} from '../../../config/texts/texts'
-import {Field, Formik} from 'formik'
+import React, { useContext } from "react";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { View } from "react-native";
+import { UsersContext } from "../../../states/UserContext";
+import { Btn } from "../../../components/button/Button";
+import { TEXTS } from "../../../config/texts/texts";
+import { Field, Formik } from "formik";
 import {
   INIT_VALUES_FOURTH,
   INPUTS_FOURTH,
   InterfaceFourth,
   SCHEMA_FOURTH,
-} from './Interfaces'
-import {LABELS} from '../../../config/texts/labels'
-import {styles} from './styles'
-import {ScreenProps} from '../../../routers/Router'
-import {Header} from './RegisterScreen'
-import {storage} from '../../../config/store/db'
-import {sha256} from 'react-native-sha256'
-
+} from "./Interfaces";
+import { LABELS } from "../../../config/texts/labels";
+import { styles } from "./styles";
+import { ScreenProps } from "../../../routers/Router";
+import { Header } from "./RegisterScreen";
+import { storage } from "../../../config/store/db";
+import { sha256 } from "react-native-sha256";
+import { Password_M, Password_W } from "../../../assets/svg";
 export const RegisterFourthScreen = ({
   navigation,
-}: ScreenProps<'RegisterFourthScreen'>) => {
+}: ScreenProps<"RegisterFourthScreen">) => {
   const submit = (values: InterfaceFourth) => {
     sha256(values.pin)
-      .then(pinHash => {
-        storage.set('security', JSON.stringify({pin: pinHash}))
-        navigation.navigate('RegisterOkScreen')
+      .then((pinHash) => {
+        storage.set("security", JSON.stringify({ pin: pinHash }));
+        navigation.navigate("RegisterOkScreen");
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }
-
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const user = useContext(UsersContext);
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={TEXTS.textF} />
+        <Header navigation={navigation} title={""} />
+        {user.gender == "M" && <Password_M />}
+        {user.gender == "W" && <Password_W />}
+
         <Formik
           initialValues={INIT_VALUES_FOURTH}
-          onSubmit={values => submit(values)}
-          validationSchema={SCHEMA_FOURTH}>
-          {({handleSubmit, isValid, dirty}) => (
+          onSubmit={(values) => submit(values)}
+          validationSchema={SCHEMA_FOURTH}
+        >
+          {({ handleSubmit, isValid, dirty }) => (
             <>
               <View style={styles.formContainer}>
                 <View style={styles.formInput}>
-                  {INPUTS_FOURTH.map(i => (
+                  {INPUTS_FOURTH.map((i) => (
                     <Field key={i.name} {...i} />
                   ))}
                 </View>
                 <View style={styles.formBtn}>
                   <Btn
                     title={LABELS.confirm}
-                    theme={isValid && dirty ? 'agrayu' : 'agrayuDisabled'}
+                    theme={isValid && dirty ? "agrayu" : "agrayuDisabled"}
                     onPress={handleSubmit}
                     disabled={!isValid || !dirty}
                   />
@@ -67,5 +72,5 @@ export const RegisterFourthScreen = ({
         </Formik>
       </View>
     </SafeArea>
-  )
-}
+  );
+};

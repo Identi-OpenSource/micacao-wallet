@@ -10,3 +10,5 @@ export { default as Name_M } from "./name_M.svg";
 export { default as Name_W } from "./name_W.svg";
 export { default as Cellphone_M } from "./cellphone_M.svg";
 export { default as Cellphone_W } from "./cellphone_W.svg";
+export { default as Password_M } from "./password_M.svg";
+export { default as Password_W } from "./password_W.svg";
