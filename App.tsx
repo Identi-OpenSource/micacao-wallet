@@ -11,12 +11,16 @@ import {
   faArrowRight,
   faArrowUp,
   faCircle,
+  faCirclePause,
+  faCirclePlay,
   faCircleQuestion,
   faCircleUser,
+  faDeleteLeft,
   faExclamation,
   faHandPointer,
   faHouse,
   faRotate,
+  faTrash,
   faTree,
   faUser,
 } from '@fortawesome/free-solid-svg-icons'
@@ -57,6 +61,10 @@ function App(): React.JSX.Element {
     faExclamation,
     faExclamationTriangle,
     faHandPointer,
+    faTrash,
+    faDeleteLeft,
+    faCirclePlay,
+    faCirclePause,
   )
 
   // useEffect(() => {

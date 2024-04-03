@@ -19,20 +19,14 @@ export const PolygonScreen = () => {
           ¡Dibuja tu parcela y gana más dinero por tu cosecha!
         </Text>
         <Btn
-          title="Dibuja tu parcela"
-          onPress={() => navigation.navigate('DrawPolygonScreen')}
-          theme="agrayu"
-        />
-        <View style={styles.space} />
-        <Btn
           title="Recorre tu parcela"
-          onPress={() => navigation.navigate('DrawPolygonScreen')}
+          onPress={() => navigation.navigate('GradientLineRecorrer')}
           theme="agrayu"
         />
         <View style={styles.space} />
         <Btn
-          title="Juega y dibujar tu parcela"
-          onPress={() => navigation.navigate('DrawPolygonScreen')}
+          title="Dibuja tu parcela"
+          onPress={() => navigation.navigate('PoligonJoystick')}
           theme="agrayu"
         />
       </View>

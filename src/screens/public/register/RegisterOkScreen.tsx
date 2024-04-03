@@ -47,7 +47,9 @@ export const RegisterOkScreen = () => {
     const wallet = newWallet()
     await delay(1500)
     setStep({step: 4, msg: 'Agregando fondos...'})
-    const funding = await fundingWallet(wallet.walletOFC)
+    const funding = await fundingWallet(wallet.walletOFC).catch(() => ({
+      status: 500,
+    }))
     const isFunding = funding.status === 200
     storage.set('wallet', JSON.stringify({wallet, isFunding}))
     await delay(2000)

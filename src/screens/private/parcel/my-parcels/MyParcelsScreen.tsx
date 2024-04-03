@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, {useCallback, useContext, useState} from 'react'
 import {Image, StyleSheet, Text, View} from 'react-native'
 import {SafeArea} from '../../../../components/safe-area/SafeArea'
 import {
@@ -14,10 +14,18 @@ import {
 } from '../../../../config/themes/default'
 import {imgCampo} from '../../../../assets/imgs'
 import {Btn} from '../../../../components/button/Button'
-import {useNavigation} from '@react-navigation/native'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {storage} from '../../../../config/store/db'
 export const MyParcelsScreen = () => {
-  const parcels: Parcel[] = JSON.parse(storage.getString('parcels') || '[]')
+  const [parcels, setParcels] = useState([] as Parcel[])
+
+  useFocusEffect(
+    useCallback(() => {
+      const parc: Parcel[] = JSON.parse(storage.getString('parcels') || '[]')
+      setParcels(parc)
+    }, []),
+  )
+
   return (
     <SafeArea>
       <View style={styles.container}>
