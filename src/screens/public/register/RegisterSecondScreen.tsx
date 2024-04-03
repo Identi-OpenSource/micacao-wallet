@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { View } from "react-native";
 import { Btn } from "../../../components/button/Button";
 import { TEXTS } from "../../../config/texts/texts";
+import { UsersContext } from "../../../states/UserContext";
 import { Field, Formik } from "formik";
 import {
   INIT_VALUES_TWO,
@@ -15,22 +16,27 @@ import { styles } from "./styles";
 import { ScreenProps } from "../../../routers/Router";
 import { Header } from "./RegisterScreen";
 import { storage } from "../../../config/store/db";
-
+import { Cellphone_M, Cellphone_W } from "../../../assets/svg";
 export const RegisterSecondScreen = ({
   navigation,
 }: ScreenProps<"RegisterSecondScreen">) => {
-  const user = JSON.parse(storage.getString("user") || "{}");
+  const user = useContext(UsersContext);
+  const storedUser = JSON.parse(storage.getString("user") || "{}");
+
+  const userInfo = Object.keys(storedUser).length > 0 ? storedUser : user;
 
   const submit = (values: InterfaceTwo) => {
-    const phone = user?.country?.phoneCode + "-" + values.phone;
-    storage.set("user", JSON.stringify({ ...user, phone }));
+    const phone = userInfo?.country?.phoneCode + "-" + values.phone;
+    storage.set("user", JSON.stringify({ ...userInfo, phone }));
     navigation.navigate("RegisterThirdScreen");
   };
 
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={TEXTS.textD} />
+        <Header navigation={navigation} title={""} />
+        {user.gender == "M" && <Cellphone_M />}
+        {user.gender == "W" && <Cellphone_W />}
         <Formik
           initialValues={INIT_VALUES_TWO}
           onSubmit={(values) => submit(values)}
@@ -40,7 +46,7 @@ export const RegisterSecondScreen = ({
             <>
               <View style={styles.formContainer}>
                 <View style={styles.formInput}>
-                  {INPUTS_TWO(user?.country?.phoneCode).map((i) => (
+                  {INPUTS_TWO(userInfo?.country?.phoneCode).map((i) => (
                     <Field key={i.name} {...i} />
                   ))}
                 </View>
