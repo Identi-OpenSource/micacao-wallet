@@ -1,11 +1,7 @@
-import React, {useCallback, useContext, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import {Image, StyleSheet, Text, View} from 'react-native'
 import {SafeArea} from '../../../../components/safe-area/SafeArea'
-import {
-  Parcel,
-  UserInterface,
-  UsersContext,
-} from '../../../../states/UserContext'
+import {Parcel} from '../../../../states/UserContext'
 import {
   COLORS_DF,
   FONT_FAMILIES,
@@ -14,9 +10,10 @@ import {
 } from '../../../../config/themes/default'
 import {imgCampo} from '../../../../assets/imgs'
 import {Btn} from '../../../../components/button/Button'
-import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import {useNavigation, useFocusEffect} from '@react-navigation/native'
 import {storage} from '../../../../config/store/db'
 export const MyParcelsScreen = () => {
+  const navigation = useNavigation()
   const [parcels, setParcels] = useState([] as Parcel[])
 
   useFocusEffect(
@@ -29,15 +26,14 @@ export const MyParcelsScreen = () => {
   return (
     <SafeArea>
       <View style={styles.container}>
-        {parcels.map(parcel => CardParcel(parcel))}
+        {parcels.map(parcel => CardParcel(parcel, navigation))}
       </View>
     </SafeArea>
   )
 }
 
-const CardParcel = (props: Parcel) => {
-  const navigation = useNavigation()
-  const user: UserInterface = useContext(UsersContext)
+const CardParcel = (props: Parcel, navigation: any) => {
+  //  const user: UserInterface = useContext(UsersContext)
 
   const certificateND = async () => {}
 
