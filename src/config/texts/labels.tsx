@@ -10,7 +10,7 @@ export const LABELS = {
   nameParcel: "¿NOMBRE DE TU PARCELA?",
   hectaresParcel: "¿NÚMERO DE HECTÁREAS?",
   nameRegister: "Escribe tu nombre completo",
-  next: "SIGUIENTE",
+  next: "Siguiente",
   imAlreadyEntrance: "ESTOY EN LA ENTRADA",
   capturePhoto: "TOMAR FOTOGRAFÍA",
   imAlreadyCenter: "ESTOY EN EL CENTRO",
