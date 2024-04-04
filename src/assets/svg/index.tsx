@@ -12,3 +12,7 @@ export { default as Cellphone_M } from "./cellphone_M.svg";
 export { default as Cellphone_W } from "./cellphone_W.svg";
 export { default as Password_M } from "./password_M.svg";
 export { default as Password_W } from "./password_W.svg";
+export { default as Hectare_M } from "./hectare_M.svg";
+export { default as Hectare_W } from "./hectare_W.svg";
+export { default as Parcel_Name_M } from "./parcel_Name_M.svg";
+export { default as Parcel_Name_W } from "./parcel_Name_W.svg";
