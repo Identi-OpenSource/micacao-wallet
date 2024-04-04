@@ -55,17 +55,12 @@ export const HomeProvScreen = () => {
   // const [TGFW, setTokenGFW] = useState(null)
   // const [apiKeyGFW, setApiKeyGFW] = useState(null)
   // const users = useQuery(Users)
-
   // const [wa, setWa] = useState(null) as any
-
-  // console.log('users', users)
 
   useFocusEffect(
     useCallback(() => {
       // verifySyncUp()
-      // if not parcels, go to register parcel
       // const usesr = JSON.parse(storage.getString('user') || '[]')
-      // console.log(usesr)
       const parcels = JSON.parse(storage.getString('parcels') || '[]')
       if (parcels.length === 0) {
         setTimeout(() => {

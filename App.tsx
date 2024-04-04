@@ -17,8 +17,14 @@ import {
   faCircleUser,
   faDeleteLeft,
   faExclamation,
+  faFloppyDisk,
+  faHand,
   faHandPointer,
   faHouse,
+  faMinus,
+  faPersonWalkingArrowLoopLeft,
+  faPersonWalkingArrowRight,
+  faPlus,
   faRotate,
   faTrash,
   faTree,
@@ -65,6 +71,12 @@ function App(): React.JSX.Element {
     faDeleteLeft,
     faCirclePlay,
     faCirclePause,
+    faPersonWalkingArrowRight,
+    faPersonWalkingArrowLoopLeft,
+    faHand,
+    faPlus,
+    faMinus,
+    faFloppyDisk,
   )
 
   // useEffect(() => {

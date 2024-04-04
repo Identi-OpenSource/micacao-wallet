@@ -211,7 +211,7 @@ const STYLE_BTN_SMALL = (theme: BTN_THEME_DF) => {
   return {
     containerPrincipal: {
       flex: 1,
-      alignItems: 'flex-end',
+      alignItems: 'center',
     },
     container: {
       height: 34,

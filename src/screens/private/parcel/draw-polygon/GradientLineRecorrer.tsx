@@ -6,7 +6,7 @@ import {
   ShapeSource,
   StyleURL,
 } from '@rnmapbox/maps'
-import {Alert, Button, View} from 'react-native'
+import {Alert, View} from 'react-native'
 import React, {
   useState,
   useRef,
@@ -17,87 +17,11 @@ import React, {
 } from 'react'
 import {storage} from '../../../../config/store/db'
 import Geolocation from 'react-native-geolocation-service'
-import {Btn, BtnIcon, BtnSmall} from '../../../../components/button/Button'
+import {Btn, BtnIcon} from '../../../../components/button/Button'
 import {useNavigation} from '@react-navigation/native'
-import {MP_DF} from '../../../../config/themes/default'
-import {BTN_THEME} from '../../../../components/button/interfaces'
+import {COLORS_DF, MP_DF} from '../../../../config/themes/default'
 
 type Position = [number, number]
-
-type CrosshairProps = {
-  size: number
-  w: number
-  onLayout: ComponentProps<typeof View>['onLayout']
-}
-const Crosshair = forwardRef<View, CrosshairProps>(
-  ({size, w, onLayout}: CrosshairProps, ref) => (
-    <View
-      onLayout={onLayout}
-      ref={ref}
-      style={{
-        width: 2 * size + 1,
-        height: 2 * size + 1,
-      }}>
-      <View
-        style={{
-          position: 'absolute',
-          left: size,
-          top: 0,
-          bottom: 0,
-          borderColor: 'white',
-          borderWidth: w,
-        }}
-      />
-      <View
-        style={{
-          position: 'absolute',
-          top: size,
-          left: 0,
-          right: 0,
-          borderColor: 'white',
-          borderWidth: w,
-        }}
-      />
-    </View>
-  ),
-)
-
-const CrosshairOverlay = ({
-  onCenter,
-}: {
-  onCenter: (x: [number, number]) => void
-}) => {
-  const ref = useRef<View>(null)
-
-  if (ref.current != null) {
-    // console.log('=> ref.current', ref.current != null)
-  }
-  return (
-    <View
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 100,
-        alignContent: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      pointerEvents="none">
-      <Crosshair
-        size={20}
-        w={1.0}
-        ref={ref}
-        onLayout={e => {
-          const {x, y, width, height} = e.nativeEvent.layout
-          onCenter([x + width / 2.0, y + height / 2.0])
-        }}
-      />
-    </View>
-  )
-}
 
 const lineLayerStyle = {
   lineColor: '#fff',
@@ -136,15 +60,13 @@ const GradientLineRecorrer = () => {
     Number(parcel[0].firstPoint[0]),
   ] as Position
   const [coordinates, setCoordinates] = useState<Position[]>([firstPoint])
-  const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
   const [cam, setCam] = useState<Position>(firstPoint)
   const [started, setStarted] = useState(false)
-  const [crosshairPos, setCrosshairPos] = useState(firstPoint)
   const navigation = useNavigation()
 
   const coordinatesWithLast = useMemo(() => {
-    return [...coordinates, lastCoordinate]
-  }, [coordinates, lastCoordinate])
+    return [...coordinates]
+  }, [coordinates])
 
   const map = useRef<MapView>(null)
 
@@ -184,7 +106,7 @@ const GradientLineRecorrer = () => {
   useEffect(() => {
     // eliminar polygonTemp
     // storage.delete('polygonTemp')
-    // si existe el poligono dentro de la parcela
+
     if (parcel[0].polygon) {
       setCoordinates(parcel[0].polygon)
     } else {
@@ -192,7 +114,6 @@ const GradientLineRecorrer = () => {
         const coordinateTemp = JSON.parse(
           storage.getString('polygonTemp') || '',
         )
-        console.log('=> polygonTemp', coordinateTemp)
         setCoordinates(coordinateTemp)
       }
     }
@@ -206,7 +127,7 @@ const GradientLineRecorrer = () => {
     // Guardar en la lista de polígonos
     const newParcel = {
       ...parcel[0],
-      polygon: coordinatesWithLast,
+      polygon: [...coordinatesWithLast, coordinatesWithLast[0]],
     }
     storage.set('parcels', JSON.stringify([newParcel]))
     storage.delete('polygonTemp')
@@ -226,7 +147,15 @@ const GradientLineRecorrer = () => {
   return (
     <View style={{flex: 1}}>
       <View style={{flex: 1}}>
-        <MapView ref={map} styleURL={StyleURL.Satellite} style={{flex: 1}}>
+        <MapView
+          ref={map}
+          styleURL={StyleURL.Satellite}
+          style={{flex: 1}}
+          scaleBarEnabled={false}
+          rotateEnabled={false}
+          attributionEnabled={false}
+          compassEnabled={false}
+          logoEnabled={false}>
           {<Polygon coordinates={coordinatesWithLast} />}
           {coordinatesWithLast.map((c, i) => {
             // buscar ultimo index en coordinates
@@ -272,16 +201,18 @@ const GradientLineRecorrer = () => {
             }}>
             <BtnIcon
               theme={'transparent'}
-              icon={!started ? 'circle-play' : 'circle-pause'}
-              size={36}
+              icon={!started ? 'person-walking-arrow-right' : 'hand'}
+              size={48}
+              iconColor={COLORS_DF.greenAgrayu}
               onPress={() => {
                 !started ? setStarted(true) : setStarted(false)
               }}
             />
             <BtnIcon
               theme={'transparent'}
-              icon={'delete-left'}
-              size={36}
+              icon={'person-walking-arrow-loop-left'}
+              size={48}
+              iconColor={COLORS_DF.greenAgrayu}
               onPress={() => {
                 deletePoint()
               }}
@@ -299,25 +230,3 @@ const GradientLineRecorrer = () => {
 }
 
 export default GradientLineRecorrer
-
-/* end-example-doc */
-
-/** @type ExampleWithMetadata['metadata'] */
-const metadata = {
-  title: 'Draw Polyline',
-  tags: [
-    'LineLayer',
-    'ShapeSource',
-    'onCameraChanged',
-    'getCoordinateFromView',
-    'Overlay',
-  ],
-  docs: `This example shows a simple polyline editor. It uses \`onCameraChanged\` to get the center of the map and \`getCoordinateFromView\` 
-  to get the coordinates of the crosshair.
-  
-  The crosshair is an overlay that is positioned using \`onLayout\` and \`getCoordinateFromView\`.
-  
-  The \`ShapeSource\` is updated with the new coordinates and the \`LineLayer\` is updated with the new coordinates.`,
-}
-
-GradientLineRecorrer.metadata = metadata
