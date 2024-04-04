@@ -4,8 +4,6 @@
  * @summary : View of entry point of the application
  */
 
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useNavigation } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Image,
@@ -15,12 +13,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { imgCO, imgPE } from "../../../assets/imgs";
-import { Iamfrom_m, Iamfrom_w } from "../../../assets/svg";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/native";
+import { Card, CheckBox } from "@rneui/themed";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { Btn } from "../../../components/button/Button";
+import { Iamfrom_m, Iamfrom_w } from "../../../assets/svg";
+import { imgCO, imgPE } from "../../../assets/imgs";
 import { COUNTRY } from "../../../config/const";
 import { storage } from "../../../config/store/db";
-import { TEXTS } from "../../../config/texts/texts";
 import { LABELS } from "../../../config/texts/labels";
 import {
   BORDER_RADIUS_DF,
@@ -37,12 +38,19 @@ import {
 } from "../../../config/themes/metrics";
 import { UsersContext } from "../../../states/UserContext";
 import { Header } from "./RegisterScreen";
-import { Btn } from "../../../components/button/Button";
-import { Card, CheckBox } from "@rneui/themed";
 
-export const IamFromScreen = () => {
+interface CardProps {
+  img: ImageSourcePropType;
+  title: string;
+  value: object;
+  selectedCountry: object | null;
+  handleCountrySelection: (value: object) => void;
+}
+
+export const IamFromScreen: React.FC = () => {
   const navigation = useNavigation();
   const user = useContext(UsersContext);
+  const [selectedCountry, setSelectedCountry] = useState<object | null>(null);
 
   const cards = [
     {
@@ -61,42 +69,57 @@ export const IamFromScreen = () => {
     console.log("user", user);
   }, []);
 
+  const handleCountrySelection = (countryValue: object) => {
+    setSelectedCountry(countryValue);
+  };
+
+  const submit = () => {
+    const user = JSON.parse(storage.getString("user") || "{}");
+    storage.set("user", JSON.stringify({ ...user, country: selectedCountry }));
+    navigation.navigate("RegisterScreen");
+  };
+
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
         <Header navigation={navigation} title={""} />
-        {user.gender == "M" && <Iamfrom_m />}
-        {user.gender == "W" && <Iamfrom_w />}
+        {user.gender === "M" && <Iamfrom_m />}
+        {user.gender === "W" && <Iamfrom_w />}
 
         <View style={styles.bodyContainer}>
           {cards.map((c, i) => (
-            <Card1 img={c.img} title={c.title} value={c.value} key={i} />
+            <Card1
+              img={c.img}
+              title={c.title}
+              value={c.value}
+              key={i}
+              selectedCountry={selectedCountry}
+              handleCountrySelection={handleCountrySelection}
+            />
           ))}
         </View>
         <View style={styles.formBtn}>
           <Btn
             title={LABELS.continue}
             theme="agrayu"
-            onPress={() => navigation.navigate("RegisterScreen")}
+            onPress={submit}
+            disabled={!selectedCountry}
           />
         </View>
       </View>
     </SafeArea>
   );
 };
-const Card1 = (props: {
-  img: ImageSourcePropType;
-  title: string;
-  value: object;
+
+const Card1: React.FC<CardProps> = ({
+  img,
+  title,
+  value,
+  selectedCountry,
+  handleCountrySelection,
 }) => {
   const navigation = useNavigation();
-  const [isChecked, setIsChecked] = useState(false);
 
-  const submit = () => {
-    const user = JSON.parse(storage.getString("user") || "{}");
-    storage.set("user", JSON.stringify({ ...user, country: props.value }));
-    navigation.navigate("RegisterScreen");
-  };
   return (
     <View style={styles.bodyCardContainerFull}>
       <View style={{ alignItems: "center" }}>
@@ -104,26 +127,30 @@ const Card1 = (props: {
           containerStyle={{
             borderRadius: 10,
             width: "100%",
-            borderColor: !isChecked ? "transparent" : "#ff5722",
+            borderColor: selectedCountry === value ? "#ff5722" : "transparent",
           }}
         >
-          <View
-            style={{ flexDirection: "row", alignItems: "center", height: 60 }}
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              height: 60,
+            }}
+            onPress={() => handleCountrySelection(value)}
           >
-            <Image source={props.img} style={styles.img} />
-            <Text style={styles.titleCard}>{props.title}</Text>
-
+            <Image source={img} style={styles.img} />
+            <Text style={styles.titleCard}>{title}</Text>
             <View style={styles.icon}>
               <CheckBox
                 containerStyle={{}}
-                checked={isChecked}
-                onPress={() => setIsChecked(!isChecked)}
+                checked={selectedCountry === value}
                 checkedIcon="dot-circle-o"
                 uncheckedIcon="circle-o"
                 checkedColor="#ff5722"
+                onPress={() => handleCountrySelection(value)}
               />
             </View>
-          </View>
+          </TouchableOpacity>
         </Card>
       </View>
     </View>
@@ -176,7 +203,6 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(32),
     fontWeight: "700",
     textAlign: "center",
-
     color: COLORS_DF.cacao,
     paddingHorizontal: horizontalScale(MP_DF.large),
     paddingVertical: verticalScale(MP_DF.medium),
@@ -194,3 +220,5 @@ const styles = StyleSheet.create({
     paddingBottom: verticalScale(MP_DF.xlarge),
   },
 });
+
+export default IamFromScreen;

@@ -6,13 +6,14 @@
 
 import { useNavigation } from "@react-navigation/native";
 import { Field, Formik } from "formik";
-import React from "react";
+import React, { useContext } from "react";
 import { Text, View } from "react-native";
 import { Btn, BtnIcon } from "../../../components/button/Button";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { storage } from "../../../config/store/db";
 import { LABELS } from "../../../config/texts/labels";
 import { moderateScale } from "../../../config/themes/metrics";
+import { UsersContext } from "../../../states/UserContext";
 import {
   INIT_VALUES_ONE,
   INPUTS_ONE,
@@ -21,7 +22,7 @@ import {
   SCHEMA_ONE,
 } from "./Interfaces";
 import { styles } from "./styles";
-
+import { Dni_M, Dni_W } from "../../../assets/svg";
 export const RegisterScreen = () => {
   const navigation = useNavigation();
 
@@ -30,11 +31,13 @@ export const RegisterScreen = () => {
     storage.set("user", JSON.stringify({ ...user, ...values }));
     navigation.navigate("RegisterSecondScreen");
   };
-
+  const user = useContext(UsersContext);
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
         <Header navigation={navigation} title={""} />
+        {user.gender == "M" && <Dni_M />}
+        {user.gender == "W" && <Dni_W />}
         <Formik
           initialValues={INIT_VALUES_ONE}
           onSubmit={(values) => submit(values)}

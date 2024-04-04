@@ -16,3 +16,5 @@ export { default as Hectare_M } from "./hectare_M.svg";
 export { default as Hectare_W } from "./hectare_W.svg";
 export { default as Parcel_Name_M } from "./parcel_Name_M.svg";
 export { default as Parcel_Name_W } from "./parcel_Name_W.svg";
+export { default as Dni_M } from "./dni_M.svg";
+export { default as Dni_W } from "./dni_W.svg";
