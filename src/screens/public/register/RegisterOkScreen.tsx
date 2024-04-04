@@ -3,6 +3,7 @@ import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {
   ActivityIndicator,
   Animated,
+  Dimensions,
   Image,
   StyleSheet,
   Text,
@@ -20,9 +21,13 @@ import {
 } from '../../../config/themes/metrics'
 import {storage} from '../../../config/store/db'
 import {UserDispatchContext} from '../../../states/UserContext'
+import geoViewport from '@mapbox/geo-viewport'
 import {fundingWallet, newWallet} from '../../../OCC/occ'
 import CryptoJS from 'crypto-js'
 import Config from 'react-native-config'
+import Mapbox from '@rnmapbox/maps'
+Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
+const {width, height} = Dimensions.get('window')
 
 export const RegisterOkScreen = () => {
   const [step, setStep] = useState({step: 0, msg: TEXTS.textH})
@@ -53,7 +58,10 @@ export const RegisterOkScreen = () => {
     const isFunding = funding.status === 200
     storage.set('wallet', JSON.stringify({wallet, isFunding}))
     await delay(2000)
-    setStep({step: 5, msg: 'Inicio de sesión...'})
+    setStep({step: 5, msg: 'Descargando mapa...'})
+    descargarMapaTarapoto()
+    await delay(1000)
+    setStep({step: 6, msg: 'Inicio de sesión...'})
     await delay(1500)
     const login = JSON.parse(storage.getString('user') || '{}')
     dispatch({type: 'login', payload: login})
@@ -70,6 +78,43 @@ export const RegisterOkScreen = () => {
     })
     const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
     return {dni: hexResult.substr(0, 32), dniAll: hexResult}
+  }
+
+  // Descargar Mapa offline
+  const descargarMapaTarapoto = async () => {
+    const bounds: [number, number, number, number] = geoViewport.bounds(
+      [-78.5442722, -0.1861084],
+      17,
+      [width, height],
+      512,
+    )
+
+    const options = {
+      name: 'TarapotoMapTest',
+      styleURL: Mapbox.StyleURL.Satellite,
+      bounds: [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ] as [[number, number], [number, number]],
+      minZoom: 10,
+      maxZoom: 20,
+      metadata: {
+        whatIsThat: 'foo',
+      },
+    }
+    await Mapbox.offlineManager
+      .createPack(
+        options,
+        (region, status) => {
+          console.log('=> progress callback region:', 'status: ', status)
+        },
+        error => {
+          console.log('=> error callback error:', error)
+        },
+      )
+      .catch(() => {
+        console.log('=> Mapa descargado')
+      })
   }
 
   return (
