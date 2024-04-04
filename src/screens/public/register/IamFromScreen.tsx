@@ -6,7 +6,7 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Image,
   ImageSourcePropType,
@@ -38,10 +38,12 @@ import {
 import { UsersContext } from "../../../states/UserContext";
 import { Header } from "./RegisterScreen";
 import { Btn } from "../../../components/button/Button";
-import { CheckBox } from "@rneui/themed";
+import { Card, CheckBox } from "@rneui/themed";
+
 export const IamFromScreen = () => {
   const navigation = useNavigation();
   const user = useContext(UsersContext);
+
   const cards = [
     {
       img: imgCO,
@@ -68,7 +70,7 @@ export const IamFromScreen = () => {
 
         <View style={styles.bodyContainer}>
           {cards.map((c, i) => (
-            <Card img={c.img} title={c.title} value={c.value} key={i} />
+            <Card1 img={c.img} title={c.title} value={c.value} key={i} />
           ))}
         </View>
         <View style={styles.formBtn}>
@@ -82,12 +84,14 @@ export const IamFromScreen = () => {
     </SafeArea>
   );
 };
-const Card = (props: {
+const Card1 = (props: {
   img: ImageSourcePropType;
   title: string;
   value: object;
 }) => {
   const navigation = useNavigation();
+  const [isChecked, setIsChecked] = useState(false);
+
   const submit = () => {
     const user = JSON.parse(storage.getString("user") || "{}");
     storage.set("user", JSON.stringify({ ...user, country: props.value }));
@@ -95,17 +99,33 @@ const Card = (props: {
   };
   return (
     <View style={styles.bodyCardContainerFull}>
-      <TouchableOpacity
-        onPress={submit}
-        style={styles.bodyCard}
-        activeOpacity={BTN_THEME.primary?.const?.opacity}
-      >
-        <Image source={props.img} style={styles.img} />
-        <Text style={styles.titleCard}>{props.title}</Text>
-        <View style={styles.icon}>
-          <FontAwesomeIcon icon="angle-right" size={32} />
-        </View>
-      </TouchableOpacity>
+      <View style={{ alignItems: "center" }}>
+        <Card
+          containerStyle={{
+            borderRadius: 10,
+            width: "100%",
+            borderColor: !isChecked ? "transparent" : "#ff5722",
+          }}
+        >
+          <View
+            style={{ flexDirection: "row", alignItems: "center", height: 60 }}
+          >
+            <Image source={props.img} style={styles.img} />
+            <Text style={styles.titleCard}>{props.title}</Text>
+
+            <View style={styles.icon}>
+              <CheckBox
+                containerStyle={{}}
+                checked={isChecked}
+                onPress={() => setIsChecked(!isChecked)}
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                checkedColor="#ff5722"
+              />
+            </View>
+          </View>
+        </Card>
+      </View>
     </View>
   );
 };
@@ -122,8 +142,6 @@ const styles = StyleSheet.create({
   },
   bodyCardContainerFull: {
     width: "100%",
-    padding: MP_DF.small,
-    marginTop: MP_DF.small,
   },
   bodyCard: {
     paddingHorizontal: MP_DF.large,
@@ -149,15 +167,16 @@ const styles = StyleSheet.create({
     marginRight: MP_DF.large,
   },
   icon: {
-    flex: 1,
     alignItems: "flex-end",
-    color: COLORS_DF.citrine_brown,
+    justifyContent: "center",
+    flex: 1,
   },
   textA: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(32),
     fontWeight: "700",
     textAlign: "center",
+
     color: COLORS_DF.cacao,
     paddingHorizontal: horizontalScale(MP_DF.large),
     paddingVertical: verticalScale(MP_DF.medium),

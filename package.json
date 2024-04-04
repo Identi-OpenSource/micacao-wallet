@@ -67,6 +67,7 @@
     "react-native-svg-transformer": "^1.3.0",
     "react-native-tcp": "^4.0.0",
     "react-native-udp": "^4.1.7",
+    "react-native-vector-icons": "^10.0.3",
     "react-native-virtual-joystick": "^0.1.7",
     "readable-stream": "^1.0.33",
     "realm": "^12.6.1",
