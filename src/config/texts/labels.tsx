@@ -20,7 +20,7 @@ export const LABELS = {
   password: "Contraseña",
   rePassword: "Repite tu contraseña",
   pin: "CREAR CONTRASEÑA",
-  rePin: "Repite tu PIN",
+  rePin: "REPITE TU CONTRASEÑA",
   name: "Nombre",
   namePersonal: "NOMBRE COMPLETO",
   phonePersonal: "NÚMERO DE CELULAR",

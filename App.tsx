@@ -1,6 +1,6 @@
-import React from 'react'
-import {NavigationContainer} from '@react-navigation/native'
-import {Router} from './src/routers/Router'
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { Router } from "./src/routers/Router";
 
 import {
   faAngleLeft,
@@ -16,11 +16,11 @@ import {
   faRotate,
   faTree,
   faUser,
-} from '@fortawesome/free-solid-svg-icons'
-import {UserProvider} from './src/states/UserContext'
-import {faWhatsapp, fab} from '@fortawesome/free-brands-svg-icons'
-import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle'
-import {library} from '@fortawesome/fontawesome-svg-core'
+} from "@fortawesome/free-solid-svg-icons";
+import { UserProvider } from "./src/states/UserContext";
+import { faWhatsapp, fab } from "@fortawesome/free-brands-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons/faExclamationTriangle";
+import { library } from "@fortawesome/fontawesome-svg-core";
 // import {GestureHandlerRootView} from 'react-native-gesture-handler'
 
 // realm
@@ -49,8 +49,8 @@ function App(): React.JSX.Element {
     faWhatsapp,
     faExclamation,
     faExclamationTriangle,
-    faHandPointer,
-  )
+    faHandPointer
+  );
 
   // useEffect(() => {
   //   getPermission()
@@ -79,7 +79,7 @@ function App(): React.JSX.Element {
     </UserProvider>
     //</GestureHandlerRootView>
     // </RealmProvider>
-  )
+  );
 }
 
-export default App
+export default App;

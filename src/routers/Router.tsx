@@ -55,6 +55,7 @@ import { DrawPolygonScreen } from "../screens/private/parcel/draw-polygon/DrawPo
 import PoligonJoystick from "../screens/private/parcel/draw-polygon/PoligonJoystick";
 import SplashScreen from "../screens/SplashScreen";
 import StartScreen from "../screens/public/register/StartScreen";
+import { ConfirmPasswordScreen } from "../screens/public/register/ConfirmPasswordScreen";
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -91,6 +92,7 @@ export type RootStackParamList = {
   RegisterParcelTwoScreen: undefined;
   RegisterParcelThirdScreen: undefined;
   RegisterParcelFourthScreen: undefined;
+  ConfirmPasswordScreen: undefined;
   HelpScreen: undefined;
   MyParcelsScreen: undefined;
   PolygonScreen: undefined;
@@ -227,6 +229,10 @@ export const Router = () => {
           <Stack.Screen
             name="RegisterFourthScreen"
             component={RegisterFourthScreen}
+          />
+          <Stack.Screen
+            name="ConfirmPasswordScreen"
+            component={ConfirmPasswordScreen}
           />
           <Stack.Screen name="RegisterOkScreen" component={RegisterOkScreen} />
         </>

@@ -1,49 +1,61 @@
 /**
  * @author : Braudin Laya
  * @since : 15/09/2021
- * @summary : Register screen of the application
+ * @summary : Pantalla de confirmación de contraseña de la aplicación
  */
 
-import React, { useContext } from "react";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { View } from "react-native";
-import { UsersContext } from "../../../states/UserContext";
-import { Btn } from "../../../components/button/Button";
-import { TEXTS } from "../../../config/texts/texts";
 import { Field, Formik } from "formik";
+import React, { useContext } from "react";
+import { View } from "react-native";
+import { sha256 } from "react-native-sha256";
+import { Password_M, Password_W } from "../../../assets/svg";
+import { Btn } from "../../../components/button/Button";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { LABELS } from "../../../config/texts/labels";
+import { ScreenProps } from "../../../routers/Router";
+import { UsersContext } from "../../../states/UserContext";
 import {
   INIT_VALUES_FOURTH,
   INPUTS_FOURTH,
   InterfaceFourth,
   SCHEMA_FOURTH,
 } from "./Interfaces";
-import { LABELS } from "../../../config/texts/labels";
-import { styles } from "./styles";
-import { ScreenProps } from "../../../routers/Router";
 import { Header } from "./RegisterScreen";
-import { storage } from "../../../config/store/db";
-import { sha256 } from "react-native-sha256";
-import { Password_M, Password_W } from "../../../assets/svg";
-export const RegisterFourthScreen = ({
+import { styles } from "./styles";
+export const ConfirmPasswordScreen = ({
   navigation,
-}: ScreenProps<"RegisterFourthScreen">) => {
+  route,
+}: ScreenProps<"ConfirmPasswordScreen">) => {
+  const pin = route.params?.pin;
+  if (pin) {
+    console.log("el pin es ", pin);
+  } else {
+    console.log("Parámetro 'pin' no proporcionado.");
+  }
+
   const submit = (values: InterfaceFourth) => {
     sha256(values.pin)
       .then((pinHash) => {
-        storage.set("security", JSON.stringify({ pin: pinHash }));
-        navigation.navigate("ConfirmPasswordScreen", { pin: pinHash });
+        if (pinHash === pin) {
+          navigation.navigate("RegisterOkScreen");
+        } else {
+          /*  */
+          console.log("Las contraseñas no coinciden");
+        }
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
   const user = useContext(UsersContext);
+
   return (
     <SafeArea bg="neutral" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={""} />
-        {user.gender == "M" && <Password_M />}
-        {user.gender == "W" && <Password_W />}
+        <Header navigation={navigation} title={"Confirma tu Contraseña"} />
+        {/*  {user.gender == "M" && <Password_M />}
+        {user.gender == "W" && <Password_W />} */}
 
         <Formik
           initialValues={INIT_VALUES_FOURTH}
