@@ -39,7 +39,7 @@ export const RegisterFourthScreen = ({
   };
   const user = useContext(UsersContext);
   return (
-    <SafeArea bg="neutral" isForm>
+    <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <Header navigation={navigation} title={""} />
         {user.gender == "M" && <Password_M />}

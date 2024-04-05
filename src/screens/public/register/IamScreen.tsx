@@ -54,7 +54,7 @@ export const IamScreen = () => {
     },
   ];
   return (
-    <SafeArea bg="neutral" isForm>
+    <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <Header navigation={navigation} title={TEXTS.textAA} />
         {cards.map((c, i) => (

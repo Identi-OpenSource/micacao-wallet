@@ -80,7 +80,7 @@ export const IamFromScreen: React.FC = () => {
   };
 
   return (
-    <SafeArea bg="neutral" isForm>
+    <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <Header navigation={navigation} title={""} />
         {user.gender === "M" && <Iamfrom_m />}

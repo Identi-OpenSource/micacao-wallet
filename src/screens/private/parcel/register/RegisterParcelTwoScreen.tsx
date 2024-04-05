@@ -55,7 +55,7 @@ export const RegisterParcelTwoScreen = ({
   const user = useContext(UsersContext);
 
   return (
-    <SafeArea bg="neutral" isForm>
+    <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <HeaderActions title={""} navigation={navigation} />
         {user.gender == "M" && <Hectare_M />}

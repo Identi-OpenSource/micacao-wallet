@@ -32,7 +32,7 @@ export const RegisterSecondScreen = ({
   };
 
   return (
-    <SafeArea bg="neutral" isForm>
+    <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <Header navigation={navigation} title={""} />
         {user.gender == "M" && <Cellphone_M />}

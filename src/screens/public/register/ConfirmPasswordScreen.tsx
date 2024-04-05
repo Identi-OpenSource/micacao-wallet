@@ -51,7 +51,7 @@ export const ConfirmPasswordScreen = ({
   const user = useContext(UsersContext);
 
   return (
-    <SafeArea bg="neutral" isForm>
+    <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <Header navigation={navigation} title={"Confirma tu Contraseña"} />
         {/*  {user.gender == "M" && <Password_M />}

@@ -18,3 +18,7 @@ export { default as Parcel_Name_M } from "./parcel_Name_M.svg";
 export { default as Parcel_Name_W } from "./parcel_Name_W.svg";
 export { default as Dni_M } from "./dni_M.svg";
 export { default as Dni_W } from "./dni_W.svg";
+export { default as Walk_Parcel_M } from "./walk_parcel_M.svg";
+export { default as Walk_Parcel_W } from "./walk_parcel_W.svg";
+export { default as Center_Parcel_M } from "./center_Parcel_M.svg";
+export { default as Center_Parcel_W } from "./center_Parcel_W.svg";

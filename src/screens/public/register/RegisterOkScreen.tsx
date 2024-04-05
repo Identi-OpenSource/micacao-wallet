@@ -96,7 +96,7 @@ export const RegisterOkScreen = () => {
         <>
           <ActivityIndicator
             size={moderateScale(86)}
-            color={COLORS_DF.cacao}
+            color={COLORS_DF.robin_egg_blue}
             style={styles.indicador}
           />
           <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
