@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(32),
     fontWeight: "700",
     textAlign: "center",
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     paddingHorizontal: horizontalScale(MP_DF.large),
     paddingVertical: verticalScale(MP_DF.medium),
   },

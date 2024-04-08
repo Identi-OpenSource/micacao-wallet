@@ -4,6 +4,8 @@
  * @summary : View of entry point of the application
  */
 
+import { useNavigation } from "@react-navigation/native";
+import { Card, CheckBox } from "@rneui/themed";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Image,
@@ -13,19 +15,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useNavigation } from "@react-navigation/native";
-import { Card, CheckBox } from "@rneui/themed";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { Btn } from "../../../components/button/Button";
-import { Iamfrom_m, Iamfrom_w } from "../../../assets/svg";
 import { imgCO, imgPE } from "../../../assets/imgs";
+import { Iamfrom_m, Iamfrom_w } from "../../../assets/svg";
+import { Btn } from "../../../components/button/Button";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { COUNTRY } from "../../../config/const";
 import { storage } from "../../../config/store/db";
 import { LABELS } from "../../../config/texts/labels";
 import {
   BORDER_RADIUS_DF,
-  BTN_THEME,
   COLORS_DF,
   FONT_FAMILIES,
   FONT_SIZES,
@@ -76,7 +74,7 @@ export const IamFromScreen: React.FC = () => {
   const submit = () => {
     const user = JSON.parse(storage.getString("user") || "{}");
     storage.set("user", JSON.stringify({ ...user, country: selectedCountry }));
-    navigation.navigate("RegisterScreen");
+    navigation.navigate("PermissionsThreeScreen");
   };
 
   return (

@@ -22,3 +22,4 @@ export { default as Walk_Parcel_M } from "./walk_parcel_M.svg";
 export { default as Walk_Parcel_W } from "./walk_parcel_W.svg";
 export { default as Center_Parcel_M } from "./center_Parcel_M.svg";
 export { default as Center_Parcel_W } from "./center_Parcel_W.svg";
+export { default as Modal_Location } from "./modal_location.svg";

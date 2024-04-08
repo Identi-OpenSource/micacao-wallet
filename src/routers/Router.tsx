@@ -299,10 +299,10 @@ export const Router = () => {
       )}
       {/* Permission */}
       <Stack.Group navigationKey={user.isLogin ? "user" : "guest"}>
-        <Stack.Screen
+        {/* <Stack.Screen
           name="PermissionsOneScreen"
           component={PermissionsOneScreen}
-        />
+        /> */}
         <Stack.Screen
           name="PermissionsTwoScreen"
           component={PermissionsTwoScreen}
