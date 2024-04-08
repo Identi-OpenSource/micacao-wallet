@@ -5,8 +5,8 @@
  */
 
 import { Field, Formik } from "formik";
-import React, { useContext } from "react";
-import { View } from "react-native";
+import React, { useContext, useState } from "react";
+import { View, Text } from "react-native";
 import { sha256 } from "react-native-sha256";
 import { Password_M, Password_W } from "../../../assets/svg";
 import { Btn } from "../../../components/button/Button";
@@ -28,25 +28,25 @@ export const ConfirmPasswordScreen = ({
   route,
 }: ScreenProps<"ConfirmPasswordScreen">) => {
   const pin = route.params?.pin;
+  const [error, setError] = useState(false);
   if (pin) {
     console.log("el pin es ", pin);
   } else {
     console.log("Parámetro 'pin' no proporcionado.");
   }
 
-  const submit = (values: InterfaceFourth) => {
-    sha256(values.pin)
-      .then((pinHash) => {
-        if (pinHash === pin) {
-          navigation.navigate("RegisterOkScreen");
-        } else {
-          /*  */
-          console.log("Las contraseñas no coinciden");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const submit = async (values: InterfaceFourth) => {
+    try {
+      const pinHash = await sha256(values.pin); // Obtener el hash de la contraseña ingresada
+      if (pinHash === pin) {
+        navigation.navigate("RegisterOkScreen"); // Navegar a la siguiente pantalla si el PIN es correcto
+      } else {
+        setError(true); // Establecer estado de error a true
+      }
+    } catch (error) {
+      console.log("Error al verificar la contraseña:", error);
+      setError(true); // En caso de error, establecer estado de error a true
+    }
   };
 
   const user = useContext(UsersContext);
@@ -55,8 +55,7 @@ export const ConfirmPasswordScreen = ({
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <Header navigation={navigation} title={" "} />
-        {user.gender == "M" && <Confirm_Password_M />}
-        {user.gender == "W" && <Confirm_Password_W />}
+        {user.gender === "M" ? <Confirm_Password_M /> : <Confirm_Password_W />}
 
         <Formik
           initialValues={INIT_VALUES_FOURTH}
@@ -70,6 +69,11 @@ export const ConfirmPasswordScreen = ({
                   {INPUTS_FOURTH.map((i) => (
                     <Field key={i.name} {...i} />
                   ))}
+                  {error && ( // Mostrar mensaje de error si error es true
+                    <Text style={{ color: "red" }}>
+                      El PIN ingresado no es correcto.
+                    </Text>
+                  )}
                 </View>
                 <View style={styles.formBtn}>
                   <Btn
