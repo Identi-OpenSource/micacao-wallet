@@ -104,7 +104,7 @@ export const INIT_VALUES_FOURTH: InterfaceFourth = {
 export const INPUTS_FOURTH = [
   {
     name: "pin",
-    label: LABELS.rePin,
+    label: LABELS.pin,
     placeholder: LABELS.pin,
     keyboardType: "numeric",
 

@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, { useContext } from "react";
 import {
   Image,
   PermissionsAndroid,
@@ -6,30 +6,34 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native'
+} from "react-native";
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
-} from '../../../config/themes/metrics'
-import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {TEXTS} from '../../../config/texts/texts'
-import {Btn} from '../../../components/button/Button'
-import {LABELS} from '../../../config/texts/labels'
-import {useNavigation} from '@react-navigation/native'
-import {imgCam} from '../../../assets/imgs'
-import {UsersContext} from '../../../states/UserContext'
-import {RootStackParamList} from '../../../routers/Router'
-
+} from "../../../config/themes/metrics";
+import {
+  COLORS_DF,
+  FONT_FAMILIES,
+  MP_DF,
+} from "../../../config/themes/default";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { TEXTS } from "../../../config/texts/texts";
+import { Btn } from "../../../components/button/Button";
+import { LABELS } from "../../../config/texts/labels";
+import { useNavigation } from "@react-navigation/native";
+import { modal_camara } from "../../../assets/imgs";
+import { UsersContext } from "../../../states/UserContext";
+import { RootStackParamList } from "../../../routers/Router";
+import { Camera_M, Camera_W, Modal_Camera } from "../../../assets/svg";
 export const PermissionsFourScreen = () => {
-  const user = useContext(UsersContext)
-  const navigation = useNavigation()
+  const user = useContext(UsersContext);
+  const navigation = useNavigation();
   // request permission to use location
 
   const requestPermission = async () => {
     try {
-      if (Platform.OS === 'android') {
+      if (Platform.OS === "android") {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA,
           {
@@ -38,45 +42,56 @@ export const PermissionsFourScreen = () => {
             buttonNeutral: LABELS.AskMeLater,
             buttonNegative: LABELS.cancel,
             buttonPositive: LABELS.permission,
-          },
-        )
+          }
+        );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          let initialRouteName: keyof RootStackParamList = 'TabPrivate'
+          let initialRouteName: keyof RootStackParamList = "TabPrivate";
           if (!user.isLogin) {
-            initialRouteName = 'HomeScreen'
+            initialRouteName = "RegisterScreen";
           }
           if (user.isLogin && user?.parcel?.length === 0) {
-            initialRouteName = 'RegisterParcelScreen'
+            initialRouteName = "RegisterParcelScreen";
           }
-          console.log('initialRouteName', initialRouteName)
-          navigation.navigate(initialRouteName)
+          console.log("initialRouteName", initialRouteName);
+          navigation.navigate(initialRouteName);
         } else {
-          console.log('Camera permission denied')
+          console.log("Camera permission denied");
         }
       }
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-  }
+  };
 
   return (
-    <SafeArea bg={'neutral'}>
+    <SafeArea bg={"neutral"}>
       <View style={styles.container}>
         <View style={styles.textContainer}>
-          <Text style={[styles.textB]}>{TEXTS.textZ}</Text>
-          <Image source={imgCam} style={styles.img} />
+          <Text style={[styles.textB]}>{""}</Text>
+          {user.gender === "M" && <Camera_M />}
+          {user.gender === "W" && <Camera_W />}
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              height: "75%",
+              width: "100%",
+            }}
+          >
+            <Image source={modal_camara} style={styles.img} />
+          </View>
         </View>
         <View style={styles.formBtn}>
           <Btn
-            title={LABELS.requestPermissionCamera}
+            title={LABELS.continue}
             theme="agrayu"
             onPress={() => requestPermission()}
           />
         </View>
       </View>
     </SafeArea>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -84,10 +99,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: horizontalScale(MP_DF.large),
   },
   img: {
-    marginVertical: verticalScale(MP_DF.large),
-    alignSelf: 'center',
-    flex: 1,
-    resizeMode: 'contain',
+    width: "100%",
+    height: "60%",
+    alignSelf: "center",
+    marginLeft: 25,
   },
   textContainer: {
     flex: 1,
@@ -95,21 +110,21 @@ const styles = StyleSheet.create({
   textA: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(32),
-    fontWeight: '700',
-    textAlign: 'left',
+    fontWeight: "700",
+    textAlign: "left",
     color: COLORS_DF.cacao,
     paddingVertical: verticalScale(MP_DF.medium),
   },
   textB: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(24),
-    fontWeight: '500',
+    fontWeight: "500",
     lineHeight: 36,
     color: COLORS_DF.cacao,
     marginTop: MP_DF.large,
   },
   formBtn: {
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     paddingBottom: verticalScale(MP_DF.xlarge),
   },
-})
+});

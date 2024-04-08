@@ -22,6 +22,7 @@ import {
 } from "./Interfaces";
 import { Header } from "./RegisterScreen";
 import { styles } from "./styles";
+import { Confirm_Password_M, Confirm_Password_W } from "../../../assets/svg";
 export const ConfirmPasswordScreen = ({
   navigation,
   route,
@@ -53,9 +54,9 @@ export const ConfirmPasswordScreen = ({
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={"Confirma tu Contraseña"} />
-        {/*  {user.gender == "M" && <Password_M />}
-        {user.gender == "W" && <Password_W />} */}
+        <Header navigation={navigation} title={" "} />
+        {user.gender == "M" && <Confirm_Password_M />}
+        {user.gender == "W" && <Confirm_Password_W />}
 
         <Formik
           initialValues={INIT_VALUES_FOURTH}

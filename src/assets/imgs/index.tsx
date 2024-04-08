@@ -20,3 +20,4 @@ export const imgPE = require("./PE.png");
 export const imgBaba = require("./baba.png");
 export const imgTostado = require("./tostado.png");
 export const modal_location = require("./modal_Location.png");
+export const modal_camara = require("./modal_Camara.png");

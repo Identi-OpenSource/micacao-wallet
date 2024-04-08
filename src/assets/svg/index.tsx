@@ -23,3 +23,8 @@ export { default as Walk_Parcel_W } from "./walk_parcel_W.svg";
 export { default as Center_Parcel_M } from "./center_Parcel_M.svg";
 export { default as Center_Parcel_W } from "./center_Parcel_W.svg";
 export { default as Modal_Location } from "./modal_location.svg";
+export { default as Confirm_Password_M } from "./confirm_Password_M.svg";
+export { default as Confirm_Password_W } from "./confirm_Password_W.svg";
+export { default as Camera_M } from "./camera_M.svg";
+export { default as Camera_W } from "./camera_W.svg";
+export { default as Modal_Camera } from "./modal_Camera.svg";
