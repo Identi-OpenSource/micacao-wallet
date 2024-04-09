@@ -6,7 +6,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Alert as Alerts,
 } from 'react-native'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {
@@ -21,23 +20,29 @@ import {UserInterface, UsersContext} from '../../../states/UserContext'
 import useInternetConnection from '../../../hooks/useInternetConnection'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {LABELS} from '../../../config/texts/labels'
-import {Btn, BtnSmall} from '../../../components/button/Button'
+import {BtnSmall} from '../../../components/button/Button'
 import {TEXTS} from '../../../config/texts/texts'
 import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {storage} from '../../../config/store/db'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
-import {
-  fundingWallet,
-  // fundingWalletOff,
-  newWallet,
-  verificarWallet,
-  writeTransaction,
-  // writeTransaction,
-} from '../../../OCC/occ'
 import {Alert} from '../../../components/alert/Alert'
+/* import  fundingWallet,
+fundingWalletOff,
+newWallet,
+writeTransaction,
+writeTransaction,
+verificarWallet,
+'../../../OCC/occ'
 import axios from 'axios'
-/* import {Users} from '../../../models/user'
+import CryptoJS from 'crypto-js'
+import DATA_KAFE from './kafe-sistemas.json'
+const key = 'llavesecretakafesistemasidenti12'
+const API_KAFE_SISTEMAS =
+  'http://148.113.174.223/api/v1/pe/land-request/polygon'
+const API_KEY =
+   'fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4'
+ import {Users} from '../../../models/user'
 import {useQuery} from '@realm/react'
 import Geolocation from '@react-native-community/geolocation' */
 
@@ -46,19 +51,16 @@ export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext)
   const isConnected = useInternetConnection()
   const [syncUp, setSyncUp] = useState(false)
-  const [TGFW, setTokenGFW] = useState(null)
-  const [apiKeyGFW, setApiKeyGFW] = useState(null)
   const [loadinSync, setLoadingSync] = useState(false)
+  // const [TGFW, setTokenGFW] = useState(null)
+  // const [apiKeyGFW, setApiKeyGFW] = useState(null)
   // const users = useQuery(Users)
-
-  const [wa, setWa] = useState(null) as any
-
-  // console.log('users', users)
+  // const [wa, setWa] = useState(null) as any
 
   useFocusEffect(
     useCallback(() => {
       // verifySyncUp()
-      // if not parcels, go to register parcel
+      // const usesr = JSON.parse(storage.getString('user') || '[]')
       const parcels = JSON.parse(storage.getString('parcels') || '[]')
       if (parcels.length === 0) {
         setTimeout(() => {
@@ -67,6 +69,16 @@ export const HomeProvScreen = () => {
       }
     }, [isConnected]),
   )
+
+  /* const dataSyncUp = () => {
+    setLoadingSync(true)
+    setTimeout(() => {
+      const newSync = {isSyncUp: false, lastSyncUp: Date.now()}
+      storage.set('syncUp', JSON.stringify(newSync))
+      setSyncUp(false)
+      setLoadingSync(false)
+    }, 2500)
+  } */
 
   // const verifySyncUp = () => {
   //   // asyncData if not syncUp in the last 4 hours
@@ -80,24 +92,14 @@ export const HomeProvScreen = () => {
   //   }
   // }
 
-  const dataSyncUp = () => {
-    setLoadingSync(true)
-    setTimeout(() => {
-      const newSync = {isSyncUp: false, lastSyncUp: Date.now()}
-      storage.set('syncUp', JSON.stringify(newSync))
-      setSyncUp(false)
-      setLoadingSync(false)
-    }, 2500)
-  }
-
-  const createWallet = () => {
+  /*   const createWallet = () => {
     const wallet = newWallet()
     setWa(wallet)
     Alerts.alert('Wallet Creada', wallet.walletOFC)
     console.log('wallet', wallet)
-  }
+  } */
 
-  const getFundingWallet = async () => {
+  /* const getFundingWallet = async () => {
     await fundingWallet(wa.walletOFC)
       .then(() => {
         Alerts.alert(
@@ -111,14 +113,14 @@ export const HomeProvScreen = () => {
           'No se han podido agregar fondos a su wallet. Parece que la red OCC no está disponible. Intente más tarde.',
         )
       })
-  }
+  } */
 
-  const write = async () => {
+  /* const write = async () => {
     // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
     // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
     // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
     await writeTransaction(wa.wif)
-  }
+  } */
 
   /*  const fundingWalletOffline = async () => {
     await fundingWalletOff(wa.ec_pairs, wa.walletOFC, wa.wifi)
@@ -139,7 +141,7 @@ export const HomeProvScreen = () => {
     //console.log(f)
   } */
 
-  const tokenGFW = async () => {
+  /* const tokenGFW = async () => {
     await axios
       .post(
         'https://data-api.globalforestwatch.org/auth/token',
@@ -162,9 +164,9 @@ export const HomeProvScreen = () => {
         Alerts.alert('Error al intentar obtener el token')
         console.log('error', e)
       })
-  }
+  } */
 
-  const createApiKeyGFW = async () => {
+  /* const createApiKeyGFW = async () => {
     const payload = {
       alias: 'mi-cacao-appss' + Date.now(),
       organization: 'GFWdata',
@@ -189,9 +191,9 @@ export const HomeProvScreen = () => {
         Alerts.alert('Error al intentar obtener el ApiKey')
         console.log('error', e)
       })
-  }
+  } */
 
-  const testApiKeyGFW = async () => {
+  /* const testApiKeyGFW = async () => {
     await axios
       .get('https://data-api.globalforestwatch.org/datasets', {
         headers: {
@@ -207,9 +209,9 @@ export const HomeProvScreen = () => {
         Alerts.alert('Test Api Key GFW', 'Api Key GFW no valido')
         console.log('error', e)
       })
-  }
+  } */
 
-  const queryPForestal = async () => {
+  /*  const queryPForestal = async () => {
     const payload = {
       geometry: {
         type: 'Polygon',
@@ -249,7 +251,67 @@ export const HomeProvScreen = () => {
         )
         console.log('error', e)
       })
-  }
+  } */
+
+  /* const certificateND = async (dni: string) => {
+    const paddedDNI = dni.padStart(16, '0')
+    const utf8Key = CryptoJS.enc.Utf8.parse(key)
+    const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
+
+    const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+    })
+
+    const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
+
+    return hexResult.substr(0, 32)
+  } */
+
+  /* const kafeSistemas = async () => {
+    const resp_kafe: any = []
+    for (let i = 0; i < DATA_KAFE.length; i++) {
+      const dniEncrypted = await certificateND(DATA_KAFE[i].dni)
+      const data = {
+        dni: dniEncrypted,
+        polygon: DATA_KAFE[i].polygon,
+        departamento: 'San Martin',
+      }
+      // axios.interceptors.request.use(request => {
+      //   console.log('Starting Request', JSON.stringify(request, null, 2))
+      //   return request
+      // })
+      await axios
+        .post(API_KAFE_SISTEMAS, data, {
+          headers: {
+            api_key: API_KEY,
+            // Authorization: `Bearer ${API_KEY}`,
+          },
+        })
+        .then(resp => {
+          console.log('resp', resp.data)
+          resp_kafe.push({
+            send: {...data, dni: DATA_KAFE[i].dni, dniEncrypted},
+            resp: resp.data,
+          })
+        })
+        .catch(e => {
+          console.log('error', e)
+        })
+    }
+    // ordenar por dni
+    resp_kafe.sort((a, b) => {
+      if (a.send.dni > b.send.dni) {
+        return 1
+      }
+      if (a.send.dni < b.send.dni) {
+        return -1
+      }
+      return 0
+    })
+
+    console.log('resp_kafe', resp_kafe)
+  } */
 
   return (
     <SafeArea>
@@ -259,158 +321,180 @@ export const HomeProvScreen = () => {
             <ConnectionStatus
               syncUp={syncUp}
               isConnected={isConnected}
-              dataSyncUp={dataSyncUp}
+              dataSyncUp={() => {} /* dataSyncUp */}
             />
             <Header {...user} />
             <Body syncUp={syncUp} />
-            <View style={{marginTop: MP_DF.large}}>
-              <Text style={styles.titleHeader}>Pruebas Polígono</Text>
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Muestra puntos en el mapa
-              </Text>
-              <Btn
-                title={'Prueba de puntos GPS'}
-                theme="agrayu"
-                onPress={() => navigation.navigate('TestMap')}
-              />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Capturar polígono primera opción
-              </Text>
-              <Btn
-                title={'Polígono A'}
-                theme="agrayu"
-                onPress={() => navigation.navigate('DrawPolyline')}
-              />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Capturar polígono segunda opción
-              </Text>
-              <Btn
-                title={'Polígono B'}
-                theme="agrayu"
-                onPress={() => navigation.navigate('GradientLine')}
-              />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Capturar polígono tercera opción
-              </Text>
-              <Btn
-                title={'Polígono C'}
-                theme="agrayu"
-                disabled={false}
-                onPress={() => navigation.navigate('GradientLineRecorrer')}
-              />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Capturar polígono cuarta opción
-              </Text>
-              <Btn
-                title={'Polígono D'}
-                theme="agrayu"
-                disabled={false}
-                onPress={() => navigation.navigate('GradientLineRecorrerAdd')}
-              />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Capturar polígono quinta opción
-              </Text>
-              <Btn
-                title={'Polígono E'}
-                theme="agrayu"
-                disabled={false}
-                onPress={() => navigation.navigate('PoligonJoystick')}
-              />
+            {/*  <View>
+              <View style={{marginTop: MP_DF.large}}>
+                <Text style={styles.titleHeader}>Pruebas Polígono</Text>
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Muestra puntos en el mapa
+                </Text>
+                <Btn
+                  title={'Prueba de puntos GPS'}
+                  theme="agrayu"
+                  onPress={() => navigation.navigate('TestMap')}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Capturar polígono primera opción
+                </Text>
+                <Btn
+                  title={'Polígono A'}
+                  theme="agrayu"
+                  onPress={() => navigation.navigate('DrawPolyline')}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Capturar polígono segunda opción
+                </Text>
+                <Btn
+                  title={'Polígono B'}
+                  theme="agrayu"
+                  onPress={() => navigation.navigate('GradientLine')}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Capturar polígono tercera opción
+                </Text>
+                <Btn
+                  title={'Polígono C'}
+                  theme="agrayu"
+                  disabled={false}
+                  onPress={() => navigation.navigate('GradientLineRecorrer')}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Capturar polígono cuarta opción
+                </Text>
+                <Btn
+                  title={'Polígono D'}
+                  theme="agrayu"
+                  disabled={false}
+                  onPress={() => navigation.navigate('GradientLineRecorrerAdd')}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Capturar polígono quinta opción
+                </Text>
+                <Btn
+                  title={'Polígono E'}
+                  theme="agrayu"
+                  disabled={false}
+                  onPress={() => navigation.navigate('PoligonJoystick')}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Capturar polígono sexta opción
+                </Text>
+                <Btn
+                  title={'Polígono F'}
+                  theme="agrayu"
+                  disabled={false}
+                  onPress={() => navigation.navigate('PoligonBTN')}
+                />
 
+                <Text style={[styles.titleHeader, {marginVertical: 10}]}>
+                  Pruebas Wallet
+                </Text>
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Crea una wallet compatible con OCC
+                </Text>
+                <Btn
+                  title={'Nueva Wallet'}
+                  theme="agrayu"
+                  onPress={() => createWallet()}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Agrega fondos a la wallet
+                </Text>
+                <Btn
+                  title={'Funding Wallet'}
+                  theme="agrayu"
+                  onPress={() => getFundingWallet()}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Verificar wallet
+                </Text>
+                <Btn
+                  title={'Revisar Wallet Online OFC'}
+                  theme="agrayu"
+                  onPress={() => verificarWallet(wa.walletOFC)}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Post Transaction de prueba a la wallet
+                </Text>
+                <Btn
+                  title={'Escribir en red OCC'}
+                  theme="agrayu"
+                  onPress={() => write()}
+                />
+
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Agregar fondos fuera de linea a la wallet
+                </Text>
+                <Btn
+                  title={'Funding Wallet Offline OFC'}
+                  theme="agrayu"
+                  onPress={() => fundingWalletOffline()}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Get Transaction de prueba a la wallet
+                </Text>
+                <Btn
+                  title={'Leer de la red OCC'}
+                  theme="agrayuDisabled"
+                  disabled={true}
+                  onPress={() => verificarWallet(wa)}
+                />
+                <Btn
+                  title={'Transaction de prueba a la wallet'}
+                  theme="agrayu"
+                  onPress={() => newTransaction()}
+                />
+                <Text style={[styles.titleHeader, {marginVertical: 10}]}>
+                  Pruebas Global Forest Watch
+                </Text>
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Obtener token
+                </Text>
+                <Btn
+                  title={'Token GFW'}
+                  theme="agrayu"
+                  onPress={() => tokenGFW()}
+                />
+                <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                  Obtener ApiKEY
+                </Text>
+                <Btn
+                  title={'Api GFW'}
+                  theme="agrayu"
+                  onPress={() => createApiKeyGFW()}
+                />
+              </View>
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Test Api Key
+              </Text>
+              <Btn
+                title={'ApiKey Test'}
+                theme="agrayu"
+                onPress={() => testApiKeyGFW()}
+              />
+              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+                Pérdida de cobertura forestal
+              </Text>
+              <Btn
+                title={'Query pérdida forestal'}
+                theme="agrayu"
+                onPress={() => queryPForestal()}
+              />
               <Text style={[styles.titleHeader, {marginVertical: 10}]}>
-                Pruebas Wallet
+                Pruebas Kafe Sistemas
               </Text>
               <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Crea una wallet compatible con OCC
+                Integración con Kafe Sistemas
               </Text>
               <Btn
-                title={'Nueva Wallet'}
+                title={'Envió de datos test'}
                 theme="agrayu"
-                onPress={() => createWallet()}
+                onPress={() => kafeSistemas()}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Agrega fondos a la wallet
-              </Text>
-              <Btn
-                title={'Funding Wallet'}
-                theme="agrayu"
-                onPress={() => getFundingWallet()}
-              />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Verificar wallet
-              </Text>
-              <Btn
-                title={'Revisar Wallet Online OFC'}
-                theme="agrayu"
-                onPress={() => verificarWallet(wa.walletOFC)}
-              />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Post Transaction de prueba a la wallet
-              </Text>
-              <Btn
-                title={'Escribir en red OCC'}
-                theme="agrayu"
-                onPress={() => write()}
-              />
-              {/*
-               <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Agregar fondos fuera de linea a la wallet
-              </Text>
-              <Btn
-                title={'Funding Wallet Offline OFC'}
-                theme="agrayu"
-                onPress={() => fundingWalletOffline()}
-              />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Get Transaction de prueba a la wallet
-              </Text>
-              <Btn
-                title={'Leer de la red OCC'}
-                theme="agrayuDisabled"
-                disabled={true}
-                onPress={() => verificarWallet(wa)}
-              />
-               <Btn
-                title={'Transaction de prueba a la wallet'}
-                theme="agrayu"
-                onPress={() => newTransaction()}
-              /> */}
-              <Text style={[styles.titleHeader, {marginVertical: 10}]}>
-                Pruebas Global Forest Watch
-              </Text>
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Obtener token
-              </Text>
-              <Btn
-                title={'Token GFW'}
-                theme="agrayu"
-                onPress={() => tokenGFW()}
-              />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
-                Obtener ApiKEY
-              </Text>
-              <Btn
-                title={'Api GFW'}
-                theme="agrayu"
-                onPress={() => createApiKeyGFW()}
-              />
-            </View>
-            <Text style={[styles.textHeader, {marginVertical: 10}]}>
-              Test Api Key
-            </Text>
-            <Btn
-              title={'ApiKey Test'}
-              theme="agrayu"
-              onPress={() => testApiKeyGFW()}
-            />
-            <Text style={[styles.textHeader, {marginVertical: 10}]}>
-              Pérdida de cobertura forestal
-            </Text>
-            <Btn
-              title={'Query pérdida forestal'}
-              theme="agrayu"
-              onPress={() => queryPForestal()}
-            />
+            </View> */}
           </View>
         ) : (
           <LoadingSave msg={TEXTS.textAF} />

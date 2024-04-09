@@ -38,13 +38,13 @@ export const NewSaleOneScreen = () => {
             style={styles.card}
             onPress={() => onSubmit('BABA')}>
             <Image source={imgBaba} style={styles.img} />
-            <Text style={styles.titleCard}>BABA</Text>
+            <Text style={styles.titleCard}>TOSTADO</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
             onPress={() => onSubmit('TOSTADO')}>
             <Image source={imgTostado} style={styles.img} />
-            <Text style={styles.titleCard}>TOSTADO</Text>
+            <Text style={styles.titleCard}>BABA</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>

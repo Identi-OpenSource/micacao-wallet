@@ -45,7 +45,9 @@ export const BtnIcon = (props: ButtonIconProps) => {
       <FontAwesomeIcon
         icon={props.icon as IconProp}
         size={props.size || 16}
-        color={BTN_THEME_ICON[theme].const?.color || 'black'}
+        color={
+          props?.iconColor || BTN_THEME_ICON[theme].const?.color || 'black'
+        }
       />
     </TouchableOpacity>
   )

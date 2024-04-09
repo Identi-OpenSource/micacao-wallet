@@ -1,61 +1,61 @@
-import React, { useContext, useEffect } from "react";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  NativeStackNavigationOptions,
-  NativeStackScreenProps,
-  createNativeStackNavigator,
-} from "@react-navigation/native-stack";
-import { HomeScreen } from "../screens/public/register/HomeScreen";
-import { RegisterScreen } from "../screens/public/register/RegisterScreen";
-import { UserDispatchContext, UsersContext } from "../states/UserContext";
-import { RegisterSecondScreen } from "../screens/public/register/RegisterSecondScreen";
-import { RegisterThirdScreen } from "../screens/public/register/RegisterThirdScreen";
+  BottomTabNavigationOptions,
+  createBottomTabNavigator,
+} from "@react-navigation/bottom-tabs";
 import {
   CompositeScreenProps,
   getFocusedRouteNameFromRoute,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
-import { RegisterFourthScreen } from "../screens/public/register/RegisterFourthScreen";
-import { RegisterOkScreen } from "../screens/public/register/RegisterOkScreen";
-import { HomeProvScreen } from "../screens/private/home/HomeProvScreen";
-import { storage } from "../config/store/db";
 import {
-  BottomTabNavigationOptions,
-  createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
-import { RegisterParcelScreen } from "../screens/private/parcel/register/RegisterParcelScreen";
-import { RegisterOneScreen } from "../screens/private/parcel/register/RegisterOneScreen";
-import { RegisterParcelTwoScreen } from "../screens/private/parcel/register/RegisterParcelTwoScreen";
-import { RegisterParcelThirdScreen } from "../screens/private/parcel/register/RegisterParcelThirdScreen";
-import { RegisterParcelFourthScreen } from "../screens/private/parcel/register/RegisterParcelFourthScreen";
-import { PermissionsOneScreen } from "../screens/public/permissions/PermissionsOneScreen";
-import { PermissionsTwoScreen } from "../screens/public/permissions/PermissionsTwoScreen";
-import { PermissionsThreeScreen } from "../screens/public/permissions/PermissionsThreeScreen";
-import { PermissionsFourScreen } from "../screens/public/permissions/PermissionsFourScreen";
+  NativeStackNavigationOptions,
+  NativeStackScreenProps,
+  createNativeStackNavigator,
+} from "@react-navigation/native-stack";
+import React, { useContext, useEffect } from "react";
 import { PermissionsAndroid, Platform, StyleSheet } from "react-native";
-import { TestMap } from "../screens/private/home/TestMap";
-import { IamScreen } from "../screens/public/register/IamScreen";
-import { IamFromScreen } from "../screens/public/register/IamFromScreen";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { BORDER_RADIUS_DF, COLORS_DF, MP_DF } from "../config/themes/default";
-import { HelpScreen } from "../screens/private/help/HelpScreen";
-import { MyParcelsScreen } from "../screens/private/parcel/my-parcels/MyParcelsScreen";
+import { storage } from "../config/store/db";
 import { LABELS } from "../config/texts/labels";
-import { PolygonScreen } from "../screens/private/parcel/draw-polygon/PolygonScreen";
+import { BORDER_RADIUS_DF, COLORS_DF, MP_DF } from "../config/themes/default";
+import SplashScreen from "../screens/SplashScreen";
+import { HelpScreen } from "../screens/private/help/HelpScreen";
+import { HomeProvScreen } from "../screens/private/home/HomeProvScreen";
+import { TestMap } from "../screens/private/home/TestMap";
+import { DrawPolygonScreen } from "../screens/private/parcel/draw-polygon/DrawPolygonScreen";
 import DrawPolyline from "../screens/private/parcel/draw-polygon/DrawPolyline";
 import GradientLine from "../screens/private/parcel/draw-polygon/GradientLine";
-import ThirdPartyVectorSource from "../screens/private/parcel/draw-polygon/ThirdPartyVectorSource";
 import GradientLineRecorrer from "../screens/private/parcel/draw-polygon/GradientLineRecorrer";
 import GradientLineRecorrerAdd from "../screens/private/parcel/draw-polygon/GradientLineRecorrerAdd";
-import { NewSaleOneScreen } from "../screens/private/sale/NewSaleOneScreen";
-import { NewSaleTwoScreen } from "../screens/private/sale/NewSaleTwoScreen";
-import { NewSaleThreeScreen } from "../screens/private/sale/NewSaleThreeScreen";
-import { DrawPolygonScreen } from "../screens/private/parcel/draw-polygon/DrawPolygonScreen";
+import PoligonBTN from "../screens/private/parcel/draw-polygon/PoligonBTN";
 import PoligonJoystick from "../screens/private/parcel/draw-polygon/PoligonJoystick";
-import SplashScreen from "../screens/SplashScreen";
-import StartScreen from "../screens/public/register/StartScreen";
+import { PolygonScreen } from "../screens/private/parcel/draw-polygon/PolygonScreen";
+import ThirdPartyVectorSource from "../screens/private/parcel/draw-polygon/ThirdPartyVectorSource";
+import { MyParcelsScreen } from "../screens/private/parcel/my-parcels/MyParcelsScreen";
+import { RegisterOneScreen } from "../screens/private/parcel/register/RegisterOneScreen";
+import { RegisterParcelFourthScreen } from "../screens/private/parcel/register/RegisterParcelFourthScreen";
+import { RegisterParcelScreen } from "../screens/private/parcel/register/RegisterParcelScreen";
+import { RegisterParcelThirdScreen } from "../screens/private/parcel/register/RegisterParcelThirdScreen";
+import { RegisterParcelTwoScreen } from "../screens/private/parcel/register/RegisterParcelTwoScreen";
+import { NewSaleOneScreen } from "../screens/private/sale/NewSaleOneScreen";
+import { NewSaleThreeScreen } from "../screens/private/sale/NewSaleThreeScreen";
+import { NewSaleTwoScreen } from "../screens/private/sale/NewSaleTwoScreen";
+import { PermissionsFourScreen } from "../screens/public/permissions/PermissionsFourScreen";
+import { PermissionsThreeScreen } from "../screens/public/permissions/PermissionsThreeScreen";
+import { PermissionsTwoScreen } from "../screens/public/permissions/PermissionsTwoScreen";
 import { ConfirmPasswordScreen } from "../screens/public/register/ConfirmPasswordScreen";
+import { HomeScreen } from "../screens/public/register/HomeScreen";
+import { IamFromScreen } from "../screens/public/register/IamFromScreen";
+import { IamScreen } from "../screens/public/register/IamScreen";
+import { RegisterFourthScreen } from "../screens/public/register/RegisterFourthScreen";
+import { RegisterOkScreen } from "../screens/public/register/RegisterOkScreen";
+import { RegisterScreen } from "../screens/public/register/RegisterScreen";
+import { RegisterSecondScreen } from "../screens/public/register/RegisterSecondScreen";
+import { RegisterThirdScreen } from "../screens/public/register/RegisterThirdScreen";
+import StartScreen from "../screens/public/register/StartScreen";
+import { UserDispatchContext, UsersContext } from "../states/UserContext";
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -109,6 +109,7 @@ export type RootStackParamList = {
   ThirdPartyVectorSource: undefined;
   GradientLineRecorrerAdd: undefined;
   PoligonJoystick: undefined;
+  PoligonBTN: undefined;
 };
 
 export type RootStackScreenProps<
@@ -377,14 +378,13 @@ const HomeStackPrivate = () => {
             title: LABELS.myParcels,
           }}
         />
-        {/*
         <HomeStack.Screen
-          name="DrawPolygonScreen"
-          component={DrawPolygonScreen}
+          name="PolygonScreen"
+          component={PolygonScreen}
           options={{
-            title: 'Dibujar Parcela',
+            title: "Dibujar Parcela",
           }}
-        /> */}
+        />
         <HomeStack.Screen
           name="DrawPolyline"
           component={DrawPolyline}
@@ -406,7 +406,6 @@ const HomeStackPrivate = () => {
             title: "Test Poligono Recorrer",
           }}
         />
-
         <HomeStack.Screen
           name="GradientLineRecorrerAdd"
           component={GradientLineRecorrerAdd}
@@ -424,6 +423,20 @@ const HomeStackPrivate = () => {
         <HomeStack.Screen
           name="PoligonJoystick"
           component={PoligonJoystick}
+          options={{
+            title: "Poligon Joystick",
+          }}
+        />
+        <HomeStack.Screen
+          name="PoligonBTN"
+          component={PoligonBTN}
+          options={{
+            title: "Poligon Joystick",
+          }}
+        />
+        <HomeStack.Screen
+          name="PoligonBTN"
+          component={PoligonBTN}
           options={{
             title: "Poligon Joystick",
           }}

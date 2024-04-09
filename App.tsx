@@ -5,15 +5,28 @@ import { Router } from "./src/routers/Router";
 import {
   faAngleLeft,
   faAngleRight,
+  faArrowDown,
+  faArrowLeft,
   faArrowLeftLong,
   faArrowRight,
+  faArrowUp,
   faCircle,
+  faCirclePause,
+  faCirclePlay,
   faCircleQuestion,
   faCircleUser,
+  faDeleteLeft,
   faExclamation,
+  faFloppyDisk,
+  faHand,
   faHandPointer,
   faHouse,
+  faMinus,
+  faPersonWalkingArrowLoopLeft,
+  faPersonWalkingArrowRight,
+  faPlus,
   faRotate,
+  faTrash,
   faTree,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
@@ -36,6 +49,10 @@ function App(): React.JSX.Element {
   library.add(
     fab,
     faArrowLeftLong,
+    faArrowRight,
+    faArrowLeft,
+    faArrowUp,
+    faArrowDown,
     faTree,
     faAngleLeft,
     faAngleRight,
@@ -49,7 +66,17 @@ function App(): React.JSX.Element {
     faWhatsapp,
     faExclamation,
     faExclamationTriangle,
-    faHandPointer
+    faHandPointer,
+    faTrash,
+    faDeleteLeft,
+    faCirclePlay,
+    faCirclePause,
+    faPersonWalkingArrowRight,
+    faPersonWalkingArrowLoopLeft,
+    faHand,
+    faPlus,
+    faMinus,
+    faFloppyDisk
   );
 
   // useEffect(() => {

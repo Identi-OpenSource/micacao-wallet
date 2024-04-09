@@ -22,6 +22,7 @@ export interface ButtonProps {
   disabled?: boolean
   style?: BtnProps
   icon?: string
+  props?: string
 }
 
 export interface ButtonIconProps {
@@ -30,6 +31,7 @@ export interface ButtonIconProps {
   disabled?: boolean
   style?: BtnProps
   icon: IconProp | string
+  iconColor?: string
   size?: number
 }
 

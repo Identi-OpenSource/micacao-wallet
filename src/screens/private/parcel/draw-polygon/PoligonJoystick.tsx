@@ -1,18 +1,30 @@
-import {Camera, LineLayer, MapView, ShapeSource, StyleURL} from '@rnmapbox/maps'
-import {Button, View} from 'react-native'
+import {
+  Camera,
+  LineLayer,
+  MapView,
+  PointAnnotation,
+  ShapeSource,
+  StyleURL,
+} from '@rnmapbox/maps'
+import {Alert, Button, Dimensions, View} from 'react-native'
 import React, {
   useState,
   useRef,
   ComponentProps,
   useMemo,
   forwardRef,
+  useEffect,
 } from 'react'
 import {storage} from '../../../../config/store/db'
 
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
-// import {JoyStick} from 'react-native-virtual-joystick'
-
 import {ReactNativeJoystick} from '@korsolutions/react-native-joystick'
+import {COLORS_DF, THEME_DF} from '../../../../config/themes/default'
+import {BtnSmall} from '../../../../components/button/Button'
+import {useNavigation} from '@react-navigation/native'
+
+const heightMap = Dimensions.get('window').height - 140
+const widthMap = Dimensions.get('window').width
 
 type Position = [number, number]
 
@@ -129,8 +141,10 @@ const PoligonJoystick = () => {
   ] as Position
   const [coordinates, setCoordinates] = useState<Position[]>([])
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
-  const [started, setStarted] = useState(false)
   const [crosshairPos, setCrosshairPos] = useState(firstPoint)
+  const [centerCoordinate, setCenterCoordinate] = useState(firstPoint)
+  const coorInitRef = useRef(null)
+  const navigation = useNavigation()
 
   const coordinatesWithLast = useMemo(() => {
     return [...coordinates, lastCoordinate]
@@ -138,167 +152,176 @@ const PoligonJoystick = () => {
 
   const map = useRef<MapView>(null)
   const ref2 = useRef<Camera>(null)
+  useEffect(() => {
+    // eliminar polygonTemp
+    //storage.delete('polygonTemp')
+    if (parcel[0].polygon) {
+      setCoordinates(parcel[0].polygon)
+    } else {
+      if (storage.getString('polygonTemp')) {
+        const coordinateTemp = JSON.parse(
+          storage.getString('polygonTemp') || '',
+        )
+        setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
+        setCoordinates(coordinateTemp)
+      }
+    }
+  }, [])
 
-  const newLocal = 'row'
+  useEffect(() => {
+    coorInitRef.current = lastCoordinate
+  }, [coordinates])
+
+  const moveMap = (angle, force) => {
+    // Supongamos que el mapa tiene un tamaño específico y queremos mapear el rango del joystick al tamaño del mapa
+
+    // Convertir el ángulo en radianes
+    const angleRad = angle.radian
+
+    // Calcular las nuevas coordenadas del marcador
+    const deltaX = Math.cos(angleRad) * ((force * widthMap) / 2)
+    const deltaY = Math.sin(angleRad) * ((force * heightMap) / 2)
+
+    // Supongamos que las coordenadas iniciales del marcador son el centro del mapa
+    const initialLng = coorInitRef.current[0] // Longitud inicial
+    const initialLat = coorInitRef.current[1] // Latitud inicial
+
+    // Calcular las nuevas coordenadas
+    const newLat = initialLat + deltaY / 111111 // 1 grado de latitud es aproximadamente 111111 metros
+    const newLng =
+      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 180)) // 1 grado de longitud varía dependiendo de la latitud
+    setCenterCoordinate([newLng, newLat])
+  }
+
+  const deletePoint = () => {
+    if (coordinates.length > 1) {
+      setCoordinates(prev => {
+        const newCoordinates = prev.slice(0, -1)
+        storage.set('polygonTemp', JSON.stringify(newCoordinates))
+        return newCoordinates
+      })
+    }
+  }
+
+  const onSubmit = () => {
+    if (coordinatesWithLast.length < 5) {
+      Alert.alert('Error', 'El polígono debe tener al menos 4 puntos')
+      return
+    }
+    // Guardar en la lista de polígonos
+    const newParcel = {
+      ...parcel[0],
+      polygon: [...coordinatesWithLast, coordinatesWithLast[0]],
+    }
+    storage.set('parcels', JSON.stringify([newParcel]))
+    storage.delete('polygonTemp')
+    navigation.navigate('MyParcelsScreen')
+  }
+
   return (
     <View style={{flex: 1}}>
-      <View>
-        {!started ? (
-          <Button
-            title="Iniciar poligono"
-            onPress={() => {
-              setStarted(true)
-              setCoordinates([lastCoordinate])
-            }}
-          />
-        ) : (
-          <View
-            style={{
-              flexDirection: newLocal,
-              justifyContent: 'center',
-              gap: 10,
-            }}>
-            <Button
-              title="Marcar Punto"
-              onPress={() => setCoordinates([...coordinates, lastCoordinate])}
-            />
-            <Button title="Listo" onPress={() => setStarted(false)} />
-          </View>
-        )}
+      <View
+        style={{
+          position: 'absolute',
+          top: 10,
+          zIndex: 99999,
+          width: widthMap,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <BtnSmall
+          title="Punto"
+          icon="minus"
+          theme="agrayu"
+          onPress={() => {
+            deletePoint()
+          }}
+        />
+        <BtnSmall
+          title="Guardar"
+          theme="agrayu"
+          icon="floppy-disk"
+          onPress={() => onSubmit()}
+        />
+        <BtnSmall
+          title="Punto"
+          icon="plus"
+          theme="agrayu"
+          onPress={() => {
+            const DATA = [...coordinates, lastCoordinate]
+            storage.set('polygonTemp', JSON.stringify(DATA))
+            setCoordinates(DATA)
+          }}
+        />
       </View>
-      <View style={{flex: 1}}>
-        <MapView
-          ref={map}
-          styleURL={StyleURL.Satellite}
-          style={{flex: 1}}
-          onCameraChanged={async () => {
-            const crosshairCoords = await map.current?.getCoordinateFromView(
-              crosshairPos,
-            )
-            if (crosshairCoords && started) {
-              setLastCoordinate(crosshairCoords as Position)
+      <MapView
+        ref={map}
+        styleURL={StyleURL.Satellite}
+        style={{
+          height: heightMap,
+          width: widthMap,
+        }}
+        scaleBarEnabled={false}
+        rotateEnabled={false}
+        attributionEnabled={false}
+        compassEnabled={false}
+        logoEnabled={false}
+        onCameraChanged={async () => {
+          const crosshairCoords = await map.current?.getCoordinateFromView(
+            crosshairPos,
+          )
+          if (crosshairCoords) {
+            setLastCoordinate(crosshairCoords as Position)
+          }
+        }}>
+        {<CrosshairOverlay onCenter={c => setCrosshairPos(c)} />}
+        {<Polygon coordinates={coordinatesWithLast} />}
+        {coordinatesWithLast.map((c, i) => {
+          return (
+            <PointAnnotation
+              key={i.toString()}
+              id={i.toString()}
+              coordinate={[c[0], c[1]]}>
+              <View
+                style={{
+                  height: 10,
+                  width: 10,
+                  backgroundColor: 'white',
+                  borderRadius: 5,
+                }}
+              />
+            </PointAnnotation>
+          )
+        })}
+        <Camera
+          ref={ref2}
+          defaultSettings={{
+            centerCoordinate: firstPoint,
+            zoomLevel: 17,
+          }}
+          animationMode={'flyTo'}
+          animationDuration={100}
+          centerCoordinate={centerCoordinate}
+        />
+      </MapView>
+      <GestureHandlerRootView
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: -180,
+        }}>
+        <ReactNativeJoystick
+          color={COLORS_DF.greenAgrayu}
+          radius={75}
+          onMove={data => {
+            if (data.angle && data.force) {
+              moveMap(data.angle, data.force)
             }
-          }}>
-          {<Polygon coordinates={coordinatesWithLast} />}
-          <Camera
-            ref={ref2}
-            defaultSettings={{
-              centerCoordinate: firstPoint,
-              zoomLevel: 17,
-            }}
-          />
-        </MapView>
-        <View
-          style={{
-            alignItems: 'center',
-            paddingVertical: 10,
-            height: 150,
-          }}>
-          <GestureHandlerRootView
-            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <ReactNativeJoystick
-              color="#06b6d4"
-              radius={75}
-              onMove={data => {
-                console.log(data)
-                // const distance = 0.001
-                // // Convertir el ángulo de radianes a coordenadas (x, y)
-                // const radian = (data.angle.degree * Math.PI) / 180
-                // const x = distance * Math.cos(radian)
-                // const y = distance * Math.sin(radian)
-
-                // ref2.current?.setCamera({
-                //   centerCoordinate: [
-                //     lastCoordinate[0] + y,
-                //     lastCoordinate[1] + x,
-                //   ],
-                //   animationDuration: 0,
-                //   animationMode: 'flyTo',
-                //   zoomLevel: 17,
-                // })
-              }}
-              onStart={data => {
-                console.log('start: ', data)
-              }}
-            />
-          </GestureHandlerRootView>
-        </View>
-        {/* <View
-          style={{
-            alignItems: 'center',
-            paddingVertical: 10,
-          }}>
-           <ReactNativeJoystick
-            color="#06b6d4"
-            radius={75}
-            onMove={(data: any) => {
-              // angle: {
-              //   radian: number;
-              //   degree: number;
-              // }
-              console.log('=> data', data)
-              const distance = 0.001 // Ajusta esta distancia según tus necesidades
-              const dx = distance * Math.cos(data.angle.radian)
-              const dy = distance * Math.sin(data.angle.radian)
-
-              ref2.current?.setCamera({
-                centerCoordinate: [
-                  lastCoordinate[0] + dx,
-                  lastCoordinate[1] + dy,
-                ],
-                animationDuration: 0,
-                animationMode: 'flyTo',
-                zoomLevel: 17,
-              })
-            }}
-            // onMove={(data: any) => {
-            //   // angle: {
-            //   //   radian: number;
-            //   //   degree: number;
-            //   // }
-
-            //   ref2.current?.setCamera({
-            //     centerCoordinate: [
-            //       crosshairPos[0] + data.position.x / 100000,
-            //       crosshairPos[1] + data.position.y / 100000,
-            //     ],
-            //     animationDuration: 0,
-            //     animationMode: 'flyTo',
-            //     zoomLevel: 17,
-            //   })
-
-            //   console.log('=> data', data)
-            //   console.log('=> lastCoordinate', lastCoordinate)
-            //   console.log('=> coordinates', coordinates)
-            // }}
-          />
-        </View>*/}
-        {started && <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />}
-      </View>
+          }}
+        />
+      </GestureHandlerRootView>
     </View>
   )
 }
 
 export default PoligonJoystick
-
-/* end-example-doc */
-
-/** @type ExampleWithMetadata['metadata'] */
-const metadata = {
-  title: 'Draw Polyline',
-  tags: [
-    'LineLayer',
-    'ShapeSource',
-    'onCameraChanged',
-    'getCoordinateFromView',
-    'Overlay',
-  ],
-  docs: `This example shows a simple polyline editor. It uses \`onCameraChanged\` to get the center of the map and \`getCoordinateFromView\` 
-  to get the coordinates of the crosshair.
-  
-  The crosshair is an overlay that is positioned using \`onLayout\` and \`getCoordinateFromView\`.
-  
-  The \`ShapeSource\` is updated with the new coordinates and the \`LineLayer\` is updated with the new coordinates.`,
-}
-
-PoligonJoystick.metadata = metadata
