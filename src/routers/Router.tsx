@@ -434,13 +434,6 @@ const HomeStackPrivate = () => {
             title: "Poligon Joystick",
           }}
         />
-        <HomeStack.Screen
-          name="PoligonBTN"
-          component={PoligonBTN}
-          options={{
-            title: "Poligon Joystick",
-          }}
-        />
       </HomeStack.Group>
 
       <HomeStack.Screen name="TestMap" component={TestMap} />
