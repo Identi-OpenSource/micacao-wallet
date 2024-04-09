@@ -25,7 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 import { modal_camara } from "../../../assets/imgs";
 import { UsersContext } from "../../../states/UserContext";
 import { RootStackParamList } from "../../../routers/Router";
-import { Camera_M, Camera_W, Modal_Camera } from "../../../assets/svg";
+import { Camera_M, Camera_W } from "../../../assets/svg";
 export const PermissionsFourScreen = () => {
   const user = useContext(UsersContext);
   const navigation = useNavigation();
