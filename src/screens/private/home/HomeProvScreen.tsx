@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useState} from 'react'
+import React, { useCallback, useContext, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   View,
   Alert as Alerts,
-} from 'react-native'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
+} from "react-native";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
@@ -16,17 +16,17 @@ import {
   FONT_SIZES,
   MP_DF,
   getFontSize,
-} from '../../../config/themes/default'
-import {UserInterface, UsersContext} from '../../../states/UserContext'
-import useInternetConnection from '../../../hooks/useInternetConnection'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {LABELS} from '../../../config/texts/labels'
-import {Btn, BtnSmall} from '../../../components/button/Button'
-import {TEXTS} from '../../../config/texts/texts'
-import {imgFrame, imgLayer} from '../../../assets/imgs'
-import {storage} from '../../../config/store/db'
-import {useFocusEffect, useNavigation} from '@react-navigation/native'
-import {LoadingSave} from '../../../components/loading/LoadinSave'
+} from "../../../config/themes/default";
+import { UserInterface, UsersContext } from "../../../states/UserContext";
+import useInternetConnection from "../../../hooks/useInternetConnection";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { LABELS } from "../../../config/texts/labels";
+import { Btn, BtnSmall } from "../../../components/button/Button";
+import { TEXTS } from "../../../config/texts/texts";
+import { imgFrame, imgLayer } from "../../../assets/imgs";
+import { storage } from "../../../config/store/db";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { LoadingSave } from "../../../components/loading/LoadinSave";
 import {
   fundingWallet,
   // fundingWalletOff,
@@ -34,24 +34,24 @@ import {
   verificarWallet,
   writeTransaction,
   // writeTransaction,
-} from '../../../OCC/occ'
-import {Alert} from '../../../components/alert/Alert'
-import axios from 'axios'
+} from "../../../OCC/occ";
+import { Alert } from "../../../components/alert/Alert";
+import axios from "axios";
 /* import {Users} from '../../../models/user'
 import {useQuery} from '@realm/react'
 import Geolocation from '@react-native-community/geolocation' */
 
 export const HomeProvScreen = () => {
-  const navigation = useNavigation()
-  const user: UserInterface = useContext(UsersContext)
-  const isConnected = useInternetConnection()
-  const [syncUp, setSyncUp] = useState(false)
-  const [TGFW, setTokenGFW] = useState(null)
-  const [apiKeyGFW, setApiKeyGFW] = useState(null)
-  const [loadinSync, setLoadingSync] = useState(false)
+  const navigation = useNavigation();
+  const user: UserInterface = useContext(UsersContext);
+  const isConnected = useInternetConnection();
+  const [syncUp, setSyncUp] = useState(false);
+  const [TGFW, setTokenGFW] = useState(null);
+  const [apiKeyGFW, setApiKeyGFW] = useState(null);
+  const [loadinSync, setLoadingSync] = useState(false);
   // const users = useQuery(Users)
 
-  const [wa, setWa] = useState(null) as any
+  const [wa, setWa] = useState(null) as any;
 
   // console.log('users', users)
 
@@ -59,14 +59,14 @@ export const HomeProvScreen = () => {
     useCallback(() => {
       // verifySyncUp()
       // if not parcels, go to register parcel
-      const parcels = JSON.parse(storage.getString('parcels') || '[]')
+      const parcels = JSON.parse(storage.getString("parcels") || "[]");
       if (parcels.length === 0) {
         setTimeout(() => {
-          navigation.navigate('RegisterParcelScreen')
-        }, 1000)
+          navigation.navigate("RegisterParcelScreen");
+        }, 1000);
       }
-    }, [isConnected]),
-  )
+    }, [isConnected])
+  );
 
   // const verifySyncUp = () => {
   //   // asyncData if not syncUp in the last 4 hours
@@ -81,44 +81,44 @@ export const HomeProvScreen = () => {
   // }
 
   const dataSyncUp = () => {
-    setLoadingSync(true)
+    setLoadingSync(true);
     setTimeout(() => {
-      const newSync = {isSyncUp: false, lastSyncUp: Date.now()}
-      storage.set('syncUp', JSON.stringify(newSync))
-      setSyncUp(false)
-      setLoadingSync(false)
-    }, 2500)
-  }
+      const newSync = { isSyncUp: false, lastSyncUp: Date.now() };
+      storage.set("syncUp", JSON.stringify(newSync));
+      setSyncUp(false);
+      setLoadingSync(false);
+    }, 2500);
+  };
 
   const createWallet = () => {
-    const wallet = newWallet()
-    setWa(wallet)
-    Alerts.alert('Wallet Creada', wallet.walletOFC)
-    console.log('wallet', wallet)
-  }
+    const wallet = newWallet();
+    setWa(wallet);
+    Alerts.alert("Wallet Creada", wallet.walletOFC);
+    console.log("wallet", wallet);
+  };
 
   const getFundingWallet = async () => {
     await fundingWallet(wa.walletOFC)
       .then(() => {
         Alerts.alert(
-          'Fondos Agregados',
-          'Se han agregado fondos a su wallet.' + wa.walletOFC,
-        )
+          "Fondos Agregados",
+          "Se han agregado fondos a su wallet." + wa.walletOFC
+        );
       })
       .catch(() => {
         Alerts.alert(
-          'Error',
-          'No se han podido agregar fondos a su wallet. Parece que la red OCC no está disponible. Intente más tarde.',
-        )
-      })
-  }
+          "Error",
+          "No se han podido agregar fondos a su wallet. Parece que la red OCC no está disponible. Intente más tarde."
+        );
+      });
+  };
 
   const write = async () => {
     // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
     // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
     // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
-    await writeTransaction(wa.wif)
-  }
+    await writeTransaction(wa.wif);
+  };
 
   /*  const fundingWalletOffline = async () => {
     await fundingWalletOff(wa.ec_pairs, wa.walletOFC, wa.wifi)
@@ -142,77 +142,77 @@ export const HomeProvScreen = () => {
   const tokenGFW = async () => {
     await axios
       .post(
-        'https://data-api.globalforestwatch.org/auth/token',
+        "https://data-api.globalforestwatch.org/auth/token",
         {
-          username: 'soporte@braudin.com',
-          password: 'qCd&IbS4&jt8',
+          username: "soporte@braudin.com",
+          password: "qCd&IbS4&jt8",
         },
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            "Content-Type": "application/x-www-form-urlencoded",
           },
-        },
+        }
       )
-      .then(resp => {
+      .then((resp) => {
         // setTokenGFW(resp.data)
-        setTokenGFW(resp.data.data.access_token)
-        Alerts.alert('Token GFW obtenido', resp.data.data.access_token)
+        setTokenGFW(resp.data.data.access_token);
+        Alerts.alert("Token GFW obtenido", resp.data.data.access_token);
       })
-      .catch(e => {
-        Alerts.alert('Error al intentar obtener el token')
-        console.log('error', e)
-      })
-  }
+      .catch((e) => {
+        Alerts.alert("Error al intentar obtener el token");
+        console.log("error", e);
+      });
+  };
 
   const createApiKeyGFW = async () => {
     const payload = {
-      alias: 'mi-cacao-appss' + Date.now(),
-      organization: 'GFWdata',
-      email: 'soporte@braudin.com',
+      alias: "mi-cacao-appss" + Date.now(),
+      organization: "GFWdata",
+      email: "soporte@braudin.com",
       domains: [],
-    }
+    };
     await axios
-      .post('https://data-api.globalforestwatch.org/auth/apikey', payload, {
+      .post("https://data-api.globalforestwatch.org/auth/apikey", payload, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${TGFW}`,
         },
       })
-      .then(resp => {
-        setApiKeyGFW(resp.data.data.api_key)
+      .then((resp) => {
+        setApiKeyGFW(resp.data.data.api_key);
         Alerts.alert(
-          'Api Key GFW obtenido',
-          'Se genero un api key para el alias: ' + resp.data.data.alias,
-        )
+          "Api Key GFW obtenido",
+          "Se genero un api key para el alias: " + resp.data.data.alias
+        );
       })
-      .catch(e => {
-        Alerts.alert('Error al intentar obtener el ApiKey')
-        console.log('error', e)
-      })
-  }
+      .catch((e) => {
+        Alerts.alert("Error al intentar obtener el ApiKey");
+        console.log("error", e);
+      });
+  };
 
   const testApiKeyGFW = async () => {
     await axios
-      .get('https://data-api.globalforestwatch.org/datasets', {
+      .get("https://data-api.globalforestwatch.org/datasets", {
         headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKeyGFW,
+          "Content-Type": "application/json",
+          "x-api-key": apiKeyGFW,
         },
       })
-      .then(resp => {
-        console.log('resp', resp.data.data)
-        Alerts.alert('Api Key GFW Test', 'Api Key GFW valido')
+      .then((resp) => {
+        console.log("resp", resp.data.data);
+        Alerts.alert("Api Key GFW Test", "Api Key GFW valido");
       })
-      .catch(e => {
-        Alerts.alert('Test Api Key GFW', 'Api Key GFW no valido')
-        console.log('error', e)
-      })
-  }
+      .catch((e) => {
+        Alerts.alert("Test Api Key GFW", "Api Key GFW no valido");
+        console.log("error", e);
+      });
+  };
 
   const queryPForestal = async () => {
     const payload = {
       geometry: {
-        type: 'Polygon',
+        type: "Polygon",
         coordinates: [
           [
             [103.19732666015625, 0.5537709801264608],
@@ -222,34 +222,35 @@ export const HomeProvScreen = () => {
           ],
         ],
       },
-      sql: 'SELECT SUM(area__ha) FROM results WHERE umd_tree_cover_loss__year=2022',
-    }
+      sql:
+        "SELECT SUM(area__ha) FROM results WHERE umd_tree_cover_loss__year=2022",
+    };
     await axios
       .post(
-        'https://data-api.globalforestwatch.org/dataset/umd_tree_cover_loss/latest/query',
+        "https://data-api.globalforestwatch.org/dataset/umd_tree_cover_loss/latest/query",
         payload,
         {
           headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKeyGFW,
+            "Content-Type": "application/json",
+            "x-api-key": apiKeyGFW,
           },
-        },
+        }
       )
-      .then(resp => {
-        console.log('resp', resp.data.data)
+      .then((resp) => {
+        console.log("resp", resp.data.data);
         Alerts.alert(
-          'Perdida forestal',
-          `Hubo una perdida de ${resp.data.data[0].area__ha} hectáreas en 2022 para el polígono test`,
-        )
+          "Perdida forestal",
+          `Hubo una perdida de ${resp.data.data[0].area__ha} hectáreas en 2022 para el polígono test`
+        );
       })
-      .catch(e => {
+      .catch((e) => {
         Alerts.alert(
-          'Error en la consulta',
-          'No se pudo obtener la información.',
-        )
-        console.log('error', e)
-      })
-  }
+          "Error en la consulta",
+          "No se pudo obtener la información."
+        );
+        console.log("error", e);
+      });
+  };
 
   return (
     <SafeArea>
@@ -263,92 +264,92 @@ export const HomeProvScreen = () => {
             />
             <Header {...user} />
             <Body syncUp={syncUp} />
-            <View style={{marginTop: MP_DF.large}}>
+            <View style={{ marginTop: MP_DF.large }}>
               <Text style={styles.titleHeader}>Pruebas Polígono</Text>
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Muestra puntos en el mapa
               </Text>
               <Btn
-                title={'Prueba de puntos GPS'}
+                title={"Prueba de puntos GPS"}
                 theme="agrayu"
-                onPress={() => navigation.navigate('TestMap')}
+                onPress={() => navigation.navigate("TestMap")}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Capturar polígono primera opción
               </Text>
               <Btn
-                title={'Polígono A'}
+                title={"Polígono A"}
                 theme="agrayu"
-                onPress={() => navigation.navigate('DrawPolyline')}
+                onPress={() => navigation.navigate("DrawPolyline")}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Capturar polígono segunda opción
               </Text>
               <Btn
-                title={'Polígono B'}
+                title={"Polígono B"}
                 theme="agrayu"
-                onPress={() => navigation.navigate('GradientLine')}
+                onPress={() => navigation.navigate("GradientLine")}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Capturar polígono tercera opción
               </Text>
               <Btn
-                title={'Polígono C'}
+                title={"Polígono C"}
                 theme="agrayu"
                 disabled={false}
-                onPress={() => navigation.navigate('GradientLineRecorrer')}
+                onPress={() => navigation.navigate("GradientLineRecorrer")}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Capturar polígono cuarta opción
               </Text>
               <Btn
-                title={'Polígono D'}
+                title={"Polígono D"}
                 theme="agrayu"
                 disabled={false}
-                onPress={() => navigation.navigate('GradientLineRecorrerAdd')}
+                onPress={() => navigation.navigate("GradientLineRecorrerAdd")}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Capturar polígono quinta opción
               </Text>
               <Btn
-                title={'Polígono E'}
+                title={"Polígono E"}
                 theme="agrayu"
                 disabled={false}
-                onPress={() => navigation.navigate('PoligonJoystick')}
+                onPress={() => navigation.navigate("PoligonJoystick")}
               />
 
-              <Text style={[styles.titleHeader, {marginVertical: 10}]}>
+              <Text style={[styles.titleHeader, { marginVertical: 10 }]}>
                 Pruebas Wallet
               </Text>
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Crea una wallet compatible con OCC
               </Text>
               <Btn
-                title={'Nueva Wallet'}
+                title={"Nueva Wallet"}
                 theme="agrayu"
                 onPress={() => createWallet()}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Agrega fondos a la wallet
               </Text>
               <Btn
-                title={'Funding Wallet'}
+                title={"Funding Wallet"}
                 theme="agrayu"
                 onPress={() => getFundingWallet()}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Verificar wallet
               </Text>
               <Btn
-                title={'Revisar Wallet Online OFC'}
+                title={"Revisar Wallet Online OFC"}
                 theme="agrayu"
                 onPress={() => verificarWallet(wa.walletOFC)}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Post Transaction de prueba a la wallet
               </Text>
               <Btn
-                title={'Escribir en red OCC'}
+                title={"Escribir en red OCC"}
                 theme="agrayu"
                 onPress={() => write()}
               />
@@ -375,39 +376,39 @@ export const HomeProvScreen = () => {
                 theme="agrayu"
                 onPress={() => newTransaction()}
               /> */}
-              <Text style={[styles.titleHeader, {marginVertical: 10}]}>
+              <Text style={[styles.titleHeader, { marginVertical: 10 }]}>
                 Pruebas Global Forest Watch
               </Text>
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Obtener token
               </Text>
               <Btn
-                title={'Token GFW'}
+                title={"Token GFW"}
                 theme="agrayu"
                 onPress={() => tokenGFW()}
               />
-              <Text style={[styles.textHeader, {marginVertical: 10}]}>
+              <Text style={[styles.textHeader, { marginVertical: 10 }]}>
                 Obtener ApiKEY
               </Text>
               <Btn
-                title={'Api GFW'}
+                title={"Api GFW"}
                 theme="agrayu"
                 onPress={() => createApiKeyGFW()}
               />
             </View>
-            <Text style={[styles.textHeader, {marginVertical: 10}]}>
+            <Text style={[styles.textHeader, { marginVertical: 10 }]}>
               Test Api Key
             </Text>
             <Btn
-              title={'ApiKey Test'}
+              title={"ApiKey Test"}
               theme="agrayu"
               onPress={() => testApiKeyGFW()}
             />
-            <Text style={[styles.textHeader, {marginVertical: 10}]}>
+            <Text style={[styles.textHeader, { marginVertical: 10 }]}>
               Pérdida de cobertura forestal
             </Text>
             <Btn
-              title={'Query pérdida forestal'}
+              title={"Query pérdida forestal"}
               theme="agrayu"
               onPress={() => queryPForestal()}
             />
@@ -417,22 +418,22 @@ export const HomeProvScreen = () => {
         )}
       </ScrollView>
     </SafeArea>
-  )
-}
+  );
+};
 
 const ConnectionStatus = (props: {
-  syncUp: boolean
-  isConnected: boolean
-  dataSyncUp: Function
+  syncUp: boolean;
+  isConnected: boolean;
+  dataSyncUp: Function;
 }) => {
-  const isConnected = props.isConnected
-  const syncUp = props.syncUp
-  const dataSyncUp = props.dataSyncUp
+  const isConnected = props.isConnected;
+  const syncUp = props.syncUp;
+  const dataSyncUp = props.dataSyncUp;
   return (
     <View style={styles.containerConnection}>
       <View style={styles.containerConnectionTitle}>
         <FontAwesomeIcon
-          icon={'circle'}
+          icon={"circle"}
           size={14}
           color={!isConnected ? COLORS_DF.grayLight : COLORS_DF.greenAgrayu}
         />
@@ -445,18 +446,18 @@ const ConnectionStatus = (props: {
       )}
       {isConnected && syncUp && (
         <BtnSmall
-          theme={'agrayu'}
+          theme={"agrayu"}
           title={LABELS.asyncData}
-          icon={'rotate'}
+          icon={"rotate"}
           onPress={() => dataSyncUp()}
         />
       )}
     </View>
-  )
-}
+  );
+};
 
-const Header = ({name}: UserInterface) => {
-  const firstName = name.split(' ')[0]
+const Header = ({ name }: UserInterface) => {
+  const firstName = name.split(" ")[0];
   return (
     <View style={styles.header}>
       <Text style={styles.titleHeader}>
@@ -464,13 +465,13 @@ const Header = ({name}: UserInterface) => {
       </Text>
       <Text style={styles.textHeader}>{TEXTS.textK}</Text>
     </View>
-  )
-}
+  );
+};
 
-const Body = (props: {syncUp: boolean}) => {
-  const [alert, setAlert] = useState(false)
-  const navigation = useNavigation()
-  const syncUp = props.syncUp
+const Body = (props: { syncUp: boolean }) => {
+  const [alert, setAlert] = useState(false);
+  const navigation = useNavigation();
+  const syncUp = props.syncUp;
   // const onPress = () => {
   //   if (syncUp) {
   //     setAlert(true)
@@ -482,7 +483,7 @@ const Body = (props: {syncUp: boolean}) => {
       <Alert
         visible={alert}
         onVisible={setAlert}
-        icon={'exclamation-triangle'}
+        icon={"exclamation-triangle"}
         title={TEXTS.textAE}
       />
       {/* Primer card */}
@@ -490,7 +491,8 @@ const Body = (props: {syncUp: boolean}) => {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('MyParcelsScreen')}>
+          onPress={() => navigation.navigate("MyParcelsScreen")}
+        >
           <Image source={imgLayer} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.viewMyParcels}
@@ -501,7 +503,8 @@ const Body = (props: {syncUp: boolean}) => {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('NewSaleOneScreen')}>
+          onPress={() => navigation.navigate("NewSaleOneScreen")}
+        >
           <Image source={imgFrame} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.registerVenta}
@@ -509,8 +512,8 @@ const Body = (props: {syncUp: boolean}) => {
         </TouchableOpacity>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   filter: {
@@ -527,26 +530,26 @@ const styles = StyleSheet.create({
     borderColor: COLORS_DF.cacao,
     borderRadius: BORDER_RADIUS_DF.small,
     backgroundColor: COLORS_DF.white,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: MP_DF.small,
   },
   containerConnectionTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   connectionTitle: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(18),
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS_DF.cacao,
     marginLeft: MP_DF.small,
   },
   connectionSubTitle: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(14),
-    fontWeight: 'normal',
+    fontWeight: "normal",
     color: COLORS_DF.grayLight,
     marginLeft: MP_DF.small,
   },
@@ -556,7 +559,7 @@ const styles = StyleSheet.create({
   titleHeader: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.xslarge,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS_DF.cacao,
     marginBottom: MP_DF.small,
   },
@@ -566,17 +569,17 @@ const styles = StyleSheet.create({
     color: COLORS_DF.cacao,
   },
   bodyContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginTop: MP_DF.large,
   },
   bodyCardContainer: {
-    width: '50%',
+    width: "50%",
     padding: MP_DF.small,
     marginTop: MP_DF.large,
   },
   bodyCardContainerFull: {
-    width: '100%',
+    width: "100%",
     padding: MP_DF.small,
     marginTop: MP_DF.medium,
   },
@@ -587,15 +590,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS_DF.white,
     borderRadius: BORDER_RADIUS_DF.medium,
     elevation: 3,
-    alignItems: 'center',
+    alignItems: "center",
   },
   titleCard: {
     paddingHorizontal: MP_DF.medium,
     marginTop: MP_DF.medium,
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.large,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS_DF.cacao,
-    textAlign: 'center',
+    textAlign: "center",
   },
-})
+});

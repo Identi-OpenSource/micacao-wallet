@@ -56,7 +56,7 @@ import PoligonJoystick from "../screens/private/parcel/draw-polygon/PoligonJoyst
 import SplashScreen from "../screens/SplashScreen";
 import StartScreen from "../screens/public/register/StartScreen";
 import { ConfirmPasswordScreen } from "../screens/public/register/ConfirmPasswordScreen";
-
+import ProfileScreen from "../screens/private/profile";
 const styles = StyleSheet.create({
   tabBarStyle: {
     backgroundColor: COLORS_DF.white,
@@ -101,7 +101,7 @@ export type RootStackParamList = {
   NewSaleOneScreen: undefined;
   NewSaleTwoScreen: undefined;
   NewSaleThreeScreen: undefined;
-
+  ProfileScreen: undefined;
   // Solo pruebas
   TestMap: undefined;
   DrawPolyline: undefined;
@@ -147,7 +147,7 @@ const tabConfig = {
   statusBarStyle: "dark",
   presentation: "card",
   initialRouteName: "HomeProvScreen",
-  tabBarActiveTintColor: COLORS_DF.cacao,
+  tabBarActiveTintColor: COLORS_DF.robin_egg_blue,
   tabBarInactiveTintColor: COLORS_DF.gray,
   tabBarStyle: styles.tabBarStyle,
   tabBarLabelStyle: styles.tabBarLabelStyle,
@@ -327,7 +327,7 @@ const TabPrivate = () => {
     <Tab.Navigator screenOptions={{ ...tabConfig }} initialRouteName="inicio">
       <Tab.Screen
         name="perfil"
-        component={HomeStackPrivate}
+        component={ProfileStackPrivate}
         options={{
           tabBarLabel: "PERFIL",
           tabBarIcon: ({ color }) =>
@@ -429,6 +429,16 @@ const HomeStackPrivate = () => {
           }}
         />
       </HomeStack.Group>
+
+      <HomeStack.Screen name="TestMap" component={TestMap} />
+    </HomeStack.Navigator>
+  );
+};
+const ProfileStackPrivate = () => {
+  const HomeStack = createNativeStackNavigator<RootStackParamList>();
+  return (
+    <HomeStack.Navigator screenOptions={{ ...slideFromRight }}>
+      <HomeStack.Screen name="ProfileScreen" component={ProfileScreen} />
 
       <HomeStack.Screen name="TestMap" component={TestMap} />
     </HomeStack.Navigator>
