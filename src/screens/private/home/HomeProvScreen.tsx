@@ -253,7 +253,7 @@ export const HomeProvScreen = () => {
   };
 
   return (
-    <SafeArea>
+    <SafeArea bg={"isabelline"}>
       <ScrollView>
         {!loadinSync ? (
           <View style={styles.container}>
@@ -560,13 +560,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.xslarge,
     fontWeight: "bold",
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     marginBottom: MP_DF.small,
   },
   textHeader: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.small,
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
   },
   bodyContainer: {
     flexDirection: "row",
@@ -598,7 +598,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.large,
     fontWeight: "bold",
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     textAlign: "center",
   },
 });
