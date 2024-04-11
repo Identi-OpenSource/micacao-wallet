@@ -20,7 +20,7 @@ const ProfileScreen = () => {
       <View style={styles.textContainer}>
         <Profile {...user} />
 
-        <Text style={styles.textFarmer}>Agricultor@</Text>
+        <Text style={styles.textFarmer}>Agricultor</Text>
       </View>
     </View>
   );
