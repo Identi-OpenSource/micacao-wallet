@@ -1,5 +1,6 @@
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
 import {
   Image,
   Linking,
@@ -8,12 +9,10 @@ import {
   Text,
   View,
 } from "react-native";
-import { COLORS_DF, MP_DF } from "../../../config/themes/default";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { imgCacao } from "../../../assets/imgs";
 import { Btn } from "../../../components/button/Button";
-import { Header } from "../../public/register/RegisterScreen";
-import { useNavigation } from "@react-navigation/native";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { COLORS_DF, MP_DF } from "../../../config/themes/default";
 export const HelpScreen = () => {
   const onPress = () => {
     Linking.openURL("whatsapp://send?phone=+5117064556").catch(() => {

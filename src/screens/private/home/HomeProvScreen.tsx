@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
   containerConnection: {
     height: 48,
     borderWidth: 1,
-    borderColor: COLORS_DF.cacao,
+    borderColor: COLORS_DF.citrine_brown,
     borderRadius: BORDER_RADIUS_DF.small,
     backgroundColor: COLORS_DF.white,
     flexDirection: "row",
@@ -627,7 +627,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(18),
     fontWeight: "bold",
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     marginLeft: MP_DF.small,
   },
   connectionSubTitle: {

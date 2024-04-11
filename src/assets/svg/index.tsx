@@ -31,3 +31,4 @@ export { default as Modal_Camera } from "./modal_Camera.svg";
 export { default as Person } from "./person.svg";
 export { default as LocationPermision } from "./locationPermission.svg";
 export { default as CameraPermision } from "./cameraPermission.svg";
+export { default as Parcels } from "./parcel.svg";

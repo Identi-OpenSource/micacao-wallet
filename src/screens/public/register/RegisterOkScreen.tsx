@@ -1,7 +1,5 @@
-import geoViewport from "@mapbox/geo-viewport";
-import Mapbox from "@rnmapbox/maps";
-import CryptoJS from "crypto-js";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
 import {
   ActivityIndicator,
   Animated,
@@ -11,59 +9,41 @@ import {
   Text,
   View,
 } from "react-native";
-import Config from "react-native-config";
-import { fundingWallet, newWallet } from "../../../OCC/occ";
-import { imgCheque } from "../../../assets/imgs";
-import { Btn } from "../../../components/button/Button";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { storage } from "../../../config/store/db";
-import { LABELS } from "../../../config/texts/labels";
-import { TEXTS } from "../../../config/texts/texts";
 import {
   COLORS_DF,
   FONT_FAMILIES,
   MP_DF,
 } from "../../../config/themes/default";
+import { Btn } from "../../../components/button/Button";
+import { TEXTS } from "../../../config/texts/texts";
+import { LABELS } from "../../../config/texts/labels";
+import { imgCheque } from "../../../assets/imgs";
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
 } from "../../../config/themes/metrics";
+import { storage } from "../../../config/store/db";
 import { UserDispatchContext } from "../../../states/UserContext";
+import geoViewport from "@mapbox/geo-viewport";
+import { fundingWallet, newWallet } from "../../../OCC/occ";
+import CryptoJS from "crypto-js";
+import Config from "react-native-config";
+import Mapbox from "@rnmapbox/maps";
 Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
 const { width, height } = Dimensions.get("window");
 
 export const RegisterOkScreen = () => {
-  // const realm = useRealm()
   const [step, setStep] = useState({ step: 0, msg: TEXTS.textH });
   const dispatch = useContext(UserDispatchContext);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
   const user = JSON.parse(storage.getString("user") || "{}");
-  const welcome = user.gender === "M" ? TEXTS.welcomeM : TEXTS.welcomeF;
   const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
 
   useEffect(() => {
-    storage.set("user", JSON.stringify({ ...user, isLogin: true }));
-    storage.set("syncUp", JSON.stringify({ isSyncUp: true, lastSyncUp: 0 }));
-    // realm.write(() => {
-    //   realm.create(Users, {
-    //     _id: new BSON.ObjectId(),
-    //     dni: user.dni,
-    //     gender: user.gender,
-    //     name: user.name,
-    //     phone: user.phone,
-    //     createdAt: new Date(),
-    //   })
-    // })
     initial();
   }, []);
 
-  // Login
-  const isLogin = () => {
-    const login = JSON.parse(storage.getString("user") || "{}");
-    dispatch({ type: "login", payload: login });
-  };
   // Inicializa el proceso de registro
   const initial = async () => {
     await delay(1000);
@@ -92,36 +72,6 @@ export const RegisterOkScreen = () => {
     dispatch({ type: "login", payload: login });
   };
 
-  // Animation
-  useEffect(() => {
-    if (step === 0) {
-      // Fade in
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 2000,
-        useNativeDriver: true,
-      }).start(() => {
-        // Fade out after fade in is complete
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 500,
-          delay: 1500,
-          useNativeDriver: true,
-        }).start(() => {
-          // nimero aleatorio ente 500 y 2500
-          setStep(1);
-        });
-      });
-    } else if (step === 1) {
-      fadeAnim.setValue(0);
-      // Fade in
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [fadeAnim, step]);
   // Encripta el DNI
   const certificateND = async (dni: string) => {
     const paddedDNI = dni.padStart(16, "0");
@@ -174,36 +124,17 @@ export const RegisterOkScreen = () => {
 
   return (
     <SafeArea bg={"neutral"}>
-      {step === 0 && (
-        <>
-          <ActivityIndicator
-            size={moderateScale(86)}
-            color={COLORS_DF.cacao}
-            style={styles.indicador}
-          />
-          <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-            <View style={styles.textContainer}>
-              <Text style={[styles.textA]}>{TEXTS.textG}</Text>
-              <Text style={[styles.textB]}>{TEXTS.textH}</Text>
-              <Text style={[styles.textB]}>{step.msg}</Text>
-            </View>
-          </Animated.View>
-        </>
-      )}
-      {step === 1 && (
-        <>
-          <Image source={imgCheque} style={[styles.img, styles.indicador]} />
-          <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-            <View style={styles.textContainer}>
-              <Text style={[styles.textA]}>{welcome}</Text>
-              <Text style={[styles.textB]}>{TEXTS.textJ}</Text>
-            </View>
-            <View style={styles.formBtn}>
-              <Btn title={LABELS.continue} theme="agrayu" onPress={isLogin} />
-            </View>
-          </Animated.View>
-        </>
-      )}
+      <ActivityIndicator
+        size={moderateScale(86)}
+        color={COLORS_DF.citrine_brown}
+        style={styles.indicador}
+      />
+      <View style={[styles.container]}>
+        <View style={styles.textContainer}>
+          <Text style={[styles.textA]}>{TEXTS.textG}</Text>
+          <Text style={[styles.textB]}>{step.msg}</Text>
+        </View>
+      </View>
     </SafeArea>
   );
 };
@@ -233,8 +164,8 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(MP_DF.medium),
   },
   textB: {
-    fontFamily: FONT_FAMILIES.bold,
-    fontSize: moderateScale(25),
+    fontFamily: FONT_FAMILIES.primary,
+    fontSize: moderateScale(24),
     fontWeight: "500",
     textAlign: "center",
     color: COLORS_DF.citrine_brown,
