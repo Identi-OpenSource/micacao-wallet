@@ -119,6 +119,7 @@ dependencies {
     implementation 'com.facebook.fresco:animated-gif:3.1.3'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation project(':react-native-vector-icons')
+    implementation 'com.mapbox.maps:android:10.1.8'
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
