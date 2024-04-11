@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useState} from 'react'
+import React, { useCallback, useContext, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -6,8 +6,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
+} from "react-native";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
@@ -15,18 +15,18 @@ import {
   FONT_SIZES,
   MP_DF,
   getFontSize,
-} from '../../../config/themes/default'
-import {UserInterface, UsersContext} from '../../../states/UserContext'
-import useInternetConnection from '../../../hooks/useInternetConnection'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {LABELS} from '../../../config/texts/labels'
-import {BtnSmall} from '../../../components/button/Button'
-import {TEXTS} from '../../../config/texts/texts'
-import {imgFrame, imgLayer} from '../../../assets/imgs'
-import {storage} from '../../../config/store/db'
-import {useFocusEffect, useNavigation} from '@react-navigation/native'
-import {LoadingSave} from '../../../components/loading/LoadinSave'
-import {Alert} from '../../../components/alert/Alert'
+} from "../../../config/themes/default";
+import { UserInterface, UsersContext } from "../../../states/UserContext";
+import useInternetConnection from "../../../hooks/useInternetConnection";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { LABELS } from "../../../config/texts/labels";
+import { BtnSmall } from "../../../components/button/Button";
+import { TEXTS } from "../../../config/texts/texts";
+import { imgFrame, imgLayer } from "../../../assets/imgs";
+import { storage } from "../../../config/store/db";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { LoadingSave } from "../../../components/loading/LoadinSave";
+import { Alert } from "../../../components/alert/Alert";
 /* import  fundingWallet,
 fundingWalletOff,
 newWallet,
@@ -47,11 +47,11 @@ import {useQuery} from '@realm/react'
 import Geolocation from '@react-native-community/geolocation' */
 
 export const HomeProvScreen = () => {
-  const navigation = useNavigation()
-  const user: UserInterface = useContext(UsersContext)
-  const isConnected = useInternetConnection()
-  const [syncUp, setSyncUp] = useState(false)
-  const [loadinSync, setLoadingSync] = useState(false)
+  const navigation = useNavigation();
+  const user: UserInterface = useContext(UsersContext);
+  const isConnected = useInternetConnection();
+  const [syncUp, setSyncUp] = useState(false);
+  const [loadinSync, setLoadingSync] = useState(false);
   // const [TGFW, setTokenGFW] = useState(null)
   // const [apiKeyGFW, setApiKeyGFW] = useState(null)
   // const users = useQuery(Users)
@@ -61,14 +61,14 @@ export const HomeProvScreen = () => {
     useCallback(() => {
       // verifySyncUp()
       // const usesr = JSON.parse(storage.getString('user') || '[]')
-      const parcels = JSON.parse(storage.getString('parcels') || '[]')
+      const parcels = JSON.parse(storage.getString("parcels") || "[]");
       if (parcels.length === 0) {
         setTimeout(() => {
-          navigation.navigate('RegisterParcelScreen')
-        }, 1000)
+          navigation.navigate("RegisterParcelScreen");
+        }, 1000);
       }
-    }, [isConnected]),
-  )
+    }, [isConnected])
+  );
 
   /* const dataSyncUp = () => {
     setLoadingSync(true)
@@ -103,9 +103,9 @@ export const HomeProvScreen = () => {
     await fundingWallet(wa.walletOFC)
       .then(() => {
         Alerts.alert(
-          'Fondos Agregados',
-          'Se han agregado fondos a su wallet.' + wa.walletOFC,
-        )
+          "Fondos Agregados",
+          "Se han agregado fondos a su wallet." + wa.walletOFC
+        );
       })
       .catch(() => {
         Alerts.alert(
@@ -144,21 +144,21 @@ export const HomeProvScreen = () => {
   /* const tokenGFW = async () => {
     await axios
       .post(
-        'https://data-api.globalforestwatch.org/auth/token',
+        "https://data-api.globalforestwatch.org/auth/token",
         {
-          username: 'soporte@braudin.com',
-          password: 'qCd&IbS4&jt8',
+          username: "soporte@braudin.com",
+          password: "qCd&IbS4&jt8",
         },
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            "Content-Type": "application/x-www-form-urlencoded",
           },
-        },
+        }
       )
-      .then(resp => {
+      .then((resp) => {
         // setTokenGFW(resp.data)
-        setTokenGFW(resp.data.data.access_token)
-        Alerts.alert('Token GFW obtenido', resp.data.data.access_token)
+        setTokenGFW(resp.data.data.access_token);
+        Alerts.alert("Token GFW obtenido", resp.data.data.access_token);
       })
       .catch(e => {
         Alerts.alert('Error al intentar obtener el token')
@@ -168,24 +168,24 @@ export const HomeProvScreen = () => {
 
   /* const createApiKeyGFW = async () => {
     const payload = {
-      alias: 'mi-cacao-appss' + Date.now(),
-      organization: 'GFWdata',
-      email: 'soporte@braudin.com',
+      alias: "mi-cacao-appss" + Date.now(),
+      organization: "GFWdata",
+      email: "soporte@braudin.com",
       domains: [],
-    }
+    };
     await axios
-      .post('https://data-api.globalforestwatch.org/auth/apikey', payload, {
+      .post("https://data-api.globalforestwatch.org/auth/apikey", payload, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${TGFW}`,
         },
       })
-      .then(resp => {
-        setApiKeyGFW(resp.data.data.api_key)
+      .then((resp) => {
+        setApiKeyGFW(resp.data.data.api_key);
         Alerts.alert(
-          'Api Key GFW obtenido',
-          'Se genero un api key para el alias: ' + resp.data.data.alias,
-        )
+          "Api Key GFW obtenido",
+          "Se genero un api key para el alias: " + resp.data.data.alias
+        );
       })
       .catch(e => {
         Alerts.alert('Error al intentar obtener el ApiKey')
@@ -195,15 +195,15 @@ export const HomeProvScreen = () => {
 
   /* const testApiKeyGFW = async () => {
     await axios
-      .get('https://data-api.globalforestwatch.org/datasets', {
+      .get("https://data-api.globalforestwatch.org/datasets", {
         headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKeyGFW,
+          "Content-Type": "application/json",
+          "x-api-key": apiKeyGFW,
         },
       })
-      .then(resp => {
-        console.log('resp', resp.data.data)
-        Alerts.alert('Api Key GFW Test', 'Api Key GFW valido')
+      .then((resp) => {
+        console.log("resp", resp.data.data);
+        Alerts.alert("Api Key GFW Test", "Api Key GFW valido");
       })
       .catch(e => {
         Alerts.alert('Test Api Key GFW', 'Api Key GFW no valido')
@@ -214,7 +214,7 @@ export const HomeProvScreen = () => {
   /*  const queryPForestal = async () => {
     const payload = {
       geometry: {
-        type: 'Polygon',
+        type: "Polygon",
         coordinates: [
           [
             [103.19732666015625, 0.5537709801264608],
@@ -224,27 +224,28 @@ export const HomeProvScreen = () => {
           ],
         ],
       },
-      sql: 'SELECT SUM(area__ha) FROM results WHERE umd_tree_cover_loss__year=2022',
-    }
+      sql:
+        "SELECT SUM(area__ha) FROM results WHERE umd_tree_cover_loss__year=2022",
+    };
     await axios
       .post(
-        'https://data-api.globalforestwatch.org/dataset/umd_tree_cover_loss/latest/query',
+        "https://data-api.globalforestwatch.org/dataset/umd_tree_cover_loss/latest/query",
         payload,
         {
           headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKeyGFW,
+            "Content-Type": "application/json",
+            "x-api-key": apiKeyGFW,
           },
-        },
+        }
       )
-      .then(resp => {
-        console.log('resp', resp.data.data)
+      .then((resp) => {
+        console.log("resp", resp.data.data);
         Alerts.alert(
-          'Perdida forestal',
-          `Hubo una perdida de ${resp.data.data[0].area__ha} hectáreas en 2022 para el polígono test`,
-        )
+          "Perdida forestal",
+          `Hubo una perdida de ${resp.data.data[0].area__ha} hectáreas en 2022 para el polígono test`
+        );
       })
-      .catch(e => {
+      .catch((e) => {
         Alerts.alert(
           'Error en la consulta',
           'No se pudo obtener la información.',
@@ -314,7 +315,7 @@ export const HomeProvScreen = () => {
   } */
 
   return (
-    <SafeArea>
+    <SafeArea bg={"isabelline"}>
       <ScrollView>
         {!loadinSync ? (
           <View style={styles.container}>
@@ -501,22 +502,22 @@ export const HomeProvScreen = () => {
         )}
       </ScrollView>
     </SafeArea>
-  )
-}
+  );
+};
 
 const ConnectionStatus = (props: {
-  syncUp: boolean
-  isConnected: boolean
-  dataSyncUp: Function
+  syncUp: boolean;
+  isConnected: boolean;
+  dataSyncUp: Function;
 }) => {
-  const isConnected = props.isConnected
-  const syncUp = props.syncUp
-  const dataSyncUp = props.dataSyncUp
+  const isConnected = props.isConnected;
+  const syncUp = props.syncUp;
+  const dataSyncUp = props.dataSyncUp;
   return (
     <View style={styles.containerConnection}>
       <View style={styles.containerConnectionTitle}>
         <FontAwesomeIcon
-          icon={'circle'}
+          icon={"circle"}
           size={14}
           color={!isConnected ? COLORS_DF.grayLight : COLORS_DF.greenAgrayu}
         />
@@ -529,18 +530,18 @@ const ConnectionStatus = (props: {
       )}
       {isConnected && syncUp && (
         <BtnSmall
-          theme={'agrayu'}
+          theme={"agrayu"}
           title={LABELS.asyncData}
-          icon={'rotate'}
+          icon={"rotate"}
           onPress={() => dataSyncUp()}
         />
       )}
     </View>
-  )
-}
+  );
+};
 
-const Header = ({name}: UserInterface) => {
-  const firstName = name.split(' ')[0]
+const Header = ({ name }: UserInterface) => {
+  const firstName = name.split(" ")[0];
   return (
     <View style={styles.header}>
       <Text style={styles.titleHeader}>
@@ -548,13 +549,13 @@ const Header = ({name}: UserInterface) => {
       </Text>
       <Text style={styles.textHeader}>{TEXTS.textK}</Text>
     </View>
-  )
-}
+  );
+};
 
-const Body = (props: {syncUp: boolean}) => {
-  const [alert, setAlert] = useState(false)
-  const navigation = useNavigation()
-  const syncUp = props.syncUp
+const Body = (props: { syncUp: boolean }) => {
+  const [alert, setAlert] = useState(false);
+  const navigation = useNavigation();
+  const syncUp = props.syncUp;
   // const onPress = () => {
   //   if (syncUp) {
   //     setAlert(true)
@@ -566,7 +567,7 @@ const Body = (props: {syncUp: boolean}) => {
       <Alert
         visible={alert}
         onVisible={setAlert}
-        icon={'exclamation-triangle'}
+        icon={"exclamation-triangle"}
         title={TEXTS.textAE}
       />
       {/* Primer card */}
@@ -574,7 +575,8 @@ const Body = (props: {syncUp: boolean}) => {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('MyParcelsScreen')}>
+          onPress={() => navigation.navigate("MyParcelsScreen")}
+        >
           <Image source={imgLayer} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.viewMyParcels}
@@ -585,7 +587,8 @@ const Body = (props: {syncUp: boolean}) => {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('NewSaleOneScreen')}>
+          onPress={() => navigation.navigate("NewSaleOneScreen")}
+        >
           <Image source={imgFrame} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.registerVenta}
@@ -593,8 +596,8 @@ const Body = (props: {syncUp: boolean}) => {
         </TouchableOpacity>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   filter: {
@@ -611,26 +614,26 @@ const styles = StyleSheet.create({
     borderColor: COLORS_DF.cacao,
     borderRadius: BORDER_RADIUS_DF.small,
     backgroundColor: COLORS_DF.white,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: MP_DF.small,
   },
   containerConnectionTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   connectionTitle: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(18),
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS_DF.cacao,
     marginLeft: MP_DF.small,
   },
   connectionSubTitle: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(14),
-    fontWeight: 'normal',
+    fontWeight: "normal",
     color: COLORS_DF.grayLight,
     marginLeft: MP_DF.small,
   },
@@ -640,27 +643,27 @@ const styles = StyleSheet.create({
   titleHeader: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.xslarge,
-    fontWeight: 'bold',
-    color: COLORS_DF.cacao,
+    fontWeight: "bold",
+    color: COLORS_DF.citrine_brown,
     marginBottom: MP_DF.small,
   },
   textHeader: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.small,
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
   },
   bodyContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginTop: MP_DF.large,
   },
   bodyCardContainer: {
-    width: '50%',
+    width: "50%",
     padding: MP_DF.small,
     marginTop: MP_DF.large,
   },
   bodyCardContainerFull: {
-    width: '100%',
+    width: "100%",
     padding: MP_DF.small,
     marginTop: MP_DF.medium,
   },
@@ -671,15 +674,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS_DF.white,
     borderRadius: BORDER_RADIUS_DF.medium,
     elevation: 3,
-    alignItems: 'center',
+    alignItems: "center",
   },
   titleCard: {
     paddingHorizontal: MP_DF.medium,
     marginTop: MP_DF.medium,
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.large,
-    fontWeight: 'bold',
-    color: COLORS_DF.cacao,
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: COLORS_DF.citrine_brown,
+    textAlign: "center",
   },
-})
+});

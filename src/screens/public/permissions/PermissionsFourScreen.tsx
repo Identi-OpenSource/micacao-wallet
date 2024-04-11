@@ -22,10 +22,10 @@ import { TEXTS } from "../../../config/texts/texts";
 import { Btn } from "../../../components/button/Button";
 import { LABELS } from "../../../config/texts/labels";
 import { useNavigation } from "@react-navigation/native";
-import { modal_camara } from "../../../assets/imgs";
+import { modal_camara, imgCam } from "../../../assets/imgs";
 import { UsersContext } from "../../../states/UserContext";
 import { RootStackParamList } from "../../../routers/Router";
-import { Camera_M, Camera_W, Modal_Camera } from "../../../assets/svg";
+import { Camera_M, Camera_W, CameraPermision } from "../../../assets/svg";
 export const PermissionsFourScreen = () => {
   const user = useContext(UsersContext);
   const navigation = useNavigation();
@@ -64,7 +64,7 @@ export const PermissionsFourScreen = () => {
   };
 
   return (
-    <SafeArea bg={"neutral"}>
+    <SafeArea bg={"isabelline"}>
       <View style={styles.container}>
         <View style={styles.textContainer}>
           <Text style={[styles.textB]}>{""}</Text>
@@ -74,11 +74,9 @@ export const PermissionsFourScreen = () => {
             style={{
               justifyContent: "center",
               alignItems: "center",
-              height: "75%",
-              width: "100%",
             }}
           >
-            <Image source={modal_camara} style={styles.img} />
+            <CameraPermision style={styles.img} width={350} height={390} />
           </View>
         </View>
         <View style={styles.formBtn}>
@@ -99,10 +97,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: horizontalScale(MP_DF.large),
   },
   img: {
-    width: "100%",
-    height: "60%",
     alignSelf: "center",
-    marginLeft: 25,
+    marginLeft: 35,
+    marginTop: 45,
   },
   textContainer: {
     flex: 1,

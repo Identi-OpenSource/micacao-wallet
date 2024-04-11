@@ -28,3 +28,6 @@ export { default as Confirm_Password_W } from "./confirm_Password_W.svg";
 export { default as Camera_M } from "./camera_M.svg";
 export { default as Camera_W } from "./camera_W.svg";
 export { default as Modal_Camera } from "./modal_Camera.svg";
+export { default as Person } from "./person.svg";
+export { default as LocationPermision } from "./locationPermission.svg";
+export { default as CameraPermision } from "./cameraPermission.svg";

@@ -22,9 +22,9 @@ import { TEXTS } from "../../../config/texts/texts";
 import { Btn } from "../../../components/button/Button";
 import { LABELS } from "../../../config/texts/labels";
 import { useNavigation } from "@react-navigation/native";
-import { modal_location } from "../../../assets/imgs";
+import { modal_location, imgGPS } from "../../../assets/imgs";
 import { UsersContext } from "../../../states/UserContext";
-import { Location_M, Location_W, Modal_Location } from "../../../assets/svg";
+import { Location_M, Location_W, LocationPermision } from "../../../assets/svg";
 import { Header } from "../register/RegisterScreen";
 
 export const PermissionsThreeScreen = () => {
@@ -66,11 +66,9 @@ export const PermissionsThreeScreen = () => {
             style={{
               justifyContent: "center",
               alignItems: "center",
-              height: "75%",
-              width: "100%",
             }}
           >
-            <Image source={modal_location} style={styles.img} />
+            <LocationPermision style={styles.img} width={350} height={390} />
           </View>
         </View>
         <View style={styles.formBtn}>
@@ -91,10 +89,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: horizontalScale(MP_DF.large),
   },
   img: {
-    width: "100%",
-    height: "70%",
     alignSelf: "center",
-    marginLeft: 25,
+    marginLeft: 35,
+    marginTop: 45,
   },
   textContainer: {
     flex: 1,

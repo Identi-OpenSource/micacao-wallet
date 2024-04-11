@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "prepare": "husky install",
     "postinstall": "npx rn-nodeify --install --hack"
   },
   "dependencies": {
@@ -72,6 +71,7 @@
     "react-native-udp": "^4.1.7",
     "react-native-vector-icons": "^10.0.3",
     "react-native-virtual-joystick": "^0.1.7",
+    "react-native-webview": "^13.8.4",
     "readable-stream": "^1.0.33",
     "realm": "^12.6.1",
     "stream-browserify": "^1.0.0",
