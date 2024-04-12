@@ -28,6 +28,7 @@ export const MyParcelsScreen = () => {
   return (
     <SafeArea>
       <View style={styles.container}>
+        <Text style={styles.title}>Lista de parcelas</Text>
         {parcels.map((parcel) => CardParcel(parcel, navigation))}
       </View>
     </SafeArea>
@@ -73,12 +74,12 @@ const CardParcel = (props: Parcel, navigation: any) => {
         </>
       )}
       <TouchableOpacity
-        /*   onPress={() => {
+        onPress={() => {
           navigation.navigate("DrawPolygonScreen");
-        }} */
+        }}
         style={{ justifyContent: "center", alignItems: "center" }}
       >
-        <Parcels></Parcels>
+        <Parcels />
       </TouchableOpacity>
       <Btn
         title="Presione para dibujar"
@@ -101,7 +102,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: MP_DF.large,
-    paddingTop: MP_DF.medium,
   },
   cardContainer: {
     backgroundColor: "white",
@@ -131,5 +131,12 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     resizeMode: "contain",
+  },
+  title: {
+    fontSize: FONT_SIZES.large,
+    fontFamily: FONT_FAMILIES.primary,
+    fontWeight: "bold",
+    color: COLORS_DF.citrine_brown,
+    marginBottom: MP_DF.small,
   },
 });
