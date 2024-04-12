@@ -5,43 +5,64 @@ import { Icon } from "@rneui/base";
 import { COLORS_DF } from "../../config/themes/default";
 import { FONT_FAMILIES } from "../../config/themes/default";
 import { useNavigation } from "@react-navigation/native";
-const HeaderComponent: React.FC<HeaderProps> = ({ label, goBack }) => {
+
+// Definición de los tipos de las props
+interface HeaderProps {
+  label: string;
+  goBack?: boolean;
+  backgroundColor?: string; // Prop para el color de fondo
+  textColor?: string; // Prop para el color del texto
+}
+
+const HeaderComponent: React.FC<HeaderProps> = ({
+  label,
+  goBack,
+  backgroundColor = COLORS_DF.isabelline, // Valor por defecto del color de fondo
+  textColor = COLORS_DF.citrine_brown, // Valor por defecto del color del texto
+}) => {
   const navigation = useNavigation();
+
   return (
     <Header
       containerStyle={{
         height: 100,
-        backgroundColor: COLORS_DF.isabelline,
+        backgroundColor: backgroundColor,
         justifyContent: "center",
         alignItems: "center",
       }}
       statusBarProps={{
         barStyle: "light-content",
-        backgroundColor: COLORS_DF.isabelline,
+        backgroundColor: backgroundColor,
       }}
-      /* leftComponent={
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
+      leftComponent={
+        goBack && (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginLeft: 1,
+              width: 120,
             }}
           >
-            <Icon
-              name="chevron-left"
-              color={COLORS_DF.citrine_brown}
-              size={50}
-            />
-          </TouchableOpacity>
-        } */
-      centerComponent={
-        <Text
-          style={{
-            color: COLORS_DF.citrine_brown,
-            fontSize: 30,
-            fontFamily: FONT_FAMILIES.primary,
-          }}
-        >
-          {label}
-        </Text>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+            >
+              <Icon name="chevron-left" color={textColor} size={50} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                color: textColor,
+                fontSize: 18,
+                fontFamily: FONT_FAMILIES.primary,
+              }}
+            >
+              {label}
+            </Text>
+          </View>
+        )
       }
     />
   );

@@ -1,17 +1,7 @@
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import {
-  Image,
-  Linking,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { imgCacao } from "../../../assets/imgs";
+import { Linking, StyleSheet, Text, View } from "react-native";
+import HeaderComponent from "../../../components/Header";
 import { Btn } from "../../../components/button/Button";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { COLORS_DF, MP_DF } from "../../../config/themes/default";
 export const HelpScreen = () => {
   const onPress = () => {
@@ -21,16 +11,19 @@ export const HelpScreen = () => {
       );
     });
   };
-  const navigation = useNavigation();
+
   return (
-    <SafeArea bg={"isabelline"}>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <HeaderComponent
+        label="Ayuda"
+        goBack={true}
+        backgroundColor="#8F3B06"
+        textColor="white"
+      />
+      <View style={{ paddingHorizontal: 24, paddingVertical: 25 }}>
         <Text style={styles.subTitle}>¿Cómo te podemos ayudar?</Text>
-        <ScrollView
-          style={styles.cardContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          {[1, 2, 3, 4].map((i) => (
+
+        {/* {[1, 2, 3, 4].map((i) => (
             <View style={styles.cardContenedor} key={i}>
               <Text style={styles.titleCard}>FAQ Nº {i}</Text>
               <View style={styles.actionsCard}>
@@ -41,24 +34,23 @@ export const HelpScreen = () => {
                 <Image source={imgCacao} style={styles.img} />
               </View>
             </View>
-          ))}
-          <Btn
-            title={"Conversa con un asesor"}
-            theme="agrayu"
-            icon={"fa-brands fa-whatsapp"}
-            onPress={onPress}
-            style={{ container: { marginVertical: MP_DF.large } }}
-          />
-        </ScrollView>
+          ))} */}
+        <Btn
+          title={"Conversa con un asesor"}
+          theme="agrayu"
+          icon={"fa-brands fa-whatsapp"}
+          onPress={onPress}
+          style={{ container: { marginVertical: MP_DF.large } }}
+        />
       </View>
-    </SafeArea>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: MP_DF.large,
+    backgroundColor: COLORS_DF.isabelline,
   },
   subTitle: {
     fontSize: 20,

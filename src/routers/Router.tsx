@@ -160,7 +160,7 @@ const optionsHeadersCacao = {
   headerShown: true,
   headerBackVisible: true,
   headerStyle: {
-    backgroundColor: COLORS_DF.cacao,
+    backgroundColor: COLORS_DF.citrine_brown,
   },
   headerTintColor: "#fff",
   headerTitleStyle: {
@@ -458,33 +458,11 @@ const HelpStackPrivate = () => {
   const HelpStack = createNativeStackNavigator<RootStackParamList>();
   const route = useRoute();
 
-  function getHeaderTitle() {
-    const routeName = getFocusedRouteNameFromRoute(route) ?? "HelpScreen";
-
-    switch (routeName) {
-      case "HelpScreen":
-        return "Ayuda";
-      case "Profile":
-        return "My profile";
-      case "Account":
-        return "My account";
-    }
-  }
-
   const screenOptions = () => {
     return {
       ...slideFromRight,
       statusBarStyle: "light",
-      headerShown: true,
-      headerBackVisible: true,
-      headerTitle: getHeaderTitle(),
-      headerStyle: {
-        backgroundColor: COLORS_DF.cacao,
-      },
-      headerTintColor: "#fff",
-      headerTitleStyle: {
-        fontWeight: "bold",
-      },
+      headerShown: false,
     } as NativeStackNavigationOptions;
   };
   return (

@@ -247,45 +247,12 @@ const PoligonJoystick = () => {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar backgroundColor="#8F3B06" barStyle="light-content" />
-      <View
-        style={{
-          position: "absolute",
-          top: 10,
-          zIndex: 99999,
-          height: 100,
-          paddingVertical: 5,
-          alignItems: "center",
-          marginRight: 25,
-          justifyContent: "space-between",
-          flexDirection: "row",
-          width: "100%",
-        }}
-      >
-        <TouchableOpacity
-          style={{
-            width: "25%",
-            height: "45%",
-            alignItems: "center",
-            top: 10,
-          }}
-        >
+      <View style={styles.containerButtonUp}>
+        <TouchableOpacity style={styles.buttonClose} onPress={onSubmit}>
           <Close_Map height={40} width={40} />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            width: "25%",
-            height: "45%",
-            top: 5,
-            justifyContent: "center",
-            backgroundColor: "#D4D7D5",
-            borderRadius: 7,
-            alignItems: "center",
-            marginRight: 25,
-          }}
-        >
-          <Text style={{ fontSize: 15, alignSelf: "center", color: "black" }}>
-            Guardar
-          </Text>
+        <TouchableOpacity style={styles.buttonSave}>
+          <Text style={styles.textButtonSave}>Guardar</Text>
         </TouchableOpacity>
       </View>
       <MapView
@@ -405,6 +372,39 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 200,
     paddingHorizontal: 25,
+  },
+  buttonSave: {
+    width: "25%",
+    height: "45%",
+    top: 5,
+    justifyContent: "center",
+    backgroundColor: "#D4D7D5",
+    borderRadius: 7,
+    alignItems: "center",
+    marginRight: 25,
+  },
+  containerButtonUp: {
+    position: "absolute",
+    top: 10,
+    zIndex: 99999,
+    height: 100,
+    paddingVertical: 5,
+    alignItems: "center",
+    marginRight: 25,
+    justifyContent: "space-between",
+    flexDirection: "row",
+    width: "100%",
+  },
+  buttonClose: {
+    width: "25%",
+    height: "45%",
+    alignItems: "center",
+    top: 10,
+  },
+  textButtonSave: {
+    fontSize: 15,
+    alignSelf: "center",
+    color: "black",
   },
 });
 export default PoligonJoystick;
