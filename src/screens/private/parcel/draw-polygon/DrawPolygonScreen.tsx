@@ -169,7 +169,7 @@ export const DrawPolygonScreen = () => {
       >
         <HeaderComponent
           label="Mis parcelas"
-          goBack={true}
+          goBack={false}
           backgroundColor="#8F3B06"
           textColor="white"
         />
@@ -230,7 +230,7 @@ export const DrawPolygonScreen = () => {
             compassEnabled={false}
             logoEnabled={false}
             style={{ height: 300, width: 350, alignSelf: "center" }}
-            onPress={async (e) => {
+            /* onPress={async (e) => {
               const last = [
                 (e.geometry as GeoJSON.Point).coordinates[0],
                 (e.geometry as GeoJSON.Point).coordinates[1],
@@ -240,7 +240,7 @@ export const DrawPolygonScreen = () => {
                 JSON.stringify([...coordinates, last])
               );
               setCoordinates([...coordinates, last]);
-            }}
+            }} */
           >
             <Polygon coordinates={coordinatesWithLast} />
             {started && <Polygon coordinates={coordinatesWithLast} />}

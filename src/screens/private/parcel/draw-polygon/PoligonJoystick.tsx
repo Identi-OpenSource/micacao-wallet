@@ -116,8 +116,8 @@ const CrosshairOverlay = ({
 };
 
 const lineLayerStyle = {
-  lineColor: "#fff",
-  lineWidth: 3,
+  lineColor: "#22C55E",
+  lineWidth: 4,
 };
 
 const Polygon = ({ coordinates }: { coordinates: Position[] }) => {
@@ -185,6 +185,7 @@ const PoligonJoystick = () => {
   useEffect(() => {
     coorInitRef.current = lastCoordinate;
   }, [coordinates]);
+
   const handleMove = (event) => {
     const { angle, distance } = event;
     const sensitivityFactor = 0.5; // Ajusta el factor de sensibilidad según sea necesario
@@ -207,8 +208,8 @@ const PoligonJoystick = () => {
     const angleRad = angle.radian;
 
     // Calcular las nuevas coordenadas del marcador
-    const deltaX = Math.cos(angleRad) * ((force * widthMap) / 0.5);
-    const deltaY = Math.sin(angleRad) * ((force * heightMap) / 0.5);
+    const deltaX = Math.cos(angleRad) * ((force * widthMap) / 2);
+    const deltaY = Math.sin(angleRad) * ((force * heightMap) / 2);
 
     // Supongamos que las coordenadas iniciales del marcador son el centro del mapa
     const initialLng = coorInitRef.current[0]; // Longitud inicial
@@ -217,7 +218,7 @@ const PoligonJoystick = () => {
     // Calcular las nuevas coordenadas
     const newLat = initialLat + deltaY / 111111; // 1 grado de latitud es aproximadamente 111111 metros
     const newLng =
-      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 18)); // 1 grado de longitud varía dependiendo de la latitud
+      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 180)); // 1 grado de longitud varía dependiendo de la latitud
     setCenterCoordinate([newLng, newLat]);
   };
 
@@ -251,7 +252,7 @@ const PoligonJoystick = () => {
   };
   const closeModal = () => {
     setShowModal(false);
-    navigation.navigate("MyParcelsScreen");
+    navigation.navigate("DrawPolygonScreen");
   };
 
   return (
@@ -326,7 +327,7 @@ const PoligonJoystick = () => {
         style={{
           alignItems: "center",
           justifyContent: "center",
-          marginTop: -150,
+          marginTop: -250,
         }}
       >
         <View style={styles.containerButton}>
@@ -346,7 +347,7 @@ const PoligonJoystick = () => {
           >
             <ReactNativeJoystick
               color={"#D4D7D5"}
-              radius={45}
+              radius={75}
               onMove={(data) => {
                 if (data.angle && data.force) {
                   moveMap(data.angle, data.force);
