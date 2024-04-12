@@ -99,7 +99,9 @@ export const IamFromScreen: React.FC = () => {
         <View style={styles.formBtn}>
           <Btn
             title={LABELS.continue}
-            theme="agrayu"
+            theme={
+              selectedCountry && selectedCountry ? "agrayu" : "agrayuDisabled"
+            }
             onPress={submit}
             disabled={!selectedCountry}
           />

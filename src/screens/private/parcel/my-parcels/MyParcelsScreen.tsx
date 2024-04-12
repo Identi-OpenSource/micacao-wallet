@@ -73,9 +73,9 @@ const CardParcel = (props: Parcel, navigation: any) => {
         </>
       )}
       <TouchableOpacity
-        onPress={() => {
+        /*   onPress={() => {
           navigation.navigate("DrawPolygonScreen");
-        }}
+        }} */
         style={{ justifyContent: "center", alignItems: "center" }}
       >
         <Parcels></Parcels>
