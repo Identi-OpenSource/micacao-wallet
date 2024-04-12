@@ -426,6 +426,7 @@ const HomeStackPrivate = () => {
           component={PoligonJoystick}
           options={{
             title: "Poligon Joystick",
+            headerShown: false,
           }}
         />
         <HomeStack.Screen

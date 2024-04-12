@@ -6,7 +6,16 @@ import {
   ShapeSource,
   StyleURL,
 } from "@rnmapbox/maps";
-import { Alert, Button, Dimensions, View } from "react-native";
+import {
+  Alert,
+  Button,
+  Dimensions,
+  View,
+  StyleSheet,
+  Text,
+  StatusBar,
+  TouchableOpacity,
+} from "react-native";
 import React, {
   useState,
   useRef,
@@ -16,14 +25,14 @@ import React, {
   useEffect,
 } from "react";
 import { storage } from "../../../../config/store/db";
-
+import { Delete, Add_Location } from "../../../../assets/svg";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ReactNativeJoystick } from "@korsolutions/react-native-joystick";
 import { COLORS_DF, THEME_DF } from "../../../../config/themes/default";
 import { BtnSmall } from "../../../../components/button/Button";
 import { useNavigation } from "@react-navigation/native";
-
-const heightMap = Dimensions.get("window").height - 140;
+import Close_Map from "../../../../assets/svg/Close_Map.svg";
+const heightMap = Dimensions.get("window").height - 30;
 const widthMap = Dimensions.get("window").width;
 
 type Position = [number, number];
@@ -145,6 +154,7 @@ const PoligonJoystick = () => {
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint);
   const [crosshairPos, setCrosshairPos] = useState(firstPoint);
   const [centerCoordinate, setCenterCoordinate] = useState(firstPoint);
+  const [joystickPosition, setJoystickPosition] = useState({ x: 0, y: 0 });
   const coorInitRef = useRef(null);
   const navigation = useNavigation();
 
@@ -173,7 +183,21 @@ const PoligonJoystick = () => {
   useEffect(() => {
     coorInitRef.current = lastCoordinate;
   }, [coordinates]);
+  const handleMove = (event) => {
+    const { angle, distance } = event;
+    const sensitivityFactor = 0.5; // Ajusta el factor de sensibilidad según sea necesario
+    const deadZoneRadius = 20; // Ajusta el tamaño de la zona muerta según sea necesario
 
+    // Aplica sensibilidad y zona muerta
+    const sensitivityAdjustedDistance = distance * sensitivityFactor;
+    const x = Math.cos(angle) * sensitivityAdjustedDistance;
+    const y = Math.sin(angle) * sensitivityAdjustedDistance;
+
+    // Actualiza la posición del joystick
+    setJoystickPosition({ x, y });
+
+    console.log(`Joystick moved: angle=${angle}, distance=${distance}`);
+  };
   const moveMap = (angle, force) => {
     // Supongamos que el mapa tiene un tamaño específico y queremos mapear el rango del joystick al tamaño del mapa
 
@@ -181,8 +205,8 @@ const PoligonJoystick = () => {
     const angleRad = angle.radian;
 
     // Calcular las nuevas coordenadas del marcador
-    const deltaX = Math.cos(angleRad) * ((force * widthMap) / 2);
-    const deltaY = Math.sin(angleRad) * ((force * heightMap) / 2);
+    const deltaX = Math.cos(angleRad) * ((force * widthMap) / 0.5);
+    const deltaY = Math.sin(angleRad) * ((force * heightMap) / 0.5);
 
     // Supongamos que las coordenadas iniciales del marcador son el centro del mapa
     const initialLng = coorInitRef.current[0]; // Longitud inicial
@@ -191,7 +215,7 @@ const PoligonJoystick = () => {
     // Calcular las nuevas coordenadas
     const newLat = initialLat + deltaY / 111111; // 1 grado de latitud es aproximadamente 111111 metros
     const newLng =
-      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 180)); // 1 grado de longitud varía dependiendo de la latitud
+      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 18)); // 1 grado de longitud varía dependiendo de la latitud
     setCenterCoordinate([newLng, newLat]);
   };
 
@@ -222,41 +246,47 @@ const PoligonJoystick = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <StatusBar backgroundColor="#8F3B06" barStyle="light-content" />
       <View
         style={{
           position: "absolute",
           top: 10,
           zIndex: 99999,
-          flexDirection: "row",
-          justifyContent: "space-between",
+          height: 100,
+          paddingVertical: 5,
           alignItems: "center",
           marginRight: 25,
+          justifyContent: "space-between",
+          flexDirection: "row",
+          width: "100%",
         }}
       >
-        <BtnSmall
-          title="Punto"
-          icon="minus"
-          theme="agrayu"
-          onPress={() => {
-            deletePoint();
+        <TouchableOpacity
+          style={{
+            width: "25%",
+            height: "45%",
+            alignItems: "center",
+            top: 10,
           }}
-        />
-        <BtnSmall
-          title="Guardar"
-          theme="agrayu"
-          icon="floppy-disk"
-          onPress={() => onSubmit()}
-        />
-        <BtnSmall
-          title="Punto"
-          icon="plus"
-          theme="agrayu"
-          onPress={() => {
-            const DATA = [...coordinates, lastCoordinate];
-            storage.set("polygonTemp", JSON.stringify(DATA));
-            setCoordinates(DATA);
+        >
+          <Close_Map height={40} width={40} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            width: "25%",
+            height: "45%",
+            top: 5,
+            justifyContent: "center",
+            backgroundColor: "#D4D7D5",
+            borderRadius: 7,
+            alignItems: "center",
+            marginRight: 25,
           }}
-        />
+        >
+          <Text style={{ fontSize: 15, alignSelf: "center", color: "black" }}>
+            Guardar
+          </Text>
+        </TouchableOpacity>
       </View>
       <MapView
         ref={map}
@@ -314,21 +344,67 @@ const PoligonJoystick = () => {
         style={{
           alignItems: "center",
           justifyContent: "center",
-          marginTop: -180,
+          marginTop: -150,
         }}
       >
-        <ReactNativeJoystick
-          color={COLORS_DF.light}
-          radius={75}
-          onMove={(data) => {
-            if (data.angle && data.force) {
-              moveMap(data.angle, data.force);
-            }
-          }}
-        />
+        <View style={styles.containerButton}>
+          <TouchableOpacity
+            onPress={() => {
+              deletePoint();
+            }}
+            style={styles.iconButton}
+          >
+            <Delete />
+          </TouchableOpacity>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ReactNativeJoystick
+              color={"#D4D7D5"}
+              radius={45}
+              onMove={(data) => {
+                if (data.angle && data.force) {
+                  moveMap(data.angle, data.force);
+                }
+              }}
+            />
+          </View>
+
+          <TouchableOpacity
+            onPress={() => {
+              const DATA = [...coordinates, lastCoordinate];
+              storage.set("polygonTemp", JSON.stringify(DATA));
+              setCoordinates(DATA);
+            }}
+            style={styles.iconButton}
+          >
+            <Add_Location />
+          </TouchableOpacity>
+        </View>
       </GestureHandlerRootView>
     </View>
   );
 };
-
+const styles = StyleSheet.create({
+  iconButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 7,
+    backgroundColor: "#D4D7D5",
+    width: "10%",
+    height: "45%",
+    padding: 30,
+  },
+  containerButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 200,
+    paddingHorizontal: 25,
+  },
+});
 export default PoligonJoystick;

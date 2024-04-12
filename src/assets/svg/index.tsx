@@ -33,3 +33,5 @@ export { default as LocationPermision } from "./locationPermission.svg";
 export { default as CameraPermision } from "./cameraPermission.svg";
 export { default as Parcels } from "./parcel.svg";
 export { default as ParcelColor } from "./parcelColor.svg";
+export { default as Delete } from "./delete.svg";
+export { default as Add_Location } from "./add_location_alt.svg";
