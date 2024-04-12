@@ -32,6 +32,7 @@ import { COLORS_DF, THEME_DF } from "../../../../config/themes/default";
 import { BtnSmall } from "../../../../components/button/Button";
 import { useNavigation } from "@react-navigation/native";
 import Close_Map from "../../../../assets/svg/Close_Map.svg";
+import ModalComponent from "../../../../components/modalComponent";
 const heightMap = Dimensions.get("window").height - 30;
 const widthMap = Dimensions.get("window").width;
 
@@ -157,6 +158,7 @@ const PoligonJoystick = () => {
   const [joystickPosition, setJoystickPosition] = useState({ x: 0, y: 0 });
   const coorInitRef = useRef(null);
   const navigation = useNavigation();
+  const [showModal, setShowModal] = useState(false);
 
   const coordinatesWithLast = useMemo(() => {
     return [...coordinates, lastCoordinate];
@@ -234,6 +236,7 @@ const PoligonJoystick = () => {
       Alert.alert("Error", "El polígono debe tener al menos 4 puntos");
       return;
     }
+
     // Guardar en la lista de polígonos
     const newParcel = {
       ...parcel[0],
@@ -241,17 +244,29 @@ const PoligonJoystick = () => {
     };
     storage.set("parcels", JSON.stringify([newParcel]));
     storage.delete("polygonTemp");
+    setShowModal(true);
+  };
+  const back = () => {
+    navigation.goBack();
+  };
+  const closeModal = () => {
+    setShowModal(false);
     navigation.navigate("MyParcelsScreen");
   };
 
   return (
     <View style={{ flex: 1 }}>
       <StatusBar backgroundColor="#8F3B06" barStyle="light-content" />
+      <ModalComponent
+        isVisible={showModal}
+        label={"¡El mapa de tu parcela ha sido guardado!"}
+        closeModal={closeModal}
+      />
       <View style={styles.containerButtonUp}>
-        <TouchableOpacity style={styles.buttonClose} onPress={onSubmit}>
+        <TouchableOpacity onPress={back} style={styles.buttonClose}>
           <Close_Map height={40} width={40} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonSave}>
+        <TouchableOpacity onPress={onSubmit} style={styles.buttonSave}>
           <Text style={styles.textButtonSave}>Guardar</Text>
         </TouchableOpacity>
       </View>
