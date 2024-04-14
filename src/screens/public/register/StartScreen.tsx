@@ -1,23 +1,15 @@
 import React, { useContext } from "react";
-import { View, Image, StyleSheet } from "react-native";
-import { Woman, Welcome_W, Man } from "../../../assets/svg/index";
+import { StyleSheet, View } from "react-native";
+import { Man, Welcome_W, Woman } from "../../../assets/svg/index";
 import { Btn } from "../../../components/button/Button";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { LABELS } from "../../../config/texts/labels";
-import {
-  COLORS_DF,
-  FONT_FAMILIES,
-  MP_DF,
-} from "../../../config/themes/default";
-import {
-  horizontalScale,
-  moderateScale,
-  verticalScale,
-} from "../../../config/themes/metrics";
+import { MP_DF } from "../../../config/themes/default";
+import { verticalScale } from "../../../config/themes/metrics";
+import { UsersContext } from "../../../states/UserContext";
 interface SplashScreenProps {
   navigation: any;
 }
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { UsersContext } from "../../../states/UserContext";
 const StartScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   [];
   const user = useContext(UsersContext);

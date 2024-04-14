@@ -1,29 +1,34 @@
-import React, { useContext } from "react";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { View } from "react-native";
-import { Btn } from "../../../components/button/Button";
-import { TEXTS } from "../../../config/texts/texts";
 import { Field, Formik } from "formik";
+import React, { useContext } from "react";
+import { View } from "react-native";
+import { Name_M, Name_W } from "../../../assets/svg";
+import { Btn } from "../../../components/button/Button";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { LABELS } from "../../../config/texts/labels";
+import { ScreenProps } from "../../../routers/Router";
+import { UserDispatchContext, UsersContext } from "../../../states/UserContext";
 import {
   INIT_VALUES_THREE,
   INPUTS_THREE,
   InterfaceThree,
   SCHEMA_THREE,
 } from "./Interfaces";
-import { LABELS } from "../../../config/texts/labels";
-import { styles } from "./styles";
-import { ScreenProps } from "../../../routers/Router";
 import { Header } from "./RegisterScreen";
-import { storage } from "../../../config/store/db";
-import { Name_M, Name_W } from "../../../assets/svg";
-import { UsersContext } from "../../../states/UserContext";
+import { styles } from "./styles";
 export const RegisterThirdScreen = ({
   navigation,
 }: ScreenProps<"RegisterThirdScreen">) => {
   const user = useContext(UsersContext);
+  const dispatch = useContext(UserDispatchContext);
+
   const submit = (values: InterfaceThree) => {
-    const user = JSON.parse(storage.getString("user") || "{}");
-    storage.set("user", JSON.stringify({ ...user, ...values }));
+    dispatch({
+      type: "setUser",
+      payload: {
+        ...user,
+        ...values,
+      },
+    });
     navigation.navigate("RegisterFourthScreen");
   };
 

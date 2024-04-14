@@ -6,9 +6,9 @@
 
 import { Field, Formik } from "formik";
 import React, { useContext, useState } from "react";
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
 import { sha256 } from "react-native-sha256";
-import { Password_M, Password_W } from "../../../assets/svg";
+import { Confirm_Password_M, Confirm_Password_W } from "../../../assets/svg";
 import { Btn } from "../../../components/button/Button";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { LABELS } from "../../../config/texts/labels";
@@ -22,7 +22,6 @@ import {
 } from "./Interfaces";
 import { Header } from "./RegisterScreen";
 import { styles } from "./styles";
-import { Confirm_Password_M, Confirm_Password_W } from "../../../assets/svg";
 export const ConfirmPasswordScreen = ({
   navigation,
   route,

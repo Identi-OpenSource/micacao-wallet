@@ -4,26 +4,25 @@
  * @summary : Register screen of the application
  */
 
-import React, { useContext } from "react";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { View } from "react-native";
-import { UsersContext } from "../../../states/UserContext";
-import { Btn } from "../../../components/button/Button";
-import { TEXTS } from "../../../config/texts/texts";
 import { Field, Formik } from "formik";
+import React, { useContext } from "react";
+import { View } from "react-native";
+import { sha256 } from "react-native-sha256";
+import { Password_M, Password_W } from "../../../assets/svg";
+import { Btn } from "../../../components/button/Button";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { storage } from "../../../config/store/db";
+import { LABELS } from "../../../config/texts/labels";
+import { ScreenProps } from "../../../routers/Router";
+import { UsersContext } from "../../../states/UserContext";
 import {
   INIT_VALUES_FOURTH,
   INPUTS_FOURTH,
   InterfaceFourth,
   SCHEMA_FOURTH,
 } from "./Interfaces";
-import { LABELS } from "../../../config/texts/labels";
-import { styles } from "./styles";
-import { ScreenProps } from "../../../routers/Router";
 import { Header } from "./RegisterScreen";
-import { storage } from "../../../config/store/db";
-import { sha256 } from "react-native-sha256";
-import { Password_M, Password_W } from "../../../assets/svg";
+import { styles } from "./styles";
 export const RegisterFourthScreen = ({
   navigation,
 }: ScreenProps<"RegisterFourthScreen">) => {

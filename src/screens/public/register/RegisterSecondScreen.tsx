@@ -1,33 +1,38 @@
-import React, { useContext } from "react";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { View } from "react-native";
-import { Btn } from "../../../components/button/Button";
-import { TEXTS } from "../../../config/texts/texts";
-import { UsersContext } from "../../../states/UserContext";
 import { Field, Formik } from "formik";
+import React, { useContext, useEffect } from "react";
+import { View } from "react-native";
+import { Cellphone_M, Cellphone_W } from "../../../assets/svg";
+import { Btn } from "../../../components/button/Button";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { storage } from "../../../config/store/db";
+import { LABELS } from "../../../config/texts/labels";
+import { ScreenProps } from "../../../routers/Router";
+import { UsersContext, UserDispatchContext } from "../../../states/UserContext";
 import {
   INIT_VALUES_TWO,
   INPUTS_TWO,
   InterfaceTwo,
   SCHEMA_TWO,
 } from "./Interfaces";
-import { LABELS } from "../../../config/texts/labels";
-import { styles } from "./styles";
-import { ScreenProps } from "../../../routers/Router";
 import { Header } from "./RegisterScreen";
-import { storage } from "../../../config/store/db";
-import { Cellphone_M, Cellphone_W } from "../../../assets/svg";
+import { styles } from "./styles";
 export const RegisterSecondScreen = ({
   navigation,
 }: ScreenProps<"RegisterSecondScreen">) => {
   const user = useContext(UsersContext);
-  const storedUser = JSON.parse(storage.getString("user") || "{}");
-
-  const userInfo = Object.keys(storedUser).length > 0 ? storedUser : user;
+  const dispatch = useContext(UserDispatchContext);
 
   const submit = (values: InterfaceTwo) => {
-    const phone = userInfo?.country?.phoneCode + "-" + values.phone;
-    storage.set("user", JSON.stringify({ ...userInfo, phone }));
+    const phone = user?.country?.phoneCode + "-" + values.phone;
+
+    dispatch({
+      type: "setUser",
+      payload: {
+        ...user,
+        phone,
+      },
+    });
+
     navigation.navigate("RegisterThirdScreen");
   };
 
@@ -46,7 +51,7 @@ export const RegisterSecondScreen = ({
             <>
               <View style={styles.formContainer}>
                 <View style={styles.formInput}>
-                  {INPUTS_TWO(userInfo?.country?.phoneCode).map((i) => (
+                  {INPUTS_TWO(user?.country?.phoneCode).map((i) => (
                     <Field key={i.name} {...i} />
                   ))}
                 </View>

@@ -8,8 +8,6 @@ const useAuthenticationToken = () => {
   const { isConnected } = useInternetConnection();
 
   const getToken = async () => {
-    console.log(isConnected, accessToken);
-
     if (isConnected && accessToken === null) {
       try {
         const apiRequest: API_INTERFACE = {
@@ -19,7 +17,6 @@ const useAuthenticationToken = () => {
           headers: { "Content-Type": "multipart/form-data" },
         };
         const data = await HTTP(apiRequest);
-        console.log("data", data);
         setAccessToken(data);
       } catch (error) {
         console.log("error", error);

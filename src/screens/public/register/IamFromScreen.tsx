@@ -34,7 +34,7 @@ import {
   moderateScale,
   verticalScale,
 } from "../../../config/themes/metrics";
-import { UsersContext } from "../../../states/UserContext";
+import { UsersContext, UserDispatchContext } from "../../../states/UserContext";
 import { Header } from "./RegisterScreen";
 
 interface CardProps {
@@ -47,8 +47,10 @@ interface CardProps {
 
 export const IamFromScreen: React.FC = () => {
   const navigation = useNavigation();
-  const user = useContext(UsersContext);
   const [selectedCountry, setSelectedCountry] = useState<object | null>(null);
+
+  const user = useContext(UsersContext);
+  const dispatch = useContext(UserDispatchContext);
 
   const cards = [
     {
@@ -63,17 +65,18 @@ export const IamFromScreen: React.FC = () => {
     },
   ];
 
-  useEffect(() => {
-    console.log("user", user);
-  }, []);
-
   const handleCountrySelection = (countryValue: object) => {
     setSelectedCountry(countryValue);
   };
 
   const submit = () => {
-    const user = JSON.parse(storage.getString("user") || "{}");
-    storage.set("user", JSON.stringify({ ...user, country: selectedCountry }));
+    dispatch({
+      type: "setUser",
+      payload: {
+        ...user,
+        country: selectedCountry,
+      },
+    });
     navigation.navigate("PermissionsThreeScreen");
   };
 
@@ -118,8 +121,6 @@ const Card1: React.FC<CardProps> = ({
   selectedCountry,
   handleCountrySelection,
 }) => {
-  const navigation = useNavigation();
-
   return (
     <View style={styles.bodyCardContainerFull}>
       <View style={{ alignItems: "center" }}>

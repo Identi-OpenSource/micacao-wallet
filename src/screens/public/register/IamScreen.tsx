@@ -34,7 +34,7 @@ import {
 import { Header } from "./RegisterScreen";
 import { imgMan, imgWoman } from "../../../assets/imgs";
 import { GENDER } from "../../../config/const";
-import { UserDispatchContext } from "../../../states/UserContext";
+import { UsersContext, UserDispatchContext } from "../../../states/UserContext";
 
 export const IamScreen = () => {
   const navigation = useNavigation();
@@ -72,12 +72,15 @@ const Card = (props: {
 }) => {
   const navigation = useNavigation();
 
+  const user = useContext(UsersContext);
+
   const dispatch = useContext(UserDispatchContext);
 
   const setGender = (newGender: string) => {
     dispatch({
-      type: "setGender",
+      type: "setUser",
       payload: {
+        ...user,
         gender: newGender,
       },
     });

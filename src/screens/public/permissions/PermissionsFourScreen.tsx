@@ -1,31 +1,29 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useContext } from "react";
 import {
-  Image,
   PermissionsAndroid,
   Platform,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import {
-  horizontalScale,
-  moderateScale,
-  verticalScale,
-} from "../../../config/themes/metrics";
+import { CameraPermision, Camera_M, Camera_W } from "../../../assets/svg";
+import { Btn } from "../../../components/button/Button";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { LABELS } from "../../../config/texts/labels";
+import { TEXTS } from "../../../config/texts/texts";
 import {
   COLORS_DF,
   FONT_FAMILIES,
   MP_DF,
 } from "../../../config/themes/default";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { TEXTS } from "../../../config/texts/texts";
-import { Btn } from "../../../components/button/Button";
-import { LABELS } from "../../../config/texts/labels";
-import { useNavigation } from "@react-navigation/native";
-import { modal_camara, imgCam } from "../../../assets/imgs";
-import { UsersContext } from "../../../states/UserContext";
+import {
+  horizontalScale,
+  moderateScale,
+  verticalScale,
+} from "../../../config/themes/metrics";
 import { RootStackParamList } from "../../../routers/Router";
-import { Camera_M, Camera_W, CameraPermision } from "../../../assets/svg";
+import { UsersContext } from "../../../states/UserContext";
 export const PermissionsFourScreen = () => {
   const user = useContext(UsersContext);
   const navigation = useNavigation();

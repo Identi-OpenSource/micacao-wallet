@@ -1,42 +1,37 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
+import geoViewport from "@mapbox/geo-viewport";
+import Mapbox from "@rnmapbox/maps";
+import CryptoJS from "crypto-js";
+import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Animated,
   Dimensions,
-  Image,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import Config from "react-native-config";
+import { fundingWallet, newWallet } from "../../../OCC/occ";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { storage } from "../../../config/store/db";
+import { TEXTS } from "../../../config/texts/texts";
 import {
   COLORS_DF,
   FONT_FAMILIES,
   MP_DF,
 } from "../../../config/themes/default";
-import { Btn } from "../../../components/button/Button";
-import { TEXTS } from "../../../config/texts/texts";
-import { LABELS } from "../../../config/texts/labels";
-import { imgCheque } from "../../../assets/imgs";
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
 } from "../../../config/themes/metrics";
-import { storage } from "../../../config/store/db";
-import { UserDispatchContext } from "../../../states/UserContext";
-import geoViewport from "@mapbox/geo-viewport";
-import { fundingWallet, newWallet } from "../../../OCC/occ";
-import CryptoJS from "crypto-js";
-import Config from "react-native-config";
-import Mapbox from "@rnmapbox/maps";
+import { UsersContext, UserDispatchContext } from "../../../states/UserContext";
 Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
 const { width, height } = Dimensions.get("window");
 
 export const RegisterOkScreen = () => {
   const [step, setStep] = useState({ step: 0, msg: TEXTS.textH });
   const dispatch = useContext(UserDispatchContext);
-  const user = JSON.parse(storage.getString("user") || "{}");
+  const user = useContext(UsersContext);
   const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
 
