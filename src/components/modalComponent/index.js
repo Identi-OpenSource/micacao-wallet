@@ -22,7 +22,6 @@ const ModalComponent = (props) => {
                 animationType="slide"
                 transparent={true}
                 visible={isVisible}
-                onRequestClose={closeModal}
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>

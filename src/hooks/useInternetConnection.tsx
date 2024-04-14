@@ -1,21 +1,25 @@
-import {useEffect, useState} from 'react'
-import NetInfo from '@react-native-community/netinfo'
+import { useEffect, useState } from "react";
+import NetInfo from "@react-native-community/netinfo";
 
 const useInternetConnection = () => {
-  const [isConnected, setIsConnected] = useState(false)
+  const [isConnected, setIsConnected] = useState(false);
+  const [isVisibleModal, setIsVisibleModal] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsConnected(state.isConnected ?? false)
-    })
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      if (!isConnected && state.isConnected) {
+        setIsVisibleModal(true);
+      }
+      setIsConnected(state.isConnected ?? false);
+    });
 
     // Limpiar en el desmontaje
     return () => {
-      unsubscribe()
-    }
-  }, [])
+      unsubscribe();
+    };
+  }, []);
 
-  return isConnected
-}
+  return { isConnected, isVisibleModal, setIsVisibleModal };
+};
 
-export default useInternetConnection
+export default useInternetConnection;

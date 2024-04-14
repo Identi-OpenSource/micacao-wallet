@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState, useEffect } from "react";
 import {
   Image,
   ScrollView,
@@ -27,6 +27,7 @@ import { storage } from "../../../config/store/db";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { LoadingSave } from "../../../components/loading/LoadinSave";
 import { Alert } from "../../../components/alert/Alert";
+import ModalComponent from "../../../components/modalComponent";
 /* import  fundingWallet,
 fundingWalletOff,
 newWallet,
@@ -49,7 +50,7 @@ import Geolocation from '@react-native-community/geolocation' */
 export const HomeProvScreen = () => {
   const navigation = useNavigation();
   const user: UserInterface = useContext(UsersContext);
-  const isConnected = useInternetConnection();
+  const { isConnected } = useInternetConnection();
   const [syncUp, setSyncUp] = useState(false);
   const [loadinSync, setLoadingSync] = useState(false);
   // const [TGFW, setTokenGFW] = useState(null)
@@ -513,13 +514,14 @@ const ConnectionStatus = (props: {
   const isConnected = props.isConnected;
   const syncUp = props.syncUp;
   const dataSyncUp = props.dataSyncUp;
+
   return (
     <View style={styles.containerConnection}>
       <View style={styles.containerConnectionTitle}>
         <FontAwesomeIcon
           icon={"circle"}
           size={14}
-          color={!isConnected ? COLORS_DF.grayLight : COLORS_DF.greenAgrayu}
+          color={!isConnected ? COLORS_DF.grayLight : COLORS_DF.robin_egg_blue}
         />
         <Text style={styles.connectionTitle}>
           {isConnected ? LABELS.online : LABELS.offline}
@@ -553,22 +555,20 @@ const Header = ({ name }: UserInterface) => {
 };
 
 const Body = (props: { syncUp: boolean }) => {
-  const [alert, setAlert] = useState(false);
   const navigation = useNavigation();
+  const { isVisibleModal, setIsVisibleModal } = useInternetConnection();
+
   const syncUp = props.syncUp;
-  // const onPress = () => {
-  //   if (syncUp) {
-  //     setAlert(true)
-  //     return
-  //   }
-  // }
+
   return (
     <View style={styles.bodyContainer}>
-      <Alert
-        visible={alert}
-        onVisible={setAlert}
-        icon={"exclamation-triangle"}
-        title={TEXTS.textAE}
+      <ModalComponent
+        isVisible={isVisibleModal}
+        label={"Tienes información pendiente por guardar"}
+        buttonText={"Aceptar"}
+        closeModal={() => {
+          setIsVisibleModal(false);
+        }}
       />
       {/* Primer card */}
       <View style={[styles.bodyCardContainerFull]}>
