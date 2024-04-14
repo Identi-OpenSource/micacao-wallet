@@ -22,7 +22,8 @@ const ModalComponent = (props) => {
                 animationType="slide"
                 transparent={true}
                 visible={isVisible}
-                onRequestClose={closeModal}>
+                onRequestClose={closeModal}
+            >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Check_circle />
@@ -32,7 +33,7 @@ const ModalComponent = (props) => {
                         <TouchableOpacity
                             style={styles.gameButtonRegular}
                             onPress={closeModal}>
-                            <Text style={styles.textButton}>Continuar </Text>
+                            <Text style={styles.textButton}>{props.buttonText} </Text>
                         </TouchableOpacity>
 
                     </View>

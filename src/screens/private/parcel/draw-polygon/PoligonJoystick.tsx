@@ -262,6 +262,7 @@ const PoligonJoystick = () => {
         isVisible={showModal}
         label={"¡El mapa de tu parcela ha sido guardado!"}
         closeModal={closeModal}
+        buttonText={"Continuar"}
       />
       <View style={styles.containerButtonUp}>
         <TouchableOpacity onPress={back} style={styles.buttonClose}>

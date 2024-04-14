@@ -52,17 +52,19 @@ const HeaderComponent: React.FC<HeaderProps> = ({
             >
               <Icon name="chevron-left" color={textColor} size={50} />
             </TouchableOpacity>
-            <Text
-              style={{
-                color: textColor,
-                fontSize: 18,
-                fontFamily: FONT_FAMILIES.primary,
-              }}
-            >
-              {label}
-            </Text>
           </View>
         )
+      }
+      centerComponent={
+        <Text
+          style={{
+            color: textColor,
+            fontSize: 18,
+            fontFamily: FONT_FAMILIES.primary,
+          }}
+        >
+          {label}
+        </Text>
       }
     />
   );
