@@ -1,4 +1,6 @@
-import React, { useCallback, useContext, useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -7,7 +9,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { imgFrame, imgLayer } from "../../../assets/imgs";
+import { BtnSmall } from "../../../components/button/Button";
+import { LoadingSave } from "../../../components/loading/LoadinSave";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { storage } from "../../../config/store/db";
+import { LABELS } from "../../../config/texts/labels";
+import { TEXTS } from "../../../config/texts/texts";
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
@@ -16,39 +24,18 @@ import {
   MP_DF,
   getFontSize,
 } from "../../../config/themes/default";
-import { UserInterface, UsersContext } from "../../../states/UserContext";
 import useInternetConnection from "../../../hooks/useInternetConnection";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { LABELS } from "../../../config/texts/labels";
-import { BtnSmall } from "../../../components/button/Button";
-import { TEXTS } from "../../../config/texts/texts";
-import { imgFrame, imgLayer } from "../../../assets/imgs";
-import { storage } from "../../../config/store/db";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { LoadingSave } from "../../../components/loading/LoadinSave";
-import { Alert } from "../../../components/alert/Alert";
-import ModalComponent from "../../../components/modalComponent";
 import useSyncData from "../../../hooks/useSyncData";
+import { UserInterface, UsersContext } from "../../../states/UserContext";
 
+import { writeTransaction } from "../../../OCC/occ";
 import useAuthenticationToken from "../../../hooks/useAuthenticationToken";
-/* import  fundingWallet,
-fundingWalletOff,
-newWallet,
-writeTransaction,
-writeTransaction,
-verificarWallet,
-'../../../OCC/occ'
-import axios from 'axios'
-import CryptoJS from 'crypto-js'
-import DATA_KAFE from './kafe-sistemas.json'
-const key = 'llavesecretakafesistemasidenti12'
+/*const key = 'llavesecretakafesistemasidenti12'
 const API_KAFE_SISTEMAS =
   'http://148.113.174.223/api/v1/pe/land-request/polygon'
 const API_KEY =
    'fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4'
- import {Users} from '../../../models/user'
-import {useQuery} from '@realm/react'
-import Geolocation from '@react-native-community/geolocation' */
+*/
 
 export const HomeProvScreen = () => {
   const navigation = useNavigation();
@@ -71,6 +58,10 @@ export const HomeProvScreen = () => {
   useEffect(() => {
     // Llamar a getToken
     getToken();
+    const parcels = JSON.parse(storage.getString("wallet") || "{}");
+    console.log(parcels);
+
+    write();
   });
 
   useFocusEffect(
@@ -131,13 +122,14 @@ export const HomeProvScreen = () => {
       })
   } */
 
-  /* const write = async () => {
+  const write = async () => {
     // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
     // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
     // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
-    await writeTransaction(wa.wif)
-  } */
-
+    await writeTransaction(
+      "L4V77xRH53JB9Tqvjva7FUW3XopTZEKxryP9dRiEU2HF1Y2hVo3S"
+    );
+  };
   /*  const fundingWalletOffline = async () => {
     await fundingWalletOff(wa.ec_pairs, wa.walletOFC, wa.wifi)
       .then(resp => {
@@ -585,7 +577,7 @@ const Body = (props: { syncUp: boolean; accessToken: string }) => {
 
   return (
     <View style={styles.bodyContainer}>
-      <ModalComponent
+      {/* <ModalComponent
         isVisible={isVisibleModal && existSyncData}
         label={"Tienes información pendiente por guardar"}
         buttonText={"Aceptar"}
@@ -593,7 +585,8 @@ const Body = (props: { syncUp: boolean; accessToken: string }) => {
           syncData(accessToken);
           setIsVisibleModal(false);
         }}
-      />
+      /> */}
+
       {/* Primer card */}
       <View style={[styles.bodyCardContainerFull]}>
         <TouchableOpacity

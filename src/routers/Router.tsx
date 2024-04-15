@@ -404,7 +404,7 @@ const HomeStackPrivate = () => {
           name="GradientLineRecorrer"
           component={GradientLineRecorrer}
           options={{
-            title: "Test Poligono Recorrer",
+            title: "Poligono Recorrer",
           }}
         />
         <HomeStack.Screen

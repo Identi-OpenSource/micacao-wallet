@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 interface HeaderProps {
   label: string;
   goBack?: boolean;
+  goBackNavigation: any;
   backgroundColor?: string; // Prop para el color de fondo
   textColor?: string; // Prop para el color del texto
 }
@@ -17,6 +18,7 @@ interface HeaderProps {
 const HeaderComponent: React.FC<HeaderProps> = ({
   label,
   goBack,
+  goBackNavigation,
   backgroundColor = COLORS_DF.isabelline, // Valor por defecto del color de fondo
   textColor = COLORS_DF.citrine_brown, // Valor por defecto del color del texto
 }) => {
@@ -47,7 +49,11 @@ const HeaderComponent: React.FC<HeaderProps> = ({
           >
             <TouchableOpacity
               onPress={() => {
-                navigation.goBack();
+                if (goBackNavigation) {
+                  goBackNavigation();
+                } else {
+                  navigation.goBack();
+                }
               }}
             >
               <Icon name="chevron-left" color={textColor} size={50} />

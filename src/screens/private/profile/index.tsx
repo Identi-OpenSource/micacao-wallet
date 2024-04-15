@@ -1,27 +1,25 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Text,
   Image,
   PermissionsAndroid,
   Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import * as ImagePicker from "react-native-image-picker";
-import { storage } from "../../../config/store/db";
+import { Arrow_Right, IconProfile, Person } from "../../../assets/svg";
 import HeaderComponent from "../../../components/Header";
-import {
-  COLORS_DF,
-  FONT_FAMILIES,
-  FONT_SIZES,
-} from "../../../config/themes/default";
+import { storage } from "../../../config/store/db";
+import { COLORS_DF, FONT_FAMILIES } from "../../../config/themes/default";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
-import { Person, IconProfile, Arrow_Right } from "../../../assets/svg";
+import { Card } from "@rneui/base";
 
 const ProfileScreen = () => {
   const user: UserInterface = useContext(UsersContext);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     const fetchImageUri = async () => {
@@ -101,19 +99,67 @@ const ProfileScreen = () => {
       <View style={styles.textContainer}>
         <Profile {...user} />
         <Text style={styles.textFarmer}>Agricultor</Text>
-        <TouchableOpacity
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            width: "80%",
-            alignItems: "center",
-            marginTop: 30,
-          }}
-        >
-          <IconProfile height={50} width={50} />
-          <Text style={styles.textInformation}>Información Personal</Text>
-          <Arrow_Right height={30} width={30} />
-        </TouchableOpacity>
+        {!showInfo && (
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "80%",
+              alignItems: "center",
+              marginTop: 30,
+            }}
+            onPress={() => {
+              setShowInfo(true);
+            }}
+          >
+            <IconProfile height={50} width={50} />
+            <Text style={styles.textInformation}>Información Personal</Text>
+            <Arrow_Right height={30} width={30} />
+          </TouchableOpacity>
+        )}
+        {showInfo && (
+          <>
+            <View style={{ marginRight: 280 }}>
+              <Text style={styles.textUpCard}>DNI</Text>
+            </View>
+            <Card
+              containerStyle={{
+                width: "80%",
+                height: 50,
+
+                justifyContent: "center",
+              }}
+            >
+              <Text>{user.dni}</Text>
+            </Card>
+            <View style={{ marginRight: 250, marginTop: 25 }}>
+              <Text style={styles.textUpCard}>Telefóno</Text>
+            </View>
+            <Card
+              containerStyle={{
+                width: "80%",
+                height: 50,
+
+                justifyContent: "center",
+              }}
+            >
+              <Text>{user.phone}</Text>
+            </Card>
+            <View style={{ marginRight: 270, marginTop: 25 }}>
+              <Text style={styles.textUpCard}>País</Text>
+            </View>
+            <Card
+              containerStyle={{
+                width: "80%",
+                height: 50,
+
+                justifyContent: "center",
+              }}
+            >
+              <Text>{user.country.name}</Text>
+            </Card>
+          </>
+        )}
       </View>
     </View>
   );
@@ -144,6 +190,11 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
     fontSize: 15,
+  },
+  textUpCard: {
+    fontFamily: FONT_FAMILIES.primary,
+    color: COLORS_DF.citrine_brown,
+    fontSize: 16,
   },
   textInformation: {
     fontFamily: FONT_FAMILIES.bold,

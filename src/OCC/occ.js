@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Linking} from 'react-native'
+import { Linking } from 'react-native'
 const bitGoUTXO = require('@bitgo/utxo-lib')
 const {
   fund_offline_wallets,
@@ -9,7 +9,7 @@ const {
 
 const test_batch = {
   user: {
-    id: {value: 1, unique: true},
+    id: { value: 1, unique: true },
     name: 'John Doe',
     email: 'johndoe@example.com',
     preferences: {
@@ -43,8 +43,13 @@ export const newWallet = () => {
   let wallet = bitGoUTXO.ECPair.makeRandom()
   let wif = wallet.toWIF()
   let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
+  // return {
+  //   walletOFC: ec_pairs.getAddress(),
+  //   wif,
+  // }
+  //Testing
   return {
-    walletOFC: ec_pairs.getAddress(),
+    walletOFC: "RJao1k24Dz2LP7Z4uaGKMcHvZ7HrXwDxZP",
     wif,
   }
 }
@@ -101,4 +106,4 @@ export const writeTransaction = async wif => {
   console.log(tx1)
 }
 
-export const transaction = async wallet => {}
+export const transaction = async wallet => { }

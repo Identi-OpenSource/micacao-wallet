@@ -169,7 +169,10 @@ export const DrawPolygonScreen = () => {
       >
         <HeaderComponent
           label="Mis parcelas"
-          goBack={false}
+          goBack={true}
+          goBackNavigation={() => {
+            navigation.navigate("HomeProvScreen");
+          }}
           backgroundColor="#8F3B06"
           textColor="white"
         />
