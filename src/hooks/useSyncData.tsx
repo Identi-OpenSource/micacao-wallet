@@ -6,7 +6,7 @@ import { useState } from "react";
 const useSyncData = () => {
   const [existSyncData, setExistSyncData] = useState(false);
 
-  const setProducer = async () => {
+  const setProducer = async (accessToken: any) => {
     try {
       const user = JSON.parse(storage.getString("user") || "{}");
 
@@ -37,10 +37,9 @@ const useSyncData = () => {
   const syncData = async (accessToken: any) => {
     const user = JSON.parse(storage.getString("user") || "{}");
 
-    console.log("user Sync", user, "accessToken", accessToken);
     if (Object.values(user).length > 0 && !user.syncUp) {
       if (accessToken !== null) {
-        await setProducer();
+        await setProducer(accessToken);
       } else {
         console.log("No se puede sincronizar ahora");
       }
@@ -58,10 +57,10 @@ const useSyncData = () => {
       setExistSyncData(true);
     }
 
-    if (parcels.length > 0) {
-      console.log("data, parcels");
-      setExistSyncData(true);
-    }
+    // if (parcels.length > 0) {
+    //   console.log("data, parcels");
+    //   setExistSyncData(true);
+    // }
   };
 
   return { syncData, verifyExistSyncData, existSyncData };

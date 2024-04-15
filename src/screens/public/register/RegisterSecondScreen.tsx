@@ -23,7 +23,7 @@ export const RegisterSecondScreen = ({
   const dispatch = useContext(UserDispatchContext);
 
   const submit = (values: InterfaceTwo) => {
-    const phone = user?.country?.phoneCode + "-" + values.phone;
+    const phone = values.phone;
 
     dispatch({
       type: "setUser",

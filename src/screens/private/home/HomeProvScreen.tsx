@@ -341,7 +341,7 @@ export const HomeProvScreen = () => {
               dataSyncUp={() => {} /* dataSyncUp */}
             />
             <Header {...user} />
-            <Body syncUp={syncUp} />
+            <Body syncUp={syncUp} accessToken={accessToken} />
             {/*  <View>
               <View style={{marginTop: MP_DF.large}}>
                 <Text style={styles.titleHeader}>Pruebas Polígono</Text>
@@ -569,13 +569,15 @@ const Header = ({ name }: UserInterface) => {
   );
 };
 
-const Body = (props: { syncUp: boolean }) => {
+const Body = (props: { syncUp: boolean; accessToken: string }) => {
   const navigation = useNavigation();
   const { isVisibleModal, setIsVisibleModal } = useInternetConnection();
 
-  const { verifyExistSyncData, existSyncData } = useSyncData();
+  const { syncData, verifyExistSyncData, existSyncData } = useSyncData();
 
   const syncUp = props.syncUp;
+
+  const accessToken = props.accessToken;
 
   useEffect(() => {
     verifyExistSyncData();
@@ -588,6 +590,7 @@ const Body = (props: { syncUp: boolean }) => {
         label={"Tienes información pendiente por guardar"}
         buttonText={"Aceptar"}
         closeModal={() => {
+          syncData(accessToken);
           setIsVisibleModal(false);
         }}
       />

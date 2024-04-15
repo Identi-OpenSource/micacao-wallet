@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { StyleSheet, View } from "react-native";
-import { Man, Welcome_W, Woman } from "../../../assets/svg/index";
+import { Man, Welcome_W, Woman, Welcome_M } from "../../../assets/svg/index";
 import { Btn } from "../../../components/button/Button";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { LABELS } from "../../../config/texts/labels";
@@ -28,7 +28,7 @@ const StartScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
         )}
         {user.gender == "M" && (
           <View style={styles.containerWelcome_W}>
-            <Welcome_W width={490} height={240} />
+            <Welcome_M width={490} height={240} />
           </View>
         )}
         {user.gender == "M" && (
