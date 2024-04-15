@@ -1,9 +1,5 @@
 import React, { useContext, useState } from "react";
 import {
-  HeaderActions,
-  SafeArea,
-} from "../../../../components/safe-area/SafeArea";
-import {
   ActivityIndicator,
   Alert,
   ImageBackground,
@@ -11,6 +7,23 @@ import {
   Text,
   View,
 } from "react-native";
+import Geolocation from "react-native-geolocation-service";
+import {
+  CameraType,
+  MediaType,
+  PhotoQuality,
+  launchCamera,
+} from "react-native-image-picker";
+import { imgCentro, imgCentroF } from "../../../../assets/imgs";
+import { Center_Parcel_M, Center_Parcel_W } from "../../../../assets/svg";
+import { Btn } from "../../../../components/button/Button";
+import {
+  HeaderActions,
+  SafeArea,
+} from "../../../../components/safe-area/SafeArea";
+import { storage } from "../../../../config/store/db";
+import { MSG_ERROR } from "../../../../config/texts/erros";
+import { LABELS } from "../../../../config/texts/labels";
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
@@ -19,23 +32,9 @@ import {
   FONT_SIZES,
   MP_DF,
 } from "../../../../config/themes/default";
-import { TEXTS } from "../../../../config/texts/texts";
-import { ScreenProps } from "../../../../routers/Router";
-import { LABELS } from "../../../../config/texts/labels";
-import { Btn } from "../../../../components/button/Button";
 import { STYLES_GLOBALS } from "../../../../config/themes/stylesGlobals";
-import { imgCentro, imgCentroF } from "../../../../assets/imgs";
-import {
-  CameraType,
-  MediaType,
-  PhotoQuality,
-  launchCamera,
-} from "react-native-image-picker";
-import Geolocation from "react-native-geolocation-service";
-import { MSG_ERROR } from "../../../../config/texts/erros";
-import { storage } from "../../../../config/store/db";
+import { ScreenProps } from "../../../../routers/Router";
 import { UserInterface, UsersContext } from "../../../../states/UserContext";
-import { Center_Parcel_M, Center_Parcel_W } from "../../../../assets/svg";
 export const RegisterParcelFourthScreen = ({
   navigation,
 }: ScreenProps<"RegisterParcelFourthScreen">) => {

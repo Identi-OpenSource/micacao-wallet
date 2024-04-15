@@ -1,9 +1,5 @@
 import React, { useContext, useState } from "react";
 import {
-  HeaderActions,
-  SafeArea,
-} from "../../../../components/safe-area/SafeArea";
-import {
   ActivityIndicator,
   Alert,
   ImageBackground,
@@ -12,6 +8,19 @@ import {
   View,
 } from "react-native";
 import {
+  CameraType,
+  MediaType,
+  PhotoQuality,
+  launchCamera,
+} from "react-native-image-picker";
+import { imgEntrada, imgEntradaF } from "../../../../assets/imgs";
+import { Btn } from "../../../../components/button/Button";
+import {
+  HeaderActions,
+  SafeArea,
+} from "../../../../components/safe-area/SafeArea";
+import { LABELS } from "../../../../config/texts/labels";
+import {
   BORDER_RADIUS_DF,
   COLORS_DF,
   DWH,
@@ -19,24 +28,14 @@ import {
   FONT_SIZES,
   MP_DF,
 } from "../../../../config/themes/default";
-import { TEXTS } from "../../../../config/texts/texts";
-import { ScreenProps } from "../../../../routers/Router";
-import { LABELS } from "../../../../config/texts/labels";
-import { Btn } from "../../../../components/button/Button";
 import { STYLES_GLOBALS } from "../../../../config/themes/stylesGlobals";
-import { imgEntrada, imgEntradaF } from "../../../../assets/imgs";
-import {
-  CameraType,
-  MediaType,
-  PhotoQuality,
-  launchCamera,
-} from "react-native-image-picker";
+import { ScreenProps } from "../../../../routers/Router";
 
 import Geolocation from "react-native-geolocation-service";
-import { MSG_ERROR } from "../../../../config/texts/erros";
-import { storage } from "../../../../config/store/db";
-import { UserInterface, UsersContext } from "../../../../states/UserContext";
 import { Walk_Parcel_M, Walk_Parcel_W } from "../../../../assets/svg";
+import { storage } from "../../../../config/store/db";
+import { MSG_ERROR } from "../../../../config/texts/erros";
+import { UserInterface, UsersContext } from "../../../../states/UserContext";
 export const RegisterParcelThirdScreen = ({
   navigation,
 }: ScreenProps<"RegisterParcelThirdScreen">) => {

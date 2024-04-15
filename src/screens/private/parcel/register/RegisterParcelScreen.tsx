@@ -1,8 +1,8 @@
+import { Card } from "@rneui/base";
 import React, { useContext } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ParcelColor } from "../../../../assets/svg";
 import { SafeArea } from "../../../../components/safe-area/SafeArea";
-import { ScreenProps } from "../../../../routers/Router";
-import { TEXTS } from "../../../../config/texts/texts";
 import {
   COLORS_DF,
   DWH,
@@ -10,12 +10,8 @@ import {
   FONT_SIZES,
   MP_DF,
 } from "../../../../config/themes/default";
-import { imgCampo } from "../../../../assets/imgs";
-import { Btn } from "../../../../components/button/Button";
-import { LABELS } from "../../../../config/texts/labels";
+import { ScreenProps } from "../../../../routers/Router";
 import { UserInterface, UsersContext } from "../../../../states/UserContext";
-import { Card } from "@rneui/base";
-import { ParcelColor } from "../../../../assets/svg";
 export const RegisterParcelScreen = ({
   navigation,
 }: ScreenProps<"RegisterParcelScreen">) => {

@@ -1,23 +1,22 @@
+import { Field, Formik } from "formik";
 import React, { useContext } from "react";
+import { StyleSheet, View } from "react-native";
+import { number, object } from "yup";
+import { Hectare_M, Hectare_W } from "../../../../assets/svg";
+import { Btn } from "../../../../components/button/Button";
+import { InputText } from "../../../../components/input-text/InputText";
+import { InputTextProps } from "../../../../components/input-text/interfaces";
 import {
   HeaderActions,
   SafeArea,
 } from "../../../../components/safe-area/SafeArea";
-import { StyleSheet, View } from "react-native";
-import { MP_DF } from "../../../../config/themes/default";
-import { TEXTS } from "../../../../config/texts/texts";
-import { ScreenProps } from "../../../../routers/Router";
-import { LABELS } from "../../../../config/texts/labels";
-import { InputText } from "../../../../components/input-text/InputText";
-import { InputTextProps } from "../../../../components/input-text/interfaces";
-import { number, object } from "yup";
-import { MSG_ERROR } from "../../../../config/texts/erros";
-import { Field, Formik } from "formik";
-import { Btn } from "../../../../components/button/Button";
-import { STYLES_GLOBALS } from "../../../../config/themes/stylesGlobals";
 import { storage } from "../../../../config/store/db";
+import { MSG_ERROR } from "../../../../config/texts/erros";
+import { LABELS } from "../../../../config/texts/labels";
+import { MP_DF } from "../../../../config/themes/default";
+import { STYLES_GLOBALS } from "../../../../config/themes/stylesGlobals";
+import { ScreenProps } from "../../../../routers/Router";
 import { UsersContext } from "../../../../states/UserContext";
-import { Hectare_M, Hectare_W } from "../../../../assets/svg";
 export interface Interface {
   hectares: string;
 }

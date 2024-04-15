@@ -1,8 +1,11 @@
 import Config from "react-native-config";
 import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
+import { useState } from "react";
 
 const useSyncData = () => {
+  const [existSyncData, setExistSyncData] = useState(false);
+
   const setProducer = async () => {
     try {
       const user = JSON.parse(storage.getString("user") || "{}");
@@ -44,7 +47,24 @@ const useSyncData = () => {
     }
   };
 
-  return { syncData };
+  const verifyExistSyncData = () => {
+    const user = JSON.parse(storage.getString("user") || "{}");
+    const parcels = JSON.parse(storage.getString("parcels") || "[]");
+
+    setExistSyncData(false);
+
+    if (Object.values(user).length > 0 && !user.syncUp) {
+      console.log("data, user");
+      setExistSyncData(true);
+    }
+
+    if (parcels.length > 0) {
+      console.log("data, parcels");
+      setExistSyncData(true);
+    }
+  };
+
+  return { syncData, verifyExistSyncData, existSyncData };
 };
 
 export default useSyncData;

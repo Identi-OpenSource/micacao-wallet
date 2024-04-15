@@ -28,7 +28,9 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { LoadingSave } from "../../../components/loading/LoadinSave";
 import { Alert } from "../../../components/alert/Alert";
 import ModalComponent from "../../../components/modalComponent";
-//import useAuthenticationToken from "../../../hooks/useAuthenticationToken";
+import useSyncData from "../../../hooks/useSyncData";
+
+import useAuthenticationToken from "../../../hooks/useAuthenticationToken";
 /* import  fundingWallet,
 fundingWalletOff,
 newWallet,
@@ -52,7 +54,7 @@ export const HomeProvScreen = () => {
   const navigation = useNavigation();
   const user: UserInterface = useContext(UsersContext);
   const { isConnected } = useInternetConnection();
-  //const { accessToken } = useAuthenticationToken();
+  const { accessToken, getToken } = useAuthenticationToken();
   const [syncUp, setSyncUp] = useState(false);
   const [loadinSync, setLoadingSync] = useState(false);
   // const [TGFW, setTokenGFW] = useState(null)
@@ -60,11 +62,16 @@ export const HomeProvScreen = () => {
   // const users = useQuery(Users)
   // const [wa, setWa] = useState(null) as any
 
-  // useEffect(() => {
-  //   console.log(
-  //     accessToken !== null ? "Conectado a BackEnd" : "No Conectado a Back End "
-  //   );
-  // }, [accessToken]);
+  useEffect(() => {
+    console.log(
+      accessToken !== null ? "Conectado a BackEnd" : "No Conectado a Back End "
+    );
+  }, [accessToken]);
+
+  useEffect(() => {
+    // Llamar a getToken
+    getToken();
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -566,12 +573,18 @@ const Body = (props: { syncUp: boolean }) => {
   const navigation = useNavigation();
   const { isVisibleModal, setIsVisibleModal } = useInternetConnection();
 
+  const { verifyExistSyncData, existSyncData } = useSyncData();
+
   const syncUp = props.syncUp;
+
+  useEffect(() => {
+    verifyExistSyncData();
+  }, []);
 
   return (
     <View style={styles.bodyContainer}>
       <ModalComponent
-        isVisible={isVisibleModal}
+        isVisible={isVisibleModal && existSyncData}
         label={"Tienes información pendiente por guardar"}
         buttonText={"Aceptar"}
         closeModal={() => {
