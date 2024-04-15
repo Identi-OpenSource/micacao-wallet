@@ -18,6 +18,7 @@ export const HTTP = async (api: API_INTERFACE) => {
   };
 
   try {
+    console.log("axiosConfig", axiosConfig);
     const response = await axios(axiosConfig);
     return response.data;
   } catch (error) {

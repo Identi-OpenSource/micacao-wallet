@@ -31,6 +31,7 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { UserProvider } from "./src/states/UserContext";
+import { AuthProvider } from "./src/states/AuthContext";
 import { faWhatsapp, fab } from "@fortawesome/free-brands-svg-icons";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons/faExclamationTriangle";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -99,11 +100,13 @@ function App(): React.JSX.Element {
   return (
     // <RealmProvider schema={[Users]} {...config}>
     // <GestureHandlerRootView style={{flex: 1}}>
-    <UserProvider>
-      <NavigationContainer>
-        <Router />
-      </NavigationContainer>
-    </UserProvider>
+    <AuthProvider>
+      <UserProvider>
+        <NavigationContainer>
+          <Router />
+        </NavigationContainer>
+      </UserProvider>
+    </AuthProvider>
     //</GestureHandlerRootView>
     // </RealmProvider>
   );

@@ -1,15 +1,12 @@
-import { useEffect } from "react";
 import Config from "react-native-config";
 import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
-import useAuthenticationToken from "./useAuthenticationToken";
 
 const useSyncData = () => {
-  const { accessToken } = useAuthenticationToken();
-  const user = JSON.parse(storage.getString("user") || "{}");
-
   const setProducer = async () => {
     try {
+      const user = JSON.parse(storage.getString("user") || "{}");
+
       const apiRequest: API_INTERFACE = {
         url: `${Config.BASE_URL}/create_producer`,
         method: "POST",
@@ -18,7 +15,7 @@ const useSyncData = () => {
           name: user.name,
           phone: user.phone,
           gender: user.gender == "M" ? "MALE" : "FEMALE",
-          countryid: user.country.code === "CO" ? 1 : 2,
+          countryid: user.country?.code === "CO" ? 1 : 2,
         },
         headers: {
           "Content-Type": "application/json",
@@ -34,20 +31,18 @@ const useSyncData = () => {
     }
   };
 
-  const syncData = async () => {
-    if (!user.syncUp) {
+  const syncData = async (accessToken: any) => {
+    const user = JSON.parse(storage.getString("user") || "{}");
+
+    console.log("user Sync", user, "accessToken", accessToken);
+    if (Object.values(user).length > 0 && !user.syncUp) {
       if (accessToken !== null) {
         await setProducer();
+      } else {
+        console.log("No se puede sincronizar ahora");
       }
     }
   };
-
-  useEffect(() => {
-    console.log(
-      accessToken !== null ? "Conectado a BackEnd" : "No Conectado a Back End "
-    );
-    syncData();
-  }, [accessToken]);
 
   return { syncData };
 };

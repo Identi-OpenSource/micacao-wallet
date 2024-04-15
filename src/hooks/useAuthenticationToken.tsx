@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { HTTP, API_INTERFACE } from "../services/api";
 import Config from "react-native-config";
 import useInternetConnection from "./useInternetConnection";
+import { useAuth } from "../states/AuthContext";
 
 const useAuthenticationToken = () => {
-  const [accessToken, setAccessToken] = useState(null);
+  const { accessToken, setToken } = useAuth();
   const { isConnected } = useInternetConnection();
 
   const getToken = async () => {
@@ -17,10 +18,9 @@ const useAuthenticationToken = () => {
           headers: { "Content-Type": "multipart/form-data" },
         };
         const data = await HTTP(apiRequest);
-        setAccessToken(data);
+        setToken(data.access_token);
       } catch (error) {
         console.log("error", error);
-        setAccessToken(null);
         //setError("Error fetching data");
       } finally {
       }
@@ -28,10 +28,10 @@ const useAuthenticationToken = () => {
   };
 
   useEffect(() => {
-    getToken();
-  }, [isConnected]);
+    console.log("AccessToken on Use", accessToken);
+  }, [accessToken]);
 
-  return { accessToken };
+  return { accessToken, getToken };
 };
 
 export default useAuthenticationToken;

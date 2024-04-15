@@ -24,8 +24,7 @@ import {
   moderateScale,
   verticalScale,
 } from "../../../config/themes/metrics";
-import { UsersContext, UserDispatchContext } from "../../../states/UserContext";
-import useSyncData from "../../../hooks/useSyncData";
+import { UserDispatchContext, UsersContext } from "../../../states/UserContext";
 Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
 const { width, height } = Dimensions.get("window");
 
@@ -33,7 +32,6 @@ export const RegisterOkScreen = () => {
   const [step, setStep] = useState({ step: 0, msg: TEXTS.textH });
   const dispatch = useContext(UserDispatchContext);
   const user = useContext(UsersContext);
-  const { syncData } = useSyncData();
   const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -49,7 +47,6 @@ export const RegisterOkScreen = () => {
     await delay(1000);
     setStep({ step: 2, msg: "Guardando datos..." });
     storage.set("user", JSON.stringify({ ...user, ...dni, isLogin: true }));
-    await syncData();
     await delay(1000);
     setStep({ step: 3, msg: "Creando wallet..." });
     const wallet = newWallet();
@@ -121,7 +118,7 @@ export const RegisterOkScreen = () => {
   };
 
   return (
-    <SafeArea bg={"neutral"}>
+    <SafeArea bg={"isabelline"}>
       <ActivityIndicator
         size={moderateScale(86)}
         color={COLORS_DF.citrine_brown}
