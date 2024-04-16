@@ -97,7 +97,7 @@ const ProfileScreen = () => {
         )}
       </TouchableOpacity>
       <View style={styles.textContainer}>
-        <Profile {...user} />
+        <Text style={styles.textName}>{user.name}</Text>
         <Text style={styles.textFarmer}>Agricultor</Text>
         {!showInfo && (
           <TouchableOpacity
@@ -122,41 +122,20 @@ const ProfileScreen = () => {
             <View style={{ marginRight: 280 }}>
               <Text style={styles.textUpCard}>DNI</Text>
             </View>
-            <Card
-              containerStyle={{
-                width: "80%",
-                height: 50,
-
-                justifyContent: "center",
-              }}
-            >
-              <Text>{user.dni}</Text>
+            <Card containerStyle={styles.card}>
+              <Text style={styles.textCard}>{user.dni}</Text>
             </Card>
             <View style={{ marginRight: 250, marginTop: 25 }}>
               <Text style={styles.textUpCard}>Telefóno</Text>
             </View>
-            <Card
-              containerStyle={{
-                width: "80%",
-                height: 50,
-
-                justifyContent: "center",
-              }}
-            >
-              <Text>{user.phone}</Text>
+            <Card containerStyle={styles.card}>
+              <Text style={styles.textCard}>{user.phone}</Text>
             </Card>
             <View style={{ marginRight: 270, marginTop: 25 }}>
               <Text style={styles.textUpCard}>País</Text>
             </View>
-            <Card
-              containerStyle={{
-                width: "80%",
-                height: 50,
-
-                justifyContent: "center",
-              }}
-            >
-              <Text>{user.country.name}</Text>
+            <Card containerStyle={styles.card}>
+              <Text style={styles.textCard}>{user.country.name}</Text>
             </Card>
           </>
         )}
@@ -165,16 +144,17 @@ const ProfileScreen = () => {
   );
 };
 
-const Profile = ({ name }: UserInterface) => {
-  const firstName = name.split(" ")[0];
-  return <Text style={styles.textName}>{firstName}</Text>;
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS_DF.isabelline,
     paddingVertical: 15,
+  },
+  card: {
+    width: "80%",
+    height: 50,
+
+    justifyContent: "center",
   },
   textContainer: {
     justifyContent: "center",
@@ -184,7 +164,7 @@ const styles = StyleSheet.create({
   textName: {
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
-    fontSize: 30,
+    fontSize: 25,
   },
   textFarmer: {
     fontFamily: FONT_FAMILIES.primary,
@@ -200,6 +180,11 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.bold,
     color: COLORS_DF.citrine_brown,
     fontSize: 20,
+  },
+  textCard: {
+    fontFamily: FONT_FAMILIES.bold,
+    color: COLORS_DF.black,
+    fontSize: 15,
   },
   image: {
     width: 150,
