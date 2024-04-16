@@ -36,7 +36,7 @@ export const NewSaleTwoScreen = () => {
     const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
     const sale = { ...saleTemp, kl };
     storage.set("saleTemp", JSON.stringify(sale));
-
+    console.log("Peso", sale);
     navigation.navigate("NewSaleThreeScreen");
   };
   return (

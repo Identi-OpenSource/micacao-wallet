@@ -28,6 +28,7 @@ export const NewSaleOneScreen = () => {
   const onSubmit = (type: string) => {
     const sale = { type };
     storage.set("saleTemp", JSON.stringify(sale));
+    console.log("Tipo de cacao", sale);
     navigation.navigate("NewSaleTwoScreen");
   };
 

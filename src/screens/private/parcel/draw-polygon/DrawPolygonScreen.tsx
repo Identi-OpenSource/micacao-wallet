@@ -24,6 +24,7 @@ import { useNavigation } from "@react-navigation/native";
 import HeaderComponent from "../../../../components/Header";
 import { Card } from "@rneui/base";
 import { Cacao } from "../../../../assets/svg";
+
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
 }
@@ -116,7 +117,11 @@ export const DrawPolygonScreen = () => {
   const [lastCoordinate] = useState<Position>(firstPoint);
   const [started] = useState(true);
   const navigation = useNavigation();
-
+  const [sumaTotalVentas, setSumaTotalVentas] = useState(0);
+  useEffect(() => {
+    // Obtener la suma total de ventas del almacenamiento local al cargar el componente
+    calcularSumaVentas();
+  }, []);
   useEffect(() => {
     // eliminar polygonTemp
     //storage.delete('polygonTemp')
@@ -153,6 +158,21 @@ export const DrawPolygonScreen = () => {
     storage.set("parcels", JSON.stringify([newParcel]));
     // navegar a la pantalla de parcelas
     navigation.navigate("MyParcelsScreen");
+  };
+  const calcularSumaVentas = async () => {
+    try {
+      const salesString = (await storage.getString("sales")) || "[]";
+      const sales = JSON.parse(salesString);
+
+      const sumaTotal = sales.reduce((total, venta) => {
+        const montoVenta = parseFloat(venta.kl);
+        return total + montoVenta;
+      }, 0);
+
+      setSumaTotalVentas(sumaTotal);
+    } catch (error) {
+      console.error("Error al calcular la suma total de ventas:", error);
+    }
   };
 
   return (
@@ -198,7 +218,7 @@ export const DrawPolygonScreen = () => {
                   marginTop: 25,
                 }}
               >
-                <Text style={styles.kg}>00.0</Text>
+                <Text style={styles.kg}> {sumaTotalVentas.toFixed(2)}</Text>
                 <Text style={styles.kg}>Kg.</Text>
               </View>
               <View

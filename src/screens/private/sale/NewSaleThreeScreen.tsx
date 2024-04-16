@@ -49,10 +49,35 @@ export const NewSaleThreeScreen = () => {
     const sale = { ...saleTemp, mes };
     storage.set("saleTemp", JSON.stringify({}));
     storage.set("sales", JSON.stringify([...sales, sale]));
+    console.log("Todas las ventas", sales);
+    calcularSumaVentas();
+
     setTimeout(() => {
       setP(2);
     }, 2000);
   };
+  function calcularSumaVentas() {
+    try {
+      // Obtener las ventas almacenadas en el almacenamiento local
+      const salesString = storage.getString("sales") || "[]";
+      const sales = JSON.parse(salesString);
+
+      // Calcular la suma total de ventas
+      const sumaTotalVentas = sales.reduce((total, venta) => {
+        // Asegurar que 'venta.kl' sea un número antes de sumarlo
+        const montoVenta = parseFloat(venta.kl);
+        return total + montoVenta;
+      }, 0); // Inicializar total en 0
+
+      // Mostrar la suma total de ventas en un texto
+      console.log("La suma total de los kilos " + sumaTotalVentas.toFixed(2));
+    } catch (error) {
+      console.error("Error al calcular la suma total de ventas:", error);
+    }
+  }
+
+  // Llamar a la función para calcular y mostrar la suma total de ventas
+  calcularSumaVentas();
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
@@ -75,6 +100,9 @@ export const NewSaleThreeScreen = () => {
                   </TouchableOpacity>
                 )}
               />
+              <TouchableOpacity onPress={calcularSumaVentas}>
+                <Text>Hola</Text>
+              </TouchableOpacity>
             </View>
           </>
         )}
