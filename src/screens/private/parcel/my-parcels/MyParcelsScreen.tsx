@@ -1,19 +1,18 @@
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
-import { SafeArea } from "../../../../components/safe-area/SafeArea";
-import { Parcel } from "../../../../states/UserContext";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Parcels } from "../../../../assets/svg";
+import { Btn } from "../../../../components/button/Button";
+import { SafeArea } from "../../../../components/safe-area/SafeArea";
+import { storage } from "../../../../config/store/db";
 import {
   COLORS_DF,
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
 } from "../../../../config/themes/default";
-import { imgCampo } from "../../../../assets/imgs";
-import { Btn } from "../../../../components/button/Button";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { storage } from "../../../../config/store/db";
-import { TouchableOpacity } from "react-native";
+import { Parcel } from "../../../../states/UserContext";
+
 export const MyParcelsScreen = () => {
   const navigation = useNavigation();
   const [parcels, setParcels] = useState([] as Parcel[]);
@@ -73,14 +72,18 @@ const CardParcel = (props: Parcel, navigation: any) => {
           />
         </>
       )}
+
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("DrawPolygonScreen");
+          !props.polygon
+            ? navigation.navigate("PolygonScreen")
+            : navigation.navigate("DrawPolygonScreen");
         }}
         style={{ justifyContent: "center", alignItems: "center" }}
       >
         <Parcels />
       </TouchableOpacity>
+
       <Btn
         title="Presione para dibujar"
         icon={"hand-pointer"}

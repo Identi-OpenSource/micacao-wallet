@@ -24,6 +24,7 @@ import { useNavigation } from "@react-navigation/native";
 import HeaderComponent from "../../../../components/Header";
 import { Card } from "@rneui/base";
 import { Cacao } from "../../../../assets/svg";
+import { CheckBox } from "@rneui/themed";
 
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
@@ -243,6 +244,21 @@ export const DrawPolygonScreen = () => {
             elevation: 5,
           }}
         >
+          <View
+            style={{
+              backgroundColor: "#22C55E",
+              alignItems: "center",
+              width: "100%",
+              borderRadius: 5,
+              marginBottom: 15,
+              height: 25,
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ color: "#fff" }}>
+              Estado de titularidad de tierra
+            </Text>
+          </View>
           <MapView
             ref={map}
             // key={coordinates.length}
@@ -294,16 +310,35 @@ export const DrawPolygonScreen = () => {
               );
             })}
           </MapView>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              width: 200,
+            }}
+          >
+            <View style={{ width: 49 }}>
+              <CheckBox
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="dot-circle-o"
+                uncheckedColor="#8F3B06"
+                checkedColor="  #8F3B06"
+                size={25}
+              />
+            </View>
+            <Text
+              style={{
+                fontFamily: FONT_FAMILIES.primary,
+                color: COLORS_DF.citrine_brown,
+                fontSize: 15,
+                marginRight: 45,
+              }}
+            >
+              Póligono de área
+            </Text>
+          </View>
         </Card>
       </View>
-      <View
-        style={{
-          position: "absolute",
-          bottom: MP_DF.large,
-          width: "100%",
-          paddingHorizontal: MP_DF.large,
-        }}
-      ></View>
     </View>
   );
 };

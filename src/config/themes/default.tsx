@@ -106,7 +106,7 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
       CL = [COLORS_DF.lightBlue, COLORS_DF.isabelline];
       break;
     case "transparent":
-      CL = [COLORS_DF.transparent, COLORS_DF.cacao];
+      CL = [COLORS_DF.transparent, COLORS_DF.citrine_brown];
       break;
     default:
       CL = [COLORS_DF.primary, COLORS_DF.secondary];

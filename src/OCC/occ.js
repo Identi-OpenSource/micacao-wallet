@@ -43,15 +43,15 @@ export const newWallet = () => {
   let wallet = bitGoUTXO.ECPair.makeRandom()
   let wif = wallet.toWIF()
   let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
-  // return {
-  //   walletOFC: ec_pairs.getAddress(),
-  //   wif,
-  // }
-  //Testing
   return {
-    walletOFC: "RJao1k24Dz2LP7Z4uaGKMcHvZ7HrXwDxZP",
+    walletOFC: ec_pairs.getAddress(),
     wif,
   }
+  //Testing
+  /*   return {
+      walletOFC: "RJao1k24Dz2LP7Z4uaGKMcHvZ7HrXwDxZP",
+      wif,
+    } */
 }
 
 export const fundingWallet = async wallet => {

@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ScrollView,
 } from "react-native";
 import * as ImagePicker from "react-native-image-picker";
 import { Arrow_Right, IconProfile, Person } from "../../../assets/svg";
@@ -15,7 +16,7 @@ import { storage } from "../../../config/store/db";
 import { COLORS_DF, FONT_FAMILIES } from "../../../config/themes/default";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
 import { Card } from "@rneui/base";
-
+import { newWallet, fundingWallet } from "../../../OCC/occ";
 const ProfileScreen = () => {
   const user: UserInterface = useContext(UsersContext);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -82,8 +83,13 @@ const ProfileScreen = () => {
       }
     });
   };
+  const wallet = newWallet();
+  console.log(wallet);
+  const found = fundingWallet();
+  console.log(found);
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <HeaderComponent label={"Perfil"} />
 
       <TouchableOpacity
@@ -139,8 +145,24 @@ const ProfileScreen = () => {
             </Card>
           </>
         )}
+        {/* <TouchableOpacity
+          onPress={() => {
+            wallet;
+          }}
+          style={{ padding: 15, backgroundColor: "red", marginTop: 25 }}
+        >
+          <Text>crear</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            found;
+          }}
+          style={{ padding: 15, backgroundColor: "green", margin: 20 }}
+        >
+          <Text>fondear</Text>
+        </TouchableOpacity> */}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -100,9 +100,6 @@ export const NewSaleThreeScreen = () => {
                   </TouchableOpacity>
                 )}
               />
-              <TouchableOpacity onPress={calcularSumaVentas}>
-                <Text>Hola</Text>
-              </TouchableOpacity>
             </View>
           </>
         )}
