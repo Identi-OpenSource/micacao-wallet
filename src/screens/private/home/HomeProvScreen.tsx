@@ -28,7 +28,7 @@ import useInternetConnection from "../../../hooks/useInternetConnection";
 import useSyncData from "../../../hooks/useSyncData";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
 
-import { writeTransaction } from "../../../OCC/occ";
+import { writeTransaction, newWallet } from "../../../OCC/occ";
 import useAuthenticationToken from "../../../hooks/useAuthenticationToken";
 /*const key = 'llavesecretakafesistemasidenti12'
 const API_KAFE_SISTEMAS =
@@ -47,7 +47,7 @@ export const HomeProvScreen = () => {
   // const [TGFW, setTokenGFW] = useState(null)
   // const [apiKeyGFW, setApiKeyGFW] = useState(null)
   // const users = useQuery(Users)
-  // const [wa, setWa] = useState(null) as any
+  const [wa, setWa] = useState(null) as any;
 
   useEffect(() => {
     console.log(
@@ -57,11 +57,12 @@ export const HomeProvScreen = () => {
 
   useEffect(() => {
     // Llamar a getToken
-    getToken();
-    const parcels = JSON.parse(storage.getString("wallet") || "{}");
-    console.log(parcels);
+    // getToken();
+  }, []);
 
-    write();
+  useEffect(() => {
+    // Llamar a getToken
+    // getToken();
   });
 
   useFocusEffect(
@@ -76,6 +77,26 @@ export const HomeProvScreen = () => {
       }
     }, [isConnected])
   );
+
+  const getWallet = () => {
+    // Create Wallet
+    // const wallet = JSON.parse(storage.getString("wallet") || "{}");
+    // setWa(wallet);
+
+    //Testing Wallet
+    const wallet = newWallet();
+    const isFunding = true;
+
+    const walletObj = { wallet, isFunding };
+
+    console.log(walletObj);
+
+    setWa(walletObj.wallet);
+  };
+
+  const writeWallet = () => {
+    write();
+  };
 
   /* const dataSyncUp = () => {
     setLoadingSync(true)
@@ -126,9 +147,8 @@ export const HomeProvScreen = () => {
     // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
     // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
     // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
-    await writeTransaction(
-      "L4V77xRH53JB9Tqvjva7FUW3XopTZEKxryP9dRiEU2HF1Y2hVo3S"
-    );
+    console.log(wa.wif);
+    await writeTransaction(wa.wif);
   };
   /*  const fundingWalletOffline = async () => {
     await fundingWalletOff(wa.ec_pairs, wa.walletOFC, wa.wifi)
@@ -333,7 +353,12 @@ export const HomeProvScreen = () => {
               dataSyncUp={() => {} /* dataSyncUp */}
             />
             <Header {...user} />
-            <Body syncUp={syncUp} accessToken={accessToken} />
+            <Body
+              syncUp={syncUp}
+              accessToken={accessToken}
+              getWallet={getWallet}
+              writeWallet={writeWallet}
+            />
             {/*  <View>
               <View style={{marginTop: MP_DF.large}}>
                 <Text style={styles.titleHeader}>Pruebas Polígono</Text>
@@ -561,7 +586,12 @@ const Header = ({ name }: UserInterface) => {
   );
 };
 
-const Body = (props: { syncUp: boolean; accessToken: string }) => {
+const Body = (props: {
+  syncUp: boolean;
+  accessToken: string;
+  getWallet: any;
+  writeWallet: any;
+}) => {
   const navigation = useNavigation();
   const { isVisibleModal, setIsVisibleModal } = useInternetConnection();
 
@@ -570,6 +600,8 @@ const Body = (props: { syncUp: boolean; accessToken: string }) => {
   const syncUp = props.syncUp;
 
   const accessToken = props.accessToken;
+  const getWallet = props.getWallet;
+  const writeWallet = props.writeWallet;
 
   useEffect(() => {
     verifyExistSyncData();
@@ -609,6 +641,26 @@ const Body = (props: { syncUp: boolean; accessToken: string }) => {
           <Image source={imgFrame} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.registerVenta}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.bodyCard]}
+          activeOpacity={0.9}
+          onPress={() => getWallet()}
+        >
+          <Text style={[styles.titleCard, syncUp && styles.filter]}>
+            {"get Wallet"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.bodyCard]}
+          activeOpacity={0.9}
+          onPress={() => writeWallet()}
+        >
+          <Text style={[styles.titleCard, syncUp && styles.filter]}>
+            {"write Wallet"}
           </Text>
         </TouchableOpacity>
       </View>
