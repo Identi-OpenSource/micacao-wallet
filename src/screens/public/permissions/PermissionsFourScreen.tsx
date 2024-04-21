@@ -39,8 +39,6 @@ export const PermissionsFourScreen = () => {
           },
         )
 
-        console.log('Entro aqui', user)
-
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           let initialRouteName: keyof RootStackParamList = 'TabPrivate'
           if (!user.isLogin) {
@@ -49,7 +47,6 @@ export const PermissionsFourScreen = () => {
           if (user.isLogin && user?.parcel?.length === 0) {
             initialRouteName = 'RegisterParcelScreen'
           }
-          console.log('initialRouteName', initialRouteName)
           navigation.navigate(initialRouteName)
         } else {
           console.log('Camera permission denied')

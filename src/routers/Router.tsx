@@ -13,7 +13,7 @@ import React, {useContext, useEffect} from 'react'
 import {StyleSheet} from 'react-native'
 import {storage} from '../config/store/db'
 import {BORDER_RADIUS_DF, COLORS_DF, MP_DF} from '../config/themes/default'
-import SplashScreen from '../screens/SplashScreen'
+import {SplashScreen} from '../screens/SplashScreen'
 import {HelpScreen} from '../screens/private/help/HelpScreen'
 import {HomeProvScreen} from '../screens/private/home/HomeProvScreen'
 import {TestMap} from '../screens/private/home/TestMap'
@@ -367,16 +367,14 @@ export const Router = () => {
   }
 
   const getStack = () => {
-    if (!user.isLogin) {
-      return PublicStack()
-    }
-
-    if (user.isLogin) {
-      if (parcels.length > 0) {
-        return TabPrivate()
+    if (Object.values(userLogin).length > 0) {
+      if (userLogin.isLogin) {
+        return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate()
       } else {
-        return RegisterParcelStackPrivate()
+        return PublicStack()
       }
+    } else {
+      return PublicStack()
     }
   }
 

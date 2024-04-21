@@ -2,13 +2,14 @@ import React, {useEffect} from 'react'
 import {StyleSheet, Text, View} from 'react-native'
 import {Logo} from '../assets/svg/index'
 import {COLORS_DF, FONT_FAMILIES} from '../config/themes/default'
-interface SplashScreenProps {
-  navigation: any
-}
-const SplashScreen: React.FC<SplashScreenProps> = ({navigation}) => {
+import {useNavigation} from '@react-navigation/native'
+
+export const SplashScreen = () => {
+  const navigation = useNavigation()
+
   useEffect(() => {
     setTimeout(() => {
-      navigation.replace('HomeScreen')
+      navigation.navigate('HomeScreen')
     }, 2000)
   }, [])
 
@@ -19,7 +20,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({navigation}) => {
     </View>
   )
 }
-FONT_FAMILIES
 
 const styles = StyleSheet.create({
   container: {
@@ -34,5 +34,3 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 })
-
-export default SplashScreen
