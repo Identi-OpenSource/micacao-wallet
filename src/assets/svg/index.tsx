@@ -40,3 +40,4 @@ export { default as IconProfile } from "./iconProfile.svg";
 export { default as Arrow_Right } from "./arrow_forward.svg";
 export { default as Welcome_M } from "./welcome_M.svg";
 export { default as Warning } from "./warning.svg";
+export { default as Reloading } from "./reloading.svg";

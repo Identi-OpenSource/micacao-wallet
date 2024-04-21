@@ -32,7 +32,7 @@ export const LABELS = {
   /*   continue: "CONTINUAR", */
   offline: "DESCONECTADO",
   online: "CONECTADO",
-  offlineMessage: "(No tienes conexión a internet)",
+  offlineMessage: "No tienes conexión a internet",
   asyncData: "Guardar datos",
   myEntrance: "Mi entrada",
   viewMyParcels: "Ver mis parcelas",

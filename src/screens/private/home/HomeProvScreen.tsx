@@ -27,7 +27,7 @@ import {
 import useInternetConnection from "../../../hooks/useInternetConnection";
 import useSyncData from "../../../hooks/useSyncData";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
-
+import { Reloading } from "../../../assets/svg";
 import { writeTransaction, newWallet } from "../../../OCC/occ";
 import useAuthenticationToken from "../../../hooks/useAuthenticationToken";
 /*const key = 'llavesecretakafesistemasidenti12'
@@ -559,16 +559,11 @@ const ConnectionStatus = (props: {
           {isConnected ? LABELS.online : LABELS.offline}
         </Text>
       </View>
-      {!isConnected && (
-        <Text style={styles.connectionSubTitle}>{LABELS.offlineMessage}</Text>
-      )}
-      {isConnected && syncUp && (
-        <BtnSmall
-          theme={"agrayu"}
-          title={LABELS.asyncData}
-          icon={"rotate"}
-          onPress={() => dataSyncUp()}
-        />
+      {isConnected && (
+        <TouchableOpacity style={styles.buttonReload}>
+          <Reloading />
+          <Text style={styles.connectionSubTitle}>{"Guardar Datos"}</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -591,6 +586,7 @@ const Body = (props: {
   accessToken: string;
   getWallet: any;
   writeWallet: any;
+  isConnected: boolean;
 }) => {
   const navigation = useNavigation();
   const { isVisibleModal, setIsVisibleModal } = useInternetConnection();
@@ -602,7 +598,7 @@ const Body = (props: {
   const accessToken = props.accessToken;
   const getWallet = props.getWallet;
   const writeWallet = props.writeWallet;
-
+  const isConnected = props.isConnected;
   useEffect(() => {
     verifyExistSyncData();
   }, []);
@@ -644,7 +640,7 @@ const Body = (props: {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/*  <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
           onPress={() => getWallet()}
@@ -662,7 +658,7 @@ const Body = (props: {
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {"write Wallet"}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -703,8 +699,9 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(14),
     fontWeight: "normal",
-    color: COLORS_DF.grayLight,
-    marginLeft: MP_DF.small,
+    color: COLORS_DF.white,
+    alignSelf: "center",
+    justifyContent: "center",
   },
   header: {
     marginTop: MP_DF.large,
@@ -753,5 +750,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS_DF.citrine_brown,
     textAlign: "center",
+  },
+  buttonReload: {
+    width: 135,
+    height: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS_DF.robin_egg_blue,
+    borderRadius: 5,
+    flexDirection: "row",
   },
 });

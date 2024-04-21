@@ -60,8 +60,9 @@ export const RegisterOkScreen = () => {
     await delay(2000);
     setStep({ step: 5, msg: "Descargando mapa..." });
     descargarMapaTarapoto();
+    descargarMapaQuito();
     await delay(1000);
-    setStep({ step: 6, msg: "Inicio de sesión..." });
+    setStep({ step: 7, msg: "Inicio de sesión..." });
     await delay(1500);
     const login = JSON.parse(storage.getString("user") || "{}");
     dispatch({ type: "login", payload: login });
@@ -116,7 +117,38 @@ export const RegisterOkScreen = () => {
         console.log("=> Mapa descargado");
       });
   };
+  const descargarMapaQuito = async () => {
+    const bounds = geoViewport.bounds(
+      [-78.4678, -0.1807],
+      17,
+      [width, height],
+      512
+    );
 
+    const options = {
+      name: "QuitoMap",
+      styleURL: Mapbox.StyleURL.Satellite,
+      bounds: [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ],
+      minZoom: 10,
+      maxZoom: 20,
+      metadata: {
+        whatIsThat: "foo",
+      },
+    };
+
+    await Mapbox.offlineManager.createPack(
+      options,
+      (region, status) => {
+        console.log("=> progress callback region:", "status: ", status);
+      },
+      (error) => {
+        console.log("=> error callback error:", error);
+      }
+    );
+  };
   return (
     <SafeArea bg={"isabelline"}>
       <ActivityIndicator
