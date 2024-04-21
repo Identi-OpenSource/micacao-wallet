@@ -1,6 +1,6 @@
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {
   Image,
   ScrollView,
@@ -8,14 +8,14 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import { imgFrame, imgLayer } from "../../../assets/imgs";
-import { BtnSmall } from "../../../components/button/Button";
-import { LoadingSave } from "../../../components/loading/LoadinSave";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { storage } from "../../../config/store/db";
-import { LABELS } from "../../../config/texts/labels";
-import { TEXTS } from "../../../config/texts/texts";
+} from 'react-native'
+import {imgFrame, imgLayer} from '../../../assets/imgs'
+import {BtnSmall} from '../../../components/button/Button'
+import {LoadingSave} from '../../../components/loading/LoadinSave'
+import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {storage} from '../../../config/store/db'
+import {LABELS} from '../../../config/texts/labels'
+import {TEXTS} from '../../../config/texts/texts'
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
@@ -23,13 +23,13 @@ import {
   FONT_SIZES,
   MP_DF,
   getFontSize,
-} from "../../../config/themes/default";
-import useInternetConnection from "../../../hooks/useInternetConnection";
-import useSyncData from "../../../hooks/useSyncData";
-import { UserInterface, UsersContext } from "../../../states/UserContext";
+} from '../../../config/themes/default'
+import useInternetConnection from '../../../hooks/useInternetConnection'
+import useSyncData from '../../../hooks/useSyncData'
+import {UserInterface, UsersContext} from '../../../states/UserContext'
 
-import { writeTransaction, newWallet } from "../../../OCC/occ";
-import useAuthenticationToken from "../../../hooks/useAuthenticationToken";
+import {writeTransaction, newWallet} from '../../../OCC/occ'
+import useAuthenticationToken from '../../../hooks/useAuthenticationToken'
 /*const key = 'llavesecretakafesistemasidenti12'
 const API_KAFE_SISTEMAS =
   'http://148.113.174.223/api/v1/pe/land-request/polygon'
@@ -38,45 +38,39 @@ const API_KEY =
 */
 
 export const HomeProvScreen = () => {
-  const navigation = useNavigation();
-  const user: UserInterface = useContext(UsersContext);
-  const { isConnected } = useInternetConnection();
-  const { accessToken, getToken } = useAuthenticationToken();
-  const [syncUp, setSyncUp] = useState(false);
-  const [loadinSync, setLoadingSync] = useState(false);
+  const navigation = useNavigation()
+  const user: UserInterface = useContext(UsersContext)
+  const {isConnected} = useInternetConnection()
+  const {accessToken, getToken} = useAuthenticationToken()
+  const [syncUp, setSyncUp] = useState(false)
+  const [loadinSync, setLoadingSync] = useState(false)
   // const [TGFW, setTokenGFW] = useState(null)
   // const [apiKeyGFW, setApiKeyGFW] = useState(null)
   // const users = useQuery(Users)
-  const [wa, setWa] = useState(null) as any;
+  const [wa, setWa] = useState(null) as any
 
   useEffect(() => {
     console.log(
-      accessToken !== null ? "Conectado a BackEnd" : "No Conectado a Back End "
-    );
-  }, [accessToken]);
+      accessToken !== null ? 'Conectado a BackEnd' : 'No Conectado a Back End ',
+    )
+  }, [accessToken])
 
   useEffect(() => {
     // Llamar a getToken
     // getToken();
-  }, []);
+  }, [])
 
   useEffect(() => {
     // Llamar a getToken
     // getToken();
-  });
+  })
 
   useFocusEffect(
     useCallback(() => {
       // verifySyncUp()
       // const usesr = JSON.parse(storage.getString('user') || '[]')
-      const parcels = JSON.parse(storage.getString("parcels") || "[]");
-      if (parcels.length === 0) {
-        setTimeout(() => {
-          navigation.navigate("RegisterParcelScreen");
-        }, 1000);
-      }
-    }, [isConnected])
-  );
+    }, [isConnected]),
+  )
 
   const getWallet = () => {
     // Create Wallet
@@ -84,19 +78,19 @@ export const HomeProvScreen = () => {
     // setWa(wallet);
 
     //Testing Wallet
-    const wallet = newWallet();
-    const isFunding = true;
+    const wallet = newWallet()
+    const isFunding = true
 
-    const walletObj = { wallet, isFunding };
+    const walletObj = {wallet, isFunding}
 
-    console.log(walletObj);
+    console.log(walletObj)
 
-    setWa(walletObj.wallet);
-  };
+    setWa(walletObj.wallet)
+  }
 
   const writeWallet = () => {
-    write();
-  };
+    write()
+  }
 
   /* const dataSyncUp = () => {
     setLoadingSync(true)
@@ -147,9 +141,9 @@ export const HomeProvScreen = () => {
     // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
     // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
     // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
-    console.log(wa.wif);
-    await writeTransaction(wa.wif);
-  };
+    console.log(wa.wif)
+    await writeTransaction(wa.wif)
+  }
   /*  const fundingWalletOffline = async () => {
     await fundingWalletOff(wa.ec_pairs, wa.walletOFC, wa.wifi)
       .then(resp => {
@@ -343,7 +337,7 @@ export const HomeProvScreen = () => {
   } */
 
   return (
-    <SafeArea bg={"isabelline"}>
+    <SafeArea bg={'isabelline'}>
       <ScrollView>
         {!loadinSync ? (
           <View style={styles.container}>
@@ -535,23 +529,23 @@ export const HomeProvScreen = () => {
         )}
       </ScrollView>
     </SafeArea>
-  );
-};
+  )
+}
 
 const ConnectionStatus = (props: {
-  syncUp: boolean;
-  isConnected: boolean;
-  dataSyncUp: Function;
+  syncUp: boolean
+  isConnected: boolean
+  dataSyncUp: Function
 }) => {
-  const isConnected = props.isConnected;
-  const syncUp = props.syncUp;
-  const dataSyncUp = props.dataSyncUp;
+  const isConnected = props.isConnected
+  const syncUp = props.syncUp
+  const dataSyncUp = props.dataSyncUp
 
   return (
     <View style={styles.containerConnection}>
       <View style={styles.containerConnectionTitle}>
         <FontAwesomeIcon
-          icon={"circle"}
+          icon={'circle'}
           size={14}
           color={!isConnected ? COLORS_DF.grayLight : COLORS_DF.robin_egg_blue}
         />
@@ -564,18 +558,18 @@ const ConnectionStatus = (props: {
       )}
       {isConnected && syncUp && (
         <BtnSmall
-          theme={"agrayu"}
+          theme={'agrayu'}
           title={LABELS.asyncData}
-          icon={"rotate"}
+          icon={'rotate'}
           onPress={() => dataSyncUp()}
         />
       )}
     </View>
-  );
-};
+  )
+}
 
-const Header = ({ name }: UserInterface) => {
-  const firstName = name.split(" ")[0];
+const Header = ({name}: UserInterface) => {
+  const firstName = name.split(' ')[0]
   return (
     <View style={styles.header}>
       <Text style={styles.titleHeader}>
@@ -583,29 +577,29 @@ const Header = ({ name }: UserInterface) => {
       </Text>
       <Text style={styles.textHeader}>{TEXTS.textK}</Text>
     </View>
-  );
-};
+  )
+}
 
 const Body = (props: {
-  syncUp: boolean;
-  accessToken: string;
-  getWallet: any;
-  writeWallet: any;
+  syncUp: boolean
+  accessToken: string
+  getWallet: any
+  writeWallet: any
 }) => {
-  const navigation = useNavigation();
-  const { isVisibleModal, setIsVisibleModal } = useInternetConnection();
+  const navigation = useNavigation()
+  const {isVisibleModal, setIsVisibleModal} = useInternetConnection()
 
-  const { syncData, verifyExistSyncData, existSyncData } = useSyncData();
+  const {syncData, verifyExistSyncData, existSyncData} = useSyncData()
 
-  const syncUp = props.syncUp;
+  const syncUp = props.syncUp
 
-  const accessToken = props.accessToken;
-  const getWallet = props.getWallet;
-  const writeWallet = props.writeWallet;
+  const accessToken = props.accessToken
+  const getWallet = props.getWallet
+  const writeWallet = props.writeWallet
 
   useEffect(() => {
-    verifyExistSyncData();
-  }, []);
+    verifyExistSyncData()
+  }, [])
 
   return (
     <View style={styles.bodyContainer}>
@@ -624,8 +618,7 @@ const Body = (props: {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate("MyParcelsScreen")}
-        >
+          onPress={() => navigation.navigate('MyParcelsScreen')}>
           <Image source={imgLayer} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.viewMyParcels}
@@ -636,8 +629,7 @@ const Body = (props: {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate("NewSaleOneScreen")}
-        >
+          onPress={() => navigation.navigate('NewSaleOneScreen')}>
           <Image source={imgFrame} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.registerVenta}
@@ -647,26 +639,24 @@ const Body = (props: {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => getWallet()}
-        >
+          onPress={() => getWallet()}>
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
-            {"get Wallet"}
+            {'get Wallet'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => writeWallet()}
-        >
+          onPress={() => writeWallet()}>
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
-            {"write Wallet"}
+            {'write Wallet'}
           </Text>
         </TouchableOpacity>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   filter: {
@@ -683,26 +673,26 @@ const styles = StyleSheet.create({
     borderColor: COLORS_DF.citrine_brown,
     borderRadius: BORDER_RADIUS_DF.small,
     backgroundColor: COLORS_DF.white,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: MP_DF.small,
   },
   containerConnectionTitle: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   connectionTitle: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(18),
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: COLORS_DF.citrine_brown,
     marginLeft: MP_DF.small,
   },
   connectionSubTitle: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(14),
-    fontWeight: "normal",
+    fontWeight: 'normal',
     color: COLORS_DF.grayLight,
     marginLeft: MP_DF.small,
   },
@@ -712,7 +702,7 @@ const styles = StyleSheet.create({
   titleHeader: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.xslarge,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: COLORS_DF.citrine_brown,
     marginBottom: MP_DF.small,
   },
@@ -722,17 +712,17 @@ const styles = StyleSheet.create({
     color: COLORS_DF.citrine_brown,
   },
   bodyContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     marginTop: MP_DF.large,
   },
   bodyCardContainer: {
-    width: "50%",
+    width: '50%',
     padding: MP_DF.small,
     marginTop: MP_DF.large,
   },
   bodyCardContainerFull: {
-    width: "100%",
+    width: '100%',
     padding: MP_DF.small,
     marginTop: MP_DF.medium,
   },
@@ -743,15 +733,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS_DF.white,
     borderRadius: BORDER_RADIUS_DF.medium,
     elevation: 3,
-    alignItems: "center",
+    alignItems: 'center',
   },
   titleCard: {
     paddingHorizontal: MP_DF.medium,
     marginTop: MP_DF.medium,
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.large,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: COLORS_DF.citrine_brown,
-    textAlign: "center",
+    textAlign: 'center',
   },
-});
+})
