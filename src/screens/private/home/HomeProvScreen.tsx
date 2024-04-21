@@ -69,12 +69,6 @@ export const HomeProvScreen = () => {
     useCallback(() => {
       // verifySyncUp()
       // const usesr = JSON.parse(storage.getString('user') || '[]')
-      const parcels = JSON.parse(storage.getString("parcels") || "[]");
-      if (parcels.length === 0) {
-        setTimeout(() => {
-          navigation.navigate("RegisterParcelScreen");
-        }, 1000);
-      }
     }, [isConnected])
   );
 
@@ -643,20 +637,18 @@ const Body = (props: {
         {/*  <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => getWallet()}
-        >
+          onPress={() => getWallet()}>
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
-            {"get Wallet"}
+            {'get Wallet'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => writeWallet()}
-        >
+          onPress={() => writeWallet()}>
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
-            {"write Wallet"}
+            {'write Wallet'}
           </Text>
         </TouchableOpacity> */}
       </View>
