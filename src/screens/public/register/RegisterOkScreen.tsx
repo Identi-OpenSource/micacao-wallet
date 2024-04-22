@@ -86,7 +86,6 @@ export const RegisterOkScreen = () => {
     return {dni: hexResult.substr(0, 32), dniAll: hexResult}
   }
 
-  // Descargar Mapa offline
   const descargarMapaTarapoto = async () => {
     const bounds: [number, number, number, number] = geoViewport.bounds(
       [-78.5442722, -0.1861084],
@@ -123,37 +122,45 @@ export const RegisterOkScreen = () => {
       })
   }
   const descargarMapaQuito = async () => {
-    const bounds = geoViewport.bounds(
+    const bounds: [number, number, number, number] = geoViewport.bounds(
       [-78.4678, -0.1807],
-      1,
+      12,
       [width, height],
       512,
     )
 
     const options = {
-      name: 'QuitoMap',
+      name: 'QuitoMapTest',
       styleURL: Mapbox.StyleURL.Satellite,
       bounds: [
         [bounds[0], bounds[1]],
         [bounds[2], bounds[3]],
-      ],
+      ] as [[number, number], [number, number]],
       minZoom: 10,
       maxZoom: 20,
       metadata: {
         whatIsThat: 'foo',
       },
     }
-
-    await Mapbox.offlineManager.createPack(
-      options,
-      (region, status) => {
-        console.log('=> progress callback region:', 'status: ', status)
-      },
-      error => {
-        console.log('=> error callback error:', error)
-      },
-    )
+    await Mapbox.offlineManager
+      .createPack(
+        options,
+        (region, status) => {
+          console.log('=> progress callback region:', 'status: ', status)
+          console.log(
+            'Progreso de descarga:',
+            status.percentage + '% completado',
+          )
+        },
+        error => {
+          console.log('=> error callback error:', error)
+        },
+      )
+      .catch(() => {
+        console.log('=> Mapa Quito descargado')
+      })
   }
+
   return (
     <SafeArea bg={'isabelline'}>
       <ActivityIndicator

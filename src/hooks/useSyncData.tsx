@@ -15,7 +15,7 @@ const useSyncData = () => {
     try {
       // Obtener todas las claves de almacenamiento
       const allKeys = storage.getAllKeys()
-      const names = ['parcels', 'user']
+      const names = ['user', 'parcels']
 
       const keys = allKeys.filter(key => names.includes(key))
 
@@ -52,6 +52,10 @@ const useSyncData = () => {
     try {
       switch (key) {
         case 'userSync':
+          createProducer(key)
+          break
+
+        case 'user':
           createProducer(key)
           break
 

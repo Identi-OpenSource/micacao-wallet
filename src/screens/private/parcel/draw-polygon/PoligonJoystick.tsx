@@ -202,23 +202,18 @@ const PoligonJoystick = () => {
     console.log(`Joystick moved: angle=${angle}, distance=${distance}`);
   };
   const moveMap = (angle, force) => {
-    // Supongamos que el mapa tiene un tamaño específico y queremos mapear el rango del joystick al tamaño del mapa
-
-    // Convertir el ángulo en radianes
     const angleRad = angle.radian;
 
-    // Calcular las nuevas coordenadas del marcador
     const deltaX = Math.cos(angleRad) * ((force * widthMap) / 2);
     const deltaY = Math.sin(angleRad) * ((force * heightMap) / 2);
 
-    // Supongamos que las coordenadas iniciales del marcador son el centro del mapa
-    const initialLng = coorInitRef.current[0]; // Longitud inicial
-    const initialLat = coorInitRef.current[1]; // Latitud inicial
+    const initialLng = coorInitRef.current[0];
+    const initialLat = coorInitRef.current[1];
 
     // Calcular las nuevas coordenadas
-    const newLat = initialLat + deltaY / 111111; // 1 grado de latitud es aproximadamente 111111 metros
+    const newLat = initialLat + deltaY / 111111;
     const newLng =
-      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 180)); // 1 grado de longitud varía dependiendo de la latitud
+      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 180));
     setCenterCoordinate([newLng, newLat]);
   };
 
@@ -238,7 +233,6 @@ const PoligonJoystick = () => {
       return;
     }
 
-    // Guardar en la lista de polígonos
     const newParcel = {
       ...parcel[0],
       polygon: [...coordinatesWithLast, coordinatesWithLast[0]],

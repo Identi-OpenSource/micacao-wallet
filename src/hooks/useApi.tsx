@@ -68,7 +68,7 @@ const useApi = () => {
     }
   }
 
-  return {createProducer}
+  return {createProducer, createFarm}
 }
 
 export default useApi

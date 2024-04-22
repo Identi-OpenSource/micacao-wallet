@@ -122,7 +122,7 @@ export const NewSaleThreeScreen = () => {
             <Btn
               theme="agrayu"
               title="VOLVER AL INICIO"
-              onPress={() => navigation.navigate("TabPrivate")}
+              onPress={() => navigation.navigate("HomeProvScreen")}
             />
           </View>
         )}
