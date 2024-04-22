@@ -5,7 +5,7 @@
  */
 
 import {useNavigation} from '@react-navigation/native'
-import React from 'react'
+import React, {useContext} from 'react'
 import {StyleSheet, Text, View} from 'react-native'
 import Logo from '../../../assets/svg/initMan.svg'
 import {Btn} from '../../../components/button/Button'
@@ -18,12 +18,14 @@ import {
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import useInternetConnection from '../../../hooks/useInternetConnection'
+
 import useAuthenticationToken from '../../../hooks/useAuthenticationToken'
+import {ConnectionContext} from '../../../states/ConnectionContext'
 
 export const HomeScreen = () => {
+  const internetConnection = useContext(ConnectionContext)
+  const {isConnected} = internetConnection
   const navigation = useNavigation()
-  const {isConnected} = useInternetConnection()
   const {getToken} = useAuthenticationToken()
 
   return (

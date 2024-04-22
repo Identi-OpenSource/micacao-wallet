@@ -17,7 +17,7 @@ export interface ActionsInterface {
 }
 
 export const AuthContext = createContext(authInicialState)
-export const UserDispatchContext = createContext(
+export const AuthDispatchContext = createContext(
   (() => {}) as React.Dispatch<ActionsInterface>,
 )
 

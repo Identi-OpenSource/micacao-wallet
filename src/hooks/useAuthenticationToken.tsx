@@ -1,13 +1,14 @@
-import {useEffect} from 'react'
+import {useContext, useEffect} from 'react'
 import Config from 'react-native-config'
+import {storage} from '../config/store/db'
 import {API_INTERFACE, HTTP} from '../services/api'
 import {useAuth} from '../states/AuthContext'
-import useInternetConnection from './useInternetConnection'
-import {storage} from '../config/store/db'
+import {ConnectionContext} from '../states/ConnectionContext'
 
 const useAuthenticationToken = () => {
   const {accessToken, setToken} = useAuth()
-  const {isConnected} = useInternetConnection()
+  const internetConnection = useContext(ConnectionContext)
+  const {isConnected} = internetConnection
 
   const getToken = async () => {
     if (isConnected && accessToken === null) {
