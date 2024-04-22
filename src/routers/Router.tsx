@@ -31,6 +31,7 @@ import RegisterParcelFourthScreen from '../screens/private/parcel/register/Regis
 import RegisterParcelScreen from '../screens/private/parcel/register/RegisterParcelScreen'
 import RegisterParcelThirdScreen from '../screens/private/parcel/register/RegisterParcelThirdScreen'
 import RegisterParcelTwoScreen from '../screens/private/parcel/register/RegisterParcelTwoScreen'
+import ProfileScreen from '../screens/private/profile'
 import {NewSaleOneScreen} from '../screens/private/sale/NewSaleOneScreen'
 import {NewSaleThreeScreen} from '../screens/private/sale/NewSaleThreeScreen'
 import {NewSaleTwoScreen} from '../screens/private/sale/NewSaleTwoScreen'
@@ -46,9 +47,8 @@ import {RegisterScreen} from '../screens/public/register/RegisterScreen'
 import RegisterSecondScreen from '../screens/public/register/RegisterSecondScreen'
 import RegisterThirdScreen from '../screens/public/register/RegisterThirdScreen'
 import StartScreen from '../screens/public/register/StartScreen'
-import {UserDispatchContext, UsersContext} from '../states/UserContext'
-
-import ProfileScreen from '../screens/private/profile'
+import {useAuth} from '../states/AuthContext'
+import {UserDispatchContext} from '../states/UserContext'
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -102,10 +102,11 @@ const optionsHeadersCacao = {
 } as NativeStackNavigationOptions
 
 export const Router = () => {
-  const user = useContext(UsersContext)
+  const {setToken} = useAuth()
   const dispatch = useContext(UserDispatchContext)
   const parcels = JSON.parse(storage.getString('parcels') || '[]')
   const userLogin = JSON.parse(storage.getString('user') || '{}')
+  const accessToken = storage.getString('accessToken') || ''
 
   useEffect(() => {
     getIsLogin()
@@ -114,6 +115,7 @@ export const Router = () => {
   const getIsLogin = () => {
     if (userLogin?.isLogin) {
       dispatch({type: 'login', payload: userLogin})
+      setToken(accessToken)
     }
   }
 
