@@ -41,3 +41,5 @@ export { default as Arrow_Right } from "./arrow_forward.svg";
 export { default as Welcome_M } from "./welcome_M.svg";
 export { default as Warning } from "./warning.svg";
 export { default as Reloading } from "./reloading.svg";
+export { default as ShadowParcel } from "./parcels_Shadow.svg";
+export { default as ShadowSale } from "./sales_Shadow.svg";
