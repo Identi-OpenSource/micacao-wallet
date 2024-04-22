@@ -62,7 +62,7 @@ export const RegisterOkScreen = () => {
     descargarMapaTarapoto();
     descargarMapaQuito();
     await delay(1000);
-    setStep({ step: 7, msg: "Inicio de sesión..." });
+    setStep({ step: 6, msg: "Inicio de sesión..." });
     await delay(1500);
     const login = JSON.parse(storage.getString("user") || "{}");
     dispatch({ type: "login", payload: login });
