@@ -1,4 +1,5 @@
 import React, {createContext, useReducer} from 'react'
+import {number} from 'yup'
 
 export interface UserInterface {
   name?: string
@@ -14,7 +15,7 @@ export interface UserInterface {
 }
 export interface Parcel {
   id?: string
-  name?: string
+  nameParcel?: string
   hectares?: number
   location?: {
     latitude: number
@@ -46,6 +47,7 @@ export interface ActionsInterface {
 }
 
 export const UsersContext = createContext(userInicialState)
+export const parcelContext = createContext(ParcelState)
 export const UserDispatchContext = createContext(
   (() => {}) as React.Dispatch<ActionsInterface>,
 )
