@@ -30,6 +30,7 @@ export const userInicialState: UserInterface = {
   pin: '',
   parcel: [],
   syncUp: false,
+  isLogin: false,
 }
 
 export type UserActions = 'login' | 'logout' | 'getLogin' | 'setUser'

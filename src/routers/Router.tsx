@@ -48,7 +48,8 @@ import RegisterSecondScreen from '../screens/public/register/RegisterSecondScree
 import RegisterThirdScreen from '../screens/public/register/RegisterThirdScreen'
 import StartScreen from '../screens/public/register/StartScreen'
 import {useAuth} from '../states/AuthContext'
-import {UserDispatchContext} from '../states/UserContext'
+
+import {UserDispatchContext, UsersContext} from '../states/UserContext'
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -102,6 +103,7 @@ const optionsHeadersCacao = {
 } as NativeStackNavigationOptions
 
 export const Router = () => {
+  const user = useContext(UsersContext)
   const {setToken} = useAuth()
   const dispatch = useContext(UserDispatchContext)
   const parcels = JSON.parse(storage.getString('parcels') || '[]')
@@ -157,6 +159,7 @@ export const Router = () => {
           name="RegisterOkScreen"
           component={RegisterOkScreen}
         />
+        <StackPublic.Screen name="TabPrivate" component={TabPrivate} />
       </StackPublic.Navigator>
     )
   }
@@ -369,6 +372,14 @@ export const Router = () => {
   }
 
   const getStack = () => {
+    console.log('Entro a getStack')
+
+    //Change for Context
+    if (user.isLogin) {
+      return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate()
+    }
+
+    //Change for Storage
     if (Object.values(userLogin).length > 0) {
       if (userLogin.isLogin) {
         return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate()
