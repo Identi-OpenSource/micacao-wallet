@@ -10,10 +10,9 @@ import {
   View,
 } from "react-native";
 import { imgFrame, imgLayer } from "../../../assets/imgs";
-import { BtnSmall } from "../../../components/button/Button";
+import { Reloading } from "../../../assets/svg";
 import { LoadingSave } from "../../../components/loading/LoadinSave";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { storage } from "../../../config/store/db";
 import { LABELS } from "../../../config/texts/labels";
 import { TEXTS } from "../../../config/texts/texts";
 import {
@@ -27,8 +26,7 @@ import {
 import useInternetConnection from "../../../hooks/useInternetConnection";
 import useSyncData from "../../../hooks/useSyncData";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
-import { Reloading } from "../../../assets/svg";
-import { writeTransaction, newWallet } from "../../../OCC/occ";
+//import { writeTransaction, newWallet } from "../../../OCC/occ";
 import useAuthenticationToken from "../../../hooks/useAuthenticationToken";
 /*const key = 'llavesecretakafesistemasidenti12'
 const API_KAFE_SISTEMAS =
@@ -553,8 +551,8 @@ const ConnectionStatus = (props: {
           {isConnected ? LABELS.online : LABELS.offline}
         </Text>
       </View>
-      {isConnected && (
-        <TouchableOpacity style={styles.buttonReload}>
+      {!syncUp && (
+        <TouchableOpacity style={styles.buttonReload} onPress={() => {}}>
           <Reloading />
           <Text style={styles.connectionSubTitle}>{"Guardar Datos"}</Text>
         </TouchableOpacity>
