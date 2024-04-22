@@ -372,22 +372,20 @@ export const Router = () => {
   }
 
   const getStack = () => {
-    console.log('Entro a getStack')
-
     //Change for Context
     if (user.isLogin) {
       return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate()
-    }
-
-    //Change for Storage
-    if (Object.values(userLogin).length > 0) {
-      if (userLogin.isLogin) {
-        return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate()
+    } else {
+      //Change for Storage
+      if (Object.values(userLogin).length > 0) {
+        if (userLogin.isLogin) {
+          return parcels.length > 0
+            ? TabPrivate()
+            : RegisterParcelStackPrivate()
+        }
       } else {
         return PublicStack()
       }
-    } else {
-      return PublicStack()
     }
   }
 
