@@ -1,69 +1,91 @@
-import Config from "react-native-config";
-import { storage } from "../config/store/db";
-import { API_INTERFACE, HTTP } from "../services/api";
-import { useState } from "react";
+import {useEffect, useState} from 'react'
+import {storage} from '../config/store/db'
+import useApi from '../hooks/useApi'
+
+type DataType = {
+  [key: string]: any
+}
 
 const useSyncData = () => {
-  const [existSyncData, setExistSyncData] = useState(false);
+  const {createProducer} = useApi()
+  const [dataToSync, setDataToSync] = useState<DataType>({})
+  const [hasDataToSync, setHasDataToSync] = useState<boolean>(false)
 
-  const setProducer = async (accessToken: any) => {
+  const fetchAllKeysAndSetDataToSync = async () => {
     try {
-      const user = JSON.parse(storage.getString("user") || "{}");
+      // Obtener todas las claves de almacenamiento
+      const allKeys = storage.getAllKeys()
+      const names = ['parcels', 'user']
 
-      const apiRequest: API_INTERFACE = {
-        url: `${Config.BASE_URL}/create_producer`,
-        method: "POST",
-        payload: {
-          dni: user.dni,
-          name: user.name,
-          phone: user.phone,
-          gender: user.gender == "M" ? "MALE" : "FEMALE",
-          countryid: user.country?.code === "CO" ? 1 : 2,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      };
-      const data = await HTTP(apiRequest);
-      console.log("data", data);
-      storage.set("user", JSON.stringify({ ...user, syncUp: true }));
+      const keys = allKeys.filter(key => names.includes(key))
+
+      // Establecer las claves como datos pendientes para sincronizar
+      setDataToSync(
+        keys.reduce((acc, key) => {
+          const value = JSON.parse(storage.getString(key) || '{}')
+          acc[key] = !value.syncUp // Establecer algún valor asociado a la sincronización
+          return acc
+        }, {} as DataType),
+      )
     } catch (error) {
-      console.log("error", error);
-    } finally {
+      console.error('Error al obtener las claves de almacenamiento:', error)
     }
-  };
+  }
 
-  const syncData = async (accessToken: any) => {
-    const user = JSON.parse(storage.getString("user") || "{}");
+  const addToSync = (newData: any, storageKey: string) => {
+    try {
+      // Agregar datos a la lista de datos pendientes de sincronización
+      storage.set(storageKey, newData)
 
-    if (Object.values(user).length > 0 && !user.syncUp) {
-      if (accessToken !== null) {
-        await setProducer(accessToken);
-      } else {
-        console.log("No se puede sincronizar ahora");
+      const storageName = storageKey === 'userSync' ? 'user' : storageKey
+
+      setDataToSync(prevData => ({
+        ...prevData,
+        [storageName]: !newData.syncUp,
+      }))
+    } catch (error) {
+      console.error('Error al agregar datos a la sincronización:', error)
+    }
+  }
+
+  const toSyncData = async (key: string) => {
+    try {
+      switch (key) {
+        case 'userSync':
+          createProducer(key)
+          break
+
+        default:
+          break
       }
+    } catch (error) {
+      console.error('Error al sincronizar datos:', error)
     }
-  };
+  }
 
-  const verifyExistSyncData = () => {
-    const user = JSON.parse(storage.getString("user") || "{}");
-    const parcels = JSON.parse(storage.getString("parcels") || "[]");
+  useEffect(() => {
+    console.log('dataToSync', dataToSync)
 
-    setExistSyncData(false);
-
-    if (Object.values(user).length > 0 && !user.syncUp) {
-      console.log("data, user");
-      setExistSyncData(true);
+    const checkDataToSync = () => {
+      for (const key in dataToSync) {
+        if (dataToSync.hasOwnProperty(key)) {
+          if (dataToSync[key]) {
+            setHasDataToSync(true)
+            return
+          }
+        }
+      }
+      setHasDataToSync(false)
     }
 
-    // if (parcels.length > 0) {
-    //   console.log("data, parcels");
-    //   setExistSyncData(true);
-    // }
-  };
+    checkDataToSync()
+  }, [dataToSync])
 
-  return { syncData, verifyExistSyncData, existSyncData };
-};
+  useEffect(() => {
+    fetchAllKeysAndSetDataToSync()
+  }, [])
 
-export default useSyncData;
+  return {hasDataToSync, addToSync, toSyncData}
+}
+
+export default useSyncData

@@ -37,6 +37,8 @@ import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclama
 import {library} from '@fortawesome/fontawesome-svg-core'
 import useInternetConnection from './src/hooks/useInternetConnection'
 import {ConnectionProvider} from './src/states/ConnectionContext'
+import useSyncData from './src/hooks/useSyncData'
+import {SyncDataProvider} from './src/states/SyncDataContext'
 
 function App(): React.JSX.Element {
   // biblioteca de iconos
@@ -74,16 +76,19 @@ function App(): React.JSX.Element {
   )
 
   const internetConnection = useInternetConnection()
+  const syncData = useSyncData()
 
   return (
     <ConnectionProvider value={internetConnection}>
-      <AuthProvider>
-        <UserProvider>
-          <NavigationContainer>
-            <Router />
-          </NavigationContainer>
-        </UserProvider>
-      </AuthProvider>
+      <SyncDataProvider value={syncData}>
+        <AuthProvider>
+          <UserProvider>
+            <NavigationContainer>
+              <Router />
+            </NavigationContainer>
+          </UserProvider>
+        </AuthProvider>
+      </SyncDataProvider>
     </ConnectionProvider>
   )
 }

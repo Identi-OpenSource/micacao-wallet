@@ -22,6 +22,7 @@ import {
   verticalScale,
 } from '../../../config/themes/metrics'
 import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
+import {SyncDataContext} from '../../../states/SyncDataContext'
 Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
 const {width, height} = Dimensions.get('window')
 
@@ -29,6 +30,8 @@ export const RegisterOkScreen = () => {
   const [step, setStep] = useState({step: 0, msg: TEXTS.textH})
   const dispatch = useContext(UserDispatchContext)
   const user = useContext(UsersContext)
+  const syncData = useContext(SyncDataContext)
+  const {addToSync, toSyncData} = syncData
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
   const navigation = useNavigation()
 
@@ -41,25 +44,30 @@ export const RegisterOkScreen = () => {
     await delay(1000)
     setStep({step: 1, msg: 'Encriptando datos...'})
     const dni = await certificateND(user.dni)
-    await delay(1000)
+    await delay(2000)
     setStep({step: 2, msg: 'Guardando datos...'})
-    storage.set('user', JSON.stringify({...user, ...dni, isLogin: true}))
+    addToSync(JSON.stringify({...user, ...dni}), 'userSync')
+    await delay(2000)
+    setStep({step: 3, msg: 'Sincronizando datos...'})
+    toSyncData('userSync')
     await delay(1000)
-    setStep({step: 3, msg: 'Creando wallet...'})
+    setStep({step: 4, msg: 'Creando wallet...'})
     const wallet = newWallet()
     await delay(1500)
-    setStep({step: 4, msg: 'Agregando fondos...'})
+    setStep({step: 5, msg: 'Agregando fondos...'})
     const funding = await fundingWallet(wallet.walletOFC).catch(() => ({
       status: 500,
     }))
     const isFunding = funding.status === 200
     storage.set('wallet', JSON.stringify({wallet, isFunding}))
     await delay(2000)
-    setStep({step: 5, msg: 'Descargando mapa...'})
+    setStep({step: 6, msg: 'Descargando mapa...'})
     descargarMapaTarapoto()
     //descargarMapaQuito();
     await delay(1000)
-    setStep({step: 6, msg: 'Inicio de sesión...'})
+    setStep({step: 7, msg: 'Inicio de sesión...'})
+    await delay(1500)
+    addToSync(JSON.stringify({...user, ...dni, isLogin: true}), 'user')
     await delay(1500)
     const login = JSON.parse(storage.getString('user') || '{}')
     dispatch({type: 'login', payload: login})
@@ -117,7 +125,7 @@ export const RegisterOkScreen = () => {
   const descargarMapaQuito = async () => {
     const bounds = geoViewport.bounds(
       [-78.4678, -0.1807],
-      17,
+      1,
       [width, height],
       512,
     )

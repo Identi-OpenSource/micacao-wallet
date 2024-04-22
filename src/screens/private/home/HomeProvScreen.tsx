@@ -25,15 +25,17 @@ import {
   getFontSize,
 } from '../../../config/themes/default'
 import useInternetConnection from '../../../hooks/useInternetConnection'
-import useSyncData from '../../../hooks/useSyncData'
 import {useAuth} from '../../../states/AuthContext'
 import {ConnectionContext} from '../../../states/ConnectionContext'
+import {SyncDataContext} from '../../../states/SyncDataContext'
 import {UserInterface, UsersContext} from '../../../states/UserContext'
 
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext)
   const internetConnection = useContext(ConnectionContext)
+  const syncData = useContext(SyncDataContext)
   const {isConnected} = internetConnection
+  const {hasDataToSync} = syncData
   const {accessToken} = useAuth()
   const [syncUp, setSyncUp] = useState(false)
   const [loadinSync, setLoadingSync] = useState(false)
@@ -85,7 +87,7 @@ export const HomeProvScreen = () => {
         {!loadinSync ? (
           <View style={styles.container}>
             <ConnectionStatus
-              syncUp={syncUp}
+              hasDataToSync={hasDataToSync || false}
               isConnected={isConnected || false}
               dataSyncUp={() => {} /* dataSyncUp */}
             />
@@ -107,12 +109,12 @@ export const HomeProvScreen = () => {
 }
 
 const ConnectionStatus = (props: {
-  syncUp: boolean
+  hasDataToSync: boolean
   isConnected: boolean
   dataSyncUp: Function
 }) => {
   const isConnected = props.isConnected
-  const syncUp = props.syncUp
+  const hasDataToSync = props.hasDataToSync
   const dataSyncUp = props.dataSyncUp
 
   return (
@@ -127,7 +129,7 @@ const ConnectionStatus = (props: {
           {isConnected ? LABELS.online : LABELS.offline}
         </Text>
       </View>
-      {!syncUp && (
+      {hasDataToSync && isConnected && (
         <TouchableOpacity style={styles.buttonReload} onPress={() => {}}>
           <Reloading />
           <Text style={styles.connectionSubTitle}>{'Guardar Datos'}</Text>
@@ -159,17 +161,13 @@ const Body = (props: {
   const navigation = useNavigation()
   const {isVisibleModal, setIsVisibleModal} = useInternetConnection()
 
-  const {syncData, verifyExistSyncData, existSyncData} = useSyncData()
-
   const syncUp = props.syncUp
 
   const accessToken = props.accessToken
   const getWallet = props.getWallet
   const writeWallet = props.writeWallet
   const isConnected = props.isConnected
-  useEffect(() => {
-    verifyExistSyncData()
-  }, [])
+  useEffect(() => {}, [])
 
   return (
     <View style={styles.bodyContainer}>
