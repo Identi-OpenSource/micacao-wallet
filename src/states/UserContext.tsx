@@ -34,6 +34,11 @@ export const userInicialState: UserInterface = {
   isLogin: false,
 }
 
+export const ParcelState: Parcel = {
+  nameParcel: '',
+  hectares: 0,
+}
+
 export type UserActions = 'login' | 'logout' | 'getLogin' | 'setUser'
 
 export interface userInicialState {
