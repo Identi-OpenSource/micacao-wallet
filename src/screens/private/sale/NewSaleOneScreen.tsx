@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import {
   Image,
   ScrollView,
@@ -6,52 +6,57 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native'
-import {HeaderActions, SafeArea} from '../../../components/safe-area/SafeArea'
-import {useNavigation} from '@react-navigation/native'
+} from "react-native";
+import {
+  HeaderActions,
+  SafeArea,
+} from "../../../components/safe-area/SafeArea";
+import { useNavigation } from "@react-navigation/native";
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
-} from '../../../config/themes/default'
-import {imgBaba, imgTostado} from '../../../assets/imgs'
-import {storage} from '../../../config/store/db'
+} from "../../../config/themes/default";
+import { imgBaba, imgTostado } from "../../../assets/imgs";
+import { storage } from "../../../config/store/db";
 
 export const NewSaleOneScreen = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const onSubmit = (type: string) => {
-    const sale = {type}
-    storage.set('saleTemp', JSON.stringify(sale))
-    console.log('Tipo de cacao', sale)
-    navigation.navigate('NewSaleTwoScreen')
-  }
+    const sale = { type };
+    storage.set("saleTemp", JSON.stringify(sale));
+    console.log("Tipo de cacao", sale);
+    navigation.navigate("NewSaleTwoScreen");
+  };
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <HeaderActions title={'Paso 1 de 3'} navigation={navigation} />
+        <HeaderActions title={"Paso 1 de 3"} navigation={navigation} />
         <Text style={styles.title}>¿QUÉ VAS A VENDER?</Text>
         <ScrollView style={styles.containerBTN}>
           <TouchableOpacity
             style={styles.card}
-            onPress={() => onSubmit('BABA')}>
+            onPress={() => onSubmit("BABA")}
+          >
             <Image source={imgTostado} style={styles.img} />
             <Text style={styles.titleCard}>BABA</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            onPress={() => onSubmit('TOSTADO')}>
+            onPress={() => onSubmit("SECO")}
+          >
             <Image source={imgBaba} style={styles.img} />
-            <Text style={styles.titleCard}>TOSTADO</Text>
+            <Text style={styles.titleCard}>SECO</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
     </SafeArea>
-  )
-}
+  );
+};
 
 export const styles = StyleSheet.create({
   container: {
@@ -60,9 +65,9 @@ export const styles = StyleSheet.create({
     paddingTop: MP_DF.medium,
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: FONT_SIZES.medium,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
 
@@ -74,14 +79,14 @@ export const styles = StyleSheet.create({
   img: {
     width: 250,
     height: 145,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   card: {
-    alignSelf: 'center',
+    alignSelf: "center",
 
     padding: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: COLORS_DF.white,
     borderRadius: BORDER_RADIUS_DF.medium,
     elevation: 5,
@@ -89,11 +94,11 @@ export const styles = StyleSheet.create({
     height: 250,
   },
   titleCard: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: FONT_SIZES.medium,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
     marginTop: 25,
   },
-})
+});

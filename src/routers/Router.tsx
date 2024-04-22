@@ -47,6 +47,7 @@ import { RegisterScreen } from "../screens/public/register/RegisterScreen";
 import RegisterSecondScreen from "../screens/public/register/RegisterSecondScreen";
 import RegisterThirdScreen from "../screens/public/register/RegisterThirdScreen";
 import StartScreen from "../screens/public/register/StartScreen";
+import { DrawPolygonScreen } from "../screens/private/parcel/draw-polygon/DrawPolygonScreen";
 import { useAuth } from "../states/AuthContext";
 
 import { UserDispatchContext, UsersContext } from "../states/UserContext";
@@ -211,6 +212,10 @@ export const Router = () => {
             options={{
               title: "Dibujar Parcela",
             }}
+          />
+          <HomeStack.Screen
+            name="DrawPolygonScreen"
+            component={DrawPolygonScreen}
           />
           <HomeStack.Screen
             name="DrawPolyline"

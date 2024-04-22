@@ -242,6 +242,7 @@ export const DrawPolygonScreen = () => {
           containerStyle={{
             borderRadius: 7,
             elevation: 5,
+            height: 408,
           }}
         >
           <View

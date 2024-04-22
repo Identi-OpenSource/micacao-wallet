@@ -53,11 +53,13 @@ export const NewSaleTwoScreen = () => {
             <Text style={styles.KLV}>{kl}</Text>
             <Text style={styles.KL}>Kg.</Text>
           </TouchableOpacity>
-          <Btn
-            theme={kl === "" ? "agrayuDisabled" : "agrayu"}
-            title="CONFIRMAR"
-            onPress={() => onSubmit()}
-          />
+          <View style={{ marginBottom: 25 }}>
+            <Btn
+              theme={kl === "" ? "agrayuDisabled" : "agrayu"}
+              title="CONFIRMAR"
+              onPress={() => onSubmit()}
+            />
+          </View>
         </View>
         <TextInput
           ref={ref}
