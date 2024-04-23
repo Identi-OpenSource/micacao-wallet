@@ -109,6 +109,7 @@ export const Router = () => {
   const dispatch = useContext(UserDispatchContext);
   const parcels = JSON.parse(storage.getString("parcels") || "[]");
   const userLogin = JSON.parse(storage.getString("user") || "{}");
+  const sales = storage.getString("sales") || "[]";
   const accessToken = storage.getString("accessToken") || "";
 
   useEffect(() => {
@@ -118,6 +119,12 @@ export const Router = () => {
   const getIsLogin = () => {
     if (userLogin?.isLogin) {
       dispatch({ type: "login", payload: userLogin });
+      dispatch({ type: "login", payload: parcels });
+      console.log("PARCELAS", parcels);
+
+      dispatch({ type: "login", payload: sales });
+      console.log("ventas", sales);
+
       setToken(accessToken);
     }
   };

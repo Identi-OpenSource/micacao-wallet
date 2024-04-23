@@ -29,6 +29,9 @@ import { useAuth } from "../../../states/AuthContext";
 import { ConnectionContext } from "../../../states/ConnectionContext";
 import { SyncDataContext } from "../../../states/SyncDataContext";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
+import ComponentToast from "../../../components/toastComponent";
+import Toast from "react-native-toast-message";
+import toastConfig from "../../../../App";
 
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext);
@@ -142,12 +145,18 @@ const ConnectionStatus = (props: {
 
 const Header = ({ name }: UserInterface) => {
   const firstName = name.split(" ")[0];
+
   return (
     <View style={styles.header}>
       <Text style={styles.titleHeader}>
         {TEXTS.textL} {firstName}
       </Text>
+      {/* <TouchableOpacity onPress={showToast}>
+        <Text>Perro</Text>
+      </TouchableOpacity>
+ */}
       <Text style={styles.textHeader}>{TEXTS.textK}</Text>
+      <Toast />
     </View>
   );
 };
