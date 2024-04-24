@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { Router } from "./src/routers/Router";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
@@ -46,10 +46,11 @@ import { ConnectionProvider } from "./src/states/ConnectionContext";
 import useSyncData from "./src/hooks/useSyncData";
 
 import { SyncDataProvider } from "./src/states/SyncDataContext";
+import { COLORS_DF, FONT_FAMILIES } from "./src/config/themes/default";
 
 function App(): React.JSX.Element {
   // biblioteca de iconos
-
+  const [visible, setVisible] = useState(false);
   library.add(
     fab,
     faArrowLeftLong,
@@ -83,7 +84,7 @@ function App(): React.JSX.Element {
     faFloppyDisk
   );
 
-  /* const toastConfig: ToastConfig = {
+  const toastConfig: ToastConfig = {
     success: (props) => (
       <BaseToast
         {...props}
@@ -107,14 +108,33 @@ function App(): React.JSX.Element {
       />
     ),
 
-    TomatoToast: ({ text1, props }) => (
-      <View style={{ height: 60, width: "100%", backgroundColor: "tomato" }}>
-        <Sad />
-        <Text>{text1}</Text>
-        <Text>{props.uuid}</Text>
+    sadToast: ({ text1, onPress }) => (
+      <View style={styles.toastContainer}>
+        <View>
+          <Sad height={70} width={70} />
+        </View>
+        <Text style={styles.toastText}>{text1}</Text>
+        <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
+          <Text style={{ color: "#fff", fontSize: 15 }}>Ok</Text>
+        </TouchableOpacity>
       </View>
     ),
-  }; */
+    syncToast: ({ text1, props, onPress }) => (
+      <View style={styles.toastContainer}>
+        <View>
+          <Error height={70} width={70} />
+        </View>
+        <Text style={styles.toastText}>{text1}</Text>
+        <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
+          <Text style={{ color: "#fff", fontSize: 20 }}>Ok</Text>
+        </TouchableOpacity>
+      </View>
+    ),
+  };
+  const hideToast = () => {
+    setVisible(false);
+    Toast.hide();
+  };
   const internetConnection = useInternetConnection();
   const syncData = useSyncData();
 
@@ -125,6 +145,9 @@ function App(): React.JSX.Element {
           <UserProvider>
             <NavigationContainer>
               <Router />
+              <>
+                <Toast config={toastConfig} />
+              </>
             </NavigationContainer>
           </UserProvider>
         </AuthProvider>
@@ -132,5 +155,30 @@ function App(): React.JSX.Element {
     </ConnectionProvider>
   );
 }
-
+const styles = StyleSheet.create({
+  toastContainer: {
+    height: 200,
+    width: "80%",
+    backgroundColor: "#FFF",
+    padding: 25,
+    alignItems: "center",
+    borderRadius: 10,
+    elevation: 5,
+  },
+  toastText: {
+    fontSize: 18,
+    fontFamily: FONT_FAMILIES.primary,
+    color: COLORS_DF.citrine_brown,
+    textAlign: "center",
+  },
+  buttonToast: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS_DF.robin_egg_blue,
+    width: "90%",
+    height: 30,
+    borderRadius: 5,
+    marginTop: 5,
+  },
+});
 export default App;

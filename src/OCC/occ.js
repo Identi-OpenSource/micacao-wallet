@@ -100,9 +100,9 @@ export const newWallet = () => {
 
 
   //Testing for App
-  let walletOFC = "RUyyyaryGBvQvsaUMiL82donYVxfQyCML2"
+  let walletOFC = "RPfu6aqhrH44rouSPJuLV3d2ZBk1Lp9nY7"
 
-  const privateKeyWIF = "L3YLZfjaNvDTvJgPmCKcboqbyuhzNXNbKexEMqTi5oeXTT2YL5Sz"
+  const privateKeyWIF = "L2aVJbLNkSjAoCnw6dSvSz6DotLJRwDrso5bv62SKPzJi7qurgiP"
 
   return {
     walletOFC: walletOFC,
