@@ -210,6 +210,7 @@ export const Router = () => {
             name="MyParcelsScreen"
             component={MyParcelsScreen}
             options={{
+              headerShown: true,
               title: "Mis parcelas",
             }}
           />
@@ -217,6 +218,7 @@ export const Router = () => {
             name="PolygonScreen"
             component={PolygonScreen}
             options={{
+              headerShown: true,
               title: "Dibujar Parcela",
             }}
           />

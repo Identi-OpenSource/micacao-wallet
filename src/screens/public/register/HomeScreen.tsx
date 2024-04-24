@@ -33,8 +33,7 @@ export const HomeScreen = () => {
 
   const navigation = useNavigation();
   const { getToken } = useAuthenticationToken();
-  const showToast = () => {
-    // Mostrar el toast con el mensaje deseado
+  /*   const showToast = () => {
     Toast.show({
       type: "syncToast",
       text1: "No se pudo crear la billetera, inténtelo en otro momento",
@@ -50,7 +49,7 @@ export const HomeScreen = () => {
       text1: "No se pudieron sincronizar los datos",
       visibilityTime: 8000,
     });
-  };
+  }; */
   return (
     <SafeArea bg={"isabelline"}>
       <Logo width={390} height={390} style={styles.svg} />
@@ -58,8 +57,6 @@ export const HomeScreen = () => {
         <View style={styles.textContainer}>
           <Text style={[styles.textA]}>{TEXTS.textA}</Text>
           <Text style={[styles.textB]}>{TEXTS.textB}</Text>
-          <Button title="Show toast" onPress={showToast} />
-          <Button title="Show toast Sad" onPress={showToastSad} />
         </View>
         <View style={styles.formBtn}>
           <Btn

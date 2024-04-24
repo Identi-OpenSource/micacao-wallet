@@ -133,12 +133,12 @@ const ConnectionStatus = (props: {
           {isConnected ? LABELS.online : LABELS.offline}
         </Text>
       </View>
-      {hasDataToSync && isConnected && (
+      {/* {hasDataToSync && isConnected && (
         <TouchableOpacity style={styles.buttonReload} onPress={() => {}}>
           <Reloading />
           <Text style={styles.connectionSubTitle}>{"Guardar Datos"}</Text>
         </TouchableOpacity>
-      )}
+      )} */}
     </View>
   );
 };

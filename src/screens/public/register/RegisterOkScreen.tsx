@@ -56,7 +56,7 @@ export const RegisterOkScreen = () => {
     setStep({ step: 3, msg: "Sincronizando datos..." });
     toSyncData("userSync");
     await delay(1000);
-    setStep({ step: 4, msg: "Creando wallet..." });
+    setStep({ step: 4, msg: "Creando billetera..." });
     const wallet = newWallet();
     await delay(1500);
     setStep({ step: 5, msg: "Agregando fondos..." });
