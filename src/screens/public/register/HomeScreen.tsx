@@ -5,8 +5,8 @@
  */
 
 import { useNavigation } from "@react-navigation/native";
-import React, { useContext, useState } from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
+import React, { useContext } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import Logo from "../../../assets/svg/initMan.svg";
 import { Btn } from "../../../components/button/Button";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
@@ -17,14 +17,13 @@ import {
   FONT_FAMILIES,
   MP_DF,
 } from "../../../config/themes/default";
-import Toast from "react-native-toast-message";
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
 } from "../../../config/themes/metrics";
 
-import useAuthenticationToken from "../../../hooks/useAuthenticationToken";
+import { AuthContext } from "../../../states/AuthContext";
 import { ConnectionContext } from "../../../states/ConnectionContext";
 
 export const HomeScreen = () => {
@@ -32,7 +31,8 @@ export const HomeScreen = () => {
   const { isConnected } = internetConnection;
 
   const navigation = useNavigation();
-  const { getToken } = useAuthenticationToken();
+  const authenticationToken = useContext(AuthContext);
+  const { getToken } = authenticationToken;
   /*   const showToast = () => {
     Toast.show({
       type: "syncToast",
@@ -43,12 +43,7 @@ export const HomeScreen = () => {
     });
   };
 
-  const showToastSad = () => {
-    Toast.show({
-      type: "sadToast",
-      text1: "No se pudieron sincronizar los datos",
-      visibilityTime: 8000,
-    });
+
   }; */
   return (
     <SafeArea bg={"isabelline"}>

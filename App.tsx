@@ -44,6 +44,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import useInternetConnection from "./src/hooks/useInternetConnection";
 import { ConnectionProvider } from "./src/states/ConnectionContext";
 import useSyncData from "./src/hooks/useSyncData";
+import useAuthenticationToken from "./src/hooks/useAuthenticationToken";
 
 import { SyncDataProvider } from "./src/states/SyncDataContext";
 import { COLORS_DF, FONT_FAMILIES } from "./src/config/themes/default";
@@ -136,12 +137,13 @@ function App(): React.JSX.Element {
     Toast.hide();
   };
   const internetConnection = useInternetConnection();
+  const authenticationToken = useAuthenticationToken();
   const syncData = useSyncData();
 
   return (
     <ConnectionProvider value={internetConnection}>
-      <SyncDataProvider value={syncData}>
-        <AuthProvider>
+      <AuthProvider value={authenticationToken}>
+        <SyncDataProvider value={syncData}>
           <UserProvider>
             <NavigationContainer>
               <Router />
@@ -150,8 +152,8 @@ function App(): React.JSX.Element {
               </>
             </NavigationContainer>
           </UserProvider>
-        </AuthProvider>
-      </SyncDataProvider>
+        </SyncDataProvider>
+      </AuthProvider>
     </ConnectionProvider>
   );
 }

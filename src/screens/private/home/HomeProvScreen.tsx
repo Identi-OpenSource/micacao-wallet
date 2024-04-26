@@ -38,7 +38,8 @@ export const HomeProvScreen = () => {
   const internetConnection = useContext(ConnectionContext);
   const syncData = useContext(SyncDataContext);
   const { isConnected } = internetConnection;
-  const { hasDataToSync } = syncData;
+  const { hasDataToSync, addToSync, toSyncData } = syncData;
+
   const { accessToken } = useAuth();
   const [syncUp, setSyncUp] = useState(false);
   const [loadinSync, setLoadingSync] = useState(false);
@@ -47,6 +48,7 @@ export const HomeProvScreen = () => {
   useEffect(() => {
     // Llamar a getToken
     // getToken();
+
     console.log("userInHome", user);
   }, []);
 
@@ -56,6 +58,15 @@ export const HomeProvScreen = () => {
       // const usesr = JSON.parse(storage.getString('user') || '[]')
     }, [isConnected])
   );
+
+  const syncBack = async () => {
+    if (hasDataToSync) {
+      console.log("Calling toSyncData with 'createFarm'");
+      toSyncData("createFarm");
+    } else {
+      console.log("No data to sync detected.");
+    }
+  };
 
   const getWallet = () => {
     // Create Wallet

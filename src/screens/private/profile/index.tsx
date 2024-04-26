@@ -145,22 +145,6 @@ const ProfileScreen = () => {
             </Card>
           </>
         )}
-        {/* <TouchableOpacity
-          onPress={() => {
-            wallet;
-          }}
-          style={{ padding: 15, backgroundColor: "red", marginTop: 25 }}
-        >
-          <Text>crear</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            found;
-          }}
-          style={{ padding: 15, backgroundColor: "green", margin: 20 }}
-        >
-          <Text>fondear</Text>
-        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );

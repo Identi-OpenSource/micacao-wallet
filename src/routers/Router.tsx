@@ -125,6 +125,8 @@ export const Router = () => {
       dispatch({ type: "login", payload: sales });
       console.log("ventas", sales);
 
+      console.log("router", accessToken);
+
       setToken(accessToken);
     }
   };

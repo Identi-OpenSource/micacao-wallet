@@ -11,6 +11,9 @@ const useSyncData = () => {
   const [dataToSync, setDataToSync] = useState<DataType>({});
   const [hasDataToSync, setHasDataToSync] = useState<boolean>(false);
 
+  useEffect(() => {
+    console.log("Has data to sync:", hasDataToSync);
+  }, [hasDataToSync]);
   const fetchAllKeysAndSetDataToSync = async () => {
     try {
       // Obtener todas las claves de almacenamiento
@@ -34,7 +37,6 @@ const useSyncData = () => {
 
   const addToSync = (newData: any, storageKey: string) => {
     try {
-      // Agregar datos a la lista de datos pendientes de sincronización
       storage.set(storageKey, newData);
 
       const storageName = storageKey === "userSync" ? "user" : storageKey;
@@ -59,10 +61,11 @@ const useSyncData = () => {
           createProducer(key);
           break;
         case "createFarm":
-          createFarm(key);
+          createFarm();
+
           break;
         case "createSale":
-          createSale(key);
+          createSale();
         default:
           break;
       }
