@@ -1,99 +1,107 @@
 import { useContext } from "react";
 import Config from "react-native-config";
+import Toast from "react-native-toast-message";
 import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
-import { AuthContext, useAuth } from "../states/AuthContext";
-import {
-  CacaoContext,
-  UsersContext,
-  parcelContext,
-} from "../states/UserContext";
+import { useAuth } from "../states/AuthContext";
 import { SyncDataContext } from "../states/SyncDataContext";
-import useInternetConnection from "./useInternetConnection";
+import { CacaoContext, parcelContext } from "../states/UserContext";
 
 const useApi = () => {
-  const { setToken } = useAuth();
-  const { isConnected } = useInternetConnection();
-  const accessToken = useContext(AuthContext);
+  const { accessToken } = useAuth();
+
   const parcel = useContext(parcelContext);
   const syncData = useContext(SyncDataContext);
   const sale = useContext(CacaoContext);
   const { addToSync } = syncData;
   const createProducer = async (key: string) => {
-    console.log("createProducer");
+    console.log("createProducer", accessToken);
 
-    if (isConnected) {
-      try {
-        const user = JSON.parse(storage.getString(key) || "{}");
-        const apiRequest: API_INTERFACE = {
-          url: `${Config.BASE_URL}/create_producer`,
-          method: "POST",
-          payload: {
-            dni: user.dni,
-            name: user.name,
-            phone: user.phone,
-            gender: user.gender == "M" ? "MALE" : "FEMALE",
-            countryid: user.country?.code === "CO" ? 1 : 2,
-          },
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        };
-        const data = await HTTP(apiRequest);
-        console.log("data", data);
-        addToSync(JSON.stringify({ ...user, syncUp: true }), key);
-      } catch (error) {
-        console.log("error", error);
-      }
+    try {
+      const user = JSON.parse(storage.getString(key) || "{}");
+      const apiRequest: API_INTERFACE = {
+        url: `${Config.BASE_URL}/create_producer`,
+        method: "POST",
+        payload: {
+          dni: user.dni,
+          name: user.name,
+          phone: user.phone,
+          gender: user.gender == "M" ? "MALE" : "FEMALE",
+          countryid: user.country?.code === "CO" ? 1 : 2,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      const data = await HTTP(apiRequest);
+      console.log("data", data);
+      addToSync(JSON.stringify({ ...user, syncUp: true }), key);
+    } catch (error) {
+      Toast.show({
+        type: "sadToast",
+        text1: "No se pudieron sincronizar los datos",
+        visibilityTime: 8000,
+      });
+      console.log("error", error);
     }
   };
 
   const createFarm = async () => {
+    console.log("log de crear parcela");
+
     const parcel = useContext(parcelContext);
-    if (isConnected) {
-      try {
-        const apiRequest: API_INTERFACE = {
-          url: `${Config.BASE_URL}/create_farm`,
-          method: "POST",
-          payload: {
-            parcel: parcel.nameParcel,
-            hectares: parcel.hectares,
-          },
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        };
-        const data = await HTTP(apiRequest);
-        console.log("data", data);
-      } catch (error) {
-        console.log("error", error);
-      }
+
+    try {
+      const apiRequest: API_INTERFACE = {
+        url: `${Config.BASE_URL}/create_farm`,
+        method: "POST",
+        payload: {
+          parcel: parcel.nameParcel,
+          hectares: parcel.hectares,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      const data = await HTTP(apiRequest);
+      console.log("data", data);
+    } catch (error) {
+      Toast.show({
+        type: "sadToast",
+        text1: "No se pudieron sincronizar los datos",
+        visibilityTime: 8000,
+      });
+      console.log("error", error);
     }
   };
   const createSale = async () => {
     const sale = useContext(CacaoContext);
-    if (isConnected) {
-      try {
-        const apiRequest: API_INTERFACE = {
-          url: `${Config.BASE_URL}/create_activities`,
-          method: "POST",
-          payload: {
-            typeCacao: sale.typeCacao,
-            kg: sale.kgCacao,
-            month: sale.month,
-          },
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        };
-        const data = await HTTP(apiRequest);
-        console.log("data", data);
-      } catch (error) {
-        console.log("error", error);
-      }
+
+    try {
+      const apiRequest: API_INTERFACE = {
+        url: `${Config.BASE_URL}/create_activities`,
+        method: "POST",
+        payload: {
+          typeCacao: sale.typeCacao,
+          kg: sale.kgCacao,
+          month: sale.month,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      const data = await HTTP(apiRequest);
+      console.log("data", data);
+    } catch (error) {
+      Toast.show({
+        type: "sadToast",
+        text1: "No se pudieron sincronizar los datos",
+        visibilityTime: 8000,
+      });
+      console.log("error", error);
     }
   };
 
