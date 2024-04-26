@@ -8,14 +8,13 @@ import {SyncDataContext} from '../states/SyncDataContext'
 import useInternetConnection from './useInternetConnection'
 
 const useApi = () => {
-  const {setToken} = useAuth()
+  const {accessToken} = useAuth()
   const {isConnected} = useInternetConnection()
-  const accessToken = useContext(AuthContext)
   const parcel = useContext(parcelContext)
   const syncData = useContext(SyncDataContext)
   const {addToSync} = syncData
   const createProducer = async (key: string) => {
-    console.log('createProducer')
+    console.log('createProducer', accessToken)
 
     if (isConnected) {
       try {

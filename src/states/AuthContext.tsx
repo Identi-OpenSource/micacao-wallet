@@ -1,12 +1,14 @@
-import React, {createContext, useContext, useState} from 'react'
+import React, {createContext, useEffect, useState} from 'react'
+import useAuthenticationToken from '../hooks/useAuthenticationToken'
 
 export interface AuthInterface {
   accessToken?: any
-  setToken?: any
+  setAccessToken?: any
+  getToken?: any
 }
 
 export const authInicialState: AuthInterface = {
-  accessToken: '',
+  accessToken: null,
 }
 
 export type AuthActions = 'getAccessToken'
@@ -24,15 +26,17 @@ export const AuthDispatchContext = createContext(
 export const AuthProvider = ({children}: {children: React.ReactNode}) => {
   const [accessToken, setAccessToken] = useState(null)
 
-  const setToken = (token: any) => {
-    setAccessToken(token)
-  }
+  const {getToken} = useAuthenticationToken(setAccessToken)
+
+  useEffect(() => {
+    console.log('AccessToken on Context', accessToken)
+  }, [accessToken])
 
   return (
-    <AuthContext.Provider value={{accessToken, setToken}}>
+    <AuthContext.Provider value={{accessToken, setAccessToken, getToken}}>
       {children}
     </AuthContext.Provider>
   )
 }
 
-export const useAuth = () => useContext(AuthContext)
+export const useAuth = () => React.useContext(AuthContext)

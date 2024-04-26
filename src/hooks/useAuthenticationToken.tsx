@@ -5,12 +5,14 @@ import {API_INTERFACE, HTTP} from '../services/api'
 import {useAuth} from '../states/AuthContext'
 import {ConnectionContext} from '../states/ConnectionContext'
 
-const useAuthenticationToken = () => {
-  const {accessToken, setToken} = useAuth()
+const useAuthenticationToken = (setAccessToken: any) => {
+  const {accessToken} = useAuth()
   const internetConnection = useContext(ConnectionContext)
   const {isConnected} = internetConnection
 
   const getToken = async () => {
+    console.log('entro?')
+
     if (isConnected && accessToken === null) {
       try {
         const apiRequest: API_INTERFACE = {
@@ -20,7 +22,7 @@ const useAuthenticationToken = () => {
           headers: {'Content-Type': 'multipart/form-data'},
         }
         const data = await HTTP(apiRequest)
-        setToken(data.access_token)
+        setAccessToken(data.access_token)
         storage.set('accessToken', data.access_token)
       } catch (error) {
         console.log('error', error)

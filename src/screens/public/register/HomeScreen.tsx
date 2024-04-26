@@ -21,12 +21,14 @@ import {
 
 import useAuthenticationToken from '../../../hooks/useAuthenticationToken'
 import {ConnectionContext} from '../../../states/ConnectionContext'
+import {AuthContext} from '../../../states/AuthContext'
 
 export const HomeScreen = () => {
+  const authenticationToken = useContext(AuthContext)
+  const {getToken} = authenticationToken
   const internetConnection = useContext(ConnectionContext)
   const {isConnected} = internetConnection
   const navigation = useNavigation()
-  const {getToken} = useAuthenticationToken()
 
   return (
     <SafeArea bg={'isabelline'}>
