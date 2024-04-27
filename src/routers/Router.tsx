@@ -118,13 +118,17 @@ export const Router = () => {
 
   const getIsLogin = () => {
     if (userLogin?.isLogin) {
+      //login
       dispatch({type: 'login', payload: userLogin})
-      dispatch({type: 'login', payload: parcels})
-      console.log('PARCELAS', parcels)
 
-      dispatch({type: 'login', payload: sales})
-      console.log('ventas', sales)
+      //TODO: Revisar el guardado
+      // dispatch({type: 'login', payload: parcels})
+      // console.log('PARCELAS', parcels)
 
+      // dispatch({type: 'login', payload: sales})
+      // console.log('ventas', sales)
+
+      //accessToken
       console.log('accessToken en Router', accessToken)
       setAccessToken(accessToken)
     }
