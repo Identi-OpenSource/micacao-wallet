@@ -22,7 +22,7 @@ import {
   moderateScale,
   verticalScale,
 } from "../../../config/themes/metrics";
-
+import Toast from "react-native-toast-message";
 import { AuthContext } from "../../../states/AuthContext";
 import { ConnectionContext } from "../../../states/ConnectionContext";
 
@@ -41,10 +41,10 @@ export const HomeScreen = () => {
         console.log("Toast oculto");
       },
     });
-  };
-
+  }
 
   }; */
+
   return (
     <SafeArea bg={"isabelline"}>
       <Logo width={390} height={390} style={styles.svg} />
@@ -60,8 +60,17 @@ export const HomeScreen = () => {
             onPress={() => {
               if (isConnected) {
                 getToken();
+                navigation.navigate("IamScreen");
+              } else {
+                Toast.show({
+                  type: "syncToast",
+                  text1:
+                    "¡Recuerda que necesitas estar conectado para crear tu cuenta!",
+                  onHide: () => {
+                    console.log("Toast oculto");
+                  },
+                });
               }
-              navigation.navigate("IamScreen");
             }}
           />
         </View>
