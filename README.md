@@ -53,13 +53,13 @@ Volvemos a instalar
 npm i react-native-udp -f
 ```
 
-5. A continuación cambiamos el compile de la linea 47 dede ,\node_modules\react-native-os\android\build.gradle'por:
+5. A continuación cambiamos el compile de la linea 47 desde \node_modules\react-native-os\android\build.gradle por:
 
 ```
 implementation
 ```
 
-6.  A continuación cambiamos el compile de la linea 47 y 48 de ,\node_modules\react-native-tcp\android\build.gradle'por:
+6.  A continuación cambiamos el compile de la linea 47 y 48 de \node_modules\react-native-tcp\android\build.gradle por:
 
 ```
 implementation
@@ -77,4 +77,4 @@ npm start
 react-native run-android
 ```
 
-9. Ahora colocamos el json de evals en la carpeta de node modules bitcoin-ops y pegamos el archivo
+9. Ahora colocamos el json de evals en la carpeta de node_modules/bitcoin-ops y pegamos el archivo

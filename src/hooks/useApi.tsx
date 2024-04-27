@@ -6,10 +6,12 @@ import {API_INTERFACE, HTTP} from '../services/api'
 import {useAuth} from '../states/AuthContext'
 import {SyncDataContext} from '../states/SyncDataContext'
 import {CacaoContext, parcelContext} from '../states/UserContext'
+import {ConnectionContext} from '../states/ConnectionContext'
 
 const useApi = () => {
+  const internetConnection = useContext(ConnectionContext)
   const {accessToken} = useAuth()
-  const {isConnected} = useInternetConnection()
+  const {isConnected} = internetConnection
   const parcel = useContext(parcelContext)
   const syncData = useContext(SyncDataContext)
   const {addToSync} = syncData
