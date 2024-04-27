@@ -1,9 +1,7 @@
-import {useContext, useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import Config from 'react-native-config'
 import {storage} from '../config/store/db'
 import {API_INTERFACE, HTTP} from '../services/api'
-import {useAuth} from '../states/AuthContext'
-import {ConnectionContext} from '../states/ConnectionContext'
 
 const useAuthenticationToken = (setAccessToken: any) => {
   const {accessToken} = useAuth()
@@ -36,7 +34,7 @@ const useAuthenticationToken = (setAccessToken: any) => {
     console.log('AccessToken on Use', accessToken)
   }, [accessToken])
 
-  return {getToken}
+  return {accessToken, setToken, getToken}
 }
 
 export default useAuthenticationToken

@@ -47,6 +47,7 @@ import { RegisterScreen } from "../screens/public/register/RegisterScreen";
 import RegisterSecondScreen from "../screens/public/register/RegisterSecondScreen";
 import RegisterThirdScreen from "../screens/public/register/RegisterThirdScreen";
 import StartScreen from "../screens/public/register/StartScreen";
+import { DrawPolygonScreen } from "../screens/private/parcel/draw-polygon/DrawPolygonScreen";
 import { useAuth } from "../states/AuthContext";
 
 import { UserDispatchContext, UsersContext } from "../states/UserContext";
@@ -108,6 +109,7 @@ export const Router = () => {
   const dispatch = useContext(UserDispatchContext);
   const parcels = JSON.parse(storage.getString("parcels") || "[]");
   const userLogin = JSON.parse(storage.getString("user") || "{}");
+  const sales = storage.getString("sales") || "[]";
   const accessToken = storage.getString("accessToken") || "";
 
   useEffect(() => {
@@ -117,6 +119,14 @@ export const Router = () => {
   const getIsLogin = () => {
     if (userLogin?.isLogin) {
       dispatch({ type: "login", payload: userLogin });
+      dispatch({ type: "login", payload: parcels });
+      console.log("PARCELAS", parcels);
+
+      dispatch({ type: "login", payload: sales });
+      console.log("ventas", sales);
+
+      console.log("router", accessToken);
+
       setToken(accessToken);
     }
   };
@@ -202,6 +212,7 @@ export const Router = () => {
             name="MyParcelsScreen"
             component={MyParcelsScreen}
             options={{
+              headerShown: true,
               title: "Mis parcelas",
             }}
           />
@@ -209,8 +220,13 @@ export const Router = () => {
             name="PolygonScreen"
             component={PolygonScreen}
             options={{
+              headerShown: true,
               title: "Dibujar Parcela",
             }}
+          />
+          <HomeStack.Screen
+            name="DrawPolygonScreen"
+            component={DrawPolygonScreen}
           />
           <HomeStack.Screen
             name="DrawPolyline"

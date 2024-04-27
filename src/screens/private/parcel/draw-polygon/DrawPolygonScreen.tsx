@@ -242,11 +242,12 @@ export const DrawPolygonScreen = () => {
           containerStyle={{
             borderRadius: 7,
             elevation: 5,
+            height: 408,
           }}
         >
           <View
             style={{
-              backgroundColor: "#22C55E",
+              backgroundColor: "#F59E0B",
               alignItems: "center",
               width: "100%",
               borderRadius: 5,
@@ -256,7 +257,7 @@ export const DrawPolygonScreen = () => {
             }}
           >
             <Text style={{ color: "#fff" }}>
-              Estado de titularidad de tierra
+              Estado de titularidad en espera
             </Text>
           </View>
           <MapView

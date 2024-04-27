@@ -43,3 +43,5 @@ export { default as Warning } from "./warning.svg";
 export { default as Reloading } from "./reloading.svg";
 export { default as ShadowParcel } from "./parcels_Shadow.svg";
 export { default as ShadowSale } from "./sales_Shadow.svg";
+export { default as Error } from "./error.svg";
+export { default as Sad } from "./sentiment_sad.svg";

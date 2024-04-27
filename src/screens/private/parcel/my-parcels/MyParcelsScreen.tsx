@@ -27,7 +27,16 @@ export const MyParcelsScreen = () => {
   return (
     <SafeArea>
       <View style={styles.container}>
-        <Text style={styles.title}>Lista de parcelas</Text>
+        <View
+          style={{
+            justifyContent: "center",
+            /*   borderColor: "red",
+            borderWidth: 1, */
+            marginBottom: 4,
+          }}
+        >
+          <Text style={styles.title}>Lista de parcelas</Text>
+        </View>
         {parcels.map((parcel) => CardParcel(parcel, navigation))}
       </View>
     </SafeArea>
@@ -62,7 +71,7 @@ const CardParcel = (props: Parcel, navigation: any) => {
           style={containerBTN}
         />
       }
-      {props.polygon && (
+      {/*       {props.polygon && (
         <>
           <Btn
             title="Solicitar certificado Propiedad"
@@ -71,7 +80,7 @@ const CardParcel = (props: Parcel, navigation: any) => {
             style={containerBTN}
           />
         </>
-      )}
+      )} */}
 
       <TouchableOpacity
         onPress={() => {

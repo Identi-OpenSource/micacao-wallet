@@ -114,7 +114,7 @@ const RegisterParcelThirdScreen: React.FC<RegisterParcelThirdScreenProps> = ({
       const parcelTemp = JSON.parse(storage.getString("parcelTemp") || "{}");
       storage.set(
         "parcelTemp",
-        JSON.stringify({ ...parcelTemp, firstPoint, imgP1 })
+        JSON.stringify({ ...parcelTemp, firstPoint /*  , imgP1 */ })
       );
       console.log("ubicacion", gps);
 

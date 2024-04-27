@@ -125,12 +125,12 @@ const ProfileScreen = () => {
         )}
         {showInfo && (
           <>
-            <View style={{ marginRight: 280 }}>
+            {/*  <View style={{ marginRight: 280 }}>
               <Text style={styles.textUpCard}>DNI</Text>
             </View>
             <Card containerStyle={styles.card}>
               <Text style={styles.textCard}>{user.dni}</Text>
-            </Card>
+            </Card> */}
             <View style={{ marginRight: 250, marginTop: 25 }}>
               <Text style={styles.textUpCard}>Telefóno</Text>
             </View>
@@ -145,22 +145,6 @@ const ProfileScreen = () => {
             </Card>
           </>
         )}
-        {/* <TouchableOpacity
-          onPress={() => {
-            wallet;
-          }}
-          style={{ padding: 15, backgroundColor: "red", marginTop: 25 }}
-        >
-          <Text>crear</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            found;
-          }}
-          style={{ padding: 15, backgroundColor: "green", margin: 20 }}
-        >
-          <Text>fondear</Text>
-        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );
