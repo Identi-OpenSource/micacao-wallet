@@ -110,13 +110,17 @@ export const Router = () => {
   const parcels = JSON.parse(storage.getString('parcels') || '[]')
   const userLogin = JSON.parse(storage.getString('user') || '{}')
   const sales = storage.getString('sales') || '[]'
-  const accessToken = storage.getString('accessToken') || ''
+  const accessToken = storage.getString('accessToken') || null
 
   useEffect(() => {
     getIsLogin()
   }, [])
 
   const getIsLogin = () => {
+    //accessToken
+    console.log('accessToken en Router', accessToken)
+    setAccessToken(accessToken)
+
     if (userLogin?.isLogin) {
       //login
       dispatch({type: 'login', payload: userLogin})
@@ -127,10 +131,6 @@ export const Router = () => {
 
       // dispatch({type: 'login', payload: sales})
       // console.log('ventas', sales)
-
-      //accessToken
-      console.log('accessToken en Router', accessToken)
-      setAccessToken(accessToken)
     }
   }
 

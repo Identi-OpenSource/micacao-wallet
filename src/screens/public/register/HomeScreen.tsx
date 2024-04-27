@@ -5,7 +5,7 @@
  */
 
 import { useNavigation } from "@react-navigation/native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import Logo from "../../../assets/svg/initMan.svg";
@@ -23,15 +23,23 @@ import {
   moderateScale,
   verticalScale,
 } from "../../../config/themes/metrics";
-import { AuthContext } from "../../../states/AuthContext";
 import { ConnectionContext } from "../../../states/ConnectionContext";
+import { useAuth } from "../../../states/AuthContext";
 
 export const HomeScreen = () => {
-  const authenticationToken = useContext(AuthContext);
-  const { getToken } = authenticationToken;
+  const { accessToken, getToken } = useAuth();
   const internetConnection = useContext(ConnectionContext);
   const { isConnected } = internetConnection;
   const navigation = useNavigation();
+
+  useEffect(() => {
+    console.log("accessToken", accessToken);
+
+    if (accessToken !== null) {
+      //TODO: Loading se desactive
+      navigation.navigate("IamScreen");
+    }
+  }, [accessToken]);
 
   return (
     <SafeArea bg={"isabelline"}>
@@ -47,8 +55,8 @@ export const HomeScreen = () => {
             theme="agrayu"
             onPress={() => {
               if (isConnected) {
+                //TODO: active el loading
                 getToken();
-                navigation.navigate("IamScreen");
               } else {
                 Toast.show({
                   type: "syncToast",

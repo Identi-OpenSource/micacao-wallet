@@ -39,7 +39,6 @@ import Toast, {
 } from "react-native-toast-message";
 import { Error, Sad } from "./src/assets/svg/index";
 import useInternetConnection from "./src/hooks/useInternetConnection";
-import useSyncData from "./src/hooks/useSyncData";
 import { Router } from "./src/routers/Router";
 import { AuthProvider } from "./src/states/AuthContext";
 import { ConnectionProvider } from "./src/states/ConnectionContext";
@@ -136,12 +135,11 @@ function App(): React.JSX.Element {
     Toast.hide();
   };
   const internetConnection = useInternetConnection();
-  const syncData = useSyncData();
 
   return (
     <ConnectionProvider value={internetConnection}>
       <AuthProvider>
-        <SyncDataProvider value={syncData}>
+        <SyncDataProvider>
           <UserProvider>
             <NavigationContainer>
               <Router />
