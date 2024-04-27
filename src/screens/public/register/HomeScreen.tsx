@@ -18,7 +18,7 @@ import {
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-
+import Toast from 'react-native-toast-message'
 import useAuthenticationToken from '../../../hooks/useAuthenticationToken'
 import {ConnectionContext} from '../../../states/ConnectionContext'
 import {AuthContext} from '../../../states/AuthContext'
@@ -45,8 +45,17 @@ export const HomeScreen = () => {
             onPress={() => {
               if (isConnected) {
                 getToken()
+                navigation.navigate('IamScreen')
+              } else {
+                Toast.show({
+                  type: 'syncToast',
+                  text1:
+                    '¡Recuerda que necesitas estar conectado para crear tu cuenta!',
+                  onHide: () => {
+                    console.log('Toast oculto')
+                  },
+                })
               }
-              navigation.navigate('IamScreen')
             }}
           />
         </View>
