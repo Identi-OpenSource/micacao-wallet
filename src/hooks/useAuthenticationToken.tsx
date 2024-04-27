@@ -11,7 +11,6 @@ const useAuthenticationToken = (setAccessToken: any) => {
   const {isConnected} = internetConnection
 
   const getToken = async () => {
-    console.log('entro?')
     if (isConnected && accessToken === null) {
       try {
         const apiRequest: API_INTERFACE = {
@@ -30,10 +29,6 @@ const useAuthenticationToken = (setAccessToken: any) => {
       }
     }
   }
-
-  useEffect(() => {
-    console.log('AccessToken on Use', accessToken)
-  }, [accessToken])
 
   return {getToken}
 }

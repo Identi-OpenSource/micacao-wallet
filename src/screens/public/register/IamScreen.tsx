@@ -5,7 +5,6 @@
  */
 
 import React, {useContext} from 'react'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {
   Image,
   ImageSourcePropType,
@@ -14,6 +13,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {TEXTS} from '../../../config/texts/texts'
 import {
   BORDER_RADIUS_DF,
   BTN_THEME,
@@ -23,26 +24,20 @@ import {
   FONT_SIZES,
   MP_DF,
 } from '../../../config/themes/default'
-import {TEXTS} from '../../../config/texts/texts'
 
 import {useNavigation} from '@react-navigation/native'
+import {imgMan, imgWoman} from '../../../assets/imgs'
+import {GENDER} from '../../../config/const'
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
+import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
 import {Header} from './RegisterScreen'
-import {imgMan, imgWoman} from '../../../assets/imgs'
-import {GENDER} from '../../../config/const'
-import {UsersContext, UserDispatchContext} from '../../../states/UserContext'
-import {SyncDataContext} from '../../../states/SyncDataContext'
-import useApi from '../../../hooks/useApi'
 
 export const IamScreen = () => {
   const navigation = useNavigation()
-  const syncData = useContext(SyncDataContext)
-  const {toSyncData} = syncData
-  const {createProducer} = useApi()
 
   const cards = [
     {
@@ -66,14 +61,6 @@ export const IamScreen = () => {
           <Card img={c.img} title={c.title} value={c.value} key={i} id={c.id} />
         ))}
       </View>
-
-      <TouchableOpacity
-        style={styles.bodyCard}
-        onPress={() => {
-          createProducer('user')
-        }}>
-        <Text style={styles.titleCard}>{'Testing'}</Text>
-      </TouchableOpacity>
     </SafeArea>
   )
 }

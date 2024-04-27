@@ -7,6 +7,7 @@
 import {useNavigation} from '@react-navigation/native'
 import React, {useContext} from 'react'
 import {StyleSheet, Text, View} from 'react-native'
+import Toast from 'react-native-toast-message'
 import Logo from '../../../assets/svg/initMan.svg'
 import {Btn} from '../../../components/button/Button'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
@@ -18,10 +19,8 @@ import {
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import Toast from 'react-native-toast-message'
-import useAuthenticationToken from '../../../hooks/useAuthenticationToken'
-import {ConnectionContext} from '../../../states/ConnectionContext'
 import {AuthContext} from '../../../states/AuthContext'
+import {ConnectionContext} from '../../../states/ConnectionContext'
 
 export const HomeScreen = () => {
   const authenticationToken = useContext(AuthContext)
