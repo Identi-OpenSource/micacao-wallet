@@ -1,4 +1,6 @@
 import React, {createContext, useContext} from 'react'
+import {useAuth} from './AuthContext'
+import useSync from '../hooks/useSyncData'
 
 export interface SyncDataInterface {
   hasDataToSync?: boolean
@@ -22,15 +24,12 @@ export const SyncDataDispatchContext = createContext(
   (() => {}) as React.Dispatch<ActionsInterface>,
 )
 
-export const SyncDataProvider = ({
-  children,
-  value,
-}: {
-  children: React.ReactNode
-  value: any
-}) => {
+export const SyncDataProvider = ({children}: {children: React.ReactNode}) => {
+  const {accessToken} = useAuth()
+  const {hasDataToSync, addToSync, toSyncData} = useSync(accessToken)
+
   return (
-    <SyncDataContext.Provider value={value}>
+    <SyncDataContext.Provider value={{hasDataToSync, addToSync, toSyncData}}>
       {children}
     </SyncDataContext.Provider>
   )
