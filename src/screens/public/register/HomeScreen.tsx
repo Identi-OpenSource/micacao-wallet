@@ -1,11 +1,5 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : View of entry point of the application
- */
-
 import { useNavigation } from "@react-navigation/native";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import Logo from "../../../assets/svg/initMan.svg";
@@ -25,9 +19,11 @@ import {
 } from "../../../config/themes/metrics";
 import { ConnectionContext } from "../../../states/ConnectionContext";
 import { useAuth } from "../../../states/AuthContext";
+import Spinner from "react-native-loading-spinner-overlay";
 
 export const HomeScreen = () => {
   const { accessToken, getToken } = useAuth();
+  const [loading, setLoading] = useState(false);
   const internetConnection = useContext(ConnectionContext);
   const { isConnected } = internetConnection;
   const navigation = useNavigation();
@@ -36,13 +32,14 @@ export const HomeScreen = () => {
     console.log("accessToken", accessToken);
 
     if (accessToken !== null) {
-      //TODO: Loading se desactive
+      setLoading(false);
       navigation.navigate("IamScreen");
     }
   }, [accessToken]);
-
+  useEffect(() => {});
   return (
     <SafeArea bg={"isabelline"}>
+      <Spinner color="#178B83" visible={loading} size={100} />
       <Logo width={390} height={390} style={styles.svg} />
       <View style={styles.container}>
         <View style={styles.textContainer}>
@@ -55,7 +52,7 @@ export const HomeScreen = () => {
             theme="agrayu"
             onPress={() => {
               if (isConnected) {
-                //TODO: active el loading
+                setLoading(true);
                 getToken();
               } else {
                 Toast.show({

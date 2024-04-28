@@ -20,7 +20,7 @@ git clone https://github.com/identi-digital/micacao-app.git
 3. Ejecuta los siguientes comandos para inicializar tu proyecto:
 
 ```
-npm instal --legacy-peer-deps
+npm install --legacy-peer-deps
 ```
 
 4. Colocamos la siguientes lineas de codigo en la consola
