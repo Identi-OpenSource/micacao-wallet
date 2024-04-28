@@ -26,6 +26,9 @@ export const SyncDataDispatchContext = createContext(
 
 export const SyncDataProvider = ({children}: {children: React.ReactNode}) => {
   const {accessToken} = useAuth()
+
+  // revisar loading y error de AuthContext
+  // loadingSync ErrorSync
   const {hasDataToSync, addToSync, toSyncData} = useSync(accessToken)
 
   return (

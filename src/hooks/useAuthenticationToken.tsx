@@ -1,4 +1,4 @@
-import {useContext, useEffect} from 'react'
+import {useContext} from 'react'
 import Config from 'react-native-config'
 import {storage} from '../config/store/db'
 import {API_INTERFACE, HTTP} from '../services/api'

@@ -43,7 +43,9 @@ const ConfirmPasswordScreen: React.FC<ConfirmPasswordScreenProps> = ({
     try {
       const pinHash = await sha256(values.pin) // Obtener el hash de la contraseña ingresada
       if (pinHash === pin) {
-        navigation.navigate('RegisterOkScreen') // Navegar a la siguiente pantalla si el PIN es correcto
+        //:TODO si tiene internet registra user caso contrario muestra error y no pasa
+        // mostrar loading
+        navigation.navigate('RegisterOkScreen') // Navegar a la siguiente pantalla se completo el registro de usuario
       } else {
         setError(true) // Establecer estado de error a true
       }
