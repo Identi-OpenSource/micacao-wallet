@@ -1,6 +1,7 @@
 import {useNavigation} from '@react-navigation/native'
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {StyleSheet, Text, View} from 'react-native'
+import Spinner from 'react-native-loading-spinner-overlay'
 import Toast from 'react-native-toast-message'
 import Logo from '../../../assets/svg/initMan.svg'
 import {Btn} from '../../../components/button/Button'
@@ -13,12 +14,11 @@ import {
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import {ConnectionContext} from '../../../states/ConnectionContext'
 import {useAuth} from '../../../states/AuthContext'
-import Spinner from 'react-native-loading-spinner-overlay'
+import {ConnectionContext} from '../../../states/ConnectionContext'
 
 export const HomeScreen = () => {
-  const {accessToken, getToken, loading, error} = useAuth()
+  const {accessToken, getToken, loading} = useAuth()
   const internetConnection = useContext(ConnectionContext)
   const {isConnected} = internetConnection
   const navigation = useNavigation()
@@ -30,14 +30,6 @@ export const HomeScreen = () => {
       navigation.navigate('IamScreen')
     }
   }, [accessToken])
-
-  useEffect(() => {
-    if (loading == false && error != null)
-      Toast.show({
-        type: 'syncToast',
-        text1: error.toString(),
-      })
-  }, [loading, error])
 
   return (
     <SafeArea bg={'isabelline'}>

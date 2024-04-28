@@ -106,7 +106,7 @@ const optionsHeadersCacao = {
 
 export const Router = () => {
   const user = useContext(UsersContext)
-  const {error, setAccessToken} = useAuth()
+  const {setAccessToken, error} = useAuth()
   const dispatch = useContext(UserDispatchContext)
   const parcels = JSON.parse(storage.getString('parcels') || '[]')
   const userLogin = JSON.parse(storage.getString('user') || '{}')
@@ -116,6 +116,14 @@ export const Router = () => {
   useEffect(() => {
     getIsLogin()
   }, [])
+
+  useEffect(() => {
+    if (error != null)
+      Toast.show({
+        type: 'syncToast',
+        text1: error.toString(),
+      })
+  }, [error])
 
   const getIsLogin = () => {
     //accessToken
