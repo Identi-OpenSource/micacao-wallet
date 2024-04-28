@@ -49,6 +49,7 @@ import RegisterThirdScreen from '../screens/public/register/RegisterThirdScreen'
 import StartScreen from '../screens/public/register/StartScreen'
 import {DrawPolygonScreen} from '../screens/private/parcel/draw-polygon/DrawPolygonScreen'
 import {useAuth} from '../states/AuthContext'
+import Toast from 'react-native-toast-message'
 
 import {UserDispatchContext, UsersContext} from '../states/UserContext'
 
@@ -105,7 +106,7 @@ const optionsHeadersCacao = {
 
 export const Router = () => {
   const user = useContext(UsersContext)
-  const {setAccessToken} = useAuth()
+  const {error, setAccessToken} = useAuth()
   const dispatch = useContext(UserDispatchContext)
   const parcels = JSON.parse(storage.getString('parcels') || '[]')
   const userLogin = JSON.parse(storage.getString('user') || '{}')

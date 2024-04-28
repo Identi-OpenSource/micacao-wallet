@@ -5,12 +5,17 @@ import {API_INTERFACE, HTTP} from '../services/api'
 import {useAuth} from '../states/AuthContext'
 import {ConnectionContext} from '../states/ConnectionContext'
 
-const useAuthenticationToken = (setAccessToken: any) => {
+const useAuthenticationToken = (
+  setAccessToken: any,
+  setLoading: any,
+  setError: any,
+) => {
   const {accessToken} = useAuth()
   const internetConnection = useContext(ConnectionContext)
   const {isConnected} = internetConnection
 
   const getToken = async () => {
+    setLoading(true)
     if (isConnected && accessToken === null) {
       try {
         const apiRequest: API_INTERFACE = {
@@ -24,8 +29,9 @@ const useAuthenticationToken = (setAccessToken: any) => {
         storage.set('accessToken', data.access_token)
       } catch (error) {
         console.log('error', error)
-        //setError("Error fetching data");
+        setError(error)
       } finally {
+        setLoading(false)
       }
     }
   }
