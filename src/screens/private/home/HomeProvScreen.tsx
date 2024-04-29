@@ -32,6 +32,7 @@ import { UserInterface, UsersContext } from "../../../states/UserContext";
 import ComponentToast from "../../../components/toastComponent";
 import Toast from "react-native-toast-message";
 import toastConfig from "../../../../App";
+import useApi from "../../../hooks/useApi";
 
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext);
@@ -44,12 +45,11 @@ export const HomeProvScreen = () => {
   const [syncUp, setSyncUp] = useState(false);
   const [loadinSync, setLoadingSync] = useState(false);
   const [wa, setWa] = useState(null) as any;
-
+  const { createSale, createFarm } = useApi();
   useEffect(() => {
     // Llamar a getToken
     // getToken();
-
-    console.log("userInHome", user);
+    /* console.log("userInHome", user); */
   }, []);
 
   useFocusEffect(
@@ -162,10 +162,7 @@ const Header = ({ name }: UserInterface) => {
       <Text style={styles.titleHeader}>
         {TEXTS.textL} {firstName}
       </Text>
-      {/* <TouchableOpacity onPress={showToast}>
-        <Text>Perro</Text>
-      </TouchableOpacity>
- */}
+
       <Text style={styles.textHeader}>{TEXTS.textK}</Text>
       <Toast />
     </View>
@@ -226,7 +223,26 @@ const Body = (props: {
             {LABELS.registerVenta}
           </Text>
         </TouchableOpacity>
-
+        <View style={{ marginTop: 45 }}>
+          <TouchableOpacity
+            style={[styles.bodyCard]}
+            activeOpacity={0.9}
+            onPress={() => {}}
+          >
+            <Text style={[styles.titleCard, syncUp && styles.filter]}>
+              {"createFarm"}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.bodyCard]}
+            activeOpacity={0.9}
+            onPress={() => {}}
+          >
+            <Text style={[styles.titleCard, syncUp && styles.filter]}>
+              {"createSale"}
+            </Text>
+          </TouchableOpacity>
+        </View>
         {/*  <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}

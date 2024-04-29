@@ -1,9 +1,3 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : Register screen of the application
- */
-
 import { Field, Formik } from "formik";
 import React, { useContext } from "react";
 import { View } from "react-native";
@@ -13,7 +7,7 @@ import { Btn } from "../../../components/button/Button";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { storage } from "../../../config/store/db";
 import { LABELS } from "../../../config/texts/labels";
-import { UsersContext, UserDispatchContext } from "../../../states/UserContext";
+import { UserDispatchContext, UsersContext } from "../../../states/UserContext";
 import {
   INIT_VALUES_FOURTH,
   INPUTS_FOURTH,
@@ -34,8 +28,8 @@ const RegisterFourthScreen: React.FC<RegisterFourthScreenProps> = ({
       .then((pinHash) => {
         storage.set("security", JSON.stringify({ pin: pinHash }));
         dispatch({ type: "setUser", payload: { ...user, pin: pinHash } });
+
         navigation.navigate("ConfirmPasswordScreen", { pin: pinHash });
-        console.log(user);
       })
       .catch((error) => {
         console.log(error);
@@ -43,6 +37,7 @@ const RegisterFourthScreen: React.FC<RegisterFourthScreenProps> = ({
   };
   const user = useContext(UsersContext);
   const dispatch = useContext(UserDispatchContext);
+
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>

@@ -1,28 +1,30 @@
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image,
-  ActivityIndicator,
 } from "react-native";
-import { styles as ST } from "./NewSaleOneScreen";
+import { useNavigation } from "@react-navigation/native";
+import { imgCheque } from "../../../assets/imgs";
+import { Btn } from "../../../components/button/Button";
+import {
+  HeaderActions,
+  SafeArea,
+} from "../../../components/safe-area/SafeArea";
+import { storage } from "../../../config/store/db";
 import {
   COLORS_DF,
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
 } from "../../../config/themes/default";
-import {
-  HeaderActions,
-  SafeArea,
-} from "../../../components/safe-area/SafeArea";
-import { useNavigation } from "@react-navigation/native";
-import { storage } from "../../../config/store/db";
-import { imgCheque } from "../../../assets/imgs";
-import { Btn } from "../../../components/button/Button";
+import { useSyncData } from "../../../states/SyncDataContext";
+import { styles as ST } from "./NewSaleOneScreen";
+import useApi from "../../../hooks/useApi"; // Importa el hook useApi
 
 export const NewSaleThreeScreen = () => {
   const [p, setP] = useState(0);
@@ -42,20 +44,41 @@ export const NewSaleThreeScreen = () => {
     "DICIEMBRE",
   ];
   console.log(p);
-  const onSubmit = (mes: string) => {
+  const {
+    addToSync,
+    loadingSync,
+    dataToSync,
+    setErrorSync,
+    setLoadingSync,
+  } = useSyncData();
+  const { createSale } = useApi(setErrorSync, setLoadingSync, addToSync);
+
+  const onSubmit = async (mes: string) => {
     setP(1);
     const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
     const sales = JSON.parse(storage.getString("sales") || "[]");
     const sale = { ...saleTemp, mes };
-    storage.set("saleTemp", JSON.stringify({}));
-    storage.set("sales", JSON.stringify([...sales, sale]));
-    console.log("Todas las ventas", sales);
-    calcularSumaVentas();
 
-    setTimeout(() => {
-      setP(2);
-    }, 2000);
+    try {
+      console.log("llamar a caca");
+
+      createSale();
+
+      storage.set("saleTemp", JSON.stringify({}));
+      storage.set("sales", JSON.stringify([...sales, sale]));
+      console.log("Todas las ventas", sales);
+
+      calcularSumaVentas();
+
+      setTimeout(() => {
+        setP(2);
+      }, 2000);
+    } catch (error) {
+      console.error("Error al guardar la venta:", error);
+      setP(0); // Reinicia el estado en caso de error
+    }
   };
+
   function calcularSumaVentas() {
     try {
       // Obtener las ventas almacenadas en el almacenamiento local
@@ -76,8 +99,6 @@ export const NewSaleThreeScreen = () => {
     }
   }
 
-  // Llamar a la función para calcular y mostrar la suma total de ventas
-  calcularSumaVentas();
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
@@ -86,6 +107,9 @@ export const NewSaleThreeScreen = () => {
             <HeaderActions title={"Paso 3 de 3"} navigation={navigation} />
             <Text style={styles.title}>¿CUÁNDO LO COSECHASTE?</Text>
             <View style={styles.containerBTN}>
+              <TouchableOpacity style={styles.select} onPress={() => {}}>
+                <Text>TEST</Text>
+              </TouchableOpacity>
               <FlatList
                 data={MESES}
                 numColumns={2}

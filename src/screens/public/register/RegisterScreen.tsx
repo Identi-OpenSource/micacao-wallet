@@ -22,20 +22,39 @@ import {
   SCHEMA_ONE,
 } from "./Interfaces";
 import { styles } from "./styles";
-
+import CryptoJS from "crypto-js";
+import Config from "react-native-config";
 import { UserDispatchContext, UsersContext } from "../../../states/UserContext";
 
 export const RegisterScreen = () => {
   const navigation = useNavigation();
   const user = useContext(UsersContext);
   const dispatch = useContext(UserDispatchContext);
-
-  const submit = (values: InterfaceOne) => {
+  //encripta el dni
+  const certificateND = async (dni: string) => {
+    const paddedDNI = dni.padStart(16, "0");
+    const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS);
+    const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI);
+    const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+    });
+    const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex);
+    return { dni: hexResult.substr(0, 32), dniAll: hexResult };
+  };
+  const submit = async (values: InterfaceOne) => {
+    const encryptedDNI = await certificateND(values.dni);
+    const updatedValues = {
+      ...values,
+      dni: encryptedDNI.dni,
+      dniAll: encryptedDNI.dniAll,
+    };
     dispatch({
       type: "setUser",
       payload: {
         ...user,
         ...values,
+        ...updatedValues,
       },
     });
 
