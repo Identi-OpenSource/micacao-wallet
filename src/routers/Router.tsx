@@ -110,7 +110,7 @@ export const Router = () => {
   const {setAccessToken, error} = useAuth()
   const {errorSync} = useSyncData()
   const dispatch = useContext(UserDispatchContext)
-  const parcels = JSON.parse(storage.getString('parcels') || '{}')
+  const parcels = JSON.parse(storage.getString('parcels') || '[]')
   const userLogin = JSON.parse(storage.getString('user') || '{}')
   const sales = storage.getString('sales') || '[]'
   const accessToken = storage.getString('accessToken') || null
@@ -414,14 +414,12 @@ export const Router = () => {
   const getStack = () => {
     //Change for Context
     if (user.isLogin) {
-      return Object.values(parcels).length > 0
-        ? TabPrivate()
-        : RegisterParcelStackPrivate()
+      return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate()
     } else {
       //Change for Storage
       if (Object.values(userLogin).length > 0) {
         if (userLogin.isLogin) {
-          return Object.values(parcels).length > 0
+          return parcels.length > 0
             ? TabPrivate()
             : RegisterParcelStackPrivate()
         }
