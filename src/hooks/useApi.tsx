@@ -74,6 +74,7 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
 
   const createSale = async () => {
     const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
+    const user = JSON.parse(storage.getString(key) || "{}");
     try {
       const apiRequest: API_INTERFACE = {
         url: `${Config.BASE_URL}/create_activities`,
@@ -81,6 +82,7 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
         payload: {
           cacao_type: saleTemp.type,
           dry_weight: saleTemp.kl,
+          dni_cacao_producer: user.dni,
         },
         headers: {
           "Content-Type": "application/json",
