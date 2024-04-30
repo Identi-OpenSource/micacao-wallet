@@ -131,10 +131,6 @@ const ConnectionStatus = (props: {
         <Text style={styles.connectionTitle}>
           {isConnected ? LABELS.online : LABELS.offline}
         </Text>
-
-        <Text style={styles.connectionTitle}>
-          {hasDataToSync ? 'true' : 'false'}
-        </Text>
       </View>
       {/* {hasDataToSync && isConnected && (
         <TouchableOpacity style={styles.buttonReload} onPress={() => {}}>

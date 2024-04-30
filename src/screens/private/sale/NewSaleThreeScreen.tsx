@@ -43,7 +43,6 @@ export const NewSaleThreeScreen = () => {
   console.log(p)
   const {addToSync, loadingSync, dataToSync, setErrorSync, setLoadingSync} =
     useSyncData()
-  const {createSale} = useApi(setErrorSync, setLoadingSync, addToSync)
 
   const onSubmit = async (mes: string) => {
     setP(1)
@@ -52,10 +51,11 @@ export const NewSaleThreeScreen = () => {
     const sale = {...saleTemp, mes, syncUp: false}
 
     try {
-      storage.set('saleTemp', JSON.stringify({}))
-      storage.set('sales', JSON.stringify([...sales, sale]))
-      console.log('Todas las ventas', sales)
-
+      setTimeout(() => {
+        storage.set('saleTemp', JSON.stringify({}))
+        addToSync(JSON.stringify([...sales, sale]), 'sales')
+        console.log('Todas las ventas', sales)
+      }, 3000)
       calcularSumaVentas()
 
       setTimeout(() => {
@@ -95,9 +95,6 @@ export const NewSaleThreeScreen = () => {
             <HeaderActions title={'Paso 3 de 3'} navigation={navigation} />
             <Text style={styles.title}>¿CUÁNDO LO COSECHASTE?</Text>
             <View style={styles.containerBTN}>
-              <TouchableOpacity style={styles.select} onPress={() => {}}>
-                <Text>TEST</Text>
-              </TouchableOpacity>
               <FlatList
                 data={MESES}
                 numColumns={2}
