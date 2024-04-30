@@ -117,6 +117,7 @@ export const Router = () => {
 
   useEffect(() => {
     //storage.delete('parcels')
+    //storage.delete('sales')
     getIsLogin()
   }, [])
 

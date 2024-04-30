@@ -45,10 +45,9 @@ export const HomeProvScreen = () => {
   useEffect(() => {
     if (isConnected) {
       if (dataToSync.parcels) toSyncData('createFarm')
-      //if(dataToSync.sales)
-      //toSyncData('createFarm')
+      if (dataToSync.sales) toSyncData('createSale')
     }
-  }, [dataToSync])
+  }, [isConnected, dataToSync])
 
   useFocusEffect(
     useCallback(() => {
@@ -214,24 +213,7 @@ const Body = (props: {
             {LABELS.registerVenta}
           </Text>
         </TouchableOpacity>
-        <View style={{marginTop: 45}}>
-          <TouchableOpacity
-            style={[styles.bodyCard]}
-            activeOpacity={0.9}
-            onPress={() => {}}>
-            <Text style={[styles.titleCard, syncUp && styles.filter]}>
-              {'createFarm'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.bodyCard]}
-            activeOpacity={0.9}
-            onPress={() => {}}>
-            <Text style={[styles.titleCard, syncUp && styles.filter]}>
-              {'createSale'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+
         {/*  <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}

@@ -45,7 +45,6 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
     const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
     const parcels = parcels_array[0]
     const user = JSON.parse(storage.getString('user') || '{}')
-    console.log('parcels use API', parcels)
 
     if (parcels.polygon && !parcels.syncUp) {
       try {
@@ -66,7 +65,10 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
         }
         const data = await HTTP(apiRequest)
         console.log('data', data)
-        addToSync(JSON.stringify([{...parcels, syncUp: true}]), 'parcels')
+        addToSync(
+          JSON.stringify([{...parcels, syncUp: true, id: data[0].id}]),
+          'parcels',
+        )
       } catch (error) {
         if (error?.response?.data) {
           const errorText = JSON.stringify(error.response.data.errors)
@@ -82,36 +84,52 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
   }
 
   const createSale = async () => {
-    const saleTemp = JSON.parse(storage.getString('saleTemp') || '{}')
+    let sales = JSON.parse(storage.getString('sales') || '[]')
     const user = JSON.parse(storage.getString('user') || '{}')
-    try {
-      const apiRequest: API_INTERFACE = {
-        url: `${Config.BASE_URL}/create_activities`,
-        method: 'POST',
-        payload: {
-          cacao_type: saleTemp.type,
-          dry_weight: saleTemp.kl,
-          dni_cacao_producer: user.dni,
-        },
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-      const data = await HTTP(apiRequest)
-      console.log('data', data)
-    } catch (error) {
-      console.log('error', error)
-      /* if (error.response.data) {
-        const errorText = JSON.stringify(error.response.data.errors);
+    const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
+    const parcels = parcels_array[0]
 
-        // setErrorSync(errorText);
+    console.log('hook', sales)
+    console.log('hook', parcels)
+
+    for (let index = 0; index < sales.length; index++) {
+      const element = sales[index]
+      if (element.syncUp === false) {
+        const key = element.type === 'SECO' ? 'dry_weight' : 'wet_weight'
+        try {
+          const apiRequest: API_INTERFACE = {
+            url: `${Config.BASE_URL}/create_activities`,
+            method: 'POST',
+            payload: {
+              dni_cacao_producer: user.dni,
+              id_farm: parcels.id,
+              id_activity_type: 4,
+              cacao_type: element.type,
+              [key]: element.kl,
+            },
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+          const data = await HTTP(apiRequest)
+          console.log('data', data)
+          sales[index] = {...element, syncUp: true}
+        } catch (error) {
+          if (error?.response?.data) {
+            const errorText = JSON.stringify(error.response.data.errors)
+            setErrorSync(errorText)
+          } else {
+            setErrorSync(error)
+          }
+        } finally {
+          setLoadingSync(false)
+          setErrorSync(null)
+        }
       }
-      console.log("error", error); */
-    } finally {
-      //setLoadingSync(false);
-      //setErrorSync(null);
     }
+
+    addToSync(JSON.stringify(sales), 'sales')
   }
 
   return {createProducer, createFarm, createSale}

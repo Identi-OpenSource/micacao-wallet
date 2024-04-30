@@ -22,16 +22,27 @@ const useSync = (
   const fetchAllKeysAndSetDataToSync = async () => {
     try {
       const allKeys = storage.getAllKeys()
-      const names = ['user', 'parcels']
+      const names = ['user', 'parcels', 'sales']
 
       const keys = allKeys.filter(key => names.includes(key))
 
       // Establecer las claves como datos pendientes para sincronizar
       setDataToSync(
         keys.reduce((acc, key) => {
-          const value = JSON.parse(storage.getString(key) || '{}')
+          if (key === 'user') {
+            const value = JSON.parse(storage.getString(key) || '{}')
+            acc[key] = !value.syncUp
+          } else {
+            let value = JSON.parse(storage.getString(key) || '[]')
 
-          acc[key] = !value.syncUp
+            for (let index = 0; index < value.length; index++) {
+              if (value[index]['syncUp'] === false) {
+                acc[key] = !value.syncUp
+                break // Sale del bucle si encuentra un valor igual a false
+              }
+            }
+          }
+
           return acc
         }, {} as DataType),
       )
@@ -41,6 +52,8 @@ const useSync = (
   }
 
   const addToSync = (newData: any, storageKey: string) => {
+    console.log('addToSync', newData, storageKey)
+
     try {
       storage.set(storageKey, newData)
 
@@ -48,12 +61,22 @@ const useSync = (
 
       newData = JSON.parse(newData)
 
-      newData = storageName !== 'user' ? newData[0] : newData
-
-      setDataToSync(prevData => ({
-        ...prevData,
-        [storageName]: !newData.syncUp,
-      }))
+      if (storageName === 'user') {
+        setDataToSync(prevData => ({
+          ...prevData,
+          [storageName]: !newData.syncUp,
+        }))
+      } else {
+        for (let index = 0; index < newData.length; index++) {
+          if (newData[index]['syncUp'] === false) {
+            setDataToSync(prevData => ({
+              ...prevData,
+              [storageName]: !newData.syncUp,
+            }))
+            break // Sale del bucle si encuentra un valor igual a false
+          }
+        }
+      }
     } catch (error) {
       console.error('Error al agregar datos a la sincronización:', error)
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from 'react'
 import {
   ActivityIndicator,
   FlatList,
@@ -7,95 +7,83 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { imgCheque } from "../../../assets/imgs";
-import { Btn } from "../../../components/button/Button";
-import {
-  HeaderActions,
-  SafeArea,
-} from "../../../components/safe-area/SafeArea";
-import { storage } from "../../../config/store/db";
+} from 'react-native'
+import {useNavigation} from '@react-navigation/native'
+import {imgCheque} from '../../../assets/imgs'
+import {Btn} from '../../../components/button/Button'
+import {HeaderActions, SafeArea} from '../../../components/safe-area/SafeArea'
+import {storage} from '../../../config/store/db'
 import {
   COLORS_DF,
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
-} from "../../../config/themes/default";
-import { useSyncData } from "../../../states/SyncDataContext";
-import { styles as ST } from "./NewSaleOneScreen";
-import useApi from "../../../hooks/useApi"; // Importa el hook useApi
+} from '../../../config/themes/default'
+import {useSyncData} from '../../../states/SyncDataContext'
+import {styles as ST} from './NewSaleOneScreen'
+import useApi from '../../../hooks/useApi' // Importa el hook useApi
 
 export const NewSaleThreeScreen = () => {
-  const [p, setP] = useState(0);
-  const navigation = useNavigation();
+  const [p, setP] = useState(0)
+  const navigation = useNavigation()
   const MESES: string[] = [
-    "ENERO",
-    "FEBRERO",
-    "MARZO",
-    "ABRIL",
-    "MAYO",
-    "JUNIO",
-    "JULIO",
-    "AGOSTO",
-    "SEPTIEMBRE",
-    "OCTUBRE",
-    "NOVIEMBRE",
-    "DICIEMBRE",
-  ];
-  console.log(p);
-  const {
-    addToSync,
-    loadingSync,
-    dataToSync,
-    setErrorSync,
-    setLoadingSync,
-  } = useSyncData();
-  const { createSale } = useApi(setErrorSync, setLoadingSync, addToSync);
+    'ENERO',
+    'FEBRERO',
+    'MARZO',
+    'ABRIL',
+    'MAYO',
+    'JUNIO',
+    'JULIO',
+    'AGOSTO',
+    'SEPTIEMBRE',
+    'OCTUBRE',
+    'NOVIEMBRE',
+    'DICIEMBRE',
+  ]
+  console.log(p)
+  const {addToSync, loadingSync, dataToSync, setErrorSync, setLoadingSync} =
+    useSyncData()
+  const {createSale} = useApi(setErrorSync, setLoadingSync, addToSync)
 
   const onSubmit = async (mes: string) => {
-    setP(1);
-    const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
-    const sales = JSON.parse(storage.getString("sales") || "[]");
-    const sale = { ...saleTemp, mes };
+    setP(1)
+    const saleTemp = JSON.parse(storage.getString('saleTemp') || '{}')
+    const sales = JSON.parse(storage.getString('sales') || '[]')
+    const sale = {...saleTemp, mes, syncUp: false}
 
     try {
-      console.log("llamar a caca");
+      storage.set('saleTemp', JSON.stringify({}))
+      storage.set('sales', JSON.stringify([...sales, sale]))
+      console.log('Todas las ventas', sales)
 
-      createSale();
-
-      storage.set("saleTemp", JSON.stringify({}));
-      storage.set("sales", JSON.stringify([...sales, sale]));
-      console.log("Todas las ventas", sales);
-
-      calcularSumaVentas();
+      calcularSumaVentas()
 
       setTimeout(() => {
-        setP(2);
-      }, 2000);
+        setP(2)
+      }, 2000)
     } catch (error) {
-      console.error("Error al guardar la venta:", error);
-      setP(0); // Reinicia el estado en caso de error
+      console.error('Error al guardar la venta:', error)
+      setP(0) // Reinicia el estado en caso de error
     }
-  };
+  }
 
   function calcularSumaVentas() {
     try {
       // Obtener las ventas almacenadas en el almacenamiento local
-      const salesString = storage.getString("sales") || "[]";
-      const sales = JSON.parse(salesString);
+      const salesString = storage.getString('sales') || '[]'
+      const sales = JSON.parse(salesString)
 
       // Calcular la suma total de ventas
       const sumaTotalVentas = sales.reduce((total, venta) => {
         // Asegurar que 'venta.kl' sea un número antes de sumarlo
-        const montoVenta = parseFloat(venta.kl);
-        return total + montoVenta;
-      }, 0); // Inicializar total en 0
+        const montoVenta = parseFloat(venta.kl)
+        return total + montoVenta
+      }, 0) // Inicializar total en 0
 
       // Mostrar la suma total de ventas en un texto
-      console.log("La suma total de los kilos " + sumaTotalVentas.toFixed(2));
+      console.log('La suma total de los kilos ' + sumaTotalVentas.toFixed(2))
     } catch (error) {
-      console.error("Error al calcular la suma total de ventas:", error);
+      console.error('Error al calcular la suma total de ventas:', error)
     }
   }
 
@@ -104,7 +92,7 @@ export const NewSaleThreeScreen = () => {
       <View style={styles.container}>
         {p === 0 && (
           <>
-            <HeaderActions title={"Paso 3 de 3"} navigation={navigation} />
+            <HeaderActions title={'Paso 3 de 3'} navigation={navigation} />
             <Text style={styles.title}>¿CUÁNDO LO COSECHASTE?</Text>
             <View style={styles.containerBTN}>
               <TouchableOpacity style={styles.select} onPress={() => {}}>
@@ -114,12 +102,11 @@ export const NewSaleThreeScreen = () => {
                 data={MESES}
                 numColumns={2}
                 keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
+                renderItem={({item}) => (
                   <TouchableOpacity
                     activeOpacity={0.8}
                     style={styles.select}
-                    onPress={() => onSubmit(item)}
-                  >
+                    onPress={() => onSubmit(item)}>
                     <Text style={styles.textSelect}>{item}</Text>
                   </TouchableOpacity>
                 )}
@@ -140,26 +127,26 @@ export const NewSaleThreeScreen = () => {
         {p === 2 && (
           <View style={styles.containerSpiner}>
             <Image source={imgCheque} style={styles.img} />
-            <Text style={[styles.title2, { marginBottom: 30 }]}>
+            <Text style={[styles.title2, {marginBottom: 30}]}>
               Venta guardada
             </Text>
             <Btn
               theme="agrayu"
               title="VOLVER AL INICIO"
-              onPress={() => navigation.navigate("HomeProvScreen")}
+              onPress={() => navigation.navigate('HomeProvScreen')}
             />
           </View>
         )}
       </View>
     </SafeArea>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   ...ST,
   containerBTN: {
     marginTop: MP_DF.large,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     flex: 1,
     paddingBottom: MP_DF.large,
   },
@@ -170,17 +157,17 @@ const styles = StyleSheet.create({
     margin: MP_DF.small,
     flex: 1,
     height: 60,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textSelect: {
     color: COLORS_DF.white,
     fontFamily: FONT_FAMILIES.primary,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   containerSpiner: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingTop: MP_DF.xxxlarge * 2,
   },
   colorSpiner: {
@@ -188,9 +175,9 @@ const styles = StyleSheet.create({
   },
   spiner: {},
   title2: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: FONT_SIZES.xslarge,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
     marginTop: MP_DF.large,
@@ -198,8 +185,8 @@ const styles = StyleSheet.create({
   img: {
     width: 250,
     height: 140,
-    resizeMode: "contain",
-    alignSelf: "center",
+    resizeMode: 'contain',
+    alignSelf: 'center',
     marginTop: MP_DF.large,
   },
-});
+})
