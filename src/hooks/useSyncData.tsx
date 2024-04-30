@@ -48,6 +48,8 @@ const useSync = (
 
       newData = JSON.parse(newData)
 
+      newData = storageName !== 'user' ? newData[0] : newData
+
       setDataToSync(prevData => ({
         ...prevData,
         [storageName]: !newData.syncUp,
