@@ -42,27 +42,30 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
   }
 
   const createFarm = async () => {
-    const parcels = JSON.parse(storage.getString('parcels') || '[]')
+    const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
+    const parcels = parcels_array[0]
 
     console.log('parcels', parcels)
 
-    try {
-      const apiRequest: API_INTERFACE = {
-        url: `${Config.BASE_URL}/create_farm`,
-        method: 'POST',
-        payload: {
-          farm_name: parcels.name,
-          hectares: parcels.hectares,
-        },
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
+    if (parcels.polygon) {
+      try {
+        const apiRequest: API_INTERFACE = {
+          url: `${Config.BASE_URL}/create_farm`,
+          method: 'POST',
+          payload: {
+            farm_name: parcels.name,
+            hectares: parcels.hectares,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+        const data = await HTTP(apiRequest)
+        console.log('data', data)
+      } catch (error) {
+        console.log('error', error)
       }
-      const data = await HTTP(apiRequest)
-      console.log('data', data)
-    } catch (error) {
-      console.log('error', error)
     }
   }
 
