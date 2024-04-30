@@ -30,6 +30,9 @@ const useSync = (
       setDataToSync(
         keys.reduce((acc, key) => {
           const value = JSON.parse(storage.getString(key) || '{}')
+
+          console.log(value.syncUp, key)
+
           acc[key] = !value.syncUp
           return acc
         }, {} as DataType),

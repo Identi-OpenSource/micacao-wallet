@@ -1,58 +1,58 @@
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {IconProp} from '@fortawesome/fontawesome-svg-core'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {
   BottomTabNavigationOptions,
   createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
-import { useRoute } from "@react-navigation/native";
+} from '@react-navigation/bottom-tabs'
+import {useRoute} from '@react-navigation/native'
 import {
   NativeStackNavigationOptions,
   createNativeStackNavigator,
-} from "@react-navigation/native-stack";
-import React, { useContext, useEffect } from "react";
-import { StyleSheet } from "react-native";
-import { storage } from "../config/store/db";
-import { BORDER_RADIUS_DF, COLORS_DF, MP_DF } from "../config/themes/default";
-import { SplashScreen } from "../screens/SplashScreen";
-import { HelpScreen } from "../screens/private/help/HelpScreen";
-import { HomeProvScreen } from "../screens/private/home/HomeProvScreen";
-import { TestMap } from "../screens/private/home/TestMap";
-import DrawPolyline from "../screens/private/parcel/draw-polygon/DrawPolyline";
-import GradientLine from "../screens/private/parcel/draw-polygon/GradientLine";
-import GradientLineRecorrer from "../screens/private/parcel/draw-polygon/GradientLineRecorrer";
-import GradientLineRecorrerAdd from "../screens/private/parcel/draw-polygon/GradientLineRecorrerAdd";
-import PoligonBTN from "../screens/private/parcel/draw-polygon/PoligonBTN";
-import PoligonJoystick from "../screens/private/parcel/draw-polygon/PoligonJoystick";
-import { PolygonScreen } from "../screens/private/parcel/draw-polygon/PolygonScreen";
-import ThirdPartyVectorSource from "../screens/private/parcel/draw-polygon/ThirdPartyVectorSource";
-import { MyParcelsScreen } from "../screens/private/parcel/my-parcels/MyParcelsScreen";
-import RegisterOneScreen from "../screens/private/parcel/register/RegisterOneScreen";
-import RegisterParcelFourthScreen from "../screens/private/parcel/register/RegisterParcelFourthScreen";
-import RegisterParcelScreen from "../screens/private/parcel/register/RegisterParcelScreen";
-import RegisterParcelThirdScreen from "../screens/private/parcel/register/RegisterParcelThirdScreen";
-import RegisterParcelTwoScreen from "../screens/private/parcel/register/RegisterParcelTwoScreen";
-import ProfileScreen from "../screens/private/profile";
-import { NewSaleOneScreen } from "../screens/private/sale/NewSaleOneScreen";
-import { NewSaleThreeScreen } from "../screens/private/sale/NewSaleThreeScreen";
-import { NewSaleTwoScreen } from "../screens/private/sale/NewSaleTwoScreen";
-import { PermissionsFourScreen } from "../screens/public/permissions/PermissionsFourScreen";
-import { PermissionsThreeScreen } from "../screens/public/permissions/PermissionsThreeScreen";
-import ConfirmPasswordScreen from "../screens/public/register/ConfirmPasswordScreen";
-import { HomeScreen } from "../screens/public/register/HomeScreen";
-import { IamFromScreen } from "../screens/public/register/IamFromScreen";
-import { IamScreen } from "../screens/public/register/IamScreen";
-import RegisterFourthScreen from "../screens/public/register/RegisterFourthScreen";
-import { RegisterOkScreen } from "../screens/public/register/RegisterOkScreen";
-import { RegisterScreen } from "../screens/public/register/RegisterScreen";
-import RegisterSecondScreen from "../screens/public/register/RegisterSecondScreen";
-import RegisterThirdScreen from "../screens/public/register/RegisterThirdScreen";
-import StartScreen from "../screens/public/register/StartScreen";
-import { DrawPolygonScreen } from "../screens/private/parcel/draw-polygon/DrawPolygonScreen";
-import { useAuth } from "../states/AuthContext";
-import Toast from "react-native-toast-message";
+} from '@react-navigation/native-stack'
+import React, {useContext, useEffect} from 'react'
+import {StyleSheet} from 'react-native'
+import {storage} from '../config/store/db'
+import {BORDER_RADIUS_DF, COLORS_DF, MP_DF} from '../config/themes/default'
+import {SplashScreen} from '../screens/SplashScreen'
+import {HelpScreen} from '../screens/private/help/HelpScreen'
+import {HomeProvScreen} from '../screens/private/home/HomeProvScreen'
+import {TestMap} from '../screens/private/home/TestMap'
+import DrawPolyline from '../screens/private/parcel/draw-polygon/DrawPolyline'
+import GradientLine from '../screens/private/parcel/draw-polygon/GradientLine'
+import GradientLineRecorrer from '../screens/private/parcel/draw-polygon/GradientLineRecorrer'
+import GradientLineRecorrerAdd from '../screens/private/parcel/draw-polygon/GradientLineRecorrerAdd'
+import PoligonBTN from '../screens/private/parcel/draw-polygon/PoligonBTN'
+import PoligonJoystick from '../screens/private/parcel/draw-polygon/PoligonJoystick'
+import {PolygonScreen} from '../screens/private/parcel/draw-polygon/PolygonScreen'
+import ThirdPartyVectorSource from '../screens/private/parcel/draw-polygon/ThirdPartyVectorSource'
+import {MyParcelsScreen} from '../screens/private/parcel/my-parcels/MyParcelsScreen'
+import RegisterOneScreen from '../screens/private/parcel/register/RegisterOneScreen'
+import RegisterParcelFourthScreen from '../screens/private/parcel/register/RegisterParcelFourthScreen'
+import RegisterParcelScreen from '../screens/private/parcel/register/RegisterParcelScreen'
+import RegisterParcelThirdScreen from '../screens/private/parcel/register/RegisterParcelThirdScreen'
+import RegisterParcelTwoScreen from '../screens/private/parcel/register/RegisterParcelTwoScreen'
+import ProfileScreen from '../screens/private/profile'
+import {NewSaleOneScreen} from '../screens/private/sale/NewSaleOneScreen'
+import {NewSaleThreeScreen} from '../screens/private/sale/NewSaleThreeScreen'
+import {NewSaleTwoScreen} from '../screens/private/sale/NewSaleTwoScreen'
+import {PermissionsFourScreen} from '../screens/public/permissions/PermissionsFourScreen'
+import {PermissionsThreeScreen} from '../screens/public/permissions/PermissionsThreeScreen'
+import ConfirmPasswordScreen from '../screens/public/register/ConfirmPasswordScreen'
+import {HomeScreen} from '../screens/public/register/HomeScreen'
+import {IamFromScreen} from '../screens/public/register/IamFromScreen'
+import {IamScreen} from '../screens/public/register/IamScreen'
+import RegisterFourthScreen from '../screens/public/register/RegisterFourthScreen'
+import {RegisterOkScreen} from '../screens/public/register/RegisterOkScreen'
+import {RegisterScreen} from '../screens/public/register/RegisterScreen'
+import RegisterSecondScreen from '../screens/public/register/RegisterSecondScreen'
+import RegisterThirdScreen from '../screens/public/register/RegisterThirdScreen'
+import StartScreen from '../screens/public/register/StartScreen'
+import {DrawPolygonScreen} from '../screens/private/parcel/draw-polygon/DrawPolygonScreen'
+import {useAuth} from '../states/AuthContext'
+import Toast from 'react-native-toast-message'
 
-import { UserDispatchContext, UsersContext } from "../states/UserContext";
-import { useSyncData } from "../states/SyncDataContext";
+import {UserDispatchContext, UsersContext} from '../states/UserContext'
+import {useSyncData} from '../states/SyncDataContext'
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -63,87 +63,87 @@ const styles = StyleSheet.create({
     borderTopStartRadius: BORDER_RADIUS_DF?.medium,
   },
   tabBarLabelStyle: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
-});
+})
 
 const slideFromRight = {
   headerShown: false,
-  animation: "slide_from_right",
+  animation: 'slide_from_right',
   shouldShowHintSearchIcon: true,
   statusBarTranslucent: true,
-  statusBarColor: "transparent",
-  statusBarStyle: "dark",
-  presentation: "card",
-} as NativeStackNavigationOptions;
+  statusBarColor: 'transparent',
+  statusBarStyle: 'dark',
+  presentation: 'card',
+} as NativeStackNavigationOptions
 
 const tabConfig = {
   headerShown: false,
-  animation: "slide_from_right",
+  animation: 'slide_from_right',
   shouldShowHintSearchIcon: true,
   statusBarTranslucent: true,
-  statusBarColor: "transparent",
-  statusBarStyle: "dark",
-  presentation: "card",
-  initialRouteName: "HomeProvScreen",
+  statusBarColor: 'transparent',
+  statusBarStyle: 'dark',
+  presentation: 'card',
+  initialRouteName: 'HomeProvScreen',
   tabBarActiveTintColor: COLORS_DF?.robin_egg_blue,
   tabBarInactiveTintColor: COLORS_DF?.gray,
   tabBarStyle: styles.tabBarStyle,
   tabBarLabelStyle: styles.tabBarLabelStyle,
-} as BottomTabNavigationOptions;
+} as BottomTabNavigationOptions
 
 const optionsHeadersCacao = {
-  statusBarStyle: "light",
+  statusBarStyle: 'light',
   headerShown: false,
   headerBackVisible: true,
   headerStyle: {
     backgroundColor: COLORS_DF?.citrine_brown,
   },
-  headerTintColor: "#fff",
+  headerTintColor: '#fff',
   headerTitleStyle: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
-} as NativeStackNavigationOptions;
+} as NativeStackNavigationOptions
 
 export const Router = () => {
-  const user = useContext(UsersContext);
-  const { setAccessToken, error } = useAuth();
-  const { errorSync } = useSyncData();
-  const dispatch = useContext(UserDispatchContext);
-  const parcels = JSON.parse(storage.getString("parcels") || "[]");
-  const userLogin = JSON.parse(storage.getString("user") || "{}");
-  const sales = storage.getString("sales") || "[]";
-  const accessToken = storage.getString("accessToken") || null;
+  const user = useContext(UsersContext)
+  const {setAccessToken, error} = useAuth()
+  const {errorSync} = useSyncData()
+  const dispatch = useContext(UserDispatchContext)
+  const parcels = JSON.parse(storage.getString('parcels') || '[]')
+  const userLogin = JSON.parse(storage.getString('user') || '{}')
+  const sales = storage.getString('sales') || '[]'
+  const accessToken = storage.getString('accessToken') || null
 
   useEffect(() => {
-    getIsLogin();
-  }, []);
+    getIsLogin()
+  }, [])
 
   useEffect(() => {
     if (error != null)
       Toast.show({
-        type: "syncToast",
+        type: 'syncToast',
         text1: error.toString(),
-      });
-  }, [error]);
+      })
+  }, [error])
 
   //Usas otro useEfffect para que el salga el toast de errorSync
   useEffect(() => {
     if (errorSync != null)
       Toast.show({
-        type: "syncToast",
+        type: 'syncToast',
         text1: errorSync.toString(),
-      });
-  }, [errorSync]);
+      })
+  }, [errorSync])
 
   const getIsLogin = () => {
     //accessToken
-    console.log("accessToken en Router", accessToken);
-    setAccessToken(accessToken);
+    console.log('accessToken en Router', accessToken)
+    setAccessToken(accessToken)
 
     if (userLogin?.isLogin) {
       //login
-      dispatch({ type: "login", payload: userLogin });
+      dispatch({type: 'login', payload: userLogin})
 
       //TODO: Revisar el guardado
       // dispatch({type: 'login', payload: parcels})
@@ -152,12 +152,12 @@ export const Router = () => {
       // dispatch({type: 'login', payload: sales})
       // console.log('ventas', sales)
     }
-  };
+  }
 
   const PublicStack = () => {
-    const StackPublic = createNativeStackNavigator();
+    const StackPublic = createNativeStackNavigator()
     return (
-      <StackPublic.Navigator screenOptions={{ ...slideFromRight }}>
+      <StackPublic.Navigator screenOptions={{...slideFromRight}}>
         <StackPublic.Screen name="SplashScreen" component={SplashScreen} />
         <StackPublic.Screen name="StartScreen" component={StartScreen} />
         <StackPublic.Screen name="HomeScreen" component={HomeScreen} />
@@ -194,13 +194,13 @@ export const Router = () => {
         />
         <StackPublic.Screen name="TabPrivate" component={TabPrivate} />
       </StackPublic.Navigator>
-    );
-  };
+    )
+  }
 
   const PermissionsStack = () => {
-    const StackPermissions = createNativeStackNavigator();
+    const StackPermissions = createNativeStackNavigator()
     return (
-      <StackPermissions.Navigator screenOptions={{ ...slideFromRight }}>
+      <StackPermissions.Navigator screenOptions={{...slideFromRight}}>
         <StackPermissions.Screen
           name="PermissionsThreeScreen"
           component={PermissionsThreeScreen}
@@ -210,13 +210,13 @@ export const Router = () => {
           component={PermissionsFourScreen}
         />
       </StackPermissions.Navigator>
-    );
-  };
+    )
+  }
 
   const HomeStackPrivate = () => {
-    const HomeStack = createNativeStackNavigator();
+    const HomeStack = createNativeStackNavigator()
     return (
-      <HomeStack.Navigator screenOptions={{ ...slideFromRight }}>
+      <HomeStack.Navigator screenOptions={{...slideFromRight}}>
         <HomeStack.Screen name="HomeProvScreen" component={HomeProvScreen} />
         <HomeStack.Group screenOptions={optionsHeadersCacao}>
           <HomeStack.Screen
@@ -236,7 +236,7 @@ export const Router = () => {
             component={MyParcelsScreen}
             options={{
               headerShown: true,
-              title: "Mis parcelas",
+              title: 'Mis parcelas',
             }}
           />
           <HomeStack.Screen
@@ -244,7 +244,7 @@ export const Router = () => {
             component={PolygonScreen}
             options={{
               headerShown: true,
-              title: "Dibujar Parcela",
+              title: 'Dibujar Parcela',
             }}
           />
           <HomeStack.Screen
@@ -255,42 +255,42 @@ export const Router = () => {
             name="DrawPolyline"
             component={DrawPolyline}
             options={{
-              title: "Test DrawPolyline",
+              title: 'Test DrawPolyline',
             }}
           />
           <HomeStack.Screen
             name="GradientLine"
             component={GradientLine}
             options={{
-              title: "Test GradientLine",
+              title: 'Test GradientLine',
             }}
           />
           <HomeStack.Screen
             name="GradientLineRecorrer"
             component={GradientLineRecorrer}
             options={{
-              title: "Poligono Recorrer",
+              title: 'Poligono Recorrer',
             }}
           />
           <HomeStack.Screen
             name="GradientLineRecorrerAdd"
             component={GradientLineRecorrerAdd}
             options={{
-              title: "Test Poligono Recorrer Add",
+              title: 'Test Poligono Recorrer Add',
             }}
           />
           <HomeStack.Screen
             name="ThirdPartyVectorSource"
             component={ThirdPartyVectorSource}
             options={{
-              title: "Test ThirdPartyVectorSource",
+              title: 'Test ThirdPartyVectorSource',
             }}
           />
           <HomeStack.Screen
             name="PoligonJoystick"
             component={PoligonJoystick}
             options={{
-              title: "Poligon Joystick",
+              title: 'Poligon Joystick',
               headerShown: false,
             }}
           />
@@ -298,19 +298,19 @@ export const Router = () => {
             name="PoligonBTN"
             component={PoligonBTN}
             options={{
-              title: "Poligon Joystick",
+              title: 'Poligon Joystick',
             }}
           />
         </HomeStack.Group>
         <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>
-    );
-  };
+    )
+  }
 
   const RegisterParcelStackPrivate = () => {
-    const RegisterParcelStack = createNativeStackNavigator();
+    const RegisterParcelStack = createNativeStackNavigator()
     return (
-      <RegisterParcelStack.Navigator screenOptions={{ ...slideFromRight }}>
+      <RegisterParcelStack.Navigator screenOptions={{...slideFromRight}}>
         <RegisterParcelStack.Screen
           name="RegisterParcelScreen"
           component={RegisterParcelScreen}
@@ -334,100 +334,99 @@ export const Router = () => {
 
         <RegisterParcelStack.Screen name="TabPrivate" component={TabPrivate} />
       </RegisterParcelStack.Navigator>
-    );
-  };
+    )
+  }
 
   const ProfileStackPrivate = () => {
-    const HomeStack = createNativeStackNavigator();
+    const HomeStack = createNativeStackNavigator()
     return (
-      <HomeStack.Navigator screenOptions={{ ...slideFromRight }}>
+      <HomeStack.Navigator screenOptions={{...slideFromRight}}>
         <HomeStack.Screen name="ProfileScreen" component={ProfileScreen} />
 
         <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>
-    );
-  };
+    )
+  }
 
   const HelpStackPrivate = () => {
-    const HelpStack = createNativeStackNavigator();
-    const route = useRoute();
+    const HelpStack = createNativeStackNavigator()
+    const route = useRoute()
 
     const screenOptions = () => {
       return {
         ...slideFromRight,
-        statusBarStyle: "light",
+        statusBarStyle: 'light',
         headerShown: false,
-      } as NativeStackNavigationOptions;
-    };
+      } as NativeStackNavigationOptions
+    }
     return (
       <HelpStack.Navigator screenOptions={screenOptions}>
         <HelpStack.Screen name="HelpScreen" component={HelpScreen} />
       </HelpStack.Navigator>
-    );
-  };
+    )
+  }
 
   const TabPrivate = () => {
-    const Tab = createBottomTabNavigator();
+    const Tab = createBottomTabNavigator()
     return (
-      <Tab.Navigator screenOptions={{ ...tabConfig }} initialRouteName="inicio">
+      <Tab.Navigator screenOptions={{...tabConfig}} initialRouteName="inicio">
         <Tab.Screen
           name="perfil"
           component={ProfileStackPrivate}
           options={{
-            tabBarLabel: "PERFIL",
-            tabBarIcon: ({ color }) =>
-              tab_icon({ icon: "circle-user", size: 24, color }),
+            tabBarLabel: 'PERFIL',
+            tabBarIcon: ({color}) =>
+              tab_icon({icon: 'circle-user', size: 24, color}),
           }}
         />
         <Tab.Screen
           name="inicio"
           component={HomeStackPrivate}
           options={{
-            tabBarLabel: "INICIO",
-            tabBarIcon: ({ color }) =>
-              tab_icon({ icon: "house", size: 24, color }),
+            tabBarLabel: 'INICIO',
+            tabBarIcon: ({color}) => tab_icon({icon: 'house', size: 24, color}),
           }}
         />
         <Tab.Screen
           name="ayuda"
           component={HelpStackPrivate}
           options={{
-            tabBarLabel: "AYUDA",
-            tabBarIcon: ({ color }) =>
-              tab_icon({ icon: "circle-question", size: 24, color }),
+            tabBarLabel: 'AYUDA',
+            tabBarIcon: ({color}) =>
+              tab_icon({icon: 'circle-question', size: 24, color}),
           }}
         />
       </Tab.Navigator>
-    );
-  };
+    )
+  }
 
-  const tab_icon = (props: { icon: IconProp; size: number; color: string }) => {
+  const tab_icon = (props: {icon: IconProp; size: number; color: string}) => {
     return (
       <FontAwesomeIcon
         icon={props.icon}
         size={props.size}
         color={props.color}
       />
-    );
-  };
+    )
+  }
 
   const getStack = () => {
     //Change for Context
     if (user.isLogin) {
-      return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate();
+      return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate()
     } else {
       //Change for Storage
       if (Object.values(userLogin).length > 0) {
         if (userLogin.isLogin) {
           return parcels.length > 0
             ? TabPrivate()
-            : RegisterParcelStackPrivate();
+            : RegisterParcelStackPrivate()
         }
       } else {
-        return PublicStack();
+        return PublicStack()
       }
     }
-  };
+  }
 
-  return getStack();
-};
+  return getStack()
+}
