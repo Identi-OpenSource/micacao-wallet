@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import {newWallet, writeTransaction} from '../../../OCC/occ'
 import {imgFrame, imgLayer} from '../../../assets/imgs'
-import {Reloading} from '../../../assets/svg'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {LABELS} from '../../../config/texts/labels'
@@ -29,27 +29,26 @@ import {useAuth} from '../../../states/AuthContext'
 import {ConnectionContext} from '../../../states/ConnectionContext'
 import {SyncDataContext} from '../../../states/SyncDataContext'
 import {UserInterface, UsersContext} from '../../../states/UserContext'
-import ComponentToast from '../../../components/toastComponent'
-import Toast from 'react-native-toast-message'
-import toastConfig from '../../../../App'
-import useApi from '../../../hooks/useApi'
 
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext)
   const internetConnection = useContext(ConnectionContext)
   const syncData = useContext(SyncDataContext)
   const {isConnected} = internetConnection
-  const {hasDataToSync, addToSync, toSyncData} = syncData
+  const {hasDataToSync, addToSync, toSyncData, dataToSync} = syncData
 
   const {accessToken} = useAuth()
   const [syncUp, setSyncUp] = useState(false)
   const [loadinSync, setLoadingSync] = useState(false)
   const [wa, setWa] = useState(null) as any
+
   useEffect(() => {
-    // Llamar a getToken
-    // getToken();
-    /* console.log("userInHome", user); */
-  }, [])
+    if (isConnected) {
+      if (dataToSync.parcels) toSyncData('createFarm')
+      //if(dataToSync.sales)
+      //toSyncData('createFarm')
+    }
+  }, [dataToSync])
 
   useFocusEffect(
     useCallback(() => {

@@ -46,8 +46,7 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
   }
 
   const createFarm = async () => {
-    /*     const parcel = useContext(parcelContext); */
-
+    const parcels = JSON.parse(storage.getString('parcels') || '{}')
     try {
       const apiRequest: API_INTERFACE = {
         url: `${Config.BASE_URL}/create_farm`,
@@ -64,20 +63,15 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
       const data = await HTTP(apiRequest)
       console.log('data', data)
     } catch (error) {
-      Toast.show({
-        type: 'sadToast',
-        text1: 'No se pudieron sincronizar los datos',
-        visibilityTime: 8000,
-      })
       console.log('error', error)
     }
   }
+
   const createSale = async () => {
     /*  const sale = useContext(CacaoContext); */
     const sale = storage
     storage.set('saleTemp', JSON.stringify({}))
     storage.set('sales', JSON.stringify([sale]))
-    console.log('caca')
     try {
       const apiRequest: API_INTERFACE = {
         url: `${Config.BASE_URL}/create_activities`,
