@@ -1,26 +1,46 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { Card } from "@rneui/base";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
+  BackHandler,
   Image,
   PermissionsAndroid,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ScrollView,
 } from "react-native";
 import * as ImagePicker from "react-native-image-picker";
+import { fundingWallet, newWallet } from "../../../OCC/occ";
 import { Arrow_Right, IconProfile, Person } from "../../../assets/svg";
 import HeaderComponent from "../../../components/Header";
 import { storage } from "../../../config/store/db";
 import { COLORS_DF, FONT_FAMILIES } from "../../../config/themes/default";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
-import { Card } from "@rneui/base";
-import { newWallet, fundingWallet } from "../../../OCC/occ";
 const ProfileScreen = () => {
   const user: UserInterface = useContext(UsersContext);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Evita que se ejecute el comportamiento predeterminado de Android
+        return true; // true para indicar que el evento de retroceso ha sido manejado
+      };
+
+      // Agrega un listener para el evento de retroceso de Android
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      // Limpia el listener cuando la pantalla pierde el enfoque
+      return () => backHandler.remove();
+    }, [])
+  );
 
   useEffect(() => {
     const fetchImageUri = async () => {

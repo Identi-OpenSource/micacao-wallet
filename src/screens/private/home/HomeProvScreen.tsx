@@ -1,21 +1,22 @@
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {useFocusEffect, useNavigation} from '@react-navigation/native'
-import React, {useCallback, useContext, useEffect, useState} from 'react'
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
+  BackHandler,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-} from 'react-native'
-import Toast from 'react-native-toast-message'
-import {newWallet, writeTransaction} from '../../../OCC/occ'
-import {imgFrame, imgLayer} from '../../../assets/imgs'
-import {LoadingSave} from '../../../components/loading/LoadinSave'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {LABELS} from '../../../config/texts/labels'
-import {TEXTS} from '../../../config/texts/texts'
+} from "react-native";
+import Toast from "react-native-toast-message";
+import { newWallet, writeTransaction } from "../../../OCC/occ";
+import { imgFrame, imgLayer } from "../../../assets/imgs";
+import { LoadingSave } from "../../../components/loading/LoadinSave";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { LABELS } from "../../../config/texts/labels";
+import { TEXTS } from "../../../config/texts/texts";
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
@@ -23,38 +24,49 @@ import {
   FONT_SIZES,
   MP_DF,
   getFontSize,
-} from '../../../config/themes/default'
-import useInternetConnection from '../../../hooks/useInternetConnection'
-import {useAuth} from '../../../states/AuthContext'
-import {ConnectionContext} from '../../../states/ConnectionContext'
-import {SyncDataContext} from '../../../states/SyncDataContext'
-import {UserInterface, UsersContext} from '../../../states/UserContext'
+} from "../../../config/themes/default";
+import useInternetConnection from "../../../hooks/useInternetConnection";
+import { useAuth } from "../../../states/AuthContext";
+import { ConnectionContext } from "../../../states/ConnectionContext";
+import { SyncDataContext } from "../../../states/SyncDataContext";
+import { UserInterface, UsersContext } from "../../../states/UserContext";
 
 export const HomeProvScreen = () => {
-  const user: UserInterface = useContext(UsersContext)
-  const internetConnection = useContext(ConnectionContext)
-  const syncData = useContext(SyncDataContext)
-  const {isConnected} = internetConnection
-  const {hasDataToSync, addToSync, toSyncData, dataToSync} = syncData
+  const user: UserInterface = useContext(UsersContext);
+  const internetConnection = useContext(ConnectionContext);
+  const syncData = useContext(SyncDataContext);
+  const { isConnected } = internetConnection;
+  const { hasDataToSync, addToSync, toSyncData, dataToSync } = syncData;
 
-  const {accessToken} = useAuth()
-  const [syncUp, setSyncUp] = useState(false)
-  const [loadinSync, setLoadingSync] = useState(false)
-  const [wa, setWa] = useState(null) as any
+  const { accessToken } = useAuth();
+  const [syncUp, setSyncUp] = useState(false);
+  const [loadinSync, setLoadingSync] = useState(false);
+  const [wa, setWa] = useState(null) as any;
 
   useEffect(() => {
     if (isConnected) {
-      if (dataToSync.parcels) toSyncData('createFarm')
-      if (dataToSync.sales) toSyncData('createSale')
+      if (dataToSync.parcels) toSyncData("createFarm");
+      if (dataToSync.sales) toSyncData("createSale");
     }
-  }, [isConnected, dataToSync])
+  }, [isConnected, dataToSync]);
 
   useFocusEffect(
     useCallback(() => {
-      // verifySyncUp()
-      // const usesr = JSON.parse(storage.getString('user') || '[]')
-    }, [isConnected]),
-  )
+      const onBackPress = () => {
+        // Evita que se ejecute el comportamiento predeterminado de Android
+        return true; // true para indicar que el evento de retroceso ha sido manejado
+      };
+
+      // Agrega un listener para el evento de retroceso de Android
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      // Limpia el listener cuando la pantalla pierde el enfoque
+      return () => backHandler.remove();
+    }, [])
+  );
 
   const getWallet = () => {
     // Create Wallet
@@ -62,30 +74,30 @@ export const HomeProvScreen = () => {
     // setWa(wallet);
 
     //Testing Wallet
-    const wallet = newWallet()
-    const isFunding = true
+    const wallet = newWallet();
+    const isFunding = true;
 
-    const walletObj = {wallet, isFunding}
+    const walletObj = { wallet, isFunding };
 
-    console.log(walletObj)
+    console.log(walletObj);
 
-    setWa(walletObj.wallet)
-  }
+    setWa(walletObj.wallet);
+  };
 
   const writeWallet = () => {
-    write()
-  }
+    write();
+  };
 
   const write = async () => {
     // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
     // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
     // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
-    console.log(wa.wif)
-    await writeTransaction(wa.wif)
-  }
+    console.log(wa.wif);
+    await writeTransaction(wa.wif);
+  };
 
   return (
-    <SafeArea bg={'isabelline'}>
+    <SafeArea bg={"isabelline"}>
       <ScrollView>
         {!loadinSync ? (
           <View style={styles.container}>
@@ -108,23 +120,23 @@ export const HomeProvScreen = () => {
         )}
       </ScrollView>
     </SafeArea>
-  )
-}
+  );
+};
 
 const ConnectionStatus = (props: {
-  hasDataToSync: boolean
-  isConnected: boolean
-  dataSyncUp: Function
+  hasDataToSync: boolean;
+  isConnected: boolean;
+  dataSyncUp: Function;
 }) => {
-  const isConnected = props.isConnected
-  const hasDataToSync = props.hasDataToSync
-  const dataSyncUp = props.dataSyncUp
+  const isConnected = props.isConnected;
+  const hasDataToSync = props.hasDataToSync;
+  const dataSyncUp = props.dataSyncUp;
 
   return (
     <View style={styles.containerConnection}>
       <View style={styles.containerConnectionTitle}>
         <FontAwesomeIcon
-          icon={'circle'}
+          icon={"circle"}
           size={14}
           color={!isConnected ? COLORS_DF.grayLight : COLORS_DF.robin_egg_blue}
         />
@@ -139,11 +151,11 @@ const ConnectionStatus = (props: {
         </TouchableOpacity>
       )} */}
     </View>
-  )
-}
+  );
+};
 
-const Header = ({name}: UserInterface) => {
-  const firstName = name.split(' ')[0]
+const Header = ({ name }: UserInterface) => {
+  const firstName = name.split(" ")[0];
 
   return (
     <View style={styles.header}>
@@ -154,26 +166,26 @@ const Header = ({name}: UserInterface) => {
       <Text style={styles.textHeader}>{TEXTS.textK}</Text>
       <Toast />
     </View>
-  )
-}
+  );
+};
 
 const Body = (props: {
-  syncUp: boolean
-  accessToken: string
-  getWallet: any
-  writeWallet: any
-  isConnected: boolean
+  syncUp: boolean;
+  accessToken: string;
+  getWallet: any;
+  writeWallet: any;
+  isConnected: boolean;
 }) => {
-  const navigation = useNavigation()
-  const {isVisibleModal, setIsVisibleModal} = useInternetConnection()
+  const navigation = useNavigation();
+  const { isVisibleModal, setIsVisibleModal } = useInternetConnection();
 
-  const syncUp = props.syncUp
+  const syncUp = props.syncUp;
 
-  const accessToken = props.accessToken
-  const getWallet = props.getWallet
-  const writeWallet = props.writeWallet
-  const isConnected = props.isConnected
-  useEffect(() => {}, [])
+  const accessToken = props.accessToken;
+  const getWallet = props.getWallet;
+  const writeWallet = props.writeWallet;
+  const isConnected = props.isConnected;
+  useEffect(() => {}, []);
 
   return (
     <View style={styles.bodyContainer}>
@@ -192,7 +204,8 @@ const Body = (props: {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('MyParcelsScreen')}>
+          onPress={() => navigation.navigate("MyParcelsScreen")}
+        >
           <Image source={imgLayer} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.viewMyParcels}
@@ -203,7 +216,8 @@ const Body = (props: {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('NewSaleOneScreen')}>
+          onPress={() => navigation.navigate("NewSaleOneScreen")}
+        >
           <Image source={imgFrame} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.registerVenta}
@@ -229,8 +243,8 @@ const Body = (props: {
         </TouchableOpacity> */}
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   filter: {
@@ -247,29 +261,29 @@ const styles = StyleSheet.create({
     borderColor: COLORS_DF.citrine_brown,
     borderRadius: BORDER_RADIUS_DF.small,
     backgroundColor: COLORS_DF.white,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: MP_DF.small,
   },
   containerConnectionTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   connectionTitle: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(18),
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS_DF.citrine_brown,
     marginLeft: MP_DF.small,
   },
   connectionSubTitle: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(14),
-    fontWeight: 'normal',
+    fontWeight: "normal",
     color: COLORS_DF.white,
-    alignSelf: 'center',
-    justifyContent: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
   },
   header: {
     marginTop: MP_DF.large,
@@ -277,7 +291,7 @@ const styles = StyleSheet.create({
   titleHeader: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.xslarge,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS_DF.citrine_brown,
     marginBottom: MP_DF.small,
   },
@@ -287,17 +301,17 @@ const styles = StyleSheet.create({
     color: COLORS_DF.citrine_brown,
   },
   bodyContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginTop: MP_DF.large,
   },
   bodyCardContainer: {
-    width: '50%',
+    width: "50%",
     padding: MP_DF.small,
     marginTop: MP_DF.large,
   },
   bodyCardContainerFull: {
-    width: '100%',
+    width: "100%",
     padding: MP_DF.small,
     marginTop: MP_DF.medium,
   },
@@ -308,24 +322,24 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS_DF.white,
     borderRadius: BORDER_RADIUS_DF.medium,
     elevation: 3,
-    alignItems: 'center',
+    alignItems: "center",
   },
   titleCard: {
     paddingHorizontal: MP_DF.medium,
     marginTop: MP_DF.medium,
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.large,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS_DF.citrine_brown,
-    textAlign: 'center',
+    textAlign: "center",
   },
   buttonReload: {
     width: 135,
     height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: COLORS_DF.robin_egg_blue,
     borderRadius: 5,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
-})
+});
