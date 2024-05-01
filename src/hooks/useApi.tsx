@@ -29,7 +29,11 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
       addToSync(JSON.stringify({ ...user, syncUp: true }), key);
     } catch (error) {
       if (error?.response?.data) {
-        const errorText = JSON.stringify(error.response.data.errors);
+        const text_error = error.response.data.errors.error;
+        const errorText =
+          text_error !== undefined
+            ? error.response.data.errors.error
+            : JSON.stringify(error.response.data.errors);
         setErrorSync(errorText);
       } else {
         setErrorSync(error);
@@ -70,7 +74,11 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
         );
       } catch (error) {
         if (error?.response?.data) {
-          const errorText = JSON.stringify(error.response.data.errors);
+          const text_error = error.response.data.errors.error;
+          const errorText =
+            text_error !== undefined
+              ? error.response.data.errors.error
+              : JSON.stringify(error.response.data.errors);
           setErrorSync(errorText);
         } else {
           setErrorSync(error);
@@ -116,7 +124,11 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
           sales[index] = { ...element, syncUp: true };
         } catch (error) {
           if (error?.response?.data) {
-            const errorText = JSON.stringify(error.response.data.errors);
+            const text_error = error.response.data.errors.error;
+            const errorText =
+              text_error !== undefined
+                ? error.response.data.errors.error
+                : JSON.stringify(error.response.data.errors);
             setErrorSync(errorText);
           } else {
             setErrorSync(error);
