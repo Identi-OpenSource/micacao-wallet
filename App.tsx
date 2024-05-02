@@ -107,7 +107,7 @@ function App(): React.JSX.Element {
       />
     ),
 
-    sadToast: ({ text1, onPress }) => (
+    sadToast: ({ text1 }) => (
       <View style={styles.toastContainer}>
         <View>
           <Sad height={70} width={70} />
@@ -118,7 +118,7 @@ function App(): React.JSX.Element {
         </TouchableOpacity>
       </View>
     ),
-    syncToast: ({ text1, props, onPress }) => (
+    syncToast: ({ text1 }) => (
       <View style={styles.toastContainer}>
         <View>
           <Error height={70} width={70} />

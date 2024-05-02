@@ -93,13 +93,13 @@ const CardParcel = (props: Parcel, navigation: any) => {
         <Parcels />
       </TouchableOpacity>
 
-      <Btn
-        title="Presione para dibujar"
-        icon={"hand-pointer"}
-        onPress={() => {}}
-        theme="transparent"
-        style={containerBTN}
-      />
+      {/*         <Btn
+          title="Presione para dibujar"
+          icon={"hand-pointer"}
+          onPress={() => {}}
+          theme="transparent"
+          style={containerBTN}
+      /> */}
     </View>
   );
 };

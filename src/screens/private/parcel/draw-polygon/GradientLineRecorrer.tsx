@@ -147,7 +147,7 @@ const GradientLineRecorrer = () => {
     setTimeout(() => {
       addToSync(JSON.stringify([newParcel]), "parcels");
       storage.delete("polygonTemp");
-    }, 20000);
+    }, 7000);
   };
   const closeModal = () => {
     setShowModal(false);
