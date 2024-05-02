@@ -32,6 +32,8 @@ export const RegisterScreen = () => {
   const dispatch = useContext(UserDispatchContext);
   //encripta el dni
   const certificateND = async (dni: string) => {
+    console.log("DNI", dni);
+
     const paddedDNI = dni.padStart(16, "0");
     const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS);
     const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI);
