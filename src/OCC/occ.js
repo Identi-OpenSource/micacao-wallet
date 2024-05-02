@@ -1,33 +1,33 @@
-import axios from "axios";
-import { Linking } from "react-native";
-const bitGoUTXO = require("@bitgo/utxo-lib");
+import axios from 'axios'
+import {Linking} from 'react-native'
+const bitGoUTXO = require('@bitgo/utxo-lib')
 const {
   fund_offline_wallets,
   send_batch_transactions,
   get_all_ecpairs,
-} = require("transaction-js/batch");
+} = require('transaction-js/batch')
 
 function generateRandomString(length) {
   const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let result = ''
   for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
+    result += characters.charAt(Math.floor(Math.random() * characters.length))
   }
-  return result;
+  return result
 }
 
 function generateRandomDate() {
-  const start = new Date(2000, 0, 1);
-  const end = new Date();
+  const start = new Date(2000, 0, 1)
+  const end = new Date()
   const randomDate = new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
-  );
-  const year = randomDate.getFullYear();
-  const month = String(randomDate.getMonth() + 1).padStart(2, "0");
-  const day = String(randomDate.getDate()).padStart(2, "0");
+    start.getTime() + Math.random() * (end.getTime() - start.getTime()),
+  )
+  const year = randomDate.getFullYear()
+  const month = String(randomDate.getMonth() + 1).padStart(2, '0')
+  const day = String(randomDate.getDate()).padStart(2, '0')
 
-  return `${year}-${month}-${day}`;
+  return `${year}-${month}-${day}`
 }
 
 function createRandomJSON() {
@@ -51,57 +51,57 @@ function createRandomJSON() {
     pop: String(Math.floor(Math.random() * 1000)),
     mass: String(Math.random().toFixed(2)),
     raw_json: Buffer.from(
-      JSON.stringify({ randomKey: generateRandomString(5) })
-    ).toString("base64"),
+      JSON.stringify({randomKey: generateRandomString(5)}),
+    ).toString('base64'),
     integrity_details: Math.random() > 0.5 ? null : generateRandomString(10),
     created_at: new Date().toISOString(),
     percentage:
       Math.random() > 0.5 ? null : String(Math.floor(Math.random() * 100)),
-  };
+  }
 }
 
 const test_batch = {
   user: {
-    id: { value: 1, unique: true },
-    name: "John Doe",
-    email: "johndoe@example.com",
+    id: {value: 1, unique: true},
+    name: 'John Doe',
+    email: 'johndoe@example.com',
     preferences: {
-      theme: "dark",
+      theme: 'dark',
       notifications: {
         email: true,
         sms: false,
         push: {
           enabled: true,
-          frequency: "daily",
+          frequency: 'daily',
         },
       },
     },
     friends: [
       {
         id: 2,
-        name: "Jane Smith",
-        status: "online",
+        name: 'Jane Smith',
+        status: 'online',
       },
       {
         id: 3,
-        name: "Bob Johnson",
-        status: "offline",
-        lastOnline: "2023-03-08T12:00:00Z",
+        name: 'Bob Johnson',
+        status: 'offline',
+        lastOnline: '2023-03-08T12:00:00Z',
       },
     ],
   },
-};
+}
 
 export const newWallet = () => {
   // Create
-  let wallet = bitGoUTXO.ECPair.makeRandom();
-  let wif = wallet.toWIF();
-  let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true);
+  let wallet = bitGoUTXO.ECPair.makeRandom()
+  let wif = wallet.toWIF()
+  let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
 
   return {
     walletOFC: ec_pairs.getAddress(),
     wif,
-  };
+  }
 
   //Testing for App
   // let walletOFC = "RPfu6aqhrH44rouSPJuLV3d2ZBk1Lp9nY7"
@@ -112,12 +112,16 @@ export const newWallet = () => {
   //   walletOFC: walletOFC,
   //   wif: privateKeyWIF,
   // }
-};
+}
 
-export const fundingWallet = async (wallet) => {
-  const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`;
-  return await axios.get(url);
-};
+// export const fundingWallet = async wallet => {
+//   const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
+//   return await axios.get(url)
+// }
+export const fundingWallet = async wallet => {
+  const url = `https://fund.occs.openfoodchain.org/found/${wallet}`
+  return await axios.get(url)
+}
 
 // export const fundingWalletOff = async (baseAddy, baseWIF) => {
 //   console.log('Start testing for Funding Wallet Offline...')
@@ -146,13 +150,13 @@ export const fundingWallet = async (wallet) => {
 //   return resp
 // }
 
-export const verificarWallet = async (wallet) => {
-  const url = `https://blockchain-explorer.occs.openfoodchain.org/address/${wallet}`;
-  console.log("Testing Wallet: ", url);
-  Linking.openURL(url);
-};
+export const verificarWallet = async wallet => {
+  const url = `https://blockchain-explorer.occs.openfoodchain.org/address/${wallet}`
+  console.log('Testing Wallet: ', url)
+  Linking.openURL(url)
+}
 
-export const writeTransaction = async (wif) => {
+export const writeTransaction = async wif => {
   // const wifs = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
   // const res = bitGoUTXO.ECPair.fromWIF(
   //   'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
@@ -161,23 +165,23 @@ export const writeTransaction = async (wif) => {
   // //console.log('res', res.getAddress())
   // const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
 
-  const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true);
+  const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
 
-  const test_batch = createRandomJSON();
+  const test_batch = createRandomJSON()
 
-  console.log(`test batch: ${JSON.stringify(test_batch)}`);
+  console.log(`test batch: ${JSON.stringify(test_batch)}`)
 
-  const ec_pairs = get_all_ecpairs(test_batch, res);
+  const ec_pairs = get_all_ecpairs(test_batch, res)
 
-  const tx1 = await send_batch_transactions(ec_pairs, test_batch, res);
-  console.log(`batchtx: ${JSON.stringify(tx1)}`);
+  const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
+  console.log(`batchtx: ${JSON.stringify(tx1)}`)
 
-  return tx1;
+  return tx1
 
   // const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
   // const ec_pairs = get_all_ecpairs(test_batch, res)
   // const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
   // console.log(tx1)
-};
+}
 
-export const transaction = async (wallet) => {};
+export const transaction = async wallet => {}
