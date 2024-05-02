@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Parcels } from "../../../../assets/svg";
+import { Parcels, ParcelColor } from "../../../../assets/svg";
 import { Btn } from "../../../../components/button/Button";
 import { SafeArea } from "../../../../components/safe-area/SafeArea";
 import { storage } from "../../../../config/store/db";
@@ -90,7 +90,7 @@ const CardParcel = (props: Parcel, navigation: any) => {
         }}
         style={{ justifyContent: "center", alignItems: "center" }}
       >
-        <Parcels />
+        {!props.polygon ? <Parcels /> : <ParcelColor />}
       </TouchableOpacity>
 
       {/*         <Btn
