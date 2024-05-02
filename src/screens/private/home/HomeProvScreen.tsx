@@ -26,27 +26,20 @@ import {
 } from '../../../config/themes/default'
 import {useAuth} from '../../../states/AuthContext'
 import {ConnectionContext} from '../../../states/ConnectionContext'
-import {SyncDataContext} from '../../../states/SyncDataContext'
+import {useSyncData} from '../../../states/SyncDataContext'
 import {UserInterface, UsersContext} from '../../../states/UserContext'
 
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext)
   const internetConnection = useContext(ConnectionContext)
-  const syncData = useContext(SyncDataContext)
+
   const {isConnected} = internetConnection
-  const {toSyncData, dataToSync} = syncData
+  const {toSyncData, dataToSync, loadingSync} = useSyncData()
 
   const {accessToken} = useAuth()
   const [syncUp, setSyncUp] = useState(false)
   const [loadinSync, setLoadingSync] = useState(false)
   const [wa, setWa] = useState(null) as any
-
-  useEffect(() => {
-    if (isConnected) {
-      if (dataToSync.parcels) toSyncData('createFarm')
-      if (dataToSync.sales) toSyncData('createSale')
-    }
-  }, [isConnected, dataToSync])
 
   useFocusEffect(
     useCallback(() => {
@@ -65,6 +58,13 @@ export const HomeProvScreen = () => {
       return () => backHandler.remove()
     }, []),
   )
+
+  useEffect(() => {
+    if (isConnected) {
+      if (dataToSync.parcels && !loadingSync) toSyncData('createFarm')
+      if (dataToSync.sales) toSyncData('createSale')
+    }
+  }, [isConnected, dataToSync.parcels, dataToSync.sales])
 
   const getWallet = () => {
     // Create Wallet

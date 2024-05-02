@@ -112,7 +112,7 @@ const RegisterParcelFourthScreen: React.FC<RegisterParcelFourthScreenProps> = ({
     const parcelTemp = JSON.parse(storage.getString('parcelTemp') || '{}')
     const parcels = JSON.parse(storage.getString('parcels') || '[]')
     const secondPoint = [gps?.coords?.latitude, gps?.coords.longitude]
-    const addParcel = [...parcels, {...parcelTemp, secondPoint}]
+    const addParcel = [...parcels, {...parcelTemp, secondPoint, syncUp: true}]
     storage.set('parcels', JSON.stringify(addParcel))
     navigation.navigate('TabPrivate')
   }

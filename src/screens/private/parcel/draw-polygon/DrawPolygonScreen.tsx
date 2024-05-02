@@ -1,31 +1,28 @@
 /* eslint-disable react-native/no-inline-styles */
+import {useNavigation} from '@react-navigation/native'
+import {Card} from '@rneui/base'
+import {CheckBox} from '@rneui/themed'
 import Mapbox, {
   Camera,
+  FillLayer,
   LineLayer,
   MapView,
-  FillLayer,
   PointAnnotation,
   ShapeSource,
   StyleURL,
 } from '@rnmapbox/maps'
-import React, {useEffect, useMemo, useRef, useState, useContext} from 'react'
-import {Alert, Text, View, StyleSheet} from 'react-native'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
+import {StyleSheet, Text, View} from 'react-native'
 import Config from 'react-native-config'
+import {Cacao} from '../../../../assets/svg'
+import HeaderComponent from '../../../../components/Header'
 import {storage} from '../../../../config/store/db'
-import DrawPolyline from './DrawPolyline'
-import {Btn} from '../../../../components/button/Button'
 import {
-  MP_DF,
   COLORS_DF,
   FONT_FAMILIES,
   FONT_SIZES,
 } from '../../../../config/themes/default'
-import {useNavigation} from '@react-navigation/native'
-import HeaderComponent from '../../../../components/Header'
-import {Card} from '@rneui/base'
-import {Cacao} from '../../../../assets/svg'
-import {CheckBox} from '@rneui/themed'
-import {SyncDataContext} from '../../../../states/SyncDataContext'
+import DrawPolyline from './DrawPolyline'
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
 }
@@ -118,8 +115,6 @@ export const DrawPolygonScreen = () => {
   const [lastCoordinate] = useState<Position>(firstPoint)
   const [started] = useState(true)
   const navigation = useNavigation()
-  const syncData = useContext(SyncDataContext)
-  const {hasDataToSync, addToSync, toSyncData, dataToSync} = syncData
   const [sumaTotalVentas, setSumaTotalVentas] = useState(0)
   useEffect(() => {
     // Obtener la suma total de ventas del almacenamiento local al cargar el componente

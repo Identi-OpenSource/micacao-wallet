@@ -51,6 +51,7 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
 
     if (parcels.polygon && !parcels.syncUp) {
       try {
+        setLoadingSync(true)
         const apiRequest: API_INTERFACE = {
           url: `${BASE_URL}/create_farm`,
           method: 'POST',

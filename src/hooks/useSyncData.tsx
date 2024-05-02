@@ -69,10 +69,18 @@ const useSync = (
       } else {
         for (let index = 0; index < newData.length; index++) {
           if (newData[index]['syncUp'] === false) {
-            setDataToSync(prevData => ({
-              ...prevData,
-              [storageName]: !newData.syncUp,
-            }))
+            setDataToSync(prevData => {
+              console.log('data para ver:', prevData, newData)
+
+              if (true) {
+                return {
+                  ...prevData,
+                  [storageName]: !newData.syncUp,
+                }
+              } else {
+                return prevData // No hay cambios, devuelve prevData sin modificar
+              }
+            })
             break // Sale del bucle si encuentra un valor igual a false
           }
         }
@@ -99,7 +107,11 @@ const useSync = (
           createProducer(key)
           break
         case 'createFarm':
-          createFarm()
+          console.log('createFarm', dataToSync.parcels)
+
+          if (dataToSync.parcels) {
+            createFarm()
+          }
 
           break
         case 'createSale':
@@ -126,7 +138,7 @@ const useSync = (
       setHasDataToSync(false)
     }
 
-    checkDataToSync()
+    //checkDataToSync()
   }, [dataToSync])
 
   useEffect(() => {
