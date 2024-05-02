@@ -143,20 +143,18 @@ export const DrawPolygonScreen = () => {
   }, [coordinates])
   const map = useRef<MapView>(null)
 
-  const calcularSumaVentas = async () => {
-    try {
-      const salesString = (await storage.getString('sales')) || '[]'
-      const sales = JSON.parse(salesString)
+  const calcularSumaVentas = () => {
+    const salesString = storage.getString('sales') || '[]'
+    const sales = JSON.parse(salesString)
 
-      const sumaTotal = sales.reduce((total, venta) => {
-        const montoVenta = parseFloat(venta.kl)
-        return total + montoVenta
-      }, 0)
+    const sumaPorTipo = sales.reduce((acumulador: any, dato: any) => {
+      if (dato.type) {
+        acumulador[dato.type] = (acumulador[dato.type] || 0) + parseInt(dato.kl)
+      }
+      return acumulador
+    }, {})
 
-      setSumaTotalVentas(sumaTotal)
-    } catch (error) {
-      console.error('Error al calcular la suma total de ventas:', error)
-    }
+    setSumaTotalVentas(sumaPorTipo)
   }
 
   return (
@@ -191,26 +189,21 @@ export const DrawPolygonScreen = () => {
                 paddingHorizontal: 20,
               }}>
               <Cacao width={40} height={40} />
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  width: '50%',
-                  marginTop: 25,
-                }}>
-                <Text style={styles.kg}> {sumaTotalVentas.toFixed(2)}</Text>
-                <Text style={styles.kg}>Kg.</Text>
-              </View>
-              <View
-                style={{
-                  width: '50%',
-                  height: 40,
 
-                  marginTop: 10,
-                  right: 4,
-                }}>
-                <Text style={styles.cacaoProducer}> de cacao producido</Text>
-              </View>
+              {Object.entries(sumaTotalVentas).map(([tipo, suma]) => (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    width: '50%',
+                    marginTop: 25,
+                  }}>
+                  <Text key={tipo} style={styles.kg}>
+                    Tipo: {tipo} {suma} Kg.{' '}
+                  </Text>
+                  <Text style={styles.cacaoProducer}>de cacao producido</Text>
+                </View>
+              ))}
             </Card>
           </View>
           <Text style={styles.title}>Mapa de parcela</Text>

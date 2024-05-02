@@ -1,5 +1,5 @@
 import {Field, Formik} from 'formik'
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {View} from 'react-native'
 import {Cellphone_M, Cellphone_W} from '../../../assets/svg'
 import {Btn} from '../../../components/button/Button'
@@ -24,6 +24,10 @@ const RegisterSecondScreen: React.FC<RegisterSecondScreenProps> = ({
 }) => {
   const user = useContext(UsersContext)
   const dispatch = useContext(UserDispatchContext)
+
+  useEffect(() => {
+    console.log('INIT_VALUES_TWO', JSON.stringify(INIT_VALUES_TWO))
+  }, [])
 
   const submit = (values: InterfaceTwo) => {
     const phone = values.phone
