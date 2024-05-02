@@ -48,41 +48,14 @@ export const NewSaleThreeScreen = () => {
     const sale = {...saleTemp, mes, syncUp: false}
 
     try {
-      setP(2)
-      calcularSumaVentas()
+      storage.set('saleTemp', JSON.stringify({}))
+      addToSync(JSON.stringify([...sales, sale]), 'sales')
+      console.log('Todas las ventas', sales)
 
-      setTimeout(() => {
-        storage.set('saleTemp', JSON.stringify({}))
-        addToSync(JSON.stringify([...sales, sale]), 'sales')
-        console.log('Todas las ventas', sales)
-      }, 7000)
-
-      setTimeout(() => {
-        navigation.navigate('HomeProvScreen')
-      }, 7010)
+      navigation.navigate('NewSaleFourScreen')
     } catch (error) {
       console.error('Error al guardar la venta:', error)
       setP(0) // Reinicia el estado en caso de error
-    }
-  }
-
-  function calcularSumaVentas() {
-    try {
-      // Obtener las ventas almacenadas en el almacenamiento local
-      const salesString = storage.getString('sales') || '[]'
-      const sales = JSON.parse(salesString)
-
-      // Calcular la suma total de ventas
-      const sumaTotalVentas = sales.reduce((total, venta) => {
-        // Asegurar que 'venta.kl' sea un número antes de sumarlo
-        const montoVenta = parseFloat(venta.kl)
-        return total + montoVenta
-      }, 0) // Inicializar total en 0
-
-      // Mostrar la suma total de ventas en un texto
-      console.log('La suma total de los kilos ' + sumaTotalVentas.toFixed(2))
-    } catch (error) {
-      console.error('Error al calcular la suma total de ventas:', error)
     }
   }
 
@@ -118,19 +91,6 @@ export const NewSaleThreeScreen = () => {
               style={styles.spiner}
             />
             <Text style={styles.title2}>Guardando venta</Text>
-          </View>
-        )}
-        {p === 2 && (
-          <View style={styles.containerSpiner}>
-            <Image source={imgCheque} style={styles.img} />
-            <Text style={[styles.title2, {marginBottom: 30}]}>
-              Venta guardada
-            </Text>
-            <Btn
-              theme="agrayu"
-              title="VOLVER AL INICIO"
-              onPress={() => navigation.navigate('HomeProvScreen')}
-            />
           </View>
         )}
       </View>
