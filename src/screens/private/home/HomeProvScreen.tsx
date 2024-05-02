@@ -29,7 +29,11 @@ import useInternetConnection from "../../../hooks/useInternetConnection";
 import { useAuth } from "../../../states/AuthContext";
 import { ConnectionContext } from "../../../states/ConnectionContext";
 import { SyncDataContext } from "../../../states/SyncDataContext";
-import { UserInterface, UsersContext } from "../../../states/UserContext";
+import {
+  Parcel,
+  UserInterface,
+  UsersContext,
+} from "../../../states/UserContext";
 
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext);
@@ -49,6 +53,18 @@ export const HomeProvScreen = () => {
       if (dataToSync.sales) toSyncData("createSale");
     }
   }, [isConnected, dataToSync]);
+
+  /*   useEffect(() => {
+    setTimeout(() => {
+      Toast.show({
+        type: "syncToast",
+        text1:
+          "¡Recuerde que debe dibujar el poligono antes de registrar una venta!",
+      });
+    }, 10);
+
+    // Limpiar el temporizador cuando el componente se desmonte
+  }, []); */
 
   useFocusEffect(
     useCallback(() => {
@@ -164,7 +180,6 @@ const Header = ({ name }: UserInterface) => {
       </Text>
 
       <Text style={styles.textHeader}>{TEXTS.textK}</Text>
-      <Toast />
     </View>
   );
 };
@@ -175,6 +190,8 @@ const Body = (props: {
   getWallet: any;
   writeWallet: any;
   isConnected: boolean;
+  Parcel: any;
+  polygon: any;
 }) => {
   const navigation = useNavigation();
   const { isVisibleModal, setIsVisibleModal } = useInternetConnection();
@@ -185,7 +202,6 @@ const Body = (props: {
   const getWallet = props.getWallet;
   const writeWallet = props.writeWallet;
   const isConnected = props.isConnected;
-  useEffect(() => {}, []);
 
   return (
     <View style={styles.bodyContainer}>
@@ -216,7 +232,17 @@ const Body = (props: {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate("NewSaleOneScreen")}
+          onPress={
+            () => navigation.navigate("NewSaleOneScreen")
+            //aqui le intenete mas o menos pero no me salio F
+            /* !props.polygon
+              ? Toast.show({
+                  type: "syncToast",
+                  text1:
+                    "¡Recuerde que debe dibujar el poligono antes de registrar una venta!",
+                })
+              :  */
+          }
         >
           <Image source={imgFrame} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>

@@ -63,7 +63,7 @@ export const NewSaleThreeScreen = () => {
         storage.set("saleTemp", JSON.stringify({}));
         addToSync(JSON.stringify([...sales, sale]), "sales");
         console.log("Todas las ventas", sales);
-      }, 20000);
+      }, 7000);
       calcularSumaVentas();
 
       setTimeout(() => {
