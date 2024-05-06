@@ -81,19 +81,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'digital.identi.micacao'
-    bundle {
-        language {
-            enableSplit = false
-        }
-    }
+    namespace 'com.micacao'
     defaultConfig {
-        applicationId 'digital.identi.micacao'
+        applicationId 'com.micacao'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode Integer.parseInt(env.VERSION_CODE)
-        versionName env.VERSION_NAME
-        resConfigs 'en', 'es', 'fr'
+        versionCode 1
+        versionName '1.0'
     }
     signingConfigs {
         debug {
@@ -104,15 +98,15 @@ android {
         }
 
         release {
-            storeFile file(env.RELEASE_STORE_FILE)
+            storeFile file('release.keystore')
             storePassword env.RELEASE_STORE_PASSWORD
             keyAlias env.RELEASE_KEY_ALIAS
             keyPassword env.RELEASE_KEY_PASSWORD
-        // doLast {
-        //     println "RELEASE_STORE_PASSWORD: ${env.RELEASE_STORE_PASSWORD}"
-        //     println "RELEASE_KEY_ALIAS: ${env.RELEASE_KEY_ALIAS}"
-        //     println "RELEASE_KEY_PASSWORD: ${env.RELEASE_KEY_PASSWORD}"
-        // }
+            // doLast {
+            //     println "RELEASE_STORE_PASSWORD: ${env.RELEASE_STORE_PASSWORD}"
+            //     println "RELEASE_KEY_ALIAS: ${env.RELEASE_KEY_ALIAS}"
+            //     println "RELEASE_KEY_PASSWORD: ${env.RELEASE_KEY_PASSWORD}"
+            // }
         }
     }
     buildTypes {
