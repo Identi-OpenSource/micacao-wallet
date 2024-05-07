@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
+import { COLORS_DF } from "../../../config/themes/default";
 
 const Maps = () => {
   const [value, setValue] = useState<string>();
@@ -17,17 +18,31 @@ const Maps = () => {
   ];
 
   return (
-    <View style={{ flex: 1, paddingTop: 25 }}>
+    <View style={styles.container}>
       <View
         style={{
           justifyContent: "center",
+          alignItems: "center",
+          marginTop: 25,
+          marginBottom: 45,
         }}
       >
-        <Text>Mapas</Text>
+        <Text
+          style={{
+            fontSize: 18,
+            color: COLORS_DF.citrine_brown,
+            fontWeight: "bold",
+          }}
+        >
+          Escoja el mapa de su distrito
+        </Text>
       </View>
       <View>
         <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+          style={[
+            styles.dropdown,
+            isFocus && { borderColor: COLORS_DF.citrine_brown },
+          ]}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           iconStyle={styles.iconStyle}
@@ -50,12 +65,14 @@ const Maps = () => {
 };
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
-    padding: 16,
+    flex: 1,
+    paddingTop: 25,
+    paddingHorizontal: 16,
+    backgroundColor: COLORS_DF.isabelline,
   },
   dropdown: {
     height: 50,
-    borderColor: "gray",
+    borderColor: COLORS_DF.citrine_brown,
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
