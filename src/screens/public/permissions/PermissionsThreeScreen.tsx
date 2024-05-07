@@ -65,7 +65,7 @@ export const PermissionsThreeScreen = () => {
               alignItems: "center",
             }}
           >
-            <LocationPermision style={styles.img} width={350} height={390} />
+            <LocationPermision style={styles.img} width={440} height={420} />
           </View>
         </View>
         <View style={styles.formBtn}>
