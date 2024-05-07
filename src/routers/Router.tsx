@@ -50,7 +50,7 @@ import { RegisterScreen } from "../screens/public/register/RegisterScreen";
 import RegisterSecondScreen from "../screens/public/register/RegisterSecondScreen";
 import RegisterThirdScreen from "../screens/public/register/RegisterThirdScreen";
 import StartScreen from "../screens/public/register/StartScreen";
-import Maps from "../screens/private/maps/index";
+import Maps from "../screens/public/maps/index";
 import { useAuth } from "../states/AuthContext";
 
 import { useSyncData } from "../states/SyncDataContext";
