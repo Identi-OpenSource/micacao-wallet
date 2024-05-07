@@ -25,6 +25,10 @@ export const fundingWallet = async wallet => {
   const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
   return await axios.get(url)
 }
+// export const fundingWallet = async wallet => {
+//   const url = `https://fund.occs.openfoodchain.org/found/${wallet}`
+//   return await axios.get(url)
+// }
 
 export const verificarWallet = async wallet => {
   const url = `https://blockchain-explorer.occs.openfoodchain.org/address/${wallet}`

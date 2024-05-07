@@ -18,25 +18,13 @@ import * as ImagePicker from 'react-native-image-picker'
 import {Arrow_Right, IconProfile, Person} from '../../../assets/svg'
 import HeaderComponent from '../../../components/Header'
 import {storage} from '../../../config/store/db'
-import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
-import {useKafeContext} from '../../../states/KafeContext'
+import {COLORS_DF, FONT_FAMILIES} from '../../../config/themes/default'
 import {UserInterface, UsersContext} from '../../../states/UserContext'
-import {Btn} from '../../../components/button/Button'
-import {PinRequest} from '../../../components/pin-request/PinRequest'
-const {width} = Dimensions.get('window')
-import Share from 'react-native-share'
-import {Buffer} from 'buffer'
-import RNFS from 'react-native-fs'
-import Toast from 'react-native-toast-message'
-
 const ProfileScreen = () => {
   const user: UserInterface = useContext(UsersContext)
-  const {postKafeSistemas, getKafeSistemas} = useKafeContext()
-  const [pinAproved, setPinApproved] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
-  const [showRequestPin, setShowRequestPin] = useState(false)
   const [showInfo, setShowInfo] = useState(false)
-  //const [wallet, setWallet] = useState<any>(null);
+  const [wallet, setWallet] = useState<any>(null)
 
   useFocusEffect(
     useCallback(() => {
@@ -70,52 +58,23 @@ const ProfileScreen = () => {
 
     fetchImageUri()
   }, [])
-
-  useEffect(() => {
-    if (pinAproved) {
-      createAndShareJSON()
-      setPinApproved(false)
-    }
-  }, [pinAproved])
-
   async function requestGalleryPermission() {
     try {
       if (Platform.OS === 'android') {
-        console.log(Platform.Version)
-
-        if (Platform.Version > 30) {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
-            {
-              title: 'Permiso de Acceso a la Galería',
-              message:
-                'Esta aplicación necesita acceso a tu galería de imágenes.',
-              buttonPositive: 'Aceptar',
-            },
-          )
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Permiso concedido')
-            handleChooseImage()
-          } else {
-            console.log('Permiso denegado')
-          }
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+          {
+            title: 'Permiso de Acceso a la Galería',
+            message:
+              'Esta aplicación necesita acceso a tu galería de imágenes.',
+            buttonPositive: 'Aceptar',
+          },
+        )
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Permiso concedido')
+          handleChooseImage()
         } else {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-            {
-              title: 'Permiso de Acceso a la Galería',
-              message:
-                'Esta aplicación necesita acceso a tu galería de imágenes.',
-              buttonPositive: 'Aceptar',
-            },
-          )
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Permiso concedido')
-            handleChooseImage()
-          } else {
-            console.log('Permiso denegado')
-            Linking.openSettings()
-          }
+          console.log('Permiso denegado')
         }
       }
     } catch (err) {
@@ -147,118 +106,63 @@ const ProfileScreen = () => {
     })
   }
 
-  const createAndShareJSON = async () => {
-    const data = {
-      user: {},
-      parcels: [],
-      sales: [],
-    }
-
-    // Convertir los datos a JSON
-    const jsonString = JSON.stringify(data)
-
-    const path = RNFS.DownloadDirectoryPath + '/mi_data_miCacao.json'
-
-    // Crear un objeto de opciones para compartir
-    const options = {
-      title: 'Compartir o descargar mi datos',
-      url: 'file://' + path,
-      type: 'application/json',
-      message: 'Compartir o descargar mi datos',
-      filename: 'mi_data_miCacao.json',
-    }
-
-    try {
-      // Guardar el archivo JSON
-      await RNFS.writeFile(path, jsonString, 'utf8')
-      Toast.show({
-        type: 'syncToast',
-        text1: 'El archivo JSON se ha guardado en la carpeta de descargas',
-      })
-      console.log('Archivo JSON guardado en:', path)
-      // Compartir el archivo JSON
-      await Share.open(options)
-
-      Toast.show({
-        type: 'syncToast',
-        text1: 'El archivo JSON se ha guardado en la carpeta de descargas',
-      })
-    } catch (error) {
-      console.error('Error al compartir el archivo JSON:', error)
-    }
-  }
-
   return (
-    <>
-      <ScrollView style={styles.container}>
-        <HeaderComponent label={'Perfil'} goBackNavigation={false} />
+    <ScrollView style={styles.container}>
+      <HeaderComponent label={'Perfil'} />
 
-        <TouchableOpacity
-          onPress={requestGalleryPermission}
-          style={{alignSelf: 'center'}}>
-          {selectedImage ? (
-            <Image source={{uri: selectedImage}} style={styles.image} />
-          ) : (
-            <Person width={150} height={150} />
-          )}
-        </TouchableOpacity>
-        <View style={styles.textContainer}>
-          <Text style={styles.textName}>{user.name}</Text>
-          <Text style={styles.textFarmer}>Agricultor</Text>
-          {!showInfo && (
-            <TouchableOpacity
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                width: '80%',
-                alignItems: 'center',
-                marginTop: 30,
-              }}
-              onPress={() => {
-                setShowInfo(true)
-              }}>
-              <IconProfile height={50} width={50} />
-              <Text style={styles.textInformation}>Información Personal</Text>
-              <Arrow_Right height={30} width={30} />
-            </TouchableOpacity>
-          )}
-          {showInfo && (
-            <>
-              {/*  <View style={{ marginRight: 280 }}>
+      <TouchableOpacity
+        onPress={requestGalleryPermission}
+        style={{alignSelf: 'center'}}>
+        {selectedImage ? (
+          <Image source={{uri: selectedImage}} style={styles.image} />
+        ) : (
+          <Person width={150} height={150} />
+        )}
+      </TouchableOpacity>
+      <View style={styles.textContainer}>
+        <Text style={styles.textName}>{user.name}</Text>
+        <Text style={styles.textFarmer}>Agricultor</Text>
+        {!showInfo && (
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '80%',
+              alignItems: 'center',
+              marginTop: 30,
+            }}
+            onPress={() => {
+              setShowInfo(true)
+            }}>
+            <IconProfile height={50} width={50} />
+            <Text style={styles.textInformation}>Información Personal</Text>
+            <Arrow_Right height={30} width={30} />
+          </TouchableOpacity>
+        )}
+        {showInfo && (
+          <>
+            {/*  <View style={{ marginRight: 280 }}>
               <Text style={styles.textUpCard}>DNI</Text>
             </View>
             <Card containerStyle={styles.card}>
               <Text style={styles.textCard}>{user.dni}</Text>
             </Card> */}
-              <View style={{marginRight: 250, marginTop: 25}}>
-                <Text style={styles.textUpCard}>Telefóno</Text>
-              </View>
-              <Card containerStyle={styles.card}>
-                <Text style={styles.textCard}>{user.phone}</Text>
-              </Card>
-              <View style={{marginRight: 270, marginTop: 25}}>
-                <Text style={styles.textUpCard}>País</Text>
-              </View>
-              <Card containerStyle={styles.card}>
-                <Text style={styles.textCard}>{user.country.name}</Text>
-              </Card>
-              <Btn
-                title="Exportar Data"
-                theme="agrayu"
-                onPress={() => setShowRequestPin(true)}
-                style={{container: {width: '80%', marginTop: MP_DF.xxlarge}}}
-              />
-            </>
-          )}
-        </View>
-      </ScrollView>
-      {showRequestPin && (
-        <PinRequest
-          setShowRequestPin={setShowRequestPin}
-          setPinApproved={setPinApproved}
-        />
-      )}
-    </>
+            <View style={{marginRight: 250, marginTop: 25}}>
+              <Text style={styles.textUpCard}>Telefóno</Text>
+            </View>
+            <Card containerStyle={styles.card}>
+              <Text style={styles.textCard}>{user.phone}</Text>
+            </Card>
+            <View style={{marginRight: 270, marginTop: 25}}>
+              <Text style={styles.textUpCard}>País</Text>
+            </View>
+            <Card containerStyle={styles.card}>
+              <Text style={styles.textCard}>{user.country.name}</Text>
+            </Card>
+          </>
+        )}
+      </View>
+    </ScrollView>
   )
 }
 
