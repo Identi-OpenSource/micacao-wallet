@@ -86,8 +86,8 @@ android {
         applicationId 'com.micacao'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName '1.0'
+        versionCode env.VERSION_CODE
+        versionName env.VERSION_NAME
     }
     signingConfigs {
         debug {
