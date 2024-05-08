@@ -50,9 +50,11 @@ interface CardProps {
 export const IamFromScreen: React.FC = () => {
   const navigation = useNavigation();
   const [selectedCountry, setSelectedCountry] = useState<object | null>(null);
+  console.log(selectedCountry);
 
   const user = useContext(UsersContext);
   const dispatch = useContext(UserDispatchContext);
+  console.log(user);
 
   const cards = [
     {

@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { COLORS_DF } from "../../../config/themes/default";
-
+import { UsersContext } from "../../../states/UserContext";
+import { useSyncData } from "../../../states/SyncDataContext";
 const Maps = () => {
   const [value, setValue] = useState<string>();
   const [isFocus, setIsFocus] = useState(false);
+  const [distritos, setDistritos] = useState<any[]>([]);
+  const { addToSync, toSyncData, loadingSync, dataToSync } = useSyncData();
+
+  useEffect(() => {
+    toSyncData("getMap");
+  }, []);
+
   const data = [
     { label: "Item 1", value: "1" },
     { label: "Item 2", value: "2" },
@@ -17,6 +25,7 @@ const Maps = () => {
     { label: "Item 8", value: "8" },
   ];
 
+  const user = useContext(UsersContext);
   return (
     <View style={styles.container}>
       <View
@@ -50,7 +59,7 @@ const Maps = () => {
           autoScroll
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? "Dropdown 1" : "..."}
+          placeholder={!isFocus ? "Distritos" : "..."}
           value={value}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
