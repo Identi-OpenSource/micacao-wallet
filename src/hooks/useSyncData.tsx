@@ -102,7 +102,6 @@ const useSync = (
         case "userSync":
           createProducer(key);
           break;
-
         case "user":
           createProducer(key);
           break;
@@ -112,14 +111,10 @@ const useSync = (
           if (dataToSync.parcels) {
             createFarm();
           }
-
           break;
         case "createSale":
           createSale();
-
           break;
-        case "getMap":
-          getMap();
         default:
           break;
       }

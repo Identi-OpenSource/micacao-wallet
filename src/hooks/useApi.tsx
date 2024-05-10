@@ -5,36 +5,6 @@ import { useAuth } from "../states/AuthContext";
 const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
   const { accessToken } = useAuth();
   const BASE_URL = "https://api-micacao.dev.identi.digital";
-  const BASE_URL_LOCAL = "http://localhost:3000";
-  const getMap = async () => {
-    setLoadingSync(true);
-    try {
-      const apiRequest: API_INTERFACE = {
-        url: `${BASE_URL_LOCAL}/distritos`,
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-      const data = await HTTP(apiRequest);
-      console.log("data", data);
-      addToSync(JSON.stringify({ ...user, syncUp: true }), key);
-    } catch (error) {
-      if (error?.response?.data) {
-        const text_error = error.response.data.errors.error;
-        const errorText =
-          text_error !== undefined
-            ? error.response.data.errors.error
-            : JSON.stringify(error.response.data.errors);
-        setErrorSync(errorText);
-      } else {
-        setErrorSync(error);
-      }
-    } finally {
-      setLoadingSync(false);
-      setErrorSync(null);
-    }
-  };
 
   const createProducer = async (key: string) => {
     setLoadingSync(true);
@@ -174,7 +144,7 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
     }
   };
 
-  return { createProducer, createFarm, createSale, getMap };
+  return { createProducer, createFarm, createSale };
 };
 
 export default useApi;

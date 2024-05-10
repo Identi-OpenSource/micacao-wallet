@@ -6,23 +6,22 @@
 
 import { useNavigation } from "@react-navigation/native";
 import { Card, CheckBox } from "@rneui/themed";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Image,
   ImageSourcePropType,
+  PermissionsAndroid,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Platform,
-  PermissionsAndroid,
 } from "react-native";
 import { imgCO, imgPE } from "../../../assets/imgs";
 import { Iamfrom_m, Iamfrom_w } from "../../../assets/svg";
 import { Btn } from "../../../components/button/Button";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { COUNTRY } from "../../../config/const";
-import { storage } from "../../../config/store/db";
 import { LABELS } from "../../../config/texts/labels";
 import {
   BORDER_RADIUS_DF,
@@ -36,7 +35,7 @@ import {
   moderateScale,
   verticalScale,
 } from "../../../config/themes/metrics";
-import { UsersContext, UserDispatchContext } from "../../../states/UserContext";
+import { UserDispatchContext, UsersContext } from "../../../states/UserContext";
 import { Header } from "./RegisterScreen";
 
 interface CardProps {

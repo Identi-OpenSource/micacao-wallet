@@ -43,6 +43,7 @@ import { Router } from "./src/routers/Router";
 import { AuthProvider } from "./src/states/AuthContext";
 import { ConnectionProvider } from "./src/states/ConnectionContext";
 import { UserProvider } from "./src/states/UserContext";
+import { MapProvider } from "./src/states/MapContext";
 
 import { COLORS_DF, FONT_FAMILIES } from "./src/config/themes/default";
 import { SyncDataProvider } from "./src/states/SyncDataContext";
@@ -141,12 +142,14 @@ function App(): React.JSX.Element {
       <AuthProvider>
         <SyncDataProvider>
           <UserProvider>
-            <NavigationContainer>
-              <Router />
-              <>
-                <Toast config={toastConfig} />
-              </>
-            </NavigationContainer>
+            <MapProvider>
+              <NavigationContainer>
+                <Router />
+                <>
+                  <Toast config={toastConfig} />
+                </>
+              </NavigationContainer>
+            </MapProvider>
           </UserProvider>
         </SyncDataProvider>
       </AuthProvider>
