@@ -6,30 +6,54 @@ import { Btn } from "../../../components/button/Button";
 import { COLORS_DF } from "../../../config/themes/default";
 import { useMapContext } from "../../../states/MapContext";
 import { UsersContext } from "../../../states/UserContext";
-
+import { ConnectionContext } from "../../../states/ConnectionContext";
+import Toast from "react-native-toast-message";
+import Spinner from "react-native-loading-spinner-overlay";
 interface Maps {
   navigation: any;
 }
 const Maps: React.FC<Maps> = ({ navigation }) => {
   const [isFocus, setIsFocus] = useState(false);
-  const { districts, getDistricts, district, saveDistrict } = useMapContext();
+  const {
+    districts,
+    getDistricts,
+    district,
+    saveDistrict,
+    getMap,
+    loadingMap,
+  } = useMapContext();
   const user = useContext(UsersContext);
-
+  const internetConnection = useContext(ConnectionContext);
+  const { isConnected } = internetConnection;
   useEffect(() => {
-    const country_id = user.country?.code === "CO" ? 1 : 2;
-    getDistricts(country_id);
+    if (isConnected) {
+      const country_id = user.country?.code === "CO" ? 1 : 2;
+      getDistricts(country_id);
+    } else {
+      Toast.show({
+        type: "syncToast",
+        text1: "¡Recuerda que necesitas estar conectado a internet !",
+      });
+    }
   }, [user.country?.code]);
 
   useEffect(() => {
     // console.log("districts", districts);
   }, [districts]);
-
+  useEffect(() => {
+    saveDistrict(null);
+  }, [districts]);
   useEffect(() => {
     console.log("district", district);
   }, [district]);
 
+  const submit = () => {
+    getMap();
+    /*     navigation.navigate("RegisterScreen"); */
+  };
   return (
     <View style={styles.container}>
+      <Spinner color="#178B83" visible={loadingMap} size={100} />
       <View
         style={{
           justifyContent: "center",
@@ -67,8 +91,9 @@ const Maps: React.FC<Maps> = ({ navigation }) => {
       <View style={styles.formBtn}>
         <Btn
           title={"Continuar"}
-          theme="agrayu"
-          onPress={() => navigation.navigate("RegisterScreen")}
+          theme={district !== null ? "agrayu" : "agrayuDisabled"}
+          onPress={submit}
+          disabled={district === null}
         />
       </View>
     </View>

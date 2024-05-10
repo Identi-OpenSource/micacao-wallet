@@ -55,6 +55,7 @@ import { useAuth } from "../states/AuthContext";
 
 import { useSyncData } from "../states/SyncDataContext";
 import { UserDispatchContext, UsersContext } from "../states/UserContext";
+import { useMapContext } from "../states/MapContext";
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -111,6 +112,7 @@ export const Router = () => {
   const user = useContext(UsersContext);
   const { setAccessToken, error } = useAuth();
   const { errorSync } = useSyncData();
+  const { errorMap } = useMapContext();
   const dispatch = useContext(UserDispatchContext);
   const parcels = JSON.parse(storage.getString("parcels") || "[]");
   const userLogin = JSON.parse(storage.getString("user") || "{}");
@@ -130,7 +132,7 @@ export const Router = () => {
       });
   }, [error]);
 
-  //Usas otro useEfffect para que el salga el toast de errorSync
+  //useEfffect para que el salga el toast de errorSync
   useEffect(() => {
     if (errorSync != null)
       Toast.show({
@@ -138,6 +140,15 @@ export const Router = () => {
         text1: errorSync.toString(),
       });
   }, [errorSync]);
+
+  // useEfffect para que el salga el toast de errorMap
+  useEffect(() => {
+    if (errorMap != null)
+      Toast.show({
+        type: "syncToast",
+        text1: errorMap.toString(),
+      });
+  }, [errorMap]);
 
   const getIsLogin = () => {
     //accessToken
