@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {writeTransaction, newWallet, fundingWallet} from '../../../OCC/occ'
+import {writeTransaction} from '../../../OCC/occ'
 import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
@@ -92,14 +92,9 @@ export const HomeProvScreen = () => {
 
   const getWallet = () => {
     // Create Wallet
-    // const wallet = {
-    //   isFunding: true,
-    //   wallet: {
-    //     walletOFC: 'R9vNe1TJLJta1srkqNo8WBrGN4JDJpTCDQ',
-    //     wif: 'L2e3T9u1ph4nceszGLqpCmwZ8soZf19hnonUNfiFywwL2bNADxwC',
-    //   },
-    // }
+    const wallet = JSON.parse(storage.getString('wallet') || '{}')
     console.log(wallet)
+    setWa(wallet.wallet)
 
     //Testing Wallet
     // const wallet = newWallet()
