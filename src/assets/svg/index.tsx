@@ -45,3 +45,7 @@ export { default as ShadowParcel } from "./parcels_Shadow.svg";
 export { default as ShadowSale } from "./sales_Shadow.svg";
 export { default as Error } from "./error.svg";
 export { default as Sad } from "./sentiment_sad.svg";
+export { default as District_W } from "./distritct_W.svg";
+export { default as District_M } from "./district_M.svg";
+export { default as Baba } from "./baba.svg";
+export { default as Seco } from "./seco.svg";
