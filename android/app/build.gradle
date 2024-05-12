@@ -81,14 +81,14 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.micacao'
+    namespace 'digital.identi.micacao'
     bundle {
         language {
             enableSplit = false
         }
     }
     defaultConfig {
-        applicationId 'com.micacao'
+        applicationId 'digital.identi.micacao'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode env.VERSION_CODE
