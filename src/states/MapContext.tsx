@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { API_INTERFACE, HTTP } from "../services/api";
-import { err } from "react-native-svg";
+
 // Define el contexto de los mapas
 const MapContext = createContext({
   map: [],

@@ -49,7 +49,7 @@ const Maps: React.FC<Maps> = ({ navigation }) => {
 
   const submit = () => {
     getMap();
-    /*     navigation.navigate("RegisterScreen"); */
+    navigation.navigate("RegisterScreen");
   };
   return (
     <View style={styles.container}>
