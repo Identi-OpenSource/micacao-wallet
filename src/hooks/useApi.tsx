@@ -1,7 +1,7 @@
 import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
 import { useAuth } from "../states/AuthContext";
-
+import Toast from "react-native-toast-message";
 const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
   const { accessToken } = useAuth();
   const BASE_URL = "https://api-micacao.dev.identi.digital";
