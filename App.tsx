@@ -37,7 +37,7 @@ import Toast, {
   ErrorToast,
   ToastConfig,
 } from "react-native-toast-message";
-import { Error, Sad } from "./src/assets/svg/index";
+import { Error, Sad, SadYellow, Happy } from "./src/assets/svg/index";
 import useInternetConnection from "./src/hooks/useInternetConnection";
 import { Router } from "./src/routers/Router";
 import { AuthProvider } from "./src/states/AuthContext";
@@ -47,6 +47,7 @@ import { MapProvider } from "./src/states/MapContext";
 
 import { COLORS_DF, FONT_FAMILIES } from "./src/config/themes/default";
 import { SyncDataProvider } from "./src/states/SyncDataContext";
+import { GwfProvider } from "./src/states/GfwContext";
 
 function App(): React.JSX.Element {
   // biblioteca de iconos
@@ -130,6 +131,53 @@ function App(): React.JSX.Element {
         </TouchableOpacity>
       </View>
     ),
+    yellowToast: ({ text1, text2 }) => (
+      <View
+        style={{
+          height: 180,
+          width: "80%",
+          backgroundColor: "#FFF",
+          padding: 20,
+          alignItems: "center",
+          borderRadius: 10,
+          elevation: 5,
+        }}
+      >
+        <View>
+          <SadYellow height={70} width={70} />
+        </View>
+        <Text style={styles.toastTextGFW}>{text1}</Text>
+        <Text style={styles.toastTextGFW}>{text2}</Text>
+      </View>
+    ),
+    happyToast: ({ text1, text2 }) => (
+      <View
+        style={{
+          height: 200,
+          width: "80%",
+          backgroundColor: "#FFF",
+          padding: 20,
+          alignItems: "center",
+          borderRadius: 10,
+          elevation: 5,
+        }}
+      >
+        <View>
+          <Happy height={70} width={70} />
+        </View>
+        <Text style={styles.toastTextGFW}>{text1}</Text>
+        <Text style={styles.toastTextGFW}>{text2}</Text>
+      </View>
+    ),
+    redSadToast: ({ text1, text2 }) => (
+      <View style={styles.toastContainer}>
+        <View>
+          <Sad height={70} width={70} />
+        </View>
+        <Text style={styles.toastTextGFW}>{text1}</Text>
+        <Text style={styles.toastTextGFW}>{text2}</Text>
+      </View>
+    ),
   };
   const hideToast = () => {
     setVisible(false);
@@ -143,12 +191,14 @@ function App(): React.JSX.Element {
         <SyncDataProvider>
           <UserProvider>
             <MapProvider>
-              <NavigationContainer>
-                <Router />
-                <>
-                  <Toast config={toastConfig} />
-                </>
-              </NavigationContainer>
+              <GwfProvider>
+                <NavigationContainer>
+                  <Router />
+                  <>
+                    <Toast config={toastConfig} />
+                  </>
+                </NavigationContainer>
+              </GwfProvider>
             </MapProvider>
           </UserProvider>
         </SyncDataProvider>
@@ -171,6 +221,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
     textAlign: "center",
+  },
+  toastTextGFW: {
+    fontSize: 18,
+    fontFamily: FONT_FAMILIES.bold,
+    color: COLORS_DF.citrine_brown,
+    textAlign: "center",
+    lineHeight: 28,
   },
   buttonToast: {
     justifyContent: "center",

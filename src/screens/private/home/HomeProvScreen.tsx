@@ -28,7 +28,7 @@ import { useAuth } from "../../../states/AuthContext";
 import { ConnectionContext } from "../../../states/ConnectionContext";
 import { useSyncData } from "../../../states/SyncDataContext";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
-import { useGfwContext } from "../../../states/GFWContext";
+import { useGfwContext } from "../../../states/GfwContext";
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext);
   const internetConnection = useContext(ConnectionContext);
@@ -169,7 +169,11 @@ const Body = (props: {
   const getWallet = props.getWallet;
   const writeWallet = props.writeWallet;
   const isConnected = props.isConnected;
-  const { postGfw, getGfw } = useGfwContext();
+
+  const { postGfw, getGfw, gfwData } = useGfwContext();
+  useEffect(() => {
+    console.log("gfwdata", gfwData);
+  }, [gfwData]);
   return (
     <View style={styles.bodyContainer}>
       {/* Primer card */}
@@ -223,9 +227,16 @@ const Body = (props: {
             postGfw(), console.log("entro");
           }}
         >
-          <Text style={[styles.titleCard, syncUp && styles.filter]}>
-            {"Test context"}
-          </Text>
+          <Text style={[styles.titleCard]}>{"test context"}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.bodyCard]}
+          activeOpacity={0.9}
+          onPress={() => {
+            getGfw();
+          }}
+        >
+          <Text style={[styles.titleCard]}>{"get context"}</Text>
         </TouchableOpacity>
       </View>
     </View>

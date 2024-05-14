@@ -4,7 +4,7 @@ import { storage } from "../config/store/db";
 // Define el contexto de los mapas
 const GfwContext = createContext({
   gfw: [],
-  getGfw: (list_id: any) => {},
+  getGfw: () => {},
   postGfw: () => {},
   saveCoverage: (coverage: any) => {},
   saveStatus: (status: any) => {},
@@ -12,6 +12,8 @@ const GfwContext = createContext({
   loadingGfw: false,
   coverage: false,
   status: null,
+  gfwData: {},
+  getData: {},
 });
 
 // Define el componente proveedor de status
@@ -20,9 +22,10 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
   const [gfw, setGfw] = useState([]);
   const [errorGfw, setErrorGfw] = useState(null);
   const [loadingGfw, setLoadingGfw] = useState(false);
-
+  const [gfwData, setGfwData] = useState({});
   const [coverage, setCoverage] = useState(false);
   const [status, setStatus] = useState(null);
+  const [getData, setGetData] = useState({});
   const BASE_URL = "https://geip5oadr5.execute-api.us-east-2.amazonaws.com";
 
   //Funcion para guardar el true o false dela respuesta
@@ -34,18 +37,17 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
     setStatus(status);
   };
   // Función para obtenerel status y los kpis de coverage
-  const getGfw = async (list_id: any) => {
+  const getGfw = async () => {
     try {
       setLoadingGfw(true);
       const apiRequest: API_INTERFACE = {
         method: "GET",
-        url: `${BASE_URL}/${list_id}`,
+        url: `${BASE_URL}/${gfwData.listId}`,
+        // url: `${BASE_URL}/129`,
       };
       const data = await HTTP(apiRequest);
-
       console.log("data", data);
-
-      setCoverage(data);
+      setGetData(data);
     } catch (error) {
       if (error?.response?.data) {
         const text_error = error.response.data.errors.error;
@@ -65,21 +67,37 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Función para mandar el poligono a GFW(Global Forest Watch)
   const postGfw = async () => {
-    const parcels_array = JSON.parse(storage.getString("parcels") || "[]");
-    const parcels = parcels_array[0];
     try {
+      const parcels_array = JSON.parse(storage.getString("parcels") || "[]");
+      const parcels = parcels_array[0];
+
+      // Verificar si hay polígonos
+      if (!parcels || !parcels.polygon) {
+        throw new Error("No se encontraron polígonos para enviar a GFW");
+      }
+
+      console.log("entro al post", parcels);
+
       setLoadingGfw(true);
-      const apiRequest: API_INTERFACE = {
+
+      // Formatear las coordenadas del polígono intercambiando latitud y longitud
+      const polygonCoordinates = parcels.polygon
+        .map((coordenada) => `${coordenada[1]} ${coordenada[0]}`)
+        .join(";");
+
+      const apiRequest = {
         url: `${BASE_URL}/upload`,
         method: "POST",
         payload: {
-          polygon_coordinates: parcels.polygon.toString(),
+          coordinates: polygonCoordinates,
           start_date: "2020-01-01",
           end_date: "2024-01-01",
         },
       };
+
       const data = await HTTP(apiRequest);
       console.log("data", data);
+      setGfwData(data);
     } catch (error) {
       console.error("Error en la solicitud POST a GFW:", error);
       if (error?.response?.data) {
@@ -110,6 +128,8 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
         errorGfw,
         coverage,
         status,
+        gfwData,
+        getData,
       }}
     >
       {children}

@@ -49,3 +49,5 @@ export { default as District_W } from "./distritct_W.svg";
 export { default as District_M } from "./district_M.svg";
 export { default as Baba } from "./baba.svg";
 export { default as Seco } from "./seco.svg";
+export { default as SadYellow } from "./sad_yellow.svg";
+export { default as Happy } from "./happy.svg";

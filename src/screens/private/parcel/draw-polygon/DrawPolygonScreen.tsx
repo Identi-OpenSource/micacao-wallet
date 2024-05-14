@@ -12,9 +12,16 @@ import Mapbox, {
   StyleURL,
 } from "@rnmapbox/maps";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Config from "react-native-config";
-import { Seco, Baba } from "../../../../assets/svg";
+import Spinner from "react-native-loading-spinner-overlay";
+import { Baba, Seco } from "../../../../assets/svg";
 import HeaderComponent from "../../../../components/Header";
 import { storage } from "../../../../config/store/db";
 import {
@@ -22,7 +29,10 @@ import {
   FONT_FAMILIES,
   FONT_SIZES,
 } from "../../../../config/themes/default";
+import { useGfwContext } from "../../../../states/GfwContext";
 import DrawPolyline from "./DrawPolyline";
+import Toast from "react-native-toast-message";
+
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
 }
@@ -116,6 +126,7 @@ export const DrawPolygonScreen = () => {
   const [started] = useState(true);
   const navigation = useNavigation();
   const [sumaTotalVentas, setSumaTotalVentas] = useState(0);
+  const { postGfw, getGfw, gfwData, loadingGfw, getData } = useGfwContext();
   useEffect(() => {
     // Obtener la suma total de ventas del almacenamiento local al cargar el componente
     calcularSumaVentas();
@@ -158,14 +169,46 @@ export const DrawPolygonScreen = () => {
 
     setSumaTotalVentas(sumaPorTipo);
   };
+  const submitPost = () => {
+    postGfw();
+  };
+  const submitGet = () => {
+    getGfw();
+  };
+  useEffect(() => {
+    console.log("get data", getData);
 
+    switch (getData.status) {
+      case "Pending":
+        Toast.show({
+          type: "yellowToast",
+          text1: "No encontramos respuesta alguna. Intente más tarde",
+        });
+        break;
+
+      case "Completed":
+        Toast.show({
+          type:
+            getData.data.deforestation_kpis[0].IsCoverage === true
+              ? "happyToast"
+              : "redSadToast",
+          text1: "Coeficientes:",
+          text2: `Bosque conservado:${getData.data.deforestation_kpis[0]["Natural Forest Coverage (HA) (Beta)"]} Bosque perdido:${getData.data.deforestation_kpis[0]["Natural Forest Loss (ha) (Beta)"]}`,
+        });
+
+        break;
+
+      default:
+        break;
+    }
+  }, [getData]);
   return (
     <View
       style={{
         flex: 1,
       }}
     >
-      <View
+      <ScrollView
         style={{
           flex: 1,
           backgroundColor: COLORS_DF.isabelline,
@@ -180,13 +223,21 @@ export const DrawPolygonScreen = () => {
           backgroundColor="#8F3B06"
           textColor="white"
         />
+        <Spinner
+          textContent="Enviando Consulta"
+          textStyle={{ color: COLORS_DF.citrine_brown }}
+          overlayColor="rgba(255, 255, 255, 0.7)" // Aquí se establece el color del overlay
+          color="#178B83"
+          visible={loadingGfw}
+          size={100}
+        />
         <View
           style={{
             paddingHorizontal: 16,
             justifyContent: "center",
           }}
         >
-          <Text style={styles.title}>Datos de tu producción en el mes</Text>
+          <Text style={styles.title}>Datos de tu producción</Text>
           <View
             style={{
               justifyContent: "space-between",
@@ -266,7 +317,44 @@ export const DrawPolygonScreen = () => {
           </View>
           <Text style={styles.title}>Mapa de parcela</Text>
         </View>
-
+        <View style={styles.containerButtonGFW}>
+          <TouchableOpacity
+            onPress={submitPost}
+            style={{
+              backgroundColor:
+                JSON.stringify(gfwData) !== "{}"
+                  ? COLORS_DF.lightBlue
+                  : COLORS_DF.robin_egg_blue,
+              height: 44,
+              borderRadius: 5,
+              justifyContent: "center",
+              marginTop: 15,
+            }}
+            disabled={JSON.stringify(gfwData) !== "{}"}
+          >
+            <Text style={styles.textGfw}>
+              Solicitar verificación No Deforestación
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={submitGet}
+            style={{
+              backgroundColor:
+                JSON.stringify(gfwData) === "{}"
+                  ? COLORS_DF.lightBlue
+                  : COLORS_DF.robin_egg_blue,
+              height: 44,
+              borderRadius: 5,
+              justifyContent: "center",
+              marginTop: 15,
+            }}
+            disabled={JSON.stringify(gfwData) === "{}"}
+          >
+            <Text style={styles.textGfw}>
+              Consultar verificación No Deforestación
+            </Text>
+          </TouchableOpacity>
+        </View>
         <Card
           containerStyle={{
             borderRadius: 7,
@@ -368,7 +456,7 @@ export const DrawPolygonScreen = () => {
             </Text>
           </View>
         </Card>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -391,6 +479,23 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.gray,
     top: 10,
+  },
+  containerButtonGFW: {
+    paddingHorizontal: 10,
+    marginTop: 10,
+  },
+  buttonGfw: {
+    backgroundColor: COLORS_DF.robin_egg_blue,
+    height: 44,
+    borderRadius: 5,
+    justifyContent: "center",
+    marginTop: 15,
+  },
+  textGfw: {
+    textAlign: "center",
+    color: "#FFF",
+    fontFamily: FONT_FAMILIES.primary,
+    fontSize: 16,
   },
 });
 export default DrawPolyline;
