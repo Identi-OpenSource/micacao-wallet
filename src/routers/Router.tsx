@@ -56,6 +56,7 @@ import { useAuth } from "../states/AuthContext";
 import { useSyncData } from "../states/SyncDataContext";
 import { UserDispatchContext, UsersContext } from "../states/UserContext";
 import { useMapContext } from "../states/MapContext";
+import { useGfwContext } from "../states/GfwContext";
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -113,10 +114,12 @@ export const Router = () => {
   const { setAccessToken, error } = useAuth();
   const { errorSync } = useSyncData();
   const { errorMap } = useMapContext();
+  const { setPostGFW } = useGfwContext();
   const dispatch = useContext(UserDispatchContext);
   const parcels = JSON.parse(storage.getString("parcels") || "[]");
   const userLogin = JSON.parse(storage.getString("user") || "{}");
   const accessToken = storage.getString("accessToken") || null;
+  const postGFW = JSON.parse(storage.getString("postGFW") || "{}");
 
   useEffect(() => {
     //storage.delete('parcels')
@@ -158,6 +161,9 @@ export const Router = () => {
     if (userLogin?.isLogin) {
       //login
       dispatch({ type: "login", payload: userLogin });
+
+      //POST GFW
+      setPostGFW(postGFW);
 
       //TODO: Revisar el guardado
       // dispatch({type: 'login', payload: parcels})

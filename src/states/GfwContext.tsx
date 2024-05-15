@@ -1,40 +1,28 @@
 import React, { createContext, useContext, useState } from "react";
-import { API_INTERFACE, HTTP } from "../services/api";
 import { storage } from "../config/store/db";
+import { API_INTERFACE, HTTP } from "../services/api";
 // Define el contexto de los mapas
 const GfwContext = createContext({
-  gfw: [],
   getGfw: () => {},
   postGfw: () => {},
-  saveCoverage: (coverage: any) => {},
-  saveStatus: (status: any) => {},
   errorGfw: null,
   loadingGfw: false,
-  coverage: false,
-  status: null,
   gfwData: {},
   getData: {},
+  setPostGFW: (value: any) => {},
 });
 
 // Define el componente proveedor de status
 export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
   // Estado inicial de los mapas
-  const [gfw, setGfw] = useState([]);
   const [errorGfw, setErrorGfw] = useState(null);
   const [loadingGfw, setLoadingGfw] = useState(false);
   const [gfwData, setGfwData] = useState({});
-  const [coverage, setCoverage] = useState(false);
-  const [status, setStatus] = useState(null);
   const [getData, setGetData] = useState({});
   const BASE_URL = "https://geip5oadr5.execute-api.us-east-2.amazonaws.com";
 
-  //Funcion para guardar el true o false dela respuesta
-  const saveCoverage = (coverage: any) => {
-    setCoverage(coverage);
-  };
-  //Funcion para guardar el status de la petición
-  const saveStatus = (status: any) => {
-    setStatus(status);
+  const setPostGFW = (value: any) => {
+    setGfwData(value);
   };
   // Función para obtenerel status y los kpis de coverage
   const getGfw = async () => {
@@ -48,6 +36,7 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await HTTP(apiRequest);
       console.log("data", data);
       setGetData(data);
+      storage.set("getGFW", JSON.stringify(data));
     } catch (error) {
       if (error?.response?.data) {
         const text_error = error.response.data.errors.error;
@@ -76,8 +65,6 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
         throw new Error("No se encontraron polígonos para enviar a GFW");
       }
 
-      console.log("entro al post", parcels);
-
       setLoadingGfw(true);
 
       // Formatear las coordenadas del polígono intercambiando latitud y longitud
@@ -98,6 +85,7 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await HTTP(apiRequest);
       console.log("data", data);
       setGfwData(data);
+      storage.set("postGFW", JSON.stringify(data));
     } catch (error) {
       console.error("Error en la solicitud POST a GFW:", error);
       if (error?.response?.data) {
@@ -119,17 +107,13 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <GfwContext.Provider
       value={{
-        gfw,
         getGfw,
         postGfw,
-        saveCoverage,
-        saveStatus,
         loadingGfw,
         errorGfw,
-        coverage,
-        status,
         gfwData,
         getData,
+        setPostGFW,
       }}
     >
       {children}

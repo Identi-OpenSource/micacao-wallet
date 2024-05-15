@@ -220,24 +220,6 @@ const Body = (props: {
             {'write Wallet'}
           </Text>
         </TouchableOpacity> */}
-        <TouchableOpacity
-          style={[styles.bodyCard]}
-          activeOpacity={0.9}
-          onPress={() => {
-            postGfw(), console.log("entro");
-          }}
-        >
-          <Text style={[styles.titleCard]}>{"test context"}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.bodyCard]}
-          activeOpacity={0.9}
-          onPress={() => {
-            getGfw();
-          }}
-        >
-          <Text style={[styles.titleCard]}>{"get context"}</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
