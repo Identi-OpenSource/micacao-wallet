@@ -11,7 +11,7 @@ import Mapbox, {
   ShapeSource,
   StyleURL,
 } from "@rnmapbox/maps";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useContext } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -32,7 +32,7 @@ import {
 import { useGfwContext } from "../../../../states/GfwContext";
 import DrawPolyline from "./DrawPolyline";
 import Toast from "react-native-toast-message";
-
+import { ConnectionContext } from "../../../../states/ConnectionContext";
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
 }
@@ -126,11 +126,19 @@ export const DrawPolygonScreen = () => {
   const [started] = useState(true);
   const navigation = useNavigation();
   const [sumaTotalVentas, setSumaTotalVentas] = useState(0);
-  const { postGfw, getGfw, gfwData, loadingGfw, getData } = useGfwContext();
+  const {
+    postGfw,
+    getGfw,
+    gfwData,
+    loadingGfw,
+    getData,
+    errorGfw,
+  } = useGfwContext();
+  const internetConnection = useContext(ConnectionContext);
+  const { isConnected } = internetConnection;
   useEffect(() => {
     // Obtener la suma total de ventas del almacenamiento local al cargar el componente
     calcularSumaVentas();
-    console.log("entro", sumaTotalVentas);
   }, []);
   useEffect(() => {
     // eliminar polygonTemp
@@ -170,14 +178,28 @@ export const DrawPolygonScreen = () => {
     setSumaTotalVentas(sumaPorTipo);
   };
   const submitPost = () => {
-    postGfw();
+    if (isConnected) {
+      postGfw();
+    } else {
+      Toast.show({
+        type: "syncToast",
+        text1: "¡Recuerda que necesitas estar conectado a internet !",
+      });
+    }
   };
   const submitGet = () => {
-    getGfw();
+    if (isConnected) {
+      getGfw();
+    } else if (JSON.stringify(getData) !== "{}") {
+      toastGetData();
+    } else {
+      Toast.show({
+        type: "syncToast",
+        text1: "¡Recuerda que necesitas estar conectado a internet !",
+      });
+    }
   };
-  useEffect(() => {
-    console.log("get data", getData);
-
+  const toastGetData = () => {
     switch (getData.status) {
       case "Pending":
         Toast.show({
@@ -189,11 +211,11 @@ export const DrawPolygonScreen = () => {
       case "Completed":
         Toast.show({
           type:
-            getData.data.deforestation_kpis[0].IsCoverage === true
+            getData.data?.deforestation_kpis[0].IsCoverage === true
               ? "happyToast"
               : "redSadToast",
           text1: "Coeficientes:",
-          text2: `Bosque conservado:${getData.data.deforestation_kpis[0]["Natural Forest Coverage (HA) (Beta)"]} Bosque perdido:${getData.data.deforestation_kpis[0]["Natural Forest Loss (ha) (Beta)"]}`,
+          text2: `Bosque conservado:${getData.data?.deforestation_kpis[0]["Natural Forest Coverage (HA) (Beta)"]} Bosque perdido:${getData.data?.deforestation_kpis[0]["Natural Forest Loss (ha) (Beta)"]}`,
         });
 
         break;
@@ -201,7 +223,20 @@ export const DrawPolygonScreen = () => {
       default:
         break;
     }
+  };
+
+  useEffect(() => {
+    toastGetData();
   }, [getData]);
+
+  useEffect(() => {
+    if (errorGfw != null)
+      Toast.show({
+        type: "syncToast",
+        text1: errorGfw.toString(),
+      });
+  }, [errorGfw]);
+
   return (
     <View
       style={{

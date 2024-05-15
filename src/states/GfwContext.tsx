@@ -33,10 +33,12 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
   const getGfw = async () => {
     try {
       setLoadingGfw(true);
+      setGetData({});
+      storage.delete("getGFW");
       const apiRequest: API_INTERFACE = {
         method: "GET",
         url: `${BASE_URL}/${gfwData.listId}`,
-        // url: `${BASE_URL}/129`,
+        //url: `${BASE_URL}/172`,
       };
       const data = await HTTP(apiRequest);
       console.log("data", data);
