@@ -4,6 +4,7 @@ import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {
   BackHandler,
   Image,
+  Linking,
   PermissionsAndroid,
   Platform,
   ScrollView,
@@ -59,20 +60,41 @@ const ProfileScreen = () => {
   async function requestGalleryPermission() {
     try {
       if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
-          {
-            title: 'Permiso de Acceso a la Galería',
-            message:
-              'Esta aplicación necesita acceso a tu galería de imágenes.',
-            buttonPositive: 'Aceptar',
-          },
-        )
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Permiso concedido')
-          handleChooseImage()
+        console.log(Platform.Version)
+
+        if (Platform.Version > 30) {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+            {
+              title: 'Permiso de Acceso a la Galería',
+              message:
+                'Esta aplicación necesita acceso a tu galería de imágenes.',
+              buttonPositive: 'Aceptar',
+            },
+          )
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('Permiso concedido')
+            handleChooseImage()
+          } else {
+            console.log('Permiso denegado')
+          }
         } else {
-          console.log('Permiso denegado')
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+            {
+              title: 'Permiso de Acceso a la Galería',
+              message:
+                'Esta aplicación necesita acceso a tu galería de imágenes.',
+              buttonPositive: 'Aceptar',
+            },
+          )
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('Permiso concedido')
+            handleChooseImage()
+          } else {
+            console.log('Permiso denegado')
+            Linking.openSettings()
+          }
         }
       }
     } catch (err) {
