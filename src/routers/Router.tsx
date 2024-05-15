@@ -57,6 +57,7 @@ import { useSyncData } from "../states/SyncDataContext";
 import { UserDispatchContext, UsersContext } from "../states/UserContext";
 import { useMapContext } from "../states/MapContext";
 import { useGfwContext } from "../states/GfwContext";
+import { Test } from "../screens/public/testing";
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -114,13 +115,13 @@ export const Router = () => {
   const { setAccessToken, error } = useAuth();
   const { errorSync } = useSyncData();
   const { errorMap } = useMapContext();
-  const { setPostGFW } = useGfwContext();
+  const { setPostGFW, setGetGFW } = useGfwContext();
   const dispatch = useContext(UserDispatchContext);
   const parcels = JSON.parse(storage.getString("parcels") || "[]");
   const userLogin = JSON.parse(storage.getString("user") || "{}");
   const accessToken = storage.getString("accessToken") || null;
   const postGFW = JSON.parse(storage.getString("postGFW") || "{}");
-
+  const getData = JSON.parse(storage.getString("getGFW") || "{}");
   useEffect(() => {
     //storage.delete('parcels')
     //storage.delete('sales')
@@ -164,7 +165,8 @@ export const Router = () => {
 
       //POST GFW
       setPostGFW(postGFW);
-
+      //GET GFW
+      setGetGFW(getData);
       //TODO: Revisar el guardado
       // dispatch({type: 'login', payload: parcels})
       // console.log('PARCELAS', parcels)
@@ -183,6 +185,12 @@ export const Router = () => {
         <StackPublic.Screen name="HomeScreen" component={HomeScreen} />
         <StackPublic.Screen name="IamScreen" component={IamScreen} />
         <StackPublic.Screen name="IamFromScreen" component={IamFromScreen} />
+        <StackPublic.Screen name="TestMap" component={TestMap} />
+        <StackPublic.Screen
+          name="PoligonJoystick"
+          component={PoligonJoystick}
+        />
+        <StackPublic.Screen name="Test" component={Test} />
         <StackPublic.Screen name="Maps" component={Maps} />
         <StackPublic.Screen
           name="PermissionsStack"

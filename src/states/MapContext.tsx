@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { API_INTERFACE, HTTP } from "../services/api";
-
+import { useAuth } from "./AuthContext";
 // Define el contexto de los mapas
 const MapContext = createContext({
   map: [],
@@ -21,8 +21,9 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
   const [loadingMap, setLoadingMap] = useState(false);
   const [districts, setDistricts] = useState([]);
   const [district, setDistrict] = useState(null);
-  const BASE_URL_LOCAL = "http://192.168.100.40:3000";
-
+  const { accessToken } = useAuth();
+  /*   const BASE_URL_LOCAL = "http://192.168.100.40:3000"; */
+  const BASE_URL = "https://api-micacao.dev.identi.digital";
   //Funcion para guardar District
 
   const saveDistrict = (district: any) => {
@@ -34,9 +35,15 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
       setLoadingMap(true);
       const apiRequest: API_INTERFACE = {
         method: "GET",
-        url: `${BASE_URL_LOCAL}/districts?country=${country_id}`,
+        url: `${BASE_URL}/districts/${country_id}`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       };
+      console.log("hace el axios");
+
       const data = await HTTP(apiRequest);
+      console.log("aqui se cae");
 
       console.log("data", data);
 
@@ -64,7 +71,10 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
       setLoadingMap(true);
       const apiRequest: API_INTERFACE = {
         method: "GET",
-        url: `${BASE_URL_LOCAL}/maps?dist_id=${district.dist_id}`,
+        url: `${BASE_URL}/coordinates/${district.dist_id}`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       };
       const data = await HTTP(apiRequest);
       console.log("data", data);

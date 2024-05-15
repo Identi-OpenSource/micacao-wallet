@@ -10,6 +10,7 @@ const GfwContext = createContext({
   gfwData: {},
   getData: {},
   setPostGFW: (value: any) => {},
+  setGetGFW: (value: any) => {},
 });
 
 // Define el componente proveedor de status
@@ -24,6 +25,10 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
   const setPostGFW = (value: any) => {
     setGfwData(value);
   };
+  const setGetGFW = (value: any) => {
+    setGetData(value);
+  };
+
   // Función para obtenerel status y los kpis de coverage
   const getGfw = async () => {
     try {
@@ -114,6 +119,7 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
         gfwData,
         getData,
         setPostGFW,
+        setGetGFW,
       }}
     >
       {children}
