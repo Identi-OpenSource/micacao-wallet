@@ -9,7 +9,8 @@ type DataType = {
 const useSync = (
   accessToken: string,
   setLoadingSync: any,
-  setErrorSync: any
+  setErrorSync: any,
+  setErrorWhattsap: any
 ) => {
   const [dataToSync, setDataToSync] = useState<DataType>({});
   const [hasDataToSync, setHasDataToSync] = useState<boolean>(false);
@@ -90,10 +91,11 @@ const useSync = (
     }
   };
 
-  const { createProducer, createFarm, createSale, getMap } = useApi(
+  const { createProducer, createFarm, createSale } = useApi(
     setLoadingSync,
     setErrorSync,
-    addToSync
+    addToSync,
+    setErrorWhattsap
   );
 
   const toSyncData = async (key: string) => {

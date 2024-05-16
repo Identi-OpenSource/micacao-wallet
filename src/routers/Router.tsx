@@ -113,7 +113,7 @@ const optionsHeadersCacao = {
 export const Router = () => {
   const user = useContext(UsersContext);
   const { setAccessToken, error } = useAuth();
-  const { errorSync } = useSyncData();
+  const { errorSync, errorWhattsap } = useSyncData();
   const { errorMap } = useMapContext();
   const { setPostGFW, setGetGFW, errorGfw } = useGfwContext();
   const dispatch = useContext(UserDispatchContext);
@@ -153,6 +153,16 @@ export const Router = () => {
         text1: errorMap.toString(),
       });
   }, [errorMap]);
+
+  //useEfffect para que el salga el toast de errorWhattsap
+  useEffect(() => {
+    if (errorWhattsap != null)
+      Toast.show({
+        type: "dniToast",
+        visibilityTime: 7000,
+        text1: errorWhattsap.toString(),
+      });
+  }, [errorWhattsap]);
 
   const getIsLogin = () => {
     //accessToken

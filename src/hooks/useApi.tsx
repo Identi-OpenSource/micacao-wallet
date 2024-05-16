@@ -1,7 +1,12 @@
 import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
 import { useAuth } from "../states/AuthContext";
-const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
+const useApi = (
+  setLoadingSync: any,
+  setErrorSync: any,
+  addToSync: any,
+  setErrorWhattsap: any
+) => {
   const { accessToken } = useAuth();
   const BASE_URL = "https://api-micacao.dev.identi.digital";
 
@@ -34,13 +39,18 @@ const useApi = (setLoadingSync: any, setErrorSync: any, addToSync: any) => {
           text_error !== undefined
             ? error.response.data.errors.error
             : JSON.stringify(error.response.data.errors);
-        setErrorSync(errorText);
+        if (error.response.data.code === 190) {
+          setErrorWhattsap(errorText);
+        } else {
+          setErrorSync(errorText);
+        }
       } else {
         setErrorSync(error);
       }
     } finally {
       setLoadingSync(false);
       setErrorSync(null);
+      setErrorWhattsap(null);
     }
   };
 

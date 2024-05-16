@@ -205,6 +205,7 @@ export const DrawPolygonScreen = () => {
         Toast.show({
           type: "yellowToast",
           text1: "No encontramos respuesta alguna. Intente más tarde",
+          visibilityTime: 8000,
         });
         break;
 
@@ -215,6 +216,7 @@ export const DrawPolygonScreen = () => {
               ? "happyToast"
               : "redSadToast",
           text1: "Coeficientes:",
+          visibilityTime: 8000,
           text2: `Bosque conservado:${getData.data?.deforestation_kpis[0]["Natural Forest Coverage (HA) (Beta)"]} Bosque perdido:${getData.data?.deforestation_kpis[0]["Natural Forest Loss (ha) (Beta)"]}`,
         });
 
