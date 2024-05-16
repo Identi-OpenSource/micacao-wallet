@@ -31,13 +31,19 @@ import {
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons/faExclamationTriangle";
 import { NavigationContainer } from "@react-navigation/native";
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Linking,
+} from "react-native";
 import Toast, {
   BaseToast,
   ErrorToast,
   ToastConfig,
 } from "react-native-toast-message";
-import { Error, Sad, SadYellow, Happy } from "./src/assets/svg/index";
+import { Error, Sad, SadYellow, Happy, Whattsap } from "./src/assets/svg/index";
 import useInternetConnection from "./src/hooks/useInternetConnection";
 import { Router } from "./src/routers/Router";
 import { AuthProvider } from "./src/states/AuthContext";
@@ -109,6 +115,33 @@ function App(): React.JSX.Element {
       />
     ),
 
+    dniToast: ({ text1 }) => (
+      <View style={styles.toastContainer}>
+        <View>
+          <Error height={70} width={70} />
+        </View>
+        <Text style={styles.toastText}>{text1}</Text>
+        <TouchableOpacity
+          onPress={linkWhattsap}
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: COLORS_DF.robin_egg_blue,
+            width: "90%",
+            height: 30,
+            borderRadius: 5,
+            marginTop: 20,
+            flexDirection: "row",
+          }}
+        >
+          <Text style={{ color: "#fff", fontSize: 15 }}>
+            Solicitar ayuda {""}
+            {""} {""}
+          </Text>
+          <Whattsap />
+        </TouchableOpacity>
+      </View>
+    ),
     sadToast: ({ text1 }) => (
       <View style={styles.toastContainer}>
         <View>
@@ -182,6 +215,13 @@ function App(): React.JSX.Element {
   const hideToast = () => {
     setVisible(false);
     Toast.hide();
+  };
+  const linkWhattsap = () => {
+    Linking.openURL("whatsapp://send?phone=+5117064556").catch(() => {
+      Linking.openURL(
+        "https://play.google.com/store/apps/details?id=com.whatsapp"
+      );
+    });
   };
   const internetConnection = useInternetConnection();
 

@@ -29,6 +29,7 @@ import { ConnectionContext } from "../../../states/ConnectionContext";
 import { useSyncData } from "../../../states/SyncDataContext";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
 import { useGfwContext } from "../../../states/GfwContext";
+import Toast from "react-native-toast-message";
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext);
   const internetConnection = useContext(ConnectionContext);
@@ -65,7 +66,12 @@ export const HomeProvScreen = () => {
       if (dataToSync.sales) toSyncData("createSale");
     }
   }, [isConnected, dataToSync.parcels, dataToSync.sales]);
-
+  useEffect(() => {
+    Toast.show({
+      type: "dniToast",
+      text1: "El productor con este DNI ya esta registrado.",
+    });
+  }, []);
   const getWallet = () => {
     // Create Wallet
     // const wallet = JSON.parse(storage.getString("wallet") || "{}");

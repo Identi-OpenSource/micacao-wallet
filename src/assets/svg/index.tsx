@@ -51,3 +51,4 @@ export { default as Baba } from "./baba.svg";
 export { default as Seco } from "./seco.svg";
 export { default as SadYellow } from "./sad_yellow.svg";
 export { default as Happy } from "./happy.svg";
+export { default as Whattsap } from "./whattsap.svg";
