@@ -29,7 +29,15 @@ import { ConnectionContext } from "../../../states/ConnectionContext";
 import { useSyncData } from "../../../states/SyncDataContext";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
 import { useGfwContext } from "../../../states/GfwContext";
-import Toast from "react-native-toast-message";
+import axios from "axios";
+import CryptoJS from "crypto-js";
+import { Btn } from "../../../components/button/Button";
+import DATA_KAFE from "./kafe-sistemas.json";
+const key = "2acdugezqflwuz8oc58j4n2tmkzsdhd8";
+const API_KAFE_SISTEMAS =
+  "http://148.113.174.223/api/v1/pe/land-request/polygon";
+const API_KEY =
+  "fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4";
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext);
   const internetConnection = useContext(ConnectionContext);
@@ -66,12 +74,55 @@ export const HomeProvScreen = () => {
       if (dataToSync.sales) toSyncData("createSale");
     }
   }, [isConnected, dataToSync.parcels, dataToSync.sales]);
-  useEffect(() => {
-    Toast.show({
-      type: "dniToast",
-      text1: "El productor con este DNI ya esta registrado.",
+  const certificateND = async (dni: string) => {
+    const paddedDNI = dni.padStart(16, "0");
+    const utf8Key = CryptoJS.enc.Utf8.parse(key);
+    const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI);
+
+    const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
     });
-  }, []);
+
+    const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex);
+
+    return hexResult.substr(0, 32);
+  };
+
+  const kafeSistemas = async () => {
+    const resp_kafe: any = [];
+    for (let i = 0; i < DATA_KAFE.length; i++) {
+      const dniEncrypted = await certificateND(DATA_KAFE[i].dni);
+      const data = {
+        dni: "23428323434",
+        polygon: "349873489",
+        departamento: "San Martin",
+      };
+      // axios.interceptors.request.use(request => {
+      //   console.log('Starting Request', JSON.stringify(request, null, 2))
+      //   return request
+      // })
+      await axios
+        .post(API_KAFE_SISTEMAS, data, {
+          headers: {
+            api_key: API_KEY,
+            // Authorization: `Bearer ${API_KEY}`,
+          },
+        })
+        .then((resp) => {
+          console.log("resp", resp.data);
+          resp_kafe.push({
+            send: { ...data, dni: DATA_KAFE[i].dni, dniEncrypted },
+            resp: resp.data,
+          });
+        })
+        .catch((e) => {
+          console.log("error", e);
+        });
+    }
+
+    console.log("resp_kafe", resp_kafe);
+  };
   const getWallet = () => {
     // Create Wallet
     // const wallet = JSON.parse(storage.getString("wallet") || "{}");
@@ -113,6 +164,11 @@ export const HomeProvScreen = () => {
               getWallet={getWallet}
               writeWallet={writeWallet}
               isConnected={isConnected || false}
+            />
+            <Btn
+              title={"Envió de datos test"}
+              theme="agrayu"
+              onPress={() => kafeSistemas()}
             />
           </View>
         ) : (
