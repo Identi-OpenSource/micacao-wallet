@@ -165,11 +165,11 @@ export const HomeProvScreen = () => {
               writeWallet={writeWallet}
               isConnected={isConnected || false}
             />
-            <Btn
+            {/*  <Btn
               title={"Envió de datos test"}
               theme="agrayu"
               onPress={() => kafeSistemas()}
-            />
+            /> */}
           </View>
         ) : (
           <LoadingSave msg={TEXTS.textAF} />

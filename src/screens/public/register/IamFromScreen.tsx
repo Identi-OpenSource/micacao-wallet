@@ -6,7 +6,7 @@
 
 import { useNavigation } from "@react-navigation/native";
 import { Card, CheckBox } from "@rneui/themed";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Image,
   ImageSourcePropType,
@@ -37,7 +37,7 @@ import {
 } from "../../../config/themes/metrics";
 import { UserDispatchContext, UsersContext } from "../../../states/UserContext";
 import { Header } from "./RegisterScreen";
-
+import { useMapContext } from "../../../states/MapContext";
 interface CardProps {
   img: ImageSourcePropType;
   title: string;
@@ -55,6 +55,8 @@ export const IamFromScreen: React.FC = () => {
   const dispatch = useContext(UserDispatchContext);
   console.log(user);
 
+  const { saveDistricts } = useMapContext();
+
   const cards = [
     {
       img: imgCO,
@@ -67,6 +69,10 @@ export const IamFromScreen: React.FC = () => {
       value: COUNTRY.peru,
     },
   ];
+
+  useEffect(() => {
+    saveDistricts([]);
+  }, [selectedCountry]);
 
   // check permission
   const checkPermission = async () => {
