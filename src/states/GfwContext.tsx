@@ -38,7 +38,7 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
       const apiRequest: API_INTERFACE = {
         method: "GET",
         url: `${BASE_URL}/${gfwData.listId}`,
-        //url: `${BASE_URL}/172`,
+        //url: `${BASE_URL}/180`,
       };
       const data = await HTTP(apiRequest);
       console.log("data", data);
