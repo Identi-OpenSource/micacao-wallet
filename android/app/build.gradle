@@ -96,6 +96,18 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+
+        release {
+            storeFile file(env.RELEASE_STORE_FILE)
+            storePassword env.RELEASE_STORE_PASSWORD
+            keyAlias env.RELEASE_KEY_ALIAS
+            keyPassword env.RELEASE_KEY_PASSWORD
+        // doLast {
+        //     println "RELEASE_STORE_PASSWORD: ${env.RELEASE_STORE_PASSWORD}"
+        //     println "RELEASE_KEY_ALIAS: ${env.RELEASE_KEY_ALIAS}"
+        //     println "RELEASE_KEY_PASSWORD: ${env.RELEASE_KEY_PASSWORD}"
+        // }
+        }
     }
     buildTypes {
         debug {
