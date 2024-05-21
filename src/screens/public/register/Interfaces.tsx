@@ -68,6 +68,18 @@ export let SCHEMA_TWO = object({
     .required(MSG_ERROR.required),
 });
 
+export let SCHEMA_CO = object({
+  phone: string()
+    .matches(REGEX.phone_co, { message: MSG_ERROR.matches })
+    .required(MSG_ERROR.required),
+});
+
+export let SCHEMA_PE = object({
+  phone: string()
+    .matches(REGEX.phone_pe, { message: MSG_ERROR.matches })
+    .required(MSG_ERROR.required),
+});
+
 // third step
 export interface InterfaceThree {
   name: string;

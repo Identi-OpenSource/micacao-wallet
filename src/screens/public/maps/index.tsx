@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { District_M, District_W } from "../../../assets/svg";
 import { Btn } from "../../../components/button/Button";
-import { COLORS_DF } from "../../../config/themes/default";
+import { COLORS_DF, FONT_FAMILIES } from "../../../config/themes/default";
 import { useMapContext } from "../../../states/MapContext";
 import { UsersContext } from "../../../states/UserContext";
 import { ConnectionContext } from "../../../states/ConnectionContext";
@@ -128,9 +128,12 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 20,
+    color: COLORS_DF.citrine_brown,
   },
   selectedTextStyle: {
     fontSize: 20,
+    color: COLORS_DF.citrine_brown,
+    fontFamily: FONT_FAMILIES.bold,
   },
   iconStyle: {
     width: 20,
