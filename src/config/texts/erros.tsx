@@ -8,11 +8,16 @@ export const MSG_ERROR = {
   503: 'Servio no disponible',
   504: 'Gateway Timeout',
   default: 'Erro desconocido',
-  matches: 'Formato invalido',
-  namePropio: 'Nombre invalido, letras y espacios',
+  matches: 'Formato inválido',
+  namePropio: 'Nombre inválido, letras y espacios',
   dni: 'El DNI o Cédula incorrecto',
   pin: 'El PIN debe tener 6 dígitos',
   rePin: 'El PIN no coincide',
   required: 'Requerido',
+  noIsNumber: 'Solo se permiten números y punto decimal',
   errorGeneric: 'Error desconocido, intente de nuevo',
+  minString: (n: number) => `Mínimo ${n} caracteres`,
+  minNumber: (n: number) => `Mínimo ${n}`,
+  notGps:
+    'No se ha podido obtener la ubicación GPS de la imagen, por favor intente de nuevo',
 }

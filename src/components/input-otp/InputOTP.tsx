@@ -1,26 +1,32 @@
-import React, {useRef} from 'react'
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
-import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../config/themes/default'
-import {InputTextProps} from './interfaces'
-import {moderateScale} from '../../config/themes/metrics'
+import React, { useRef } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS_DF, FONT_FAMILIES, MP_DF } from "../../config/themes/default";
+import { InputTextProps } from "./interfaces";
+import { moderateScale } from "../../config/themes/metrics";
 
 export const InputOTP = (props: InputTextProps) => {
   const {
     label,
-    field: {name, value},
-    form: {handleChange, handleBlur, touched, errors},
-  } = props
-  const ref = useRef() as any
-  const optLength: number[] = []
-  optLength.length = 6
+    field: { name, value },
+    form: { handleChange, handleBlur, touched, errors },
+  } = props;
+  const ref = useRef() as any;
+  const optLength: number[] = [];
+  optLength.length = 6;
 
   const onChangeText = (text: string) => {
-    let textFormate = text
+    let textFormate = text;
     if (text.length > 6) {
-      textFormate = text.substring(0, 6)
+      textFormate = text.substring(0, 6);
     }
-    handleChange(name)(textFormate)
-  }
+    handleChange(name)(textFormate);
+  };
 
   return (
     <View style={styles.container}>
@@ -28,10 +34,11 @@ export const InputOTP = (props: InputTextProps) => {
       <TouchableOpacity
         activeOpacity={1}
         style={styles.containerOPT}
-        onPress={() => ref?.current?.focus()}>
+        onPress={() => ref?.current?.focus()}
+      >
         {[...Array(6)].map((e, i) => (
           <Text key={i} style={styles.labelOPT}>
-            {value[i] || ''}
+            {value[i] || ""}
           </Text>
         ))}
       </TouchableOpacity>
@@ -41,38 +48,40 @@ export const InputOTP = (props: InputTextProps) => {
         onBlur={handleBlur(name)}
         value={value}
         style={styles.oculto}
-        keyboardType={'numeric'}
+        keyboardType={"numeric"}
+        autoFocus={true}
         {...props}
       />
       {touched[name] && errors[name] && (
         <Text style={styles.error}>{errors[name]?.toString()}</Text>
       )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     height: 120,
   },
   containerOPT: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignContent: 'center',
-    flexDirection: 'row',
+    justifyContent: "space-between",
+    alignItems: "center",
+    alignContent: "center",
+    flexDirection: "row",
     marginVertical: MP_DF.medium,
   },
   labelOPT: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(32),
-    fontWeight: '600',
-    lineHeight: moderateScale(35),
+    fontWeight: "600",
+    lineHeight: moderateScale(32),
     color: COLORS_DF.black,
-    textAlign: 'center',
+    textAlign: "center",
     marginHorizontal: MP_DF.medium,
     borderBottomWidth: 1,
     borderBottomColor: COLORS_DF.cacao,
     width: 36,
+    height: 40,
   },
   oculto: {
     height: 0,
@@ -80,19 +89,19 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
   label: {
-    fontFamily: FONT_FAMILIES.primary,
+    fontFamily: FONT_FAMILIES.bold,
     fontSize: moderateScale(16),
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: MP_DF.medium,
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
   },
   error: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(12),
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: moderateScale(20),
     color: COLORS_DF.warning,
-    textAlign: 'right',
+    textAlign: "right",
   },
   input: {},
-})
+});

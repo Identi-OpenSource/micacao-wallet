@@ -1,74 +1,110 @@
-import React, {createContext, useReducer} from 'react'
+import React, { createContext, useReducer } from "react";
 
 export interface UserInterface {
-  name: string
-  phone: string
-  pin: string
-  isLogin?: boolean
+  name?: string;
+  dni?: string;
+  phone?: string;
+  pin?: string;
+  isLogin?: boolean;
+  parcel?: any[];
+  syncUp?: boolean;
+  lastSyncUp?: number;
+  gender?: string;
+  country?: any;
 }
-
+export interface Parcel {
+  id?: string;
+  nameParcel?: string;
+  hectares?: number;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  polygon?: any;
+}
+export interface saleInterface {
+  typeCacao?: string;
+  kgCacao?: string;
+  month?: string;
+}
 export const userInicialState: UserInterface = {
-  name: '',
-  phone: '',
-  pin: '',
+  name: "",
+  dni: "",
+  phone: "",
+  pin: "",
+  parcel: [],
+  syncUp: false,
   isLogin: false,
-}
+};
 
-export type UserActions = 'login' | 'logout' | 'getLogin'
+export const ParcelState: Parcel = {
+  nameParcel: "",
+  hectares: 0,
+};
+export const CacaoState: saleInterface = {
+  typeCacao: "",
+  kgCacao: "",
+  month: "",
+};
+export type UserActions = "login" | "logout" | "getLogin" | "setUser";
 
 export interface userInicialState {
-  type: UserActions
-  payload: UserInterface
+  type: UserActions;
+  payload: UserInterface;
 }
 
 export interface ActionsInterface {
-  type: UserActions
-  payload: UserInterface
+  type: UserActions;
+  payload: UserInterface;
 }
 
-export const UsersContext = createContext(userInicialState)
-export const UserDispatchContext = createContext(
-  (() => {}) as React.Dispatch<ActionsInterface>,
-)
+export const UsersContext = createContext(userInicialState);
+export const parcelContext = createContext(ParcelState);
+export const CacaoContext = createContext(CacaoState);
+export const UserDispatchContext = createContext((() => {}) as React.Dispatch<
+  ActionsInterface
+>);
 
-export const UserProvider = ({children}: {children: React.ReactNode}) => {
-  const [tasks, dispatch] = useReducer(usersReducer, userInicialState)
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, dispatch] = useReducer(usersReducer, userInicialState);
 
   return (
-    <UsersContext.Provider value={tasks}>
+    <UsersContext.Provider value={user}>
       <UserDispatchContext.Provider value={dispatch}>
         {children}
       </UserDispatchContext.Provider>
     </UsersContext.Provider>
-  )
-}
+  );
+};
 
 export const usersReducer = (user: UserInterface, action: ActionsInterface) => {
   switch (action.type) {
-    case 'getLogin': {
+    case "getLogin": {
       return {
         ...user,
-        name: action.payload.name,
-        phone: action.payload.phone,
-        pin: action.payload.pin,
+        ...action.payload,
         isLogin: true,
-      }
+      };
     }
-    case 'login': {
+    case "login": {
       return {
         ...user,
-        name: action.payload.name,
-        phone: action.payload.phone,
-        pin: action.payload.pin,
+        ...action.payload,
         isLogin: true,
-      }
+      };
     }
-    case 'logout': {
-      return userInicialState
+
+    case "setUser": {
+      return {
+        ...action.payload,
+      };
+    }
+    case "logout": {
+      return userInicialState;
     }
 
     default: {
-      throw Error('Unknown action: ' + action.type)
+      throw Error("Unknown action: " + action.type);
     }
   }
-}
+};
