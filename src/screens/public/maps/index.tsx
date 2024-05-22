@@ -9,6 +9,7 @@ import { UsersContext } from "../../../states/UserContext";
 import { ConnectionContext } from "../../../states/ConnectionContext";
 import Toast from "react-native-toast-message";
 import Spinner from "react-native-loading-spinner-overlay";
+import { storage } from "../../../config/store/db";
 interface Maps {
   navigation: any;
 }
@@ -45,6 +46,7 @@ const Maps: React.FC<Maps> = ({ navigation }) => {
   }, [districts]);
   useEffect(() => {
     console.log("district", district);
+    storage.set("district", JSON.stringify(district));
   }, [district]);
 
   const submit = () => {

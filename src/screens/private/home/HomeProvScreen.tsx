@@ -32,12 +32,12 @@ import { useGfwContext } from "../../../states/GfwContext";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import { Btn } from "../../../components/button/Button";
-import DATA_KAFE from "./kafe-sistemas.json";
+/* import DATA_KAFE from "./kafe-sistemas.json";
 const key = "2acdugezqflwuz8oc58j4n2tmkzsdhd8";
 const API_KAFE_SISTEMAS =
   "http://148.113.174.223/api/v1/pe/land-request/polygon";
 const API_KEY =
-  "fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4";
+  "fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4"; */
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext);
   const internetConnection = useContext(ConnectionContext);
@@ -74,7 +74,7 @@ export const HomeProvScreen = () => {
       if (dataToSync.sales) toSyncData("createSale");
     }
   }, [isConnected, dataToSync.parcels, dataToSync.sales]);
-  const certificateND = async (dni: string) => {
+  /* const certificateND = async (dni: string) => {
     const paddedDNI = dni.padStart(16, "0");
     const utf8Key = CryptoJS.enc.Utf8.parse(key);
     const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI);
@@ -122,7 +122,7 @@ export const HomeProvScreen = () => {
     }
 
     console.log("resp_kafe", resp_kafe);
-  };
+  }; */
   const getWallet = () => {
     // Create Wallet
     // const wallet = JSON.parse(storage.getString("wallet") || "{}");
@@ -164,11 +164,6 @@ export const HomeProvScreen = () => {
               getWallet={getWallet}
               writeWallet={writeWallet}
               isConnected={isConnected || false}
-            />
-            <Btn
-              title={"Envió de datos test"}
-              theme="agrayu"
-              onPress={() => kafeSistemas()}
             />
           </View>
         ) : (

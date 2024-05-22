@@ -4,7 +4,7 @@ import { API_INTERFACE, HTTP } from "../services/api";
 // Dedine el contexto de kafe sistemas
 const KafeContext = createContext({
   getKafe: () => {},
-  postKafe: () => {},
+  postKafeSistemas: () => {},
   errorKafe: null,
   loadingKafe: false,
   postKafeData: {},
@@ -12,12 +12,13 @@ const KafeContext = createContext({
   setPostKafe: (value: any) => {},
   setGetKafe: (value: any) => {},
 });
-export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
+export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
   const [errorKafe, setErrorKafe] = useState(null);
   const [loadingKafe, setLoadingKafe] = useState(false);
   const [postKafeData, setPostKafeData] = useState({});
   const [getKafeData, setGetKafeData] = useState({});
-  const BASE_URL = "http://148.113.174.223/api/v1/pe/land-request/polygon";
+  //const BASE_URL = "http://148.113.174.223/api/v1/pe/land-request/polygon";
+  const BASE_URL = "http://192.168.100.40:3000/submit";
   const GET_BASE_URL = "https://api-micacao.dev.identi.digital";
 
   const setPostKafe = (value: any) => {
@@ -38,7 +39,7 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await HTTP(apiRequest);
       console.log("data", data);
       setGetKafeData(data);
-      storage.set("getGFW", JSON.stringify(data));
+      storage.set("getKafeData", JSON.stringify(data));
     } catch (error) {
       if (error?.response?.data) {
         const text_error = error.response.data.errors.error;
@@ -56,15 +57,18 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const postKafe = async (key: string) => {
+  const postKafeSistemas = async () => {
+    console.log("entre");
+
     try {
-      const user = JSON.parse(storage.getString(key) || "{}");
+      const user = JSON.parse(storage.getString("user") || "{}");
       const parcels_array = JSON.parse(storage.getString("parcels") || "[]");
       const parcels = parcels_array[0];
+      const district = JSON.parse(storage.getString("district") || "{}");
 
       // Verificar si hay polígonos
       if (!parcels || !parcels.polygon) {
-        throw new Error("No se encontraron polígonos para enviar a GFW");
+        throw new Error("no se puede");
       }
 
       setLoadingKafe(true);
@@ -80,7 +84,7 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
         payload: {
           dni: user.dni,
           polygon: polygonCoordinates,
-          departamento: "San Martin",
+          departamento: district.dist_name,
         },
       };
 
@@ -105,11 +109,12 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
       setErrorKafe(null);
     }
   };
+
   return (
     <KafeContext.Provider
       value={{
         getKafe,
-        postKafe,
+        postKafeSistemas,
         loadingKafe,
         errorKafe,
         postKafeData,
@@ -122,7 +127,7 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
     </KafeContext.Provider>
   );
 };
-export const useGfwContext = () => {
+export const useKafeContext = () => {
   const context = useContext(KafeContext);
   if (!context) {
     throw new Error("useMapContext must be used within a KafeProvider");

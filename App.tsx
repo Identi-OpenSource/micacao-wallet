@@ -50,7 +50,7 @@ import { AuthProvider } from "./src/states/AuthContext";
 import { ConnectionProvider } from "./src/states/ConnectionContext";
 import { UserProvider } from "./src/states/UserContext";
 import { MapProvider } from "./src/states/MapContext";
-
+import { KafeProvider } from "./src/states/KafeContext";
 import { COLORS_DF, FONT_FAMILIES } from "./src/config/themes/default";
 import { SyncDataProvider } from "./src/states/SyncDataContext";
 import { GwfProvider } from "./src/states/GfwContext";
@@ -232,12 +232,14 @@ function App(): React.JSX.Element {
           <UserProvider>
             <MapProvider>
               <GwfProvider>
-                <NavigationContainer>
-                  <Router />
-                  <>
-                    <Toast config={toastConfig} />
-                  </>
-                </NavigationContainer>
+                <KafeProvider>
+                  <NavigationContainer>
+                    <Router />
+                    <>
+                      <Toast config={toastConfig} />
+                    </>
+                  </NavigationContainer>
+                </KafeProvider>
               </GwfProvider>
             </MapProvider>
           </UserProvider>

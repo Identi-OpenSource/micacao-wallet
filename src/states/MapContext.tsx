@@ -17,6 +17,7 @@ const MapContext = createContext({
   getMap: () => {},
   districts: [],
   getDistricts: (country_id: any) => {},
+  getDistrict: (country_id: any) => {},
   district: null,
   saveDistrict: (district: any) => {},
   saveDistricts: (districts: any) => {},
@@ -39,7 +40,9 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
   const saveDistricts = (districts: any) => {
     setDistricts(districts);
   };
-
+  const getDistrict = (value: any) => {
+    setDistricts(value);
+  };
   //Funcion para guardar District
   const saveDistrict = (district: any) => {
     setDistrict(district);
@@ -59,7 +62,7 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await HTTP(apiRequest);
       console.log("data", data);
       setDistricts(data);
-      storage.set("getGFW", JSON.stringify(data));
+      // storage.set("getDistrict", JSON.stringify(data));
     } catch (error) {
       if (error?.response?.data) {
         const text_error = error.response.data.errors.error;
@@ -115,6 +118,7 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
         getMap,
         districts,
         getDistricts,
+        getDistrict,
         district,
         saveDistrict,
         saveDistricts,

@@ -58,6 +58,7 @@ import { UserDispatchContext, UsersContext } from "../states/UserContext";
 import { useMapContext } from "../states/MapContext";
 import { useGfwContext } from "../states/GfwContext";
 import { Test } from "../screens/public/testing";
+import { useKafeContext } from "../states/KafeContext";
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -114,18 +115,24 @@ export const Router = () => {
   const user = useContext(UsersContext);
   const { setAccessToken, error } = useAuth();
   const { errorSync, errorWhattsap } = useSyncData();
-  const { errorMap } = useMapContext();
+  const { errorMap, getDistrict, saveDistrict } = useMapContext();
   const { setPostGFW, setGetGFW, errorGfw } = useGfwContext();
+  const { setPostKafe, setGetKafe } = useKafeContext();
   const dispatch = useContext(UserDispatchContext);
   const parcels = JSON.parse(storage.getString("parcels") || "[]");
   const userLogin = JSON.parse(storage.getString("user") || "{}");
   const accessToken = storage.getString("accessToken") || null;
   const postGFW = JSON.parse(storage.getString("postGFW") || "{}");
   const getData = JSON.parse(storage.getString("getGFW") || "{}");
+  const district = JSON.parse(storage.getString("district") || "{}");
+  const postKafe = JSON.parse(storage.getString("postKafeData") || "{}");
+  const getKafe = JSON.parse(storage.getString("getKafeData") || "{}");
   useEffect(() => {
     //storage.delete('parcels')
     //storage.delete('sales')
+    //storage.delete("getDistrict");
     getIsLogin();
+    console.log("aqui esta el distrito ojala valfga", district);
   }, []);
 
   useEffect(() => {
@@ -177,6 +184,12 @@ export const Router = () => {
       setPostGFW(postGFW);
       //GET GFW
       setGetGFW(getData);
+      //POST Kafe
+      setPostKafe(postKafe);
+      //GET KAFE
+      setGetKafe(getKafe);
+      //GET DISTRICT
+      saveDistrict(district);
       //TODO: Revisar el guardado
       // dispatch({type: 'login', payload: parcels})
       // console.log('PARCELAS', parcels)
