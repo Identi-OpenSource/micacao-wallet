@@ -128,7 +128,7 @@ export const Router = () => {
   const postKafe = JSON.parse(storage.getString("postKafeData") || "{}");
   const getKafe = JSON.parse(storage.getString("getKafeData") || "{}");
   useEffect(() => {
-    // /storage.delete("parcels");
+    //storage.delete("parcels");
     //storage.delete('sales')
     //storage.delete("getKafeData");
     getIsLogin();

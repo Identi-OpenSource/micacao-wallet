@@ -41,7 +41,7 @@ const Polygon = ({ coordinates }: { coordinates: Position[] }) => {
       ],
     };
   }, [coordinates]);
-  // console.log('=> features', JSON.stringify(features))
+
   return (
     <ShapeSource id={"shape-source-id-0"} shape={features}>
       <LineLayer id={"line-layer"} style={lineLayerStyle} />
@@ -160,6 +160,15 @@ const GradientLineRecorrer = () => {
     }
   };
 
+  const onDragEnd = (index: number, newCoordinate: Position) => {
+    setCoordinates((prev) => {
+      const updatedCoordinates = [...prev];
+      updatedCoordinates[index] = newCoordinate;
+      storage.set("polygonTemp", JSON.stringify(updatedCoordinates));
+      return updatedCoordinates;
+    });
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
@@ -182,13 +191,19 @@ const GradientLineRecorrer = () => {
         >
           {<Polygon coordinates={coordinatesWithLast} />}
           {coordinatesWithLast.map((c, i) => {
-            // buscar ultimo index en coordinates
             const lastIndex = coordinates.length - 1;
             return (
               <PointAnnotation
                 key={i.toString() + coordinates.length}
                 id={i.toString()}
                 coordinate={[c[0], c[1]]}
+                draggable={i === 0} // Only make the first point draggable
+                onDragEnd={(e) =>
+                  onDragEnd(i, [
+                    e.geometry.coordinates[0],
+                    e.geometry.coordinates[1],
+                  ])
+                }
               >
                 <View
                   style={{

@@ -449,17 +449,6 @@ export const DrawPolygonScreen = () => {
             compassEnabled={false}
             logoEnabled={false}
             style={{ height: 300, width: 350, alignSelf: "center" }}
-            /* onPress={async (e) => {
-              const last = [
-                (e.geometry as GeoJSON.Point).coordinates[0],
-                (e.geometry as GeoJSON.Point).coordinates[1],
-              ] as Position;
-              storage.set(
-                "polygonTemp",
-                JSON.stringify([...coordinates, last])
-              );
-              setCoordinates([...coordinates, last]);
-            }} */
           >
             <Polygon coordinates={coordinatesWithLast} />
             {started && <Polygon coordinates={coordinatesWithLast} />}
@@ -469,26 +458,6 @@ export const DrawPolygonScreen = () => {
                 zoomLevel: 17,
               }}
             />
-            {coordinatesWithLast.map((c, i) => {
-              // buscar ultimo index en coordinates
-              const lastIndex = coordinates.length - 1;
-              return (
-                <PointAnnotation
-                  key={i.toString() + coordinates.length}
-                  id={i.toString()}
-                  coordinate={[c[0], c[1]]}
-                >
-                  <View
-                    style={{
-                      height: 10,
-                      width: 10,
-                      backgroundColor: lastIndex === i ? "red" : "white",
-                      borderRadius: 5,
-                    }}
-                  />
-                </PointAnnotation>
-              );
-            })}
           </MapView>
           <View
             style={{
