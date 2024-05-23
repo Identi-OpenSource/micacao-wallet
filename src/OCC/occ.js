@@ -60,38 +60,6 @@ function createRandomJSON() {
   }
 }
 
-const test_batch = {
-  user: {
-    id: {value: 1, unique: true},
-    name: 'John Doe',
-    email: 'johndoe@example.com',
-    preferences: {
-      theme: 'dark',
-      notifications: {
-        email: true,
-        sms: false,
-        push: {
-          enabled: true,
-          frequency: 'daily',
-        },
-      },
-    },
-    friends: [
-      {
-        id: 2,
-        name: 'Jane Smith',
-        status: 'online',
-      },
-      {
-        id: 3,
-        name: 'Bob Johnson',
-        status: 'offline',
-        lastOnline: '2023-03-08T12:00:00Z',
-      },
-    ],
-  },
-}
-
 export const newWallet = () => {
   // Create
   let wallet = bitGoUTXO.ECPair.makeRandom()
@@ -156,7 +124,7 @@ export const verificarWallet = async wallet => {
   Linking.openURL(url)
 }
 
-export const writeTransaction = async wif => {
+export const writeTransaction = async (wif, object) => {
   // const wifs = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
   // const res = bitGoUTXO.ECPair.fromWIF(
   //   'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
@@ -167,7 +135,7 @@ export const writeTransaction = async wif => {
 
   const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
 
-  const test_batch = createRandomJSON()
+  const test_batch = object
 
   console.log(`test batch: ${JSON.stringify(test_batch)}`)
 

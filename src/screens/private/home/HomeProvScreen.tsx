@@ -1,6 +1,7 @@
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import React, {useCallback, useContext, useEffect, useState} from 'react'
+import CryptoJS from 'crypto-js'
 import {
   BackHandler,
   Image,
@@ -10,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {writeTransaction} from '../../../OCC/occ'
+import {writeTransaction, newWallet} from '../../../OCC/occ'
 import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
@@ -29,6 +30,7 @@ import {useAuth} from '../../../states/AuthContext'
 import {ConnectionContext} from '../../../states/ConnectionContext'
 import {useSyncData} from '../../../states/SyncDataContext'
 import {UserInterface, UsersContext} from '../../../states/UserContext'
+import Config from 'react-native-config'
 
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext)
@@ -69,7 +71,14 @@ export const HomeProvScreen = () => {
 
   const getWallet = () => {
     // Create Wallet
-    const wallet = JSON.parse(storage.getString('wallet') || '{}')
+    //const wallet = JSON.parse(storage.getString('wallet') || '{}')
+    const wallet = {
+      isFunding: true,
+      wallet: {
+        walletOFC: 'R9vNe1TJLJta1srkqNo8WBrGN4JDJpTCDQ',
+        wif: 'L2e3T9u1ph4nceszGLqpCmwZ8soZf19hnonUNfiFywwL2bNADxwC',
+      },
+    }
     console.log(wallet)
     setWa(wallet.wallet)
 
@@ -92,8 +101,54 @@ export const HomeProvScreen = () => {
     // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
     // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
     // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
-    console.log(wa.wif)
-    await writeTransaction(wa.wif)
+    //console.log(wa.wif)
+
+    // Object
+
+    let object = {}
+
+    //User
+    const user = JSON.parse(storage.getString('user') || '{}')
+    object = {...object, user}
+
+    //Polygon
+    const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
+    const parcels = parcels_array[0]
+    object = {...object, polygon: parcels.polygon}
+
+    //Sales
+    const sales = JSON.parse(storage.getString('sales') || '[]')
+    object = {...object, sales}
+
+    // Hash Semilla
+
+    const hash = await createHash(user.dni)
+
+    object = {
+      ...object,
+      bnfp: {
+        unique: true,
+        value: hash.hash,
+      },
+    }
+
+    console.log('object', object)
+
+    await writeTransaction(wa.wif, object)
+  }
+
+  const createHash = async (dni: string) => {
+    //console.log('DNI', dni)
+    const date = new Date()
+    const paddedDNI = dni.padStart(16, '0') + date
+    const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
+    const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
+    const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+    })
+    const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
+    return {hash: hexResult.substr(0, 32), hashAll: hexResult}
   }
 
   return (
@@ -197,7 +252,7 @@ const Body = (props: {
           </Text>
         </TouchableOpacity>
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
           onPress={() => getWallet()}>
@@ -213,7 +268,7 @@ const Body = (props: {
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {'write Wallet'}
           </Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
     </View>
   )
