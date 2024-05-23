@@ -128,11 +128,10 @@ export const Router = () => {
   const postKafe = JSON.parse(storage.getString("postKafeData") || "{}");
   const getKafe = JSON.parse(storage.getString("getKafeData") || "{}");
   useEffect(() => {
-    //storage.delete('parcels')
+    // /storage.delete("parcels");
     //storage.delete('sales')
-    //storage.delete("getDistrict");
+    //storage.delete("getKafeData");
     getIsLogin();
-    console.log("aqui esta el distrito ojala valfga", district);
   }, []);
 
   useEffect(() => {

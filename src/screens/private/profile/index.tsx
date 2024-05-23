@@ -22,7 +22,7 @@ import { UserInterface, UsersContext } from "../../../states/UserContext";
 import { useKafeContext } from "../../../states/KafeContext";
 const ProfileScreen = () => {
   const user: UserInterface = useContext(UsersContext);
-  const { postKafeSistemas } = useKafeContext();
+  const { postKafeSistemas, getKafeSistemas } = useKafeContext();
   const [selectedImage, setSelectedImage] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
   //const [wallet, setWallet] = useState<any>(null);
@@ -185,19 +185,6 @@ const ProfileScreen = () => {
             </Card>
           </>
         )}
-        <TouchableOpacity
-          style={{
-            width: "80%",
-            alignItems: "center",
-            marginTop: 30,
-            backgroundColor: "#123456",
-          }}
-          onPress={() => {
-            postKafeSistemas();
-          }}
-        >
-          <Text>TEST</Text>
-        </TouchableOpacity>
       </View>
     </ScrollView>
   );

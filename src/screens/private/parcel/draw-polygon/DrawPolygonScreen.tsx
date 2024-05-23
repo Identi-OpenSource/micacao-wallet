@@ -33,6 +33,7 @@ import { useGfwContext } from "../../../../states/GfwContext";
 import DrawPolyline from "./DrawPolyline";
 import Toast from "react-native-toast-message";
 import { ConnectionContext } from "../../../../states/ConnectionContext";
+import { useKafeContext } from "../../../../states/KafeContext";
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
 }
@@ -134,6 +135,7 @@ export const DrawPolygonScreen = () => {
     getData,
     errorGfw,
   } = useGfwContext();
+  const {} = useKafeContext();
   const internetConnection = useContext(ConnectionContext);
   const { isConnected } = internetConnection;
   useEffect(() => {
@@ -177,6 +179,7 @@ export const DrawPolygonScreen = () => {
 
     setSumaTotalVentas(sumaPorTipo);
   };
+
   const submitPost = () => {
     if (isConnected) {
       postGfw();
@@ -239,6 +242,30 @@ export const DrawPolygonScreen = () => {
       });
   }, [errorGfw]);
 
+  const getKafe = JSON.parse(storage.getString("getKafeData") || "{}");
+
+  const getBackgroundColor = () => {
+    switch (getKafe.state) {
+      case "ok":
+        return "#22C55E"; // verde
+      case "notapproved":
+        return "#EF4444"; // Rojo
+      case "onhold":
+      default:
+        return "#F59E0B"; // Anaranjado por defecto si está en espera
+    }
+  };
+  const getMessage = () => {
+    switch (getKafe.state) {
+      case "ok":
+        return "Estado de titularidad aprobado";
+      case "not approved":
+        return "Estado de titularidad no aprobado";
+      case "on hold":
+      default:
+        return "Estado de titularidad en espera";
+    }
+  };
   return (
     <View
       style={{
@@ -401,7 +428,7 @@ export const DrawPolygonScreen = () => {
         >
           <View
             style={{
-              backgroundColor: "#F59E0B",
+              backgroundColor: getBackgroundColor(),
               alignItems: "center",
               width: "100%",
               borderRadius: 5,
@@ -410,9 +437,7 @@ export const DrawPolygonScreen = () => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ color: "#fff" }}>
-              Estado de titularidad en espera
-            </Text>
+            <Text style={{ color: "#fff" }}>{getMessage()}</Text>
           </View>
           <MapView
             ref={map}

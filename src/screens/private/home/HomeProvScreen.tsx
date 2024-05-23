@@ -26,12 +26,10 @@ import {
 } from "../../../config/themes/default";
 import { useAuth } from "../../../states/AuthContext";
 import { ConnectionContext } from "../../../states/ConnectionContext";
+import { useGfwContext } from "../../../states/GfwContext";
 import { useSyncData } from "../../../states/SyncDataContext";
 import { UserInterface, UsersContext } from "../../../states/UserContext";
-import { useGfwContext } from "../../../states/GfwContext";
-import axios from "axios";
-import CryptoJS from "crypto-js";
-import { Btn } from "../../../components/button/Button";
+import { useKafeContext } from "../../../states/KafeContext";
 /* import DATA_KAFE from "./kafe-sistemas.json";
 const key = "2acdugezqflwuz8oc58j4n2tmkzsdhd8";
 const API_KAFE_SISTEMAS =
@@ -44,7 +42,13 @@ export const HomeProvScreen = () => {
 
   const { isConnected } = internetConnection;
   const { toSyncData, dataToSync, loadingSync } = useSyncData();
-  const { postGfw } = useGfwContext();
+  const {
+    postKafeSistemas,
+    getKafeSistemas,
+    postKafeData,
+    getKafeData,
+    loadingKafe,
+  } = useKafeContext();
   const { accessToken } = useAuth();
   const [syncUp, setSyncUp] = useState(false);
   const [loadinSync, setLoadingSync] = useState(false);
@@ -151,6 +155,22 @@ export const HomeProvScreen = () => {
     await writeTransaction(wa.wif);
   };
 
+  useEffect(() => {
+    if (!loadingKafe && Object.keys(postKafeData).length === 0 && isConnected) {
+      postKafeSistemas();
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
+    let interval;
+
+    interval = setInterval(() => {
+      if (!loadingKafe && isConnected) {
+        getKafeSistemas();
+      }
+    }, 300000);
+    return () => clearInterval(interval);
+  }, [isConnected]);
   return (
     <SafeArea bg={"isabelline"}>
       <ScrollView>

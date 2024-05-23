@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState } from "react";
 import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
+import { useAuth } from "../states/AuthContext";
 // Dedine el contexto de kafe sistemas
 const KafeContext = createContext({
-  getKafe: () => {},
+  getKafeSistemas: () => {},
   postKafeSistemas: () => {},
   errorKafe: null,
   loadingKafe: false,
@@ -13,6 +14,7 @@ const KafeContext = createContext({
   setGetKafe: (value: any) => {},
 });
 export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
+  const { accessToken } = useAuth();
   const [errorKafe, setErrorKafe] = useState(null);
   const [loadingKafe, setLoadingKafe] = useState(false);
   const [postKafeData, setPostKafeData] = useState({});
@@ -21,21 +23,29 @@ export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
   const BASE_URL = "http://192.168.100.40:3000/submit";
   const GET_BASE_URL = "https://api-micacao.dev.identi.digital";
 
+  const KAFE_SISTEMAS_KEY =
+    "cFZmeGpSOUdWUUI0UXpYcWc2Y0swaFRMUXM4aDBDMkxPRVRrSnRWc0wwSldoMjR0WXBSZzk5dVNFUzdXYVRrdg==";
   const setPostKafe = (value: any) => {
     setPostKafeData(value);
   };
   const setGetKafe = (value: any) => {
     setGetKafeData(value);
   };
-  const getKafe = async () => {
+  const getKafeSistemas = async () => {
+    const user = JSON.parse(storage.getString("user") || "{}");
+    const postKafe = JSON.parse(storage.getString("postKafeData") || "{}");
     try {
       setLoadingKafe(true);
 
       const apiRequest: API_INTERFACE = {
         method: "GET",
-        url: `${GET_BASE_URL}/fiel_state/${postKafeData.code}`,
-        //url: `${BASE_URL}/172`,
+        //url: `${GET_BASE_URL}/fiel_state/${user.dni}/${postKafe.Code}`,
+        url: `${GET_BASE_URL}/field_state/hashdni/10`,
+        headers: {
+          "kafe-sistemas-key": KAFE_SISTEMAS_KEY,
+        },
       };
+
       const data = await HTTP(apiRequest);
       console.log("data", data);
       setGetKafeData(data);
@@ -113,7 +123,7 @@ export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <KafeContext.Provider
       value={{
-        getKafe,
+        getKafeSistemas,
         postKafeSistemas,
         loadingKafe,
         errorKafe,
