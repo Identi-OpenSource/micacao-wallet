@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">MiCacao</string>
-    <string name="mapbox_access_token">sk.eyJ1IjoiYWNob3JyZXMiLCJhIjoiY2x0aGNhenRtMDNlYzJpazl2eWF2emZ6ZCJ9.1AbQAkG2QBZyWRGSwgFe-g</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiaWRlbnRpLXJvYmluc29ubG0iLCJhIjoiY2x3Z3Q1ZG51MDd1ODJocXI4Yzk1aTE3diJ9.f1l1UkqwTm9qXolMQ_W5iQ</string>
 </resources>
