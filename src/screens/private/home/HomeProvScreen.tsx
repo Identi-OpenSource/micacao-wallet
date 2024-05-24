@@ -50,7 +50,6 @@ export const HomeProvScreen = () => {
   const {accessToken} = useAuth()
   const [syncUp, setSyncUp] = useState(false)
   const [loadinSync, setLoadingSync] = useState(false)
-  const [wa, setWa] = useState(null) as any
 
   useFocusEffect(
     useCallback(() => {
