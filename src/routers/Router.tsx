@@ -14,7 +14,6 @@ import { StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import { storage } from "../config/store/db";
 import { BORDER_RADIUS_DF, COLORS_DF, MP_DF } from "../config/themes/default";
-import { SplashScreen } from "../screens/SplashScreen";
 import { HelpScreen } from "../screens/private/help/HelpScreen";
 import { HomeProvScreen } from "../screens/private/home/HomeProvScreen";
 import { TestMap } from "../screens/private/home/TestMap";
@@ -202,9 +201,8 @@ export const Router = () => {
     const StackPublic = createNativeStackNavigator();
     return (
       <StackPublic.Navigator screenOptions={{ ...slideFromRight }}>
-        <StackPublic.Screen name="SplashScreen" component={SplashScreen} />
-        <StackPublic.Screen name="StartScreen" component={StartScreen} />
         <StackPublic.Screen name="HomeScreen" component={HomeScreen} />
+        <StackPublic.Screen name="StartScreen" component={StartScreen} />
         <StackPublic.Screen name="IamScreen" component={IamScreen} />
         <StackPublic.Screen name="IamFromScreen" component={IamFromScreen} />
         <StackPublic.Screen name="TestMap" component={TestMap} />
