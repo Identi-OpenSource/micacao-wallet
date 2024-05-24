@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {writeTransaction, newWallet} from '../../../OCC/occ'
+import {writeTransaction, newWallet, fundingWallet} from '../../../OCC/occ'
 import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
@@ -36,6 +36,7 @@ import Config from 'react-native-config'
 export const HomeProvScreen = () => {
   const user: UserInterface = useContext(UsersContext)
   const internetConnection = useContext(ConnectionContext)
+  const wallet = JSON.parse(storage.getString('wallet') || '{}')
 
   const {isConnected} = internetConnection
   const {toSyncData, dataToSync, loadingSync} = useSyncData()
@@ -49,7 +50,6 @@ export const HomeProvScreen = () => {
   const {accessToken} = useAuth()
   const [syncUp, setSyncUp] = useState(false)
   const [loadinSync, setLoadingSync] = useState(false)
-  const [wa, setWa] = useState(null) as any
 
   useFocusEffect(
     useCallback(() => {
@@ -80,18 +80,27 @@ export const HomeProvScreen = () => {
     }
   }, [isConnected, dataToSync.parcels, dataToSync.sales])
 
+  useEffect(() => {
+    console.log(wallet)
+    if (Object.keys(wallet).length > 0) {
+      if (wallet.isFunding) {
+        write()
+      } else {
+        funding()
+      }
+    }
+  }, [wallet])
+
   const getWallet = () => {
     // Create Wallet
-    //const wallet = JSON.parse(storage.getString('wallet') || '{}')
-    const wallet = {
-      isFunding: true,
-      wallet: {
-        walletOFC: 'R9vNe1TJLJta1srkqNo8WBrGN4JDJpTCDQ',
-        wif: 'L2e3T9u1ph4nceszGLqpCmwZ8soZf19hnonUNfiFywwL2bNADxwC',
-      },
-    }
+    // const wallet = {
+    //   isFunding: true,
+    //   wallet: {
+    //     walletOFC: 'R9vNe1TJLJta1srkqNo8WBrGN4JDJpTCDQ',
+    //     wif: 'L2e3T9u1ph4nceszGLqpCmwZ8soZf19hnonUNfiFywwL2bNADxwC',
+    //   },
+    // }
     console.log(wallet)
-    setWa(wallet.wallet)
 
     //Testing Wallet
     // const wallet = newWallet()
@@ -145,7 +154,19 @@ export const HomeProvScreen = () => {
 
     console.log('object', object)
 
-    await writeTransaction(wa.wif, object)
+    await writeTransaction(wallet.wallet.wif, object)
+  }
+
+  const funding = async () => {
+    const funding = await fundingWallet(wallet.wallet.walletOFC).catch(() => ({
+      status: 500,
+    }))
+
+    const isFunding = funding.status === 200
+
+    const wallet_a = wallet.wallet
+
+    storage.set('wallet', JSON.stringify({wallet: wallet_a, isFunding}))
   }
 
   const createHash = async (dni: string) => {
@@ -286,7 +307,7 @@ const Body = (props: {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
           onPress={() => getWallet()}>
@@ -302,7 +323,7 @@ const Body = (props: {
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {'write Wallet'}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   )
