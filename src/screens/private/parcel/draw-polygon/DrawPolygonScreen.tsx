@@ -34,6 +34,10 @@ import DrawPolyline from "./DrawPolyline";
 import Toast from "react-native-toast-message";
 import { ConnectionContext } from "../../../../states/ConnectionContext";
 import { useKafeContext } from "../../../../states/KafeContext";
+import {
+  height,
+  width,
+} from "@fortawesome/free-solid-svg-icons/faExclamationTriangle";
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
 }
@@ -448,7 +452,11 @@ export const DrawPolygonScreen = () => {
             attributionEnabled={false}
             compassEnabled={false}
             logoEnabled={false}
-            style={{ height: 300, width: 350, alignSelf: "center" }}
+            style={{
+              height: width * 0.58,
+              width: width * 0.6,
+              alignSelf: "center",
+            }}
           >
             <Polygon coordinates={coordinatesWithLast} />
             {started && <Polygon coordinates={coordinatesWithLast} />}

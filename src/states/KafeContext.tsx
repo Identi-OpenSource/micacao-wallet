@@ -19,10 +19,11 @@ export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
   const [loadingKafe, setLoadingKafe] = useState(false);
   const [postKafeData, setPostKafeData] = useState({});
   const [getKafeData, setGetKafeData] = useState({});
-  //const BASE_URL = "http://148.113.174.223/api/v1/pe/land-request/polygon";
-  const BASE_URL = "http://192.168.100.40:3000/submit";
+  const BASE_URL = "http://148.113.174.223/api/v1/pe/land-request/polygon";
+  //const BASE_URL = "http://192.168.100.40:3000/submit";
   const GET_BASE_URL = "https://api-micacao.dev.identi.digital";
-
+  const API_KEY =
+    "fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4";
   const KAFE_SISTEMAS_KEY =
     "cFZmeGpSOUdWUUI0UXpYcWc2Y0swaFRMUXM4aDBDMkxPRVRrSnRWc0wwSldoMjR0WXBSZzk5dVNFUzdXYVRrdg==";
   const setPostKafe = (value: any) => {
@@ -39,8 +40,8 @@ export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
 
       const apiRequest: API_INTERFACE = {
         method: "GET",
-        //url: `${GET_BASE_URL}/fiel_state/${user.dni}/${postKafe.Code}`,
-        url: `${GET_BASE_URL}/field_state/hashdni/10`,
+        url: `${GET_BASE_URL}/field_state/${user.dni}/${postKafe.Code}`,
+        //url: `${GET_BASE_URL}/field_state/hashdni/10`,
         headers: {
           "kafe-sistemas-key": KAFE_SISTEMAS_KEY,
         },
@@ -95,6 +96,9 @@ export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
           dni: user.dni,
           polygon: polygonCoordinates,
           departamento: district.dist_name,
+        },
+        headers: {
+          "api-key": API_KEY,
         },
       };
 

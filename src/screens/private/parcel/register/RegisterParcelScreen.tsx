@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from "react-native";
 import { ParcelColor } from "../../../../assets/svg";
 import { SafeArea } from "../../../../components/safe-area/SafeArea";
@@ -17,6 +18,7 @@ import {
   MP_DF,
 } from "../../../../config/themes/default";
 import { UserInterface, UsersContext } from "../../../../states/UserContext";
+const { width, height } = Dimensions.get("window");
 
 interface RegisterParcelScreenProps {
   navigation: any;
@@ -54,14 +56,14 @@ const RegisterParcelScreen: React.FC<RegisterParcelScreenProps> = ({
             justifyContent: "center",
             alignItems: "center",
             width: "100%",
-            height: "50%",
+            height: height * 0.42,
             marginTop: 25,
           }}
         >
           <Card
             containerStyle={{
               width: "95%",
-              height: "90%",
+              height: height * 0.42,
               elevation: 5,
               borderRadius: 7,
               justifyContent: "center",
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS_DF.citrine_brown,
     marginHorizontal: MP_DF.medium,
-    marginTop: MP_DF.xxlarge * 1.5,
+
     textAlign: "center",
   },
   textName: {
