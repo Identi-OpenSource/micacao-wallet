@@ -1,3 +1,4 @@
+import { ReactNativeJoystick } from "@korsolutions/react-native-joystick";
 import { useNavigation } from "@react-navigation/native";
 import {
   Camera,
@@ -184,6 +185,37 @@ const PoligonJoystick = () => {
     coorInitRef.current = lastCoordinate;
   }, [coordinates]);
 
+  const handleMove = (event) => {
+    const { angle, distance } = event;
+    const sensitivityFactor = 0.5; // Ajusta el factor de sensibilidad según sea necesario
+    const deadZoneRadius = 20; // Ajusta el tamaño de la zona muerta según sea necesario
+
+    // Aplica sensibilidad y zona muerta
+    const sensitivityAdjustedDistance = distance * sensitivityFactor;
+    const x = Math.cos(angle) * sensitivityAdjustedDistance;
+    const y = Math.sin(angle) * sensitivityAdjustedDistance;
+
+    // Actualiza la posición del joystick
+    setJoystickPosition({ x, y });
+
+    console.log(`Joystick moved: angle=${angle}, distance=${distance}`);
+  };
+  const moveMap = (angle, force) => {
+    const angleRad = angle.radian;
+
+    const deltaX = Math.cos(angleRad) * ((force * widthMap) / 2);
+    const deltaY = Math.sin(angleRad) * ((force * heightMap) / 2);
+
+    const initialLng = coorInitRef.current[0];
+    const initialLat = coorInitRef.current[1];
+
+    // Calcular las nuevas coordenadas
+    const newLat = initialLat + deltaY / 111111;
+    const newLng =
+      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 180));
+    setCenterCoordinate([newLng, newLat]);
+  };
+
   const deletePoint = () => {
     if (coordinates.length > 1) {
       setCoordinates((prev) => {
@@ -259,32 +291,32 @@ const PoligonJoystick = () => {
           }
         }}
       >
-        <CrosshairOverlay onCenter={(c) => setCrosshairPos(c)} />
-        <Polygon coordinates={coordinatesWithLast} />
-        {coordinatesWithLast.map((c, i) => (
-          <PointAnnotation
-            key={i.toString()}
-            id={i.toString()}
-            coordinate={[c[0], c[1]]}
-          >
-            <View
-              style={{
-                height: 10,
-                width: 10,
-                backgroundColor: "white",
-                borderRadius: 5,
-              }}
-            />
-          </PointAnnotation>
-        ))}
+        {<CrosshairOverlay onCenter={(c) => setCrosshairPos(c)} />}
+        {<Polygon coordinates={coordinatesWithLast} />}
+        {coordinatesWithLast.map((c, i) => {
+          return (
+            <PointAnnotation
+              key={i.toString()}
+              id={i.toString()}
+              coordinate={[c[0], c[1]]}
+            >
+              <View
+                style={{
+                  height: 10,
+                  width: 10,
+                  backgroundColor: "white",
+                  borderRadius: 5,
+                }}
+              />
+            </PointAnnotation>
+          );
+        })}
         <Camera
           ref={ref2}
           defaultSettings={{
             centerCoordinate: firstPoint,
             zoomLevel: 17,
           }}
-          minZoomLevel={14}
-          maxZoomLevel={18}
           animationMode={"flyTo"}
           animationDuration={100}
           centerCoordinate={centerCoordinate}
@@ -311,7 +343,17 @@ const PoligonJoystick = () => {
               justifyContent: "center",
               alignItems: "center",
             }}
-          ></View>
+          >
+            <ReactNativeJoystick
+              color={"#D4D7D5"}
+              radius={75}
+              onMove={(data) => {
+                if (data.angle && data.force) {
+                  moveMap(data.angle, data.force);
+                }
+              }}
+            />
+          </View>
 
           <TouchableOpacity
             onPress={() => {

@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(12),
     fontWeight: "600",
     lineHeight: moderateScale(20),
-    color: COLORS_DF.warning,
+    color: "red",
     textAlign: "right",
   },
   inputCode: {

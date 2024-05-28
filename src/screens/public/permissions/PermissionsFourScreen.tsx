@@ -46,7 +46,7 @@ export const PermissionsFourScreen = () => {
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           let initialRouteName: keyof RootStackParamList = "TabPrivate";
           if (!user.isLogin) {
-            initialRouteName = "RegisterScreen";
+            initialRouteName = "Maps";
           }
           if (user.isLogin && user?.parcel?.length === 0) {
             initialRouteName = "RegisterParcelScreen";
@@ -65,16 +65,23 @@ export const PermissionsFourScreen = () => {
     <SafeArea bg={"isabelline"}>
       <View style={styles.container}>
         <View style={styles.textContainer}>
-          <Text style={[styles.textB]}>{""}</Text>
-          {user.gender === "M" && <Camera_M />}
-          {user.gender === "W" && <Camera_W />}
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 20,
+            }}
+          >
+            {user.gender === "M" && <Camera_M />}
+            {user.gender === "W" && <Camera_W />}
+          </View>
           <View
             style={{
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <CameraPermision style={styles.img} width={400} height={420} />
+            <CameraPermision style={styles.img} width={440} height={420} />
           </View>
         </View>
         <View style={styles.formBtn}>
@@ -93,6 +100,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: horizontalScale(MP_DF.large),
+    paddingTop: 25,
   },
   img: {
     alignSelf: "center",

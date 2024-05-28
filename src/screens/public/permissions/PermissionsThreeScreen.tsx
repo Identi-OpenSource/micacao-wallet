@@ -56,9 +56,15 @@ export const PermissionsThreeScreen = () => {
     <SafeArea bg={"isabelline"}>
       <View style={styles.container}>
         <View style={styles.textContainer}>
-          <Text style={[styles.textB]}>{""}</Text>
-          {user.gender === "M" && <Location_M />}
-          {user.gender === "W" && <Location_W />}
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {user.gender === "M" && <Location_M />}
+            {user.gender === "W" && <Location_W />}
+          </View>
           <View
             style={{
               justifyContent: "center",
@@ -84,6 +90,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: horizontalScale(MP_DF.large),
+    paddingTop: 20,
   },
   img: {
     alignSelf: "center",

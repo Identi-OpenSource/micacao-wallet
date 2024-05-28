@@ -20,7 +20,7 @@ import {
   verticalScale,
 } from '../../../config/themes/metrics'
 import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
-
+import {useMapContext} from '../../../states/MapContext'
 import {useSyncData} from '../../../states/SyncDataContext'
 Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
 const {width, height} = Dimensions.get('window')
@@ -29,13 +29,16 @@ export const RegisterOkScreen = () => {
   const [step, setStep] = useState({step: 0, msg: TEXTS.textH})
   const dispatch = useContext(UserDispatchContext)
   const user = useContext(UsersContext)
+  const {map} = useMapContext()
   const {addToSync} = useSyncData()
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
   useEffect(() => {
     initial()
   }, [])
-
+  useEffect(() => {
+    console.log('aqui esta la data', map)
+  }, [])
   // Inicializa el proceso de registro
   const initial = async () => {
     setStep({step: 1, msg: 'Creando billetera...'})
@@ -55,8 +58,7 @@ export const RegisterOkScreen = () => {
       step: 2,
       msg: 'Descargando mapa...',
     })
-    descargarMapaTarapoto(), descargarMapaJuanjui()
-    await delay(1000)
+    descargarMapa(), await delay(1000)
     setStep({step: 3, msg: 'Inicio de sesión...'})
     await delay(1500)
     addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')
@@ -65,45 +67,27 @@ export const RegisterOkScreen = () => {
     dispatch({type: 'login', payload: login})
   }
 
-  const descargarMapaTarapoto = async () => {
-    const bounds: [number, number, number, number] = geoViewport.bounds(
-      [-78.5442722, -0.1861084],
-      17,
-      [width, height],
-      512,
-    )
+  const descargarMapa = async () => {
+    const minx = parseFloat(map.minx_point)
+    const maxx = parseFloat(map.maxx_point)
+    const miny = parseFloat(map.miny_point)
+    const maxy = parseFloat(map.maxy_point)
 
-    const options = {
-      name: 'TarapotoMapTest',
-      styleURL: Mapbox.StyleURL.Satellite,
-      bounds: [
-        [bounds[0], bounds[1]],
-        [bounds[2], bounds[3]],
-      ] as [[number, number], [number, number]],
-      minZoom: 10,
-      maxZoom: 20,
-      metadata: {
-        whatIsThat: 'foo',
-      },
-    }
-    await Mapbox.offlineManager
-      .createPack(
-        options,
-        (region, status) => {
-          console.log('=> progress callback region:', 'status: ', status)
-        },
-        error => {
-          console.log('=> error callback error:', error)
-        },
-      )
-      .catch(() => {
-        console.log('=> Mapa descargado')
-      })
-  }
+    console.log('minxpoint ', minx)
+    console.log('maxxpoint ', maxx)
+    console.log('miny_point ', miny)
+    console.log('maxy_point ', maxy)
+    // Calcular el centro del área del mapa
+    const centerLng = (minx + maxx) / 2
+    const centerLat = (miny + maxy) / 2
 
-  const descargarMapaJuanjui = async () => {
+    console.log('latitud', centerLat)
+    console.log('longitud', centerLng)
+
+    // Calcular los límites del área del mapa
     const bounds: [number, number, number, number] = geoViewport.bounds(
-      [-76.748, -7.181],
+      [centerLng, centerLat],
+
       17,
       [width, height],
       512,
@@ -136,7 +120,7 @@ export const RegisterOkScreen = () => {
         console.log('=> Mapa descargado')
       })
   }
-  /*   const descargarMapaQuito = async () => {
+  /*  const descargarMapaQuito = async () => {
     const bounds: [number, number, number, number] = geoViewport.bounds(
       [-78.4678, -0.1807],
       12,

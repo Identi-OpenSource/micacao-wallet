@@ -28,6 +28,7 @@ import {
 } from '../../../config/themes/default'
 import {useAuth} from '../../../states/AuthContext'
 import {ConnectionContext} from '../../../states/ConnectionContext'
+import {useKafeContext} from '../../../states/KafeContext'
 import {useSyncData} from '../../../states/SyncDataContext'
 import {UserInterface, UsersContext} from '../../../states/UserContext'
 import Config from 'react-native-config'
@@ -39,10 +40,17 @@ export const HomeProvScreen = () => {
 
   const {isConnected} = internetConnection
   const {toSyncData, dataToSync, loadingSync} = useSyncData()
-
+  const {
+    postKafeSistemas,
+    getKafeSistemas,
+    postKafeData,
+    getKafeData,
+    loadingKafe,
+  } = useKafeContext()
   const {accessToken} = useAuth()
   const [syncUp, setSyncUp] = useState(false)
   const [loadinSync, setLoadingSync] = useState(false)
+  const [wa, setWa] = useState(null) as any
 
   useFocusEffect(
     useCallback(() => {
@@ -236,6 +244,8 @@ const Body = (props: {
   isConnected: boolean
   Parcel: any
   polygon: any
+  postGfw: any
+  getGfw: any
 }) => {
   const navigation = useNavigation()
 

@@ -12,6 +12,7 @@ import { InputPhone } from "../../../components/input-text/InputPhone";
 export interface InterfaceHeader {
   navigation: NavigationProp<ReactNavigation.RootParamList>;
   title: string;
+  label: string;
 }
 
 // first step
@@ -65,6 +66,18 @@ export const INPUTS_TWO = (code: string) =>
 export let SCHEMA_TWO = object({
   phone: string()
     .matches(REGEX.phone, { message: MSG_ERROR.matches })
+    .required(MSG_ERROR.required),
+});
+
+export let SCHEMA_CO = object({
+  phone: string()
+    .matches(REGEX.phone_co, { message: MSG_ERROR.matches })
+    .required(MSG_ERROR.required),
+});
+
+export let SCHEMA_PE = object({
+  phone: string()
+    .matches(REGEX.phone_pe, { message: MSG_ERROR.matches })
     .required(MSG_ERROR.required),
 });
 
