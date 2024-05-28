@@ -116,10 +116,10 @@ export const IamFromScreen: React.FC = () => {
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={""} />
-        {user.gender === "M" && <Iamfrom_m />}
-        {user.gender === "W" && <Iamfrom_w />}
-
+        <View style={styles.containerSvg}>
+          {user.gender === "M" && <Iamfrom_m />}
+          {user.gender === "W" && <Iamfrom_w />}
+        </View>
         <View style={styles.bodyContainer}>
           {cards.map((c, i) => (
             <Card1
@@ -174,16 +174,7 @@ const Card1: React.FC<CardProps> = ({
           >
             <Image source={img} style={styles.img} />
             <Text style={styles.titleCard}>{title}</Text>
-            <View style={styles.icon}>
-              <CheckBox
-                containerStyle={{}}
-                checked={selectedCountry === value}
-                checkedIcon="dot-circle-o"
-                uncheckedIcon="circle-o"
-                checkedColor="#ff5722"
-                onPress={() => handleCountrySelection(value)}
-              />
-            </View>
+            <View style={styles.icon}></View>
           </TouchableOpacity>
         </Card>
       </View>
@@ -195,6 +186,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: horizontalScale(MP_DF.large),
+    paddingTop: 36,
   },
   bodyContainer: {
     flexDirection: "row",
@@ -252,6 +244,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     paddingBottom: verticalScale(MP_DF.xlarge),
+  },
+  containerSvg: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

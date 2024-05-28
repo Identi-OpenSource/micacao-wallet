@@ -48,9 +48,10 @@ const RegisterSecondScreen: React.FC<RegisterSecondScreenProps> = ({
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={""} />
-        {user.gender == "M" && <Cellphone_M />}
-        {user.gender == "W" && <Cellphone_W />}
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          {user.gender == "M" && <Cellphone_M />}
+          {user.gender == "W" && <Cellphone_W />}
+        </View>
         <Formik
           initialValues={INIT_VALUES_TWO}
           onSubmit={(values) => submit(values)}

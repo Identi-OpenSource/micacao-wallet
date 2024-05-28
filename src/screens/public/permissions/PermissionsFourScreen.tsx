@@ -65,9 +65,16 @@ export const PermissionsFourScreen = () => {
     <SafeArea bg={"isabelline"}>
       <View style={styles.container}>
         <View style={styles.textContainer}>
-          <Text style={[styles.textB]}>{""}</Text>
-          {user.gender === "M" && <Camera_M />}
-          {user.gender === "W" && <Camera_W />}
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 20,
+            }}
+          >
+            {user.gender === "M" && <Camera_M />}
+            {user.gender === "W" && <Camera_W />}
+          </View>
           <View
             style={{
               justifyContent: "center",
@@ -93,6 +100,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: horizontalScale(MP_DF.large),
+    paddingTop: 25,
   },
   img: {
     alignSelf: "center",

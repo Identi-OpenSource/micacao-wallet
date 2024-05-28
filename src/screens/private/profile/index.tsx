@@ -3,6 +3,7 @@ import { Card } from "@rneui/base";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   BackHandler,
+  Dimensions,
   Image,
   Linking,
   PermissionsAndroid,
@@ -18,8 +19,10 @@ import { Arrow_Right, IconProfile, Person } from "../../../assets/svg";
 import HeaderComponent from "../../../components/Header";
 import { storage } from "../../../config/store/db";
 import { COLORS_DF, FONT_FAMILIES } from "../../../config/themes/default";
-import { UserInterface, UsersContext } from "../../../states/UserContext";
 import { useKafeContext } from "../../../states/KafeContext";
+import { UserInterface, UsersContext } from "../../../states/UserContext";
+const { width, height } = Dimensions.get("window");
+
 const ProfileScreen = () => {
   const user: UserInterface = useContext(UsersContext);
   const { postKafeSistemas, getKafeSistemas } = useKafeContext();
@@ -199,7 +202,6 @@ const styles = StyleSheet.create({
   card: {
     width: "80%",
     height: 50,
-
     justifyContent: "center",
   },
   textContainer: {
@@ -220,7 +222,7 @@ const styles = StyleSheet.create({
   textUpCard: {
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
-    fontSize: 16,
+    fontSize: width * 0.04,
   },
   textInformation: {
     fontFamily: FONT_FAMILIES.bold,
@@ -230,7 +232,7 @@ const styles = StyleSheet.create({
   textCard: {
     fontFamily: FONT_FAMILIES.bold,
     color: COLORS_DF.black,
-    fontSize: 15,
+    fontSize: width * 0.038,
   },
   image: {
     width: 150,

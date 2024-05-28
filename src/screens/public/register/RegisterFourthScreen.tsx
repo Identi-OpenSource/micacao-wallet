@@ -41,10 +41,10 @@ const RegisterFourthScreen: React.FC<RegisterFourthScreenProps> = ({
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={""} />
-        {user.gender == "M" && <Password_M />}
-        {user.gender == "W" && <Password_W />}
-
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          {user.gender == "M" && <Password_M />}
+          {user.gender == "W" && <Password_W />}
+        </View>
         <Formik
           initialValues={INIT_VALUES_FOURTH}
           onSubmit={(values) => submit(values)}

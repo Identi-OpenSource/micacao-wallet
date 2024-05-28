@@ -7,7 +7,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { Field, Formik } from "formik";
 import React, { useContext } from "react";
-import { Text, View } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import { Dni_M, Dni_W } from "../../../assets/svg";
 import { Btn, BtnIcon } from "../../../components/button/Button";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
@@ -66,9 +66,15 @@ export const RegisterScreen = () => {
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={""} />
-        {user.gender == "M" && <Dni_M />}
-        {user.gender == "W" && <Dni_W />}
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {user.gender == "M" && <Dni_M />}
+          {user.gender == "W" && <Dni_W />}
+        </View>
         <Formik
           initialValues={INIT_VALUES_ONE}
           onSubmit={(values) => submit(values)}
@@ -102,17 +108,16 @@ export const RegisterScreen = () => {
 // Componente Header
 
 export const Header = (props: InterfaceHeader) => {
-  const { navigation, title } = props;
+  const { navigation, label } = props;
   return (
-    <View style={styles.header}>
+    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.header}>
       <BtnIcon
         theme="transparent"
         icon="angle-left"
         size={moderateScale(30)}
-        style={{ container: styles.btnIcon }}
         onPress={() => navigation.goBack()}
       />
-      <Text style={styles.title}>{title}</Text>
-    </View>
+      <Text style={styles.title}>{label}</Text>
+    </TouchableOpacity>
   );
 };

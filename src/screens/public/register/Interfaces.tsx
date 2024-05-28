@@ -12,6 +12,7 @@ import { InputPhone } from "../../../components/input-text/InputPhone";
 export interface InterfaceHeader {
   navigation: NavigationProp<ReactNavigation.RootParamList>;
   title: string;
+  label: string;
 }
 
 // first step
