@@ -273,6 +273,9 @@ export const DrawPolygonScreen = () => {
               borderRadius: 5,
               flexDirection: "row",
             }}
+            onPress={() => {
+              navigation.navigate("RegisterOneScreen");
+            }}
           >
             <Text
               style={{
@@ -333,8 +336,9 @@ export const DrawPolygonScreen = () => {
                 </Text>
               </View>
               <View style={{ marginTop: 15 }}>
-                <Text>de cacao producido </Text>
+                <Text>vendidos a </Text>
               </View>
+              <Text style={{ color: COLORS_DF.citrine_brown }}>S/.</Text>
             </Card>
             <Card
               containerStyle={{
@@ -366,8 +370,9 @@ export const DrawPolygonScreen = () => {
                 </Text>
               </View>
               <View style={{ marginTop: 15 }}>
-                <Text>de cacao producido </Text>
+                <Text>vendidos a </Text>
               </View>
+              <Text style={{ color: COLORS_DF.citrine_brown }}>S/.</Text>
             </Card>
           </View>
           <Text style={styles.title}>Mapa de parcela</Text>

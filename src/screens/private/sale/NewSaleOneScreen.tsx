@@ -34,7 +34,7 @@ export const NewSaleOneScreen = () => {
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <HeaderActions title={"Paso 1 de 3"} navigation={navigation} />
+        <HeaderActions title={"Paso 1 de 5"} navigation={navigation} />
         <Text style={styles.title}>¿QUÉ VAS A VENDER?</Text>
         <ScrollView style={styles.containerBTN}>
           <TouchableOpacity

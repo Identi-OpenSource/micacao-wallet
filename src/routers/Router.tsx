@@ -357,6 +357,10 @@ export const Router = () => {
               title: "Poligon Joystick",
             }}
           />
+          <HomeStack.Screen
+            name="RegisterOneScreen"
+            component={RegisterOneScreen}
+          />
         </HomeStack.Group>
         <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>

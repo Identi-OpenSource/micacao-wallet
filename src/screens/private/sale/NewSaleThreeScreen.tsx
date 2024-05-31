@@ -67,7 +67,7 @@ export const NewSaleThreeScreen = () => {
       <View style={styles.container}>
         {p === 0 && (
           <>
-            <HeaderActions title={"Paso 3 de 3"} navigation={navigation} />
+            <HeaderActions title={"Paso 3 de 5"} navigation={navigation} />
             <Text style={styles.title}>¿CUÁNDO LO COSECHASTE?</Text>
             <View style={styles.containerBTN}>
               <FlatList
