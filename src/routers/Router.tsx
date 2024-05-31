@@ -50,6 +50,7 @@ import RegisterSecondScreen from "../screens/public/register/RegisterSecondScree
 import RegisterThirdScreen from "../screens/public/register/RegisterThirdScreen";
 import StartScreen from "../screens/public/register/StartScreen";
 import Maps from "../screens/public/maps/index";
+import { SaleScreen } from "../screens/private/sale/saleScreen";
 import { useAuth } from "../states/AuthContext";
 
 import { useSyncData } from "../states/SyncDataContext";
@@ -58,6 +59,7 @@ import { useMapContext } from "../states/MapContext";
 import { useGfwContext } from "../states/GfwContext";
 import { Test } from "../screens/public/testing";
 import { useKafeContext } from "../states/KafeContext";
+import { FiveSaleScreen } from "../screens/private/sale/fiveSaleScreen";
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -279,6 +281,8 @@ export const Router = () => {
             name="NewSaleThreeScreen"
             component={NewSaleThreeScreen}
           />
+          <HomeStack.Screen name="SaleScreen" component={SaleScreen} />
+          <HomeStack.Screen name="FiveSaleScreen" component={FiveSaleScreen} />
           <HomeStack.Screen
             name="NewSaleFourScreen"
             component={NewSaleFourScreen}
