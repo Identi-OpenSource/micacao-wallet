@@ -7,12 +7,12 @@ import Mapbox, {
   FillLayer,
   LineLayer,
   MapView,
-  PointAnnotation,
   ShapeSource,
   StyleURL,
 } from "@rnmapbox/maps";
-import React, { useEffect, useMemo, useRef, useState, useContext } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -21,7 +21,8 @@ import {
 } from "react-native";
 import Config from "react-native-config";
 import Spinner from "react-native-loading-spinner-overlay";
-import { Baba, Seco } from "../../../../assets/svg";
+import Toast from "react-native-toast-message";
+import { Baba, Seco, Add } from "../../../../assets/svg";
 import HeaderComponent from "../../../../components/Header";
 import { storage } from "../../../../config/store/db";
 import {
@@ -29,62 +30,16 @@ import {
   FONT_FAMILIES,
   FONT_SIZES,
 } from "../../../../config/themes/default";
-import { useGfwContext } from "../../../../states/GfwContext";
-import DrawPolyline from "./DrawPolyline";
-import Toast from "react-native-toast-message";
 import { ConnectionContext } from "../../../../states/ConnectionContext";
+import { useGfwContext } from "../../../../states/GfwContext";
 import { useKafeContext } from "../../../../states/KafeContext";
-import {
-  height,
-  width,
-} from "@fortawesome/free-solid-svg-icons/faExclamationTriangle";
+import DrawPolyline from "./DrawPolyline";
+
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN);
 }
-
+const { width, height } = Dimensions.get("window");
 type Position = [number, number];
-
-// type CrosshairProps = {
-//   size: number
-//   w: number
-//   onLayout: ComponentProps<typeof View>['onLayout']
-// }
-
-// const CrosshairOverlay = ({
-//   onCenter,
-// }: {
-//   onCenter: (x: [number, number]) => void
-// }) => {
-//   const ref = useRef<View>(null)
-
-//   // if (ref.current != null) {
-//   //   console.log('=> ref.current', ref.current != null)
-//   // }
-//   return (
-//     <View
-//       style={{
-//         position: 'absolute',
-//         top: 0,
-//         left: 0,
-//         right: 0,
-//         bottom: 0,
-//         alignContent: 'center',
-//         alignItems: 'center',
-//         justifyContent: 'center',
-//       }}
-//       pointerEvents="none">
-//       <Crosshair
-//         size={20}
-//         w={1.0}
-//         ref={ref}
-//         onLayout={e => {
-//           const {x, y, width, height} = e.nativeEvent.layout
-//           onCenter([x + width / 2.0, y + height / 2.0])
-//         }}
-//       />
-//     </View>
-//   )
-// }
 
 const lineLayerStyle = {
   lineColor: "#22C55E",
@@ -262,12 +217,12 @@ export const DrawPolygonScreen = () => {
   const getMessage = () => {
     switch (getKafe.state) {
       case "ok":
-        return "Estado de titularidad aprobado";
+        return "Estado de titularidad aprobado ";
       case "not approved":
-        return "Estado de titularidad no aprobado";
+        return "Estado de titularidad no aprobado ";
       case "on hold":
       default:
-        return "Estado de titularidad en espera";
+        return "Estado de titularidad en espera ";
     }
   };
   return (
@@ -301,11 +256,43 @@ export const DrawPolygonScreen = () => {
         />
         <View
           style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 15,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#fff",
+              width: width * 0.9,
+              height: height * 0.07,
+              justifyContent: "center",
+              alignItems: "center",
+              borderColor: COLORS_DF.robin_egg_blue,
+              borderWidth: 1,
+              borderRadius: 5,
+              flexDirection: "row",
+            }}
+          >
+            <Text
+              style={{
+                color: COLORS_DF.robin_egg_blue,
+                fontSize: width * 0.045,
+                marginRight: 2,
+              }}
+            >
+              Registrar mas parcelas{" "}
+            </Text>
+            <Add />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
             paddingHorizontal: 16,
             justifyContent: "center",
           }}
         >
-          <Text style={styles.title}>Datos de tu producción</Text>
+          <Text style={styles.title}>Información de ventas</Text>
           <View
             style={{
               justifyContent: "space-between",
@@ -346,7 +333,7 @@ export const DrawPolygonScreen = () => {
                 </Text>
               </View>
               <View style={{ marginTop: 15 }}>
-                <Text>de cacao producido</Text>
+                <Text>de cacao producido </Text>
               </View>
             </Card>
             <Card
@@ -379,7 +366,7 @@ export const DrawPolygonScreen = () => {
                 </Text>
               </View>
               <View style={{ marginTop: 15 }}>
-                <Text>de cacao producido</Text>
+                <Text>de cacao producido </Text>
               </View>
             </Card>
           </View>
@@ -427,7 +414,7 @@ export const DrawPolygonScreen = () => {
           containerStyle={{
             borderRadius: 7,
             elevation: 5,
-            height: 408,
+            height: "auto",
           }}
         >
           <View
@@ -453,8 +440,8 @@ export const DrawPolygonScreen = () => {
             compassEnabled={false}
             logoEnabled={false}
             style={{
-              height: width * 0.58,
-              width: width * 0.6,
+              height: height * 0.4,
+              width: width * 0.8,
               alignSelf: "center",
             }}
           >

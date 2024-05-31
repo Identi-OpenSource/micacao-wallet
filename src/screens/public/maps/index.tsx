@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS_DF.isabelline,
   },
   dropdown: {
-    height: 65,
+    height: 75,
     backgroundColor: "#fff",
     borderColor: COLORS_DF.citrine_brown,
     borderWidth: 0.5,
