@@ -40,7 +40,7 @@ export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
 
       const apiRequest: API_INTERFACE = {
         method: "GET",
-        url: `${GET_BASE_URL}/field_state/${user.dni}/${postKafe.Code}`,
+        url: `${GET_BASE_URL}/field_state/${user.dni}}`,
         //url: `${GET_BASE_URL}/field_state/hashdni/10`,
         headers: {
           "kafe-sistemas-key": KAFE_SISTEMAS_KEY,
