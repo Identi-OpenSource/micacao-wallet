@@ -2,63 +2,9 @@ import axios from 'axios'
 import {Linking} from 'react-native'
 const bitGoUTXO = require('@bitgo/utxo-lib')
 const {
-  fund_offline_wallets,
   send_batch_transactions,
   get_all_ecpairs,
 } = require('transaction-js/batch')
-
-function generateRandomString(length) {
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  let result = ''
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length))
-  }
-  return result
-}
-
-function generateRandomDate() {
-  const start = new Date(2000, 0, 1)
-  const end = new Date()
-  const randomDate = new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime()),
-  )
-  const year = randomDate.getFullYear()
-  const month = String(randomDate.getMonth() + 1).padStart(2, '0')
-  const day = String(randomDate.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
-
-function createRandomJSON() {
-  return {
-    id: generateRandomString(36),
-    anfp: String(Math.floor(Math.random() * 100000000)),
-    dfp: generateRandomString(16),
-    bnfp: {
-      value: String(Math.floor(Math.random() * 1000000)),
-      unique: true,
-    },
-    pds: generateRandomDate(),
-    pde: generateRandomDate(),
-    jds: String(Math.floor(Math.random() * 10)),
-    jde: String(Math.floor(Math.random() * 10)),
-    bbd: generateRandomDate(),
-    pc: generateRandomString(2),
-    pl: generateRandomString(8),
-    rmn: String(Math.floor(Math.random() * 10000000000)),
-    pon: String(Math.floor(Math.random() * 1000000)),
-    pop: String(Math.floor(Math.random() * 1000)),
-    mass: String(Math.random().toFixed(2)),
-    raw_json: Buffer.from(
-      JSON.stringify({randomKey: generateRandomString(5)}),
-    ).toString('base64'),
-    integrity_details: Math.random() > 0.5 ? null : generateRandomString(10),
-    created_at: new Date().toISOString(),
-    percentage:
-      Math.random() > 0.5 ? null : String(Math.floor(Math.random() * 100)),
-  }
-}
 
 export const newWallet = () => {
   // Create
@@ -70,53 +16,12 @@ export const newWallet = () => {
     walletOFC: ec_pairs.getAddress(),
     wif,
   }
-
-  //Testing for App
-  // let walletOFC = "RPfu6aqhrH44rouSPJuLV3d2ZBk1Lp9nY7"
-
-  // const privateKeyWIF = "L2aVJbLNkSjAoCnw6dSvSz6DotLJRwDrso5bv62SKPzJi7qurgiP"
-
-  // return {
-  //   walletOFC: walletOFC,
-  //   wif: privateKeyWIF,
-  // }
 }
 
 export const fundingWallet = async wallet => {
   const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
   return await axios.get(url)
 }
-// export const fundingWallet = async wallet => {
-//   const url = `https://fund.occs.openfoodchain.org/found/${wallet}`
-//   return await axios.get(url)
-// }
-
-// export const fundingWalletOff = async (baseAddy, baseWIF) => {
-//   console.log('Start testing for Funding Wallet Offline...')
-//   //name_ecpair, baseAddy, baseWIF
-//   const test_batch = {
-//     anfp: '11000011',
-//     dfp: 'Description here Braudin',
-//     pds: '2020-03-01',
-//     pde: '2020-03-05',
-//     jds: 2,
-//     jde: 7,
-//     bbd: '2020-05-05',
-//     pc: 'DE',
-//     pl: 'Herrath',
-//     rmn: '11200100520',
-//     pon: '123072',
-//     pop: '164',
-//     mass: 1.0,
-//     percentage: null,
-//   }
-//   const res = bitGoUTXO.ECPair.fromWIF(baseWIF, bitGoUTXO.networks.kmd)
-//   const name_ecpair = get_all_ecpairs(test_batch, res)
-//   console.log('name_ecpair')
-//   const resp = await fund_offline_wallets(name_ecpair, baseAddy, baseWIF)
-//   console.log('Funding Wallet Offline', resp)
-//   return resp
-// }
 
 export const verificarWallet = async wallet => {
   const url = `https://blockchain-explorer.occs.openfoodchain.org/address/${wallet}`
@@ -125,31 +30,42 @@ export const verificarWallet = async wallet => {
 }
 
 export const writeTransaction = async (wif, object) => {
-  // const wifs = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
-  // const res = bitGoUTXO.ECPair.fromWIF(
-  //   'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
-  //   bitGoUTXO.networks.kmd,
-  // )
-  // //console.log('res', res.getAddress())
-  // const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
-
+  /*
+  @Braudin
+  - Se limpió el código un poco.
+  - Object es el objeto que se enviará a la red de OCC
+  - De momento y para fines de prueba, dejo un objeto test.
+  - DNI siempre tiene que ser DNI+purchaseDate
+  */
+  // DNI y POLIGON en SHA256
+  const hashDNI =
+    'cc729b1a100e6cae30549fa78579371ec8766bba640202dca5e0ecfbd0bc5774'
+  const POLIGON =
+    '219be08dcfd34c5bc25134d5aa730f47eb9290c430498bafaab1452110c473a5'
+  const batch = {
+    bnfp: {
+      value: hashDNI,
+      unique: true,
+    },
+    purchaseDate: '02 marzo 2024', // Fecha de venta
+    farmerAlias: 'El Patron', // Alias del agricultor, Primer nombre
+    farmerPlot: POLIGON, // Parcela del agricultor GPS o POLIGON en SHA256
+    DNI: hashDNI, // DNI del agricultor SHA256
+    variety: 'Variedad 01', // variedad del cultivo
+    moistureLevel: 'BABA', // nivel de humedad || Creo que baba o seco
+    premiumPaid: '9999', // Prima pagada || 1= Sí, 2= No, 0= No lo sé
+    COOPMaterialNumber: '0000123', // Numero GTIN del material o ''
+    COOPMaterialName: 'CACAO BABA', // Nombre del producto, el que aparece en factura
+    PONumber: '12345', // Número de orden de compra (PO)
+    POPosition: '909090', // Posición de la orden de compra (PO)
+    plannedDeliveryDate: '01 marzo 2024', // Fecha de entrega (PO)
+    shipsTo: 'IDENTI', // Empresa que compra el producto (PO)
+  }
   const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
-
-  const test_batch = object
-
-  console.log(`test batch: ${JSON.stringify(test_batch)}`)
-
-  const ec_pairs = get_all_ecpairs(test_batch, res)
-
-  const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
-  console.log(`batchtx: ${JSON.stringify(tx1)}`)
-
+  // const test_batch = object
+  const ec_pairs = get_all_ecpairs(batch, res)
+  const tx1 = await send_batch_transactions(ec_pairs, batch, res)
   return tx1
-
-  // const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
-  // const ec_pairs = get_all_ecpairs(test_batch, res)
-  // const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
-  // console.log(tx1)
 }
 
 export const transaction = async wallet => {}
