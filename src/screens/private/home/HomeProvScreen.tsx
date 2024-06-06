@@ -154,7 +154,7 @@ export const HomeProvScreen = () => {
 
     console.log('object', object)
 
-    await writeTransaction(wallet.wallet.wif, object)
+    // await writeTransaction(wallet.wallet.wif, object)
   }
 
   const funding = async () => {
