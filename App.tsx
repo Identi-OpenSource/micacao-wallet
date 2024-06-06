@@ -149,7 +149,7 @@ function App(): React.JSX.Element {
         </View>
         <Text style={styles.toastText}>{text1}</Text>
         <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
-          <Text style={{ color: "#fff", fontSize: 15 }}>Ok</Text>
+          <Text style={{ color: "#fff", fontSize: 15 }}>Ok </Text>
         </TouchableOpacity>
       </View>
     ),
@@ -160,7 +160,7 @@ function App(): React.JSX.Element {
         </View>
         <Text style={styles.toastText}>{text1}</Text>
         <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
-          <Text style={{ color: "#fff", fontSize: 20 }}>Ok</Text>
+          <Text style={{ color: "#fff", fontSize: 20 }}> Ok </Text>
         </TouchableOpacity>
       </View>
     ),

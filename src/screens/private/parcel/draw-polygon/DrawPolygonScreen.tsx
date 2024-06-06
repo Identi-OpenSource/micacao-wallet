@@ -22,7 +22,7 @@ import {
 import Config from "react-native-config";
 import Spinner from "react-native-loading-spinner-overlay";
 import Toast from "react-native-toast-message";
-import { Baba, Seco, Add } from "../../../../assets/svg";
+import { Baba, Seco } from "../../../../assets/svg";
 import HeaderComponent from "../../../../components/Header";
 import { storage } from "../../../../config/store/db";
 import {
@@ -259,7 +259,7 @@ export const DrawPolygonScreen = () => {
           label="Mis parcelas"
           goBack={true}
           goBackNavigation={() => {
-            navigation.navigate("HomeProvScreen");
+            navigation.goBack();
           }}
           backgroundColor="#8F3B06"
           textColor="white"
@@ -278,35 +278,7 @@ export const DrawPolygonScreen = () => {
             alignItems: "center",
             marginTop: 15,
           }}
-        >
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#fff",
-              width: width * 0.9,
-              height: height * 0.07,
-              justifyContent: "center",
-              alignItems: "center",
-              borderColor: COLORS_DF.robin_egg_blue,
-              borderWidth: 1,
-              borderRadius: 5,
-              flexDirection: "row",
-            }}
-            onPress={() => {
-              navigation.navigate("RegisterOneScreen");
-            }}
-          >
-            <Text
-              style={{
-                color: COLORS_DF.robin_egg_blue,
-                fontSize: width * 0.045,
-                marginRight: 2,
-              }}
-            >
-              Registrar mas parcelas{" "}
-            </Text>
-            <Add />
-          </TouchableOpacity>
-        </View>
+        ></View>
         <View
           style={{
             paddingHorizontal: 16,

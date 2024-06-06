@@ -263,6 +263,36 @@ export const Router = () => {
     );
   };
 
+  const RegisterParcelStackPrivate = () => {
+    const RegisterParcelStack = createNativeStackNavigator();
+    return (
+      <RegisterParcelStack.Navigator screenOptions={{ ...slideFromRight }}>
+        <RegisterParcelStack.Screen
+          name="RegisterParcelScreen"
+          component={RegisterParcelScreen}
+        />
+        <RegisterParcelStack.Screen
+          name="RegisterOneScreen"
+          component={RegisterOneScreen}
+        />
+        <RegisterParcelStack.Screen
+          name="RegisterParcelTwoScreen"
+          component={RegisterParcelTwoScreen}
+        />
+        <RegisterParcelStack.Screen
+          name="RegisterParcelThirdScreen"
+          component={RegisterParcelThirdScreen}
+        />
+        <RegisterParcelStack.Screen
+          name="RegisterParcelFourthScreen"
+          component={RegisterParcelFourthScreen}
+        />
+
+        <RegisterParcelStack.Screen name="TabPrivate" component={TabPrivate} />
+      </RegisterParcelStack.Navigator>
+    );
+  };
+
   const HomeStackPrivate = () => {
     const HomeStack = createNativeStackNavigator();
     return (
@@ -357,43 +387,17 @@ export const Router = () => {
               title: "Poligon Joystick",
             }}
           />
+
           <HomeStack.Screen
-            name="RegisterOneScreen"
-            component={RegisterOneScreen}
+            name="RegisterParcel"
+            component={RegisterParcelStackPrivate}
+            options={{
+              title: "RegisterParcel",
+            }}
           />
         </HomeStack.Group>
         <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>
-    );
-  };
-
-  const RegisterParcelStackPrivate = () => {
-    const RegisterParcelStack = createNativeStackNavigator();
-    return (
-      <RegisterParcelStack.Navigator screenOptions={{ ...slideFromRight }}>
-        <RegisterParcelStack.Screen
-          name="RegisterParcelScreen"
-          component={RegisterParcelScreen}
-        />
-        <RegisterParcelStack.Screen
-          name="RegisterOneScreen"
-          component={RegisterOneScreen}
-        />
-        <RegisterParcelStack.Screen
-          name="RegisterParcelTwoScreen"
-          component={RegisterParcelTwoScreen}
-        />
-        <RegisterParcelStack.Screen
-          name="RegisterParcelThirdScreen"
-          component={RegisterParcelThirdScreen}
-        />
-        <RegisterParcelStack.Screen
-          name="RegisterParcelFourthScreen"
-          component={RegisterParcelFourthScreen}
-        />
-
-        <RegisterParcelStack.Screen name="TabPrivate" component={TabPrivate} />
-      </RegisterParcelStack.Navigator>
     );
   };
 
@@ -410,7 +414,6 @@ export const Router = () => {
 
   const HelpStackPrivate = () => {
     const HelpStack = createNativeStackNavigator();
-    const route = useRoute();
 
     const screenOptions = () => {
       return {

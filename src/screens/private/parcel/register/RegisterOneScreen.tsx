@@ -47,15 +47,12 @@ const RegisterOneScreen: React.FC<RegisterOneScreenProps> = ({
 }) => {
   const onSubmit = (values: Interface) => {
     storage.set("parcelTemp", JSON.stringify({ ...values }));
-
     navigation.navigate("RegisterParcelTwoScreen");
   };
   useEffect(() => {
     console.log("user", user);
   }, []);
   const user = useContext(UsersContext);
-  const parcel = useContext(parcelContext);
-  const dispatch = useContext(UserDispatchContext);
 
   return (
     <SafeArea bg="isabelline" isForm>

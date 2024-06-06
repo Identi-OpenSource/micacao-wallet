@@ -1,7 +1,15 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Parcels, ParcelColor } from "../../../../assets/svg";
+import Toast from "react-native-toast-message";
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Add, ParcelColor, Parcels } from "../../../../assets/svg";
 import { Btn } from "../../../../components/button/Button";
 import { SafeArea } from "../../../../components/safe-area/SafeArea";
 import { storage } from "../../../../config/store/db";
@@ -12,6 +20,8 @@ import {
   MP_DF,
 } from "../../../../config/themes/default";
 import { Parcel } from "../../../../states/UserContext";
+
+const { width, height } = Dimensions.get("window");
 
 export const MyParcelsScreen = () => {
   const navigation = useNavigation();
@@ -26,7 +36,7 @@ export const MyParcelsScreen = () => {
 
   return (
     <SafeArea>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View
           style={{
             justifyContent: "center",
@@ -36,18 +46,48 @@ export const MyParcelsScreen = () => {
           }}
         >
           <Text style={styles.title}>Lista de parcelas</Text>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#fff",
+              width: width * 0.9,
+              height: height * 0.07,
+              justifyContent: "center",
+              alignItems: "center",
+              borderColor: COLORS_DF.robin_egg_blue,
+              borderWidth: 1,
+              borderRadius: 5,
+              flexDirection: "row",
+            }}
+            onPress={() => {
+              if (parcels.length < 4 && parcels.length > 0) {
+                navigation.navigate("RegisterParcel");
+              } else {
+                Toast.show({
+                  type: "sadToast",
+                  text1: "Sólo se puede crear 4 parcelas",
+                });
+              }
+            }}
+          >
+            <Text
+              style={{
+                color: COLORS_DF.robin_egg_blue,
+                fontSize: width * 0.045,
+                marginRight: 2,
+              }}
+            >
+              Registrar mas parcelas{" "}
+            </Text>
+            <Add />
+          </TouchableOpacity>
         </View>
         {parcels.map((parcel) => CardParcel(parcel, navigation))}
-      </View>
+      </ScrollView>
     </SafeArea>
   );
 };
 
 const CardParcel = (props: Parcel, navigation: any) => {
-  //  const user: UserInterface = useContext(UsersContext)
-
-  const certificateND = async () => {};
-
   return (
     <View style={styles.cardContainer} key={props.name}>
       <View style={styles.cardHeader}>
