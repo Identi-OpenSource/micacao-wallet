@@ -71,8 +71,12 @@ export const HomeProvScreen = () => {
 
   useEffect(() => {
     if (isConnected) {
-      if (dataToSync.parcels && !loadingSync) toSyncData('createFarm')
-      if (dataToSync.sales) toSyncData('createSale')
+      if (dataToSync.parcels && !loadingSync) {
+        toSyncData('createFarm')
+      }
+      if (dataToSync.sales) {
+        toSyncData('createSale')
+      }
     }
   }, [isConnected, dataToSync.parcels, dataToSync.sales])
 
@@ -150,7 +154,7 @@ export const HomeProvScreen = () => {
 
     console.log('object', object)
 
-    await writeTransaction(wallet.wallet.wif, object)
+    // await writeTransaction(wallet.wallet.wif, object)
   }
 
   const funding = async () => {
