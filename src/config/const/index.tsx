@@ -7,24 +7,24 @@ export const REGEX = {
   // namePropio: /^(?:[a-zA-ZÀ-ÿ]+['-]?)+(?:\s(?:[a-zA-ZÀ-ÿ]+['-]?)+)+$/,
   namePropio: /^[a-zA-ZÀ-ÿ,-.'\s]+$/,
   dniPeruOColombia: /^\d{8}$|^\d{6,10}$/,
-};
+}
 
 export const GENDER = {
-  man: "Hombre",
-  woman: "Mujer",
-  id_woman: "W",
-  id_man: "M",
-};
+  man: 'Hombre',
+  woman: 'Mujer',
+  id_woman: 'W',
+  id_man: 'M',
+}
 
 export const COUNTRY = {
   peru: {
-    name: "Perú",
-    code: "PE",
-    phoneCode: "+51",
+    name: 'Perú',
+    code: 'PE',
+    phoneCode: '+51',
   },
   colombia: {
-    name: "Colombia",
-    code: "CO",
-    phoneCode: "+57",
+    name: 'Colombia',
+    code: 'CO',
+    phoneCode: '+57',
   },
-};
+}
