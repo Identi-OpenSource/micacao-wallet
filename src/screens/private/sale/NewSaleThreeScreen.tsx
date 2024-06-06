@@ -55,7 +55,7 @@ export const NewSaleThreeScreen = () => {
       addToSync(JSON.stringify([...sales, sale]), "sales");
       console.log("Todas las ventas", sales);
 
-      navigation.navigate("SaleScreen");
+      navigation.navigate("NewSaleFourScreen");
     } catch (error) {
       console.error("Error al guardar la venta:", error);
       setP(0); // Reinicia el estado en caso de error
@@ -67,7 +67,7 @@ export const NewSaleThreeScreen = () => {
       <View style={styles.container}>
         {p === 0 && (
           <>
-            <HeaderActions title={"Paso 3 de 5"} navigation={navigation} />
+            <HeaderActions title={"Paso 5 de 5"} navigation={navigation} />
             <Text style={styles.title}>¿CUÁNDO LO COSECHASTE?</Text>
             <View style={styles.containerBTN}>
               <FlatList

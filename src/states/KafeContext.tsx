@@ -84,17 +84,18 @@ export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
 
       setLoadingKafe(true);
 
-      // Formatear las coordenadas del polígono intercambiando latitud y longitud
+      // Formatear las coordenadas del polígono en formato WKT intercambiando latitud y longitud
       const polygonCoordinates = parcels.polygon
         .map((coordenada) => `${coordenada[1]} ${coordenada[0]}`)
-        .join(";");
+        .join(", ");
+      const wktPolygon = `POLYGON((${polygonCoordinates}))`;
 
       const apiRequest = {
         url: `${BASE_URL}`,
         method: "POST",
         payload: {
           dni: user.dni,
-          polygon: polygonCoordinates,
+          polygon: wktPolygon,
           departamento: district.dist_name,
         },
         headers: {

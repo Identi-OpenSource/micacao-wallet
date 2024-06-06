@@ -99,7 +99,7 @@ export const RegisterOkScreen = () => {
     );
 
     const options = {
-      name: "JuanjuiMapTest",
+      name: "MapTest",
       styleURL: Mapbox.StyleURL.Satellite,
       bounds: [
         [bounds[0], bounds[1]],

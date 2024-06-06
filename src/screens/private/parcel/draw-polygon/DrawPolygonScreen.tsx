@@ -86,6 +86,7 @@ export const DrawPolygonScreen = () => {
   const [started] = useState(true);
   const navigation = useNavigation();
   const [sumaTotalVentas, setSumaTotalVentas] = useState(0);
+  const [totalVentas, setTotalVentas] = useState(0);
   const {
     postGfw,
     getGfw,
@@ -100,12 +101,13 @@ export const DrawPolygonScreen = () => {
   useEffect(() => {
     // Obtener la suma total de ventas del almacenamiento local al cargar el componente
     calcularSumaVentas();
+    calcularVentas();
   }, []);
   useEffect(() => {
-    // eliminar polygonTemp
-    //storage.delete('polygonTemp')
+    // eliminar polygonTemps
+    //storage.delete("polygonTemp");
     // si existe el poligono dentro de la parcela
-    if (parcel[0].polygon) {
+    /* if (parcel[0].polygon) {
       setCoordinates(parcel[0].polygon);
     } else {
       if (storage.getString("polygonTemp")) {
@@ -115,7 +117,7 @@ export const DrawPolygonScreen = () => {
         console.log("=> polygonTemp", coordinateTemp);
         setCoordinates(coordinateTemp);
       }
-    }
+    } */
   }, []);
 
   const coordinatesWithLast = useMemo(() => {
@@ -137,6 +139,22 @@ export const DrawPolygonScreen = () => {
     }, {});
 
     setSumaTotalVentas(sumaPorTipo);
+  };
+  const calcularVentas = () => {
+    const salesString = storage.getString("sales") || "[]";
+    const sales = JSON.parse(salesString);
+
+    const multiplicar = sales.reduce((acumulador, dato) => {
+      if (dato.type) {
+        const totalVenta = parseFloat(dato.precio) * parseInt(dato.kl);
+        acumulador[dato.type] = (acumulador[dato.type] || 0) + totalVenta;
+      }
+      return acumulador;
+    }, {});
+
+    console.log("aqui estanlos datos calculados", multiplicar); // Corregido para imprimir la variable correcta
+
+    setTotalVentas(multiplicar);
   };
 
   const submitPost = () => {
@@ -338,7 +356,9 @@ export const DrawPolygonScreen = () => {
               <View style={{ marginTop: 15 }}>
                 <Text>vendidos a </Text>
               </View>
-              <Text style={{ color: COLORS_DF.citrine_brown }}>S/.</Text>
+              <Text style={{ color: COLORS_DF.citrine_brown }}>
+                S/.{totalVentas.SECO}
+              </Text>
             </Card>
             <Card
               containerStyle={{
@@ -372,7 +392,9 @@ export const DrawPolygonScreen = () => {
               <View style={{ marginTop: 15 }}>
                 <Text>vendidos a </Text>
               </View>
-              <Text style={{ color: COLORS_DF.citrine_brown }}>S/.</Text>
+              <Text style={{ color: COLORS_DF.citrine_brown }}>
+                S/.{totalVentas.BABA}
+              </Text>
             </Card>
           </View>
           <Text style={styles.title}>Mapa de parcela</Text>

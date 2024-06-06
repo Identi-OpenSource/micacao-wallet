@@ -13,7 +13,8 @@ import {
 } from "../../../config/themes/default";
 import { styles as ST } from "./NewSaleOneScreen";
 import { Dropdown } from "react-native-element-dropdown";
-
+import Toast from "react-native-toast-message";
+import { storage } from "../../../config/store/db";
 const { width, height } = Dimensions.get("window");
 
 export const FiveSaleScreen = () => {
@@ -30,9 +31,13 @@ export const FiveSaleScreen = () => {
       });
       return;
     }
-
+    const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
+    console.log("saletemp precio", saleTemp);
+    const sale = { ...saleTemp, parcela };
+    storage.set("saleTemp", JSON.stringify(sale));
+    console.log("DE QUE PARCELA SALE EL CACAO", sale);
     // Navegar a la siguiente pantalla
-    navigation.navigate("NewSaleFourScreen");
+    navigation.navigate("NewSaleThreeScreen");
   };
 
   const data = [
@@ -57,7 +62,7 @@ export const FiveSaleScreen = () => {
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <HeaderActions title={"Paso 5 de 5"} navigation={navigation} />
+        <HeaderActions title={"Paso 4 de 5"} navigation={navigation} />
         <View
           style={{
             width: width * 0.8,
@@ -89,8 +94,8 @@ export const FiveSaleScreen = () => {
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               onChange={(item) => {
-                setParcela(item.id); // Guardar el id de la parcela seleccionada
-                setIsFocus(false);
+                setParcela(item.name); // Guardar el id de la parcela seleccionada
+                setIsFocus(true);
               }}
             />
           </View>

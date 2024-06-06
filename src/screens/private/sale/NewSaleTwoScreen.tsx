@@ -41,10 +41,12 @@ export const NewSaleTwoScreen = () => {
       return;
     }
     const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
+    console.log("saletemp", saleTemp);
+
     const sale = { ...saleTemp, kl };
     storage.set("saleTemp", JSON.stringify(sale));
-    console.log("Peso", sale);
-    navigation.navigate("NewSaleThreeScreen");
+    console.log("PESO DEL CACAO", sale);
+    navigation.navigate("SaleScreen");
   };
   return (
     <SafeArea bg="isabelline" isForm>

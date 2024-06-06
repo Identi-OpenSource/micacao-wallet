@@ -26,10 +26,8 @@ export const SaleScreen = () => {
     return /^(0|[1-9]\d{0,3})(\.\d{2})?$/.test(numero.trim());
   };
 
-  storage.set("saleTemp", JSON.stringify({}));
-
   const onSubmit = () => {
-    /*  ref.current?.blur();
+    ref.current?.blur();
 
     if (isNaN(Number(precio)) || Number(precio) <= 0 || !decimals(precio)) {
       Toast.show({
@@ -37,25 +35,21 @@ export const SaleScreen = () => {
         text1: "¡Número Inválido!",
       });
       return;
-    } */
+    }
 
-    /*     const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
-    const sale = { ...saleTemp, precioPorKilo: precio };
+    const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
+    console.log("saletemp precio", saleTemp);
+    const sale = { ...saleTemp, precio };
+    storage.set("saleTemp", JSON.stringify(sale));
+    console.log("PRECIO DEL CACAO", sale);
 
-    const sales = JSON.parse(storage.getString("sales") || "[]");
-    sales.push(sale);
-
-    storage.set("sales", JSON.stringify(sales));
-
-    console.log("Precio", precio);
-    console.log("Sales", sales); */
     navigation.navigate("FiveSaleScreen");
   };
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <HeaderActions title={"Paso 4 de 5"} navigation={navigation} />
+        <HeaderActions title={"Paso 3 de 5"} navigation={navigation} />
         <View style={{ width: width * 0.8, marginLeft: 16 }}>
           <Text style={styles.title}>¿CUÁNTO TE ESTAN PAGANDO POR KILO?</Text>
         </View>
