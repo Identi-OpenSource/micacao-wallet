@@ -18,6 +18,10 @@ import { storage } from "../../../config/store/db";
 const { width, height } = Dimensions.get("window");
 
 export const FiveSaleScreen = () => {
+  const parcels = JSON.parse(storage.getString("parcels") || "[]");
+
+  console.log("parcels", parcels);
+
   const navigation = useNavigation();
   const [parcela, setParcela] = useState("");
   const [isFocus, setIsFocus] = useState(false);
@@ -39,25 +43,6 @@ export const FiveSaleScreen = () => {
     // Navegar a la siguiente pantalla
     navigation.navigate("NewSaleThreeScreen");
   };
-
-  const data = [
-    {
-      id: "1",
-      name: "Finca Roman",
-    },
-    {
-      id: "2",
-      name: "Parcelita",
-    },
-    {
-      id: "3",
-      name: "Huerta Verde",
-    },
-    {
-      id: "4",
-      name: "Tierra Fértil",
-    },
-  ];
 
   return (
     <SafeArea bg="isabelline" isForm>
@@ -84,7 +69,7 @@ export const FiveSaleScreen = () => {
               selectedTextStyle={styles.selectedTextStyle}
               itemTextStyle={styles.itemSelect}
               iconStyle={styles.iconStyle}
-              data={data}
+              data={parcels}
               autoScroll
               itemContainerStyle={styles.itemContainer}
               labelField="name"
@@ -93,8 +78,8 @@ export const FiveSaleScreen = () => {
               value={parcela} // Añadir el valor seleccionado
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
-              onChange={(item) => {
-                setParcela(item.name); // Guardar el id de la parcela seleccionada
+              onChange={(item: any) => {
+                setParcela(item.id); // Guardar el id de la parcela seleccionada
                 setIsFocus(true);
               }}
             />

@@ -250,7 +250,7 @@ const PoligonJoystick = () => {
   };
   const closeModal = () => {
     setShowModal(false);
-    navigation.navigate("DrawPolygonScreen");
+    navigation.navigate("DrawPolygonScreen", { index: 0 });
   };
 
   return (

@@ -4,7 +4,6 @@ import {
   BottomTabNavigationOptions,
   createBottomTabNavigator,
 } from "@react-navigation/bottom-tabs";
-import { useRoute } from "@react-navigation/native";
 import {
   NativeStackNavigationOptions,
   createNativeStackNavigator,
@@ -37,6 +36,8 @@ import { NewSaleFourScreen } from "../screens/private/sale/NewSaleFourScreen";
 import { NewSaleOneScreen } from "../screens/private/sale/NewSaleOneScreen";
 import { NewSaleThreeScreen } from "../screens/private/sale/NewSaleThreeScreen";
 import { NewSaleTwoScreen } from "../screens/private/sale/NewSaleTwoScreen";
+import { SaleScreen } from "../screens/private/sale/saleScreen";
+import Maps from "../screens/public/maps/index";
 import { PermissionsFourScreen } from "../screens/public/permissions/PermissionsFourScreen";
 import { PermissionsThreeScreen } from "../screens/public/permissions/PermissionsThreeScreen";
 import ConfirmPasswordScreen from "../screens/public/register/ConfirmPasswordScreen";
@@ -49,17 +50,15 @@ import { RegisterScreen } from "../screens/public/register/RegisterScreen";
 import RegisterSecondScreen from "../screens/public/register/RegisterSecondScreen";
 import RegisterThirdScreen from "../screens/public/register/RegisterThirdScreen";
 import StartScreen from "../screens/public/register/StartScreen";
-import Maps from "../screens/public/maps/index";
-import { SaleScreen } from "../screens/private/sale/saleScreen";
 import { useAuth } from "../states/AuthContext";
 
+import { FiveSaleScreen } from "../screens/private/sale/fiveSaleScreen";
+import { Test } from "../screens/public/testing";
+import { useGfwContext } from "../states/GfwContext";
+import { useKafeContext } from "../states/KafeContext";
+import { useMapContext } from "../states/MapContext";
 import { useSyncData } from "../states/SyncDataContext";
 import { UserDispatchContext, UsersContext } from "../states/UserContext";
-import { useMapContext } from "../states/MapContext";
-import { useGfwContext } from "../states/GfwContext";
-import { Test } from "../screens/public/testing";
-import { useKafeContext } from "../states/KafeContext";
-import { FiveSaleScreen } from "../screens/private/sale/fiveSaleScreen";
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -130,7 +129,7 @@ export const Router = () => {
   const getKafe = JSON.parse(storage.getString("getKafeData") || "{}");
   useEffect(() => {
     //storage.delete("parcels");
-    //storage.delete('sales')
+    //storage.delete("sales");
     //storage.delete("getKafeData");
     getIsLogin();
   }, []);

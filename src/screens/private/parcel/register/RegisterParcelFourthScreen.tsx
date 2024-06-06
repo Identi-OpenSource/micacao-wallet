@@ -114,7 +114,12 @@ const RegisterParcelFourthScreen: React.FC<RegisterParcelFourthScreenProps> = ({
     const secondPoint = [gps?.coords?.latitude, gps?.coords.longitude];
     const addParcel = [
       ...parcels,
-      { ...parcelTemp, secondPoint, syncUp: true },
+      {
+        ...parcelTemp,
+        secondPoint,
+        syncUp: true,
+        id: (parcels.length + 1).toString(),
+      },
     ];
     storage.set("parcels", JSON.stringify(addParcel));
 

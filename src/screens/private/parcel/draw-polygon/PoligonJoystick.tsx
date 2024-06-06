@@ -225,7 +225,7 @@ const PoligonJoystick = ({ route }: any) => {
 
   const closeModal = () => {
     setShowModal(false);
-    navigation.navigate("DrawPolygonScreen");
+    navigation.navigate("DrawPolygonScreen", { index });
   };
 
   /*   useFocusEffect(

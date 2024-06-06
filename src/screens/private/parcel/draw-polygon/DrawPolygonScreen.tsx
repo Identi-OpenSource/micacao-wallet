@@ -75,18 +75,20 @@ const Polygon = ({ coordinates }: { coordinates: Position[] }) => {
   );
 };
 
-export const DrawPolygonScreen = () => {
+export const DrawPolygonScreen = ({ route }: any) => {
+  const { index } = route.params;
+
   const parcel = JSON.parse(storage.getString("parcels") || "[]");
   const firstPoint = [
-    Number(parcel[0].firstPoint[1]),
-    Number(parcel[0].firstPoint[0]),
+    Number(parcel[index].firstPoint[1]),
+    Number(parcel[index].firstPoint[0]),
   ] as Position;
   const [coordinates, setCoordinates] = useState<Position[]>([firstPoint]);
   const [lastCoordinate] = useState<Position>(firstPoint);
   const [started] = useState(true);
   const navigation = useNavigation();
-  const [sumaTotalVentas, setSumaTotalVentas] = useState(0);
-  const [totalVentas, setTotalVentas] = useState(0);
+  const [sumaTotalVentas, setSumaTotalVentas] = useState<any>({});
+  const [totalVentas, setTotalVentas] = useState<any>({});
   const {
     postGfw,
     getGfw,
@@ -107,8 +109,8 @@ export const DrawPolygonScreen = () => {
     // eliminar polygonTemps
     //storage.delete('polygonTemp')
     // si existe el poligono dentro de la parcela
-    if (parcel[0].polygon) {
-      setCoordinates(parcel[0].polygon);
+    if (parcel[index].polygon) {
+      setCoordinates(parcel[index].polygon);
     } else {
       if (storage.getString("polygonTemp")) {
         const coordinateTemp = JSON.parse(
@@ -129,32 +131,51 @@ export const DrawPolygonScreen = () => {
   const calcularSumaVentas = () => {
     const salesString = storage.getString("sales") || "[]";
     const sales = JSON.parse(salesString);
-
-    const sumaPorTipo = sales.reduce((acumulador: any, dato: any) => {
-      if (dato.type) {
-        acumulador[dato.type] =
-          (acumulador[dato.type] || 0) + parseInt(dato.kl);
-      }
-      return acumulador;
-    }, {});
-
-    setSumaTotalVentas(sumaPorTipo);
+    const sumKlByParcelaAndType = sumKilosByParcelaAndType(sales);
+    setSumaTotalVentas(sumKlByParcelaAndType);
   };
+
+  const sumKilosByParcelaAndType = (data: any) => {
+    const sumByParcelaAndType = {};
+
+    data.forEach((item) => {
+      const key = `${item.parcela}_${item.type}`;
+      const kilos = item.kl;
+
+      // Si la clave ya está en el objeto sumByParcelaAndType, agregamos los kilos, de lo contrario, inicializamos con los kilos actuales
+      sumByParcelaAndType[key] = sumByParcelaAndType[key]
+        ? sumByParcelaAndType[key] + kilos
+        : kilos;
+    });
+
+    return sumByParcelaAndType;
+  };
+
+  const sumTotalByParcelaAndType = (data: any) => {
+    const sumTotalByParcelaAndType = {};
+
+    data.forEach((item: any) => {
+      const key = `${item.parcela}_${item.type}`;
+      const total = item.kl * parseFloat(item.precio);
+
+      // Si la clave ya está en el objeto sumByParcelaAndType, agregamos los kilos, de lo contrario, inicializamos con los kilos actuales
+      sumTotalByParcelaAndType[key] = sumTotalByParcelaAndType[key]
+        ? sumTotalByParcelaAndType[key] + total
+        : total;
+    });
+
+    return sumTotalByParcelaAndType;
+  };
+
   const calcularVentas = () => {
     const salesString = storage.getString("sales") || "[]";
     const sales = JSON.parse(salesString);
 
-    const multiplicar = sales.reduce((acumulador, dato) => {
-      if (dato.type) {
-        const totalVenta = parseFloat(dato.precio) * parseInt(dato.kl);
-        acumulador[dato.type] = (acumulador[dato.type] || 0) + totalVenta;
-      }
-      return acumulador;
-    }, {});
+    const sumTlByParcelaAndType = sumTotalByParcelaAndType(sales);
 
-    console.log("aqui estanlos datos calculados", multiplicar); // Corregido para imprimir la variable correcta
+    console.log("sumTlByParcelaAndType", sumTlByParcelaAndType);
 
-    setTotalVentas(multiplicar);
+    setTotalVentas(sumTlByParcelaAndType);
   };
 
   const submitPost = () => {
@@ -318,7 +339,7 @@ export const DrawPolygonScreen = () => {
                 }}
               >
                 <Text style={styles.kg}>
-                  {sumaTotalVentas.SECO}{" "}
+                  {sumaTotalVentas[`${parcel[index]["id"]}_SECO`]}{" "}
                   <Text style={{ fontWeight: "normal", marginLeft: 45 }}>
                     {" "}
                     Kg.
@@ -329,7 +350,7 @@ export const DrawPolygonScreen = () => {
                 <Text>vendidos a </Text>
               </View>
               <Text style={{ color: COLORS_DF.citrine_brown }}>
-                S/.{totalVentas.SECO}
+                S/.{totalVentas[`${parcel[index]["id"]}_SECO`]}
               </Text>
             </Card>
             <Card
@@ -357,7 +378,7 @@ export const DrawPolygonScreen = () => {
                 }}
               >
                 <Text style={styles.kg}>
-                  {sumaTotalVentas.BABA}{" "}
+                  {sumaTotalVentas[`${parcel[index]["id"]}_BABA`]}{" "}
                   <Text style={{ fontWeight: "normal" }}>Kg.</Text>{" "}
                 </Text>
               </View>
@@ -365,7 +386,7 @@ export const DrawPolygonScreen = () => {
                 <Text>vendidos a </Text>
               </View>
               <Text style={{ color: COLORS_DF.citrine_brown }}>
-                S/.{totalVentas.BABA}
+                S/.{totalVentas[`${parcel[index]["id"]}_BABA`]}
               </Text>
             </Card>
           </View>
