@@ -105,9 +105,9 @@ export const DrawPolygonScreen = () => {
   }, []);
   useEffect(() => {
     // eliminar polygonTemps
-    //storage.delete("polygonTemp");
+    //storage.delete('polygonTemp')
     // si existe el poligono dentro de la parcela
-    /* if (parcel[0].polygon) {
+    if (parcel[0].polygon) {
       setCoordinates(parcel[0].polygon);
     } else {
       if (storage.getString("polygonTemp")) {
@@ -117,7 +117,7 @@ export const DrawPolygonScreen = () => {
         console.log("=> polygonTemp", coordinateTemp);
         setCoordinates(coordinateTemp);
       }
-    } */
+    }
   }, []);
 
   const coordinatesWithLast = useMemo(() => {

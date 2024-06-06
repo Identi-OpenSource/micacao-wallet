@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {
   Camera,
   LineLayer,
@@ -10,6 +10,7 @@ import {
 import React, {
   ComponentProps,
   forwardRef,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -24,12 +25,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Add_Location, Delete } from "../../../../assets/svg";
 import Close_Map from "../../../../assets/svg/Close_Map.svg";
 import ModalComponent from "../../../../components/modalComponent";
 import { storage } from "../../../../config/store/db";
 import { useSyncData } from "../../../../states/SyncDataContext";
+
 const heightMap = Dimensions.get("window").height - 30;
 const widthMap = Dimensions.get("window").width;
 
@@ -40,6 +41,7 @@ type CrosshairProps = {
   w: number;
   onLayout: ComponentProps<typeof View>["onLayout"];
 };
+
 const Crosshair = forwardRef<View, CrosshairProps>(
   ({ size, w, onLayout }: CrosshairProps, ref) => (
     <View
@@ -164,9 +166,8 @@ const PoligonJoystick = () => {
 
   const map = useRef<MapView>(null);
   const ref2 = useRef<Camera>(null);
+
   useEffect(() => {
-    // eliminar polygonTemp
-    //storage.delete('polygonTemp')
     if (parcel[0].polygon) {
       setCoordinates(parcel[0].polygon);
     } else {
@@ -213,13 +214,24 @@ const PoligonJoystick = () => {
       storage.delete("polygonTemp");
     }, 7000);
   };
+
   const back = () => {
+    storage.delete("polygonTemp");
     navigation.goBack();
   };
+
   const closeModal = () => {
     setShowModal(false);
     navigation.navigate("DrawPolygonScreen");
   };
+
+  /*   useFocusEffect(
+    useCallback(() => {
+      return () => {
+        storage.delete("polygonTemp");
+      };
+    }, [])
+  ); */
 
   return (
     <View style={{ flex: 1 }}>
@@ -290,44 +302,38 @@ const PoligonJoystick = () => {
           centerCoordinate={centerCoordinate}
         />
       </MapView>
-      <GestureHandlerRootView
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: -250,
-        }}
-      >
-        <View style={styles.containerButton}>
-          <TouchableOpacity
-            onPress={() => {
-              deletePoint();
-            }}
-            style={styles.iconButton}
-          >
-            <Delete />
-          </TouchableOpacity>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          ></View>
 
-          <TouchableOpacity
-            onPress={() => {
-              const DATA = [...coordinates, lastCoordinate];
-              storage.set("polygonTemp", JSON.stringify(DATA));
-              setCoordinates(DATA);
-            }}
-            style={styles.iconButton}
-          >
-            <Add_Location />
-          </TouchableOpacity>
-        </View>
-      </GestureHandlerRootView>
+      <View style={styles.containerButton}>
+        <TouchableOpacity
+          onPress={() => {
+            deletePoint();
+          }}
+          style={styles.iconButton}
+        >
+          <Delete />
+        </TouchableOpacity>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        ></View>
+
+        <TouchableOpacity
+          onPress={() => {
+            const DATA = [...coordinates, lastCoordinate];
+            storage.set("polygonTemp", JSON.stringify(DATA));
+            setCoordinates(DATA);
+          }}
+          style={styles.iconButton}
+        >
+          <Add_Location />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   iconButton: {
     justifyContent: "center",
@@ -342,9 +348,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+    height: "15%",
     alignItems: "center",
     marginBottom: 200,
     paddingHorizontal: 25,
+    marginTop: -150,
   },
   buttonSave: {
     width: "25%",
@@ -380,4 +388,5 @@ const styles = StyleSheet.create({
     color: "black",
   },
 });
+
 export default PoligonJoystick;

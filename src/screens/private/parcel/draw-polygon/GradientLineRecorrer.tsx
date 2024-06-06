@@ -9,14 +9,21 @@ import {
 } from "@rnmapbox/maps";
 import { activateKeepAwake } from "@sayem314/react-native-keep-awake";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, StatusBar, View } from "react-native";
+import {
+  Alert,
+  StatusBar,
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+} from "react-native";
 import Geolocation from "react-native-geolocation-service";
 import { Btn, BtnIcon } from "../../../../components/button/Button";
 import ModalComponent from "../../../../components/modalComponent";
 import { storage } from "../../../../config/store/db";
 import { COLORS_DF, MP_DF } from "../../../../config/themes/default";
 import { useSyncData } from "../../../../states/SyncDataContext";
-
+import Close_Map from "../../../../assets/svg/Close_Map.svg";
 type Position = [number, number];
 
 const lineLayerStyle = {
@@ -150,6 +157,10 @@ const GradientLineRecorrer = () => {
     setShowModal(false);
     navigation.navigate("DrawPolygonScreen");
   };
+  const back = () => {
+    storage.delete("polygonTemp");
+    navigation.goBack();
+  };
   const deletePoint = () => {
     if (coordinates.length > 1) {
       setCoordinates((prev) => {
@@ -179,6 +190,11 @@ const GradientLineRecorrer = () => {
           closeModal={closeModal}
           buttonText={"Continuar"}
         />
+        <View style={styles.containerButtonUp}>
+          <TouchableOpacity onPress={back} style={styles.buttonClose}>
+            <Close_Map height={40} width={40} />
+          </TouchableOpacity>
+        </View>
         <MapView
           ref={map}
           styleURL={StyleURL.Satellite}
@@ -226,6 +242,7 @@ const GradientLineRecorrer = () => {
             minHeight: 50,
             paddingHorizontal: MP_DF.large,
             zIndex: 1000000,
+            justifyContent: "space-between",
           }}
         >
           <View
@@ -244,6 +261,7 @@ const GradientLineRecorrer = () => {
                 !started ? setStarted(true) : setStarted(false);
               }}
             />
+
             <BtnIcon
               theme={"transparent"}
               icon={"person-walking-arrow-loop-left"}
@@ -264,5 +282,38 @@ const GradientLineRecorrer = () => {
     </View>
   );
 };
+const styles = StyleSheet.create({
+  containerButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 200,
+    paddingHorizontal: 25,
+  },
 
+  containerButtonUp: {
+    position: "absolute",
+    top: 10,
+    zIndex: 99999,
+    height: 100,
+    paddingVertical: 5,
+    alignItems: "center",
+    marginRight: 25,
+    justifyContent: "space-between",
+    flexDirection: "row",
+    width: "100%",
+  },
+  buttonClose: {
+    width: "25%",
+    height: "45%",
+    alignItems: "center",
+    top: 10,
+  },
+  textButtonSave: {
+    fontSize: 15,
+    alignSelf: "center",
+    color: "black",
+  },
+});
 export default GradientLineRecorrer;

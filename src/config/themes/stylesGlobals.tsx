@@ -10,6 +10,6 @@ export const STYLES_GLOBALS = {
     flex: 1,
   },
   formBtn: {
-    paddingBottom: 89,
+    paddingBottom: 35,
   },
 };
