@@ -1,4 +1,4 @@
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import {
   Camera,
   LineLayer,
@@ -10,7 +10,6 @@ import {
 import React, {
   ComponentProps,
   forwardRef,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -144,12 +143,13 @@ const Polygon = ({ coordinates }: { coordinates: Position[] }) => {
   );
 };
 
-const PoligonJoystick = () => {
+const PoligonJoystick = ({ route }: any) => {
+  const { index } = route.params;
   const parcel = JSON.parse(storage.getString("parcels") || "[]");
 
   const firstPoint = [
-    Number(parcel[0].firstPoint[1]),
-    Number(parcel[0].firstPoint[0]),
+    Number(parcel[index].firstPoint[1]),
+    Number(parcel[index].firstPoint[0]),
   ] as Position;
   const [coordinates, setCoordinates] = useState<Position[]>([]);
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint);
@@ -168,8 +168,8 @@ const PoligonJoystick = () => {
   const ref2 = useRef<Camera>(null);
 
   useEffect(() => {
-    if (parcel[0].polygon) {
-      setCoordinates(parcel[0].polygon);
+    if (parcel[index].polygon) {
+      setCoordinates(parcel[index].polygon);
     } else {
       if (storage.getString("polygonTemp")) {
         const coordinateTemp = JSON.parse(
@@ -202,15 +202,18 @@ const PoligonJoystick = () => {
     }
 
     const newParcel = {
-      ...parcel[0],
+      ...parcel[index],
       polygon: [...coordinatesWithLast, coordinatesWithLast[0]],
       syncUp: false,
     };
 
+    let parcels = parcel;
+    parcels[index] = newParcel;
+
     setShowModal(true);
 
     setTimeout(() => {
-      addToSync(JSON.stringify([newParcel]), "parcels");
+      addToSync(JSON.stringify(parcels), "parcels");
       storage.delete("polygonTemp");
     }, 7000);
   };

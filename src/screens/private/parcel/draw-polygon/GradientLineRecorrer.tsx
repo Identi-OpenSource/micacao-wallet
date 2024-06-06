@@ -12,18 +12,17 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   StatusBar,
-  View,
-  TouchableOpacity,
-  Text,
   StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Geolocation from "react-native-geolocation-service";
+import Close_Map from "../../../../assets/svg/Close_Map.svg";
 import { Btn, BtnIcon } from "../../../../components/button/Button";
 import ModalComponent from "../../../../components/modalComponent";
 import { storage } from "../../../../config/store/db";
 import { COLORS_DF, MP_DF } from "../../../../config/themes/default";
 import { useSyncData } from "../../../../states/SyncDataContext";
-import Close_Map from "../../../../assets/svg/Close_Map.svg";
 type Position = [number, number];
 
 const lineLayerStyle = {
@@ -56,11 +55,12 @@ const Polygon = ({ coordinates }: { coordinates: Position[] }) => {
   );
 };
 
-const GradientLineRecorrer = () => {
+const GradientLineRecorrer = ({ route }: any) => {
+  const { index } = route.params;
   const parcel = JSON.parse(storage.getString("parcels") || "[]");
   const firstPoint = [
-    Number(parcel[0].firstPoint[1]),
-    Number(parcel[0].firstPoint[0]),
+    Number(parcel[index].firstPoint[1]),
+    Number(parcel[index].firstPoint[0]),
   ] as Position;
   const { addToSync } = useSyncData();
   const [coordinates, setCoordinates] = useState<Position[]>([firstPoint]);
@@ -122,8 +122,8 @@ const GradientLineRecorrer = () => {
     // eliminar polygonTemp
     //storage.delete("polygonTemp");
 
-    if (parcel[0].polygon) {
-      setCoordinates(parcel[0].polygon);
+    if (parcel[index].polygon) {
+      setCoordinates(parcel[index].polygon);
     } else {
       if (storage.getString("polygonTemp")) {
         const coordinateTemp = JSON.parse(
@@ -141,15 +141,18 @@ const GradientLineRecorrer = () => {
     }
     // Guardar en la lista de polígonos
     const newParcel = {
-      ...parcel[0],
+      ...parcel[index],
       polygon: [...coordinatesWithLast, coordinatesWithLast[0]],
       syncUp: false,
     };
 
     setShowModal(true);
 
+    let parcels = parcel;
+    parcels[index] = newParcel;
+
     setTimeout(() => {
-      addToSync(JSON.stringify([newParcel]), "parcels");
+      addToSync(JSON.stringify(parcels), "parcels");
       storage.delete("polygonTemp");
     }, 7000);
   };
@@ -273,8 +276,10 @@ const GradientLineRecorrer = () => {
             />
           </View>
           <Btn
-            title={parcel[0].polygon ? "Volver" : "Guardar Polígono"}
-            onPress={parcel[0].polygon ? navigation.goBack : () => onSubmit()}
+            title={parcel[index].polygon ? "Volver" : "Guardar Polígono"}
+            onPress={
+              parcel[index].polygon ? navigation.goBack : () => onSubmit()
+            }
             theme="agrayu"
           />
         </View>

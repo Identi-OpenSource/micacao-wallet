@@ -10,8 +10,10 @@ import {
 import { Btn } from "../../../../components/button/Button";
 import { useNavigation } from "@react-navigation/native";
 
-export const PolygonScreen = () => {
+export const PolygonScreen = ({ route }: any) => {
   const navigation = useNavigation();
+  const { index } = route.params;
+
   return (
     <SafeArea>
       <View style={styles.container}>
@@ -20,13 +22,13 @@ export const PolygonScreen = () => {
         </Text>
         <Btn
           title="Recorre tu parcela"
-          onPress={() => navigation.navigate("GradientLineRecorrer")}
+          onPress={() => navigation.navigate("GradientLineRecorrer", { index })}
           theme="agrayu"
         />
         <View style={styles.space} />
         <Btn
           title="Dibuja tu parcela"
-          onPress={() => navigation.navigate("PoligonJoystick")}
+          onPress={() => navigation.navigate("PoligonJoystick", { index })}
           theme="agrayu"
         />
       </View>

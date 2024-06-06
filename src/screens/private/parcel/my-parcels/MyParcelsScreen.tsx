@@ -81,13 +81,13 @@ export const MyParcelsScreen = () => {
             <Add />
           </TouchableOpacity>
         </View>
-        {parcels.map((parcel) => CardParcel(parcel, navigation))}
+        {parcels.map((parcel, index) => CardParcel(parcel, navigation, index))}
       </ScrollView>
     </SafeArea>
   );
 };
 
-const CardParcel = (props: Parcel, navigation: any) => {
+const CardParcel = (props: Parcel, navigation: any, index: any) => {
   return (
     <View style={styles.cardContainer} key={props.name}>
       <View style={styles.cardHeader}>
@@ -104,8 +104,8 @@ const CardParcel = (props: Parcel, navigation: any) => {
           title={!props.polygon ? "Falta dibujar mapa" : "Ver polígono en mapa"}
           onPress={() =>
             !props.polygon
-              ? navigation.navigate("PolygonScreen")
-              : navigation.navigate("DrawPolygonScreen")
+              ? navigation.navigate("PolygonScreen", { index })
+              : navigation.navigate("DrawPolygonScreen", { index })
           }
           theme="warning"
           style={containerBTN}
@@ -125,8 +125,8 @@ const CardParcel = (props: Parcel, navigation: any) => {
       <TouchableOpacity
         onPress={() => {
           !props.polygon
-            ? navigation.navigate("PolygonScreen")
-            : navigation.navigate("DrawPolygonScreen");
+            ? navigation.navigate("PolygonScreen", { index })
+            : navigation.navigate("DrawPolygonScreen", { index });
         }}
         style={{ justifyContent: "center", alignItems: "center" }}
       >
