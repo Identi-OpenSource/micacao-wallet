@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {writeTransaction} from '../../../OCC/occ'
+import {writeTransaction, newWallet} from '../../../OCC/occ'
 import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
@@ -92,7 +92,14 @@ export const HomeProvScreen = () => {
 
   const getWallet = () => {
     // Create Wallet
-    const wallet = JSON.parse(storage.getString('wallet') || '{}')
+    //const wallet = JSON.parse(storage.getString('wallet') || '{}')
+    const wallet = {
+      isFunding: true,
+      wallet: {
+        walletOFC: 'R9vNe1TJLJta1srkqNo8WBrGN4JDJpTCDQ',
+        wif: 'L2e3T9u1ph4nceszGLqpCmwZ8soZf19hnonUNfiFywwL2bNADxwC',
+      },
+    }
     console.log(wallet)
     setWa(wallet.wallet)
 
@@ -253,7 +260,7 @@ const Body = (props: {
           </Text>
         </TouchableOpacity>
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
           onPress={() => getWallet()}>
@@ -269,7 +276,7 @@ const Body = (props: {
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {'write Wallet'}
           </Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
     </View>
   )
