@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+<<<<<<< HEAD
 } from "react-native";
 import { newWallet, writeTransaction } from "../../../OCC/occ";
 import { imgFrame, imgLayer } from "../../../assets/imgs";
@@ -16,6 +17,16 @@ import { LoadingSave } from "../../../components/loading/LoadinSave";
 import { SafeArea } from "../../../components/safe-area/SafeArea";
 import { LABELS } from "../../../config/texts/labels";
 import { TEXTS } from "../../../config/texts/texts";
+=======
+} from 'react-native'
+import {writeTransaction} from '../../../OCC/occ'
+import {imgFrame, imgLayer} from '../../../assets/imgs'
+import {LoadingSave} from '../../../components/loading/LoadinSave'
+import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {storage} from '../../../config/store/db'
+import {LABELS} from '../../../config/texts/labels'
+import {TEXTS} from '../../../config/texts/texts'
+>>>>>>> c2da318 (fix: testing for blockchain)
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
@@ -75,10 +86,12 @@ export const HomeProvScreen = () => {
 
   const getWallet = () => {
     // Create Wallet
-    // const wallet = JSON.parse(storage.getString("wallet") || "{}");
-    // setWa(wallet);
+    const wallet = JSON.parse(storage.getString('wallet') || '{}')
+    console.log(wallet)
+    setWa(wallet.wallet)
 
     //Testing Wallet
+<<<<<<< HEAD
     const wallet = newWallet();
     const isFunding = true;
 
@@ -88,6 +101,17 @@ export const HomeProvScreen = () => {
 
     setWa(walletObj.wallet);
   };
+=======
+    // const wallet = newWallet()
+    // const isFunding = true
+
+    // const walletObj = {wallet, isFunding}
+
+    // console.log(walletObj)
+
+    // setWa(walletObj.wallet)
+  }
+>>>>>>> c2da318 (fix: testing for blockchain)
 
   const writeWallet = () => {
     write();
@@ -227,7 +251,7 @@ const Body = (props: {
           </Text>
         </TouchableOpacity>
 
-        {/*  <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
           onPress={() => getWallet()}>
