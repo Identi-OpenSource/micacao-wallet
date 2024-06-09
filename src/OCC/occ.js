@@ -5,6 +5,9 @@ const {
   send_batch_transactions,
   get_all_ecpairs,
 } = require('transaction-js/batch')
+import CryptoJS from 'crypto-js'
+import Config from 'react-native-config'
+import {months} from '../config/const'
 
 export const newWallet = () => {
   // Create
@@ -30,42 +33,91 @@ export const verificarWallet = async wallet => {
 }
 
 export const writeTransaction = async (wif, object) => {
-  /*
-  @Braudin
-  - Se limpió el código un poco.
-  - Object es el objeto que se enviará a la red de OCC
-  - De momento y para fines de prueba, dejo un objeto test.
-  - DNI siempre tiene que ser DNI+purchaseDate
-  */
-  // DNI y POLIGON en SHA256
-  const hashDNI =
-    'cc729b1a100e6cae30549fa78579371ec8766bba640202dca5e0ecfbd0bc5774'
-  const POLIGON =
-    '219be08dcfd34c5bc25134d5aa730f47eb9290c430498bafaab1452110c473a5'
-  const batch = {
-    bnfp: {
-      value: hashDNI,
-      unique: true,
-    },
-    purchaseDate: '02 marzo 2024', // Fecha de venta
-    farmerAlias: 'El Patron', // Alias del agricultor, Primer nombre
-    farmerPlot: POLIGON, // Parcela del agricultor GPS o POLIGON en SHA256
-    DNI: hashDNI, // DNI del agricultor SHA256
-    variety: 'Variedad 01', // variedad del cultivo
-    moistureLevel: 'BABA', // nivel de humedad || Creo que baba o seco
-    premiumPaid: '9999', // Prima pagada || 1= Sí, 2= No, 0= No lo sé
-    COOPMaterialNumber: '0000123', // Numero GTIN del material o ''
-    COOPMaterialName: 'CACAO BABA', // Nombre del producto, el que aparece en factura
-    PONumber: '12345', // Número de orden de compra (PO)
-    POPosition: '909090', // Posición de la orden de compra (PO)
-    plannedDeliveryDate: '01 marzo 2024', // Fecha de entrega (PO)
-    shipsTo: 'IDENTI', // Empresa que compra el producto (PO)
+  const {userData, parcels_array, sales} = object
+  // Obtener DNI
+  const utf8Key = await CryptoJS.enc.Utf8.parse(
+    Config.KEY_CIFRADO_KAFE_SISTEMAS,
+  )
+  const encryptedHexStr = await CryptoJS.enc.Hex.parse(userData.dniAll)
+  const encryptedBase64Str = await CryptoJS.enc.Base64.stringify(
+    encryptedHexStr,
+  )
+  const decrypted = await CryptoJS.AES.decrypt(encryptedBase64Str, utf8Key, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.Pkcs7,
+  })
+  const DNI = await decrypted.toString(CryptoJS.enc.Utf8)
+  let TX = []
+  let newSales = []
+  for (let index = 0; index < sales.length; index++) {
+    let sale = sales[index]
+    if (!sale.syncUpOCC) {
+      const month = months.findIndex(p => p === sale.mes)
+      const purchaseDate = getFirstDayMonthPrevious(month)
+      const hashDNI = await CryptoJS.SHA256(DNI + purchaseDate).toString()
+      const polygon = convertAPolygonString(
+        parcels_array?.find(p => p.id === sale?.parcela)?.polygon,
+      )
+      const farmerPlot = await CryptoJS.SHA256(polygon).toString()
+      const batch = {
+        bnfp: {value: hashDNI, unique: true},
+        purchaseDate,
+        farmerAlias: userData.name.trim().split(' ')[0],
+        farmerPlot,
+        DNI: hashDNI,
+        variety: 'CRIOLLO',
+        moistureLevel: sale.type,
+        premiumPaid: '1',
+        COOPMaterialNumber: '',
+        COOPMaterialName: 'CACAO CRIOLLO (BABA)',
+        PONumber: '',
+        POPosition: '',
+        plannedDeliveryDate: purchaseDate,
+        shipsTo: '',
+      }
+      const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
+      const ec_pairs = get_all_ecpairs(batch, res)
+      const tx1 = await send_batch_transactions(ec_pairs, batch, res)
+      TX = [...TX, tx1]
+      sale.syncUpOCC = true
+      console.log(batch)
+      console.log(polygon, farmerPlot, hashDNI, sale.type)
+    }
+    newSales = [...newSales, sale]
   }
-  const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
-  // const test_batch = object
-  const ec_pairs = get_all_ecpairs(batch, res)
-  const tx1 = await send_batch_transactions(ec_pairs, batch, res)
-  return tx1
+  return [TX, newSales]
+}
+
+const getFirstDayMonthPrevious = mes => {
+  const fechaActual = new Date()
+  const añoActual = fechaActual.getFullYear()
+  const mesActual = fechaActual.getMonth()
+  let añoObjetivo
+  let mesObjetivo
+  if (mesActual > mes) {
+    añoObjetivo = añoActual
+    mesObjetivo = mes
+  } else {
+    añoObjetivo = añoActual - 1
+    mesObjetivo = mes
+  }
+  const fechaObjetivo = new Date(añoObjetivo, mesObjetivo, 1)
+  const año = fechaObjetivo.getFullYear()
+  const mesStr = fechaObjetivo.getMonth()
+  return `01-${months[mesStr]}-${año}`
+}
+
+function convertAPolygonString(coordenadas) {
+  // Mappear las coordenadas a un string con el formato requerido
+  let polygonString = coordenadas
+    .map(coord => `${coord[0]} ${coord[1]}`)
+    .join(', ')
+
+  // Agregar el primer punto al final para cerrar el polígono
+  polygonString += `, ${coordenadas[0][0]} ${coordenadas[0][1]}`
+
+  // Formato final del polígono
+  return `POLYGON((${polygonString}))`
 }
 
 export const transaction = async wallet => {}
