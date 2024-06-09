@@ -164,7 +164,14 @@ function App(): React.JSX.Element {
         </View>
         <Text style={styles.toastText}>{text1}</Text>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={props.onPress} style={styles.buttonToast}>
+          <TouchableOpacity
+            onPress={() => {
+              hideToast()
+              setTimeout(() => {
+                props?.onPress()
+              }, 200)
+            }}
+            style={styles.buttonToast}>
             <Text style={{color: '#fff', fontSize: 20}}> {props.btnText} </Text>
           </TouchableOpacity>
           <TouchableOpacity
