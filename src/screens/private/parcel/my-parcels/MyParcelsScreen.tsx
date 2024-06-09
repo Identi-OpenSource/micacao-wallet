@@ -13,8 +13,6 @@ import {
 } from '../../../../config/themes/default'
 import {Parcel} from '../../../../states/UserContext'
 
-const { width, height } = Dimensions.get("window");
-
 export const MyParcelsScreen = () => {
   const navigation = useNavigation()
   const [parcels, setParcels] = useState([] as Parcel[])

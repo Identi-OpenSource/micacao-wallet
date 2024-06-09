@@ -183,27 +183,6 @@ export const HomeProvScreen = () => {
     return {hash: hexResult.substr(0, 32), hashAll: hexResult}
   }
 
-  useEffect(() => {
-    if (
-      !loadingKafe &&
-      Object.keys(postKafeData).length === 0 &&
-      isConnected &&
-      user.country?.code === 'PE'
-    ) {
-      postKafeSistemas()
-    }
-  }, [isConnected])
-
-  useEffect(() => {
-    let interval
-
-    interval = setInterval(() => {
-      if (!loadingKafe && isConnected) {
-        getKafeSistemas()
-      }
-    }, 300000)
-    return () => clearInterval(interval)
-  }, [isConnected])
   return (
     <SafeArea bg={'isabelline'}>
       <ScrollView>
