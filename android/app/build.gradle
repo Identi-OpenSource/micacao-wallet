@@ -91,7 +91,7 @@ android {
         applicationId 'digital.identi.micacao'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode env.VERSION_CODE
+        versionCode Integer.parseInt(env.VERSION_CODE)
         versionName env.VERSION_NAME
         resConfigs 'en', 'es', 'fr'
     }

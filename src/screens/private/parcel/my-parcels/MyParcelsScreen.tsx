@@ -1,5 +1,6 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import React, {useCallback, useState} from 'react'
+import Toast from 'react-native-toast-message'
 import {
   Dimensions,
   ScrollView,
@@ -8,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {Parcels, ParcelColor, Add} from '../../../../assets/svg'
+import {Add, ParcelColor, Parcels} from '../../../../assets/svg'
 import {Btn} from '../../../../components/button/Button'
 import {SafeArea} from '../../../../components/safe-area/SafeArea'
 import {storage} from '../../../../config/store/db'
@@ -19,7 +20,6 @@ import {
   MP_DF,
 } from '../../../../config/themes/default'
 import {Parcel} from '../../../../states/UserContext'
-import Toast from 'react-native-toast-message'
 
 const {width, height} = Dimensions.get('window')
 
@@ -78,13 +78,13 @@ export const MyParcelsScreen = () => {
             <Add />
           </TouchableOpacity>
         </View>
-        {parcels.map(parcel => CardParcel(parcel, navigation))}
+        {parcels.map((parcel, index) => CardParcel(parcel, navigation, index))}
       </ScrollView>
     </SafeArea>
   )
 }
 
-const CardParcel = (props: Parcel, navigation: any) => {
+const CardParcel = (props: Parcel, navigation: any, index: any) => {
   return (
     <View style={styles.cardContainer} key={props.name}>
       <View style={styles.cardHeader}>
@@ -102,8 +102,8 @@ const CardParcel = (props: Parcel, navigation: any) => {
           title={!props.polygon ? 'Falta dibujar mapa' : 'Ver polígono en mapa'}
           onPress={() =>
             !props.polygon
-              ? navigation.navigate('PolygonScreen')
-              : navigation.navigate('DrawPolygonScreen')
+              ? navigation.navigate('PolygonScreen', {index})
+              : navigation.navigate('DrawPolygonScreen', {index})
           }
           theme="warning"
           style={containerBTN}
@@ -123,8 +123,8 @@ const CardParcel = (props: Parcel, navigation: any) => {
       <TouchableOpacity
         onPress={() => {
           !props.polygon
-            ? navigation.navigate('PolygonScreen')
-            : navigation.navigate('DrawPolygonScreen')
+            ? navigation.navigate('PolygonScreen', {index})
+            : navigation.navigate('DrawPolygonScreen', {index})
         }}
         style={{justifyContent: 'center', alignItems: 'center'}}>
         {!props.polygon ? <Parcels /> : <ParcelColor />}
