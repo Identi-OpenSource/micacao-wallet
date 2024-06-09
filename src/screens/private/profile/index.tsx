@@ -73,7 +73,7 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     if (pinAproved) {
-      createAndShareJSON()
+      saveJSONDownload()
       setPinApproved(false)
     }
   }, [pinAproved])
@@ -147,19 +147,32 @@ const ProfileScreen = () => {
     })
   }
 
-  const createAndShareJSON = async () => {
+  const saveJSONDownload = async () => {
     const data = {
       user: {},
       parcels: [],
       sales: [],
     }
-
-    // Convertir los datos a JSON
     const jsonString = JSON.stringify(data)
-
     const path = RNFS.DownloadDirectoryPath + '/mi_data_miCacao.json'
+    try {
+      await RNFS.writeFile(path, jsonString, 'utf8')
+      Toast.show({
+        type: 'actionToast',
+        text1:
+          'El archivo JSON se ha guardado en la carpeta de descargas, Quieres compartirlo?',
+        autoHide: false,
+        props: {
+          onPress: () => shareJSON(path),
+          btnText: 'Compartir',
+        },
+      })
+    } catch (error) {
+      console.error('Error al compartir el archivo JSON:', error)
+    }
+  }
 
-    // Crear un objeto de opciones para compartir
+  const shareJSON = async (path: string) => {
     const options = {
       title: 'Compartir o descargar mi datos',
       url: 'file://' + path,
@@ -167,25 +180,7 @@ const ProfileScreen = () => {
       message: 'Compartir o descargar mi datos',
       filename: 'mi_data_miCacao.json',
     }
-
-    try {
-      // Guardar el archivo JSON
-      await RNFS.writeFile(path, jsonString, 'utf8')
-      Toast.show({
-        type: 'syncToast',
-        text1: 'El archivo JSON se ha guardado en la carpeta de descargas',
-      })
-      console.log('Archivo JSON guardado en:', path)
-      // Compartir el archivo JSON
-      await Share.open(options)
-
-      Toast.show({
-        type: 'syncToast',
-        text1: 'El archivo JSON se ha guardado en la carpeta de descargas',
-      })
-    } catch (error) {
-      console.error('Error al compartir el archivo JSON:', error)
-    }
+    await Share.open(options)
   }
 
   return (
