@@ -206,7 +206,7 @@ export const Router = () => {
         <StackPublic.Screen name="StartScreen" component={StartScreen} />
         <StackPublic.Screen name="IamScreen" component={IamScreen} />
         <StackPublic.Screen name="IamFromScreen" component={IamFromScreen} />
-        <StackPublic.Screen name="TestMap" component={TestMap} />
+
         <StackPublic.Screen
           name="PoligonJoystick"
           component={PoligonJoystick}

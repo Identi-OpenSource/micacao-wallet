@@ -1,6 +1,7 @@
 import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
 import { useAuth } from "../states/AuthContext";
+import Toast from "react-native-toast-message";
 const useApi = (
   setLoadingSync: any,
   setErrorSync: any,
@@ -45,7 +46,10 @@ const useApi = (
           setErrorSync(errorText);
         }
       } else {
-        setErrorSync(error);
+        Toast.show({
+          type: "syncToast",
+          text1: "INTENTE MAS TARDE",
+        });
       }
     } finally {
       setLoadingSync(false);
@@ -92,7 +96,10 @@ const useApi = (
               : JSON.stringify(error.response.data.errors);
           setErrorSync(errorText);
         } else {
-          setErrorSync(error);
+          Toast.show({
+            type: "syncToast",
+            text1: "INTENTE MAS TARDE",
+          });
         }
       } finally {
         setLoadingSync(false);
@@ -140,7 +147,10 @@ const useApi = (
                   : JSON.stringify(error.response.data.errors);
               setErrorSync(errorText);
             } else {
-              setErrorSync(error);
+              Toast.show({
+                type: "syncToast",
+                text1: "INTENTE MAS TARDE",
+              });
             }
           } finally {
             setLoadingSync(false);

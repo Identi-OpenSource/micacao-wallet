@@ -14,7 +14,6 @@ import {
   InterfaceFourth,
   SCHEMA_FOURTH,
 } from "./Interfaces";
-import { Header } from "./RegisterScreen";
 import { styles } from "./styles";
 
 interface RegisterFourthScreenProps {

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
+import Toast from "react-native-toast-message";
 // Define el contexto de los mapas
 const GfwContext = createContext({
   getGfw: () => {},
@@ -53,7 +54,10 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
             : JSON.stringify(error.response.data.errors);
         setErrorGfw(errorText);
       } else {
-        setErrorGfw(error);
+        Toast.show({
+          type: "syncToast",
+          text1: "INTENTE MAS TARDE",
+        });
       }
     } finally {
       setLoadingGfw(false);
@@ -103,7 +107,10 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
             : JSON.stringify(error.response.data.errors);
         setErrorGfw(errorText);
       } else {
-        setErrorGfw(error);
+        Toast.show({
+          type: "syncToast",
+          text1: "INTENTE MAS TARDE",
+        });
       }
     } finally {
       setLoadingGfw(false);

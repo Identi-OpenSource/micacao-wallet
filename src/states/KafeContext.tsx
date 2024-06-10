@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
+import Toast from "react-native-toast-message";
 import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
 import { useAuth } from "../states/AuthContext";
@@ -60,7 +61,10 @@ export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
             : JSON.stringify(error.response.data.errors);
         setErrorKafe(errorText);
       } else {
-        setErrorKafe(error);
+        Toast.show({
+          type: "syncToast",
+          text1: "INTENTE MAS TARDE",
+        });
       }
     } finally {
       setLoadingKafe(false);
@@ -117,7 +121,10 @@ export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
             : JSON.stringify(error.response.data.errors);
         setErrorKafe(errorText);
       } else {
-        setErrorKafe(error);
+        Toast.show({
+          type: "syncToast",
+          text1: "INTENTE MAS TARDE",
+        });
       }
     } finally {
       setLoadingKafe(false);
