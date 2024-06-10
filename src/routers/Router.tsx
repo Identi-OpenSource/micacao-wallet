@@ -15,7 +15,7 @@ import { storage } from "../config/store/db";
 import { BORDER_RADIUS_DF, COLORS_DF, MP_DF } from "../config/themes/default";
 import { HelpScreen } from "../screens/private/help/HelpScreen";
 import { HomeProvScreen } from "../screens/private/home/HomeProvScreen";
-import { TestMap } from "../screens/private/home/TestMap";
+
 import { DrawPolygonScreen } from "../screens/private/parcel/draw-polygon/DrawPolygonScreen";
 import DrawPolyline from "../screens/private/parcel/draw-polygon/DrawPolyline";
 import GradientLine from "../screens/private/parcel/draw-polygon/GradientLine";
@@ -395,7 +395,6 @@ export const Router = () => {
             }}
           />
         </HomeStack.Group>
-        <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>
     );
   };
@@ -405,8 +404,6 @@ export const Router = () => {
     return (
       <HomeStack.Navigator screenOptions={{ ...slideFromRight }}>
         <HomeStack.Screen name="ProfileScreen" component={ProfileScreen} />
-
-        <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>
     );
   };

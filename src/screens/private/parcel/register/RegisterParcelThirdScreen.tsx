@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     lineHeight: FONT_SIZES.xslarge * 1.5,
     color: COLORS_DF.citrine_brown,
-    marginTop: MP_DF.xxlarge,
+    marginTop: 10,
   },
   textUniqueUPPER: {
     textTransform: "uppercase",

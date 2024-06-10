@@ -116,7 +116,7 @@ export const HomeProvScreen = () => {
     let interval;
 
     interval = setInterval(() => {
-      if (!loadingKafe && isConnected) {
+      if (!loadingKafe && isConnected && user.country?.code === "PE") {
         getKafeSistemas();
       }
     }, 300000);

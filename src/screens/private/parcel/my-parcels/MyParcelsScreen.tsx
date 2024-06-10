@@ -40,46 +40,53 @@ export const MyParcelsScreen = () => {
         <View
           style={{
             justifyContent: "center",
-            /*   borderColor: "red",
+            /*borderColor: "red",
             borderWidth: 1, */
             marginBottom: 4,
           }}
         >
           <Text style={styles.title}>Lista de parcelas</Text>
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#fff",
-              width: width * 0.9,
-              height: height * 0.07,
-              justifyContent: "center",
-              alignItems: "center",
-              borderColor: COLORS_DF.robin_egg_blue,
-              borderWidth: 1,
-              borderRadius: 5,
-              flexDirection: "row",
-            }}
-            onPress={() => {
-              if (parcels.length < 4 && parcels.length > 0) {
-                navigation.navigate("RegisterParcel");
-              } else {
-                Toast.show({
-                  type: "sadToast",
-                  text1: "Sólo se puede crear 4 parcelas",
-                });
-              }
-            }}
-          >
-            <Text
+          {parcels.length < 4 ? (
+            <TouchableOpacity
               style={{
-                color: COLORS_DF.robin_egg_blue,
-                fontSize: width * 0.045,
-                marginRight: 2,
+                alignSelf: "center",
+                backgroundColor: "#fff",
+                width: width * 0.85,
+                height: height * 0.07,
+                justifyContent: "center",
+                alignItems: "center",
+                borderColor: COLORS_DF.robin_egg_blue,
+                borderWidth: 1,
+                borderRadius: 5,
+                flexDirection: "row",
+              }}
+              onPress={() => {
+                navigation.navigate("RegisterParcel");
               }}
             >
-              Registrar mas parcelas{" "}
+              <Text
+                style={{
+                  color: COLORS_DF.robin_egg_blue,
+                  fontSize: width * 0.045,
+                  marginRight: 2,
+                }}
+              >
+                Registrar más parcelas{" "}
+              </Text>
+              <Add />
+            </TouchableOpacity>
+          ) : (
+            <Text
+              style={{
+                color: "#EE7B34",
+                fontSize: width * 0.037,
+                marginVertical: 10, // Espacio vertical adicional
+                fontFamily: FONT_FAMILIES.bold,
+              }}
+            >
+              Has completado el límite de parcelas registradas
             </Text>
-            <Add />
-          </TouchableOpacity>
+          )}
         </View>
         {parcels.map((parcel, index) => CardParcel(parcel, navigation, index))}
       </ScrollView>
@@ -189,6 +196,5 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontWeight: "bold",
     color: COLORS_DF.citrine_brown,
-    marginBottom: MP_DF.small,
   },
 });

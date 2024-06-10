@@ -89,6 +89,7 @@ export const DrawPolygonScreen = ({ route }: any) => {
   const navigation = useNavigation();
   const [sumaTotalVentas, setSumaTotalVentas] = useState<any>({});
   const [totalVentas, setTotalVentas] = useState<any>({});
+  const user = JSON.parse(storage.getString("user") || "{}");
   const {
     postGfw,
     getGfw,
@@ -350,7 +351,10 @@ export const DrawPolygonScreen = ({ route }: any) => {
                 <Text>vendidos a </Text>
               </View>
               <Text style={{ color: COLORS_DF.citrine_brown }}>
-                S/.{totalVentas[`${parcel[index]["id"]}_SECO`]}
+                S/.{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  {totalVentas[`${parcel[index]["id"]}_SECO`]}
+                </Text>
               </Text>
             </Card>
             <Card
@@ -386,7 +390,10 @@ export const DrawPolygonScreen = ({ route }: any) => {
                 <Text>vendidos a </Text>
               </View>
               <Text style={{ color: COLORS_DF.citrine_brown }}>
-                S/.{totalVentas[`${parcel[index]["id"]}_BABA`]}
+                S/.{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  {totalVentas[`${parcel[index]["id"]}_BABA`]}
+                </Text>
               </Text>
             </Card>
           </View>
@@ -437,19 +444,21 @@ export const DrawPolygonScreen = ({ route }: any) => {
             height: "auto",
           }}
         >
-          <View
-            style={{
-              backgroundColor: getBackgroundColor(),
-              alignItems: "center",
-              width: "100%",
-              borderRadius: 5,
-              marginBottom: 15,
-              height: 25,
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ color: "#fff" }}>{getMessage()}</Text>
-          </View>
+          {user.country?.code === "PE" && (
+            <View
+              style={{
+                backgroundColor: getBackgroundColor(),
+                alignItems: "center",
+                width: "100%",
+                borderRadius: 5,
+                marginBottom: 15,
+                height: 25,
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#fff" }}>{getMessage()}</Text>
+            </View>
+          )}
           <MapView
             ref={map}
             // key={coordinates.length}

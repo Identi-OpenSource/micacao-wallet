@@ -78,6 +78,12 @@ export const RegisterOkScreen = () => {
     const miny = parseFloat(map.miny_point);
     const maxy = parseFloat(map.maxy_point);
 
+    //San vicente de chucuri coordenadas
+    /* const minx = -73.432241; // Longitud mínima (oeste)
+    const maxx = -73.3971; // Longitud máxima (este)
+    const miny = 6.866859; // Latitud mínima (sur)
+    const maxy = 6.892324; // Latitud máxima (norte)
+ */
     console.log("minxpoint ", minx);
     console.log("maxxpoint ", maxx);
     console.log("miny_point ", miny);
