@@ -74,7 +74,7 @@ const RegisterOneScreen: React.FC<RegisterOneScreenProps> = ({
                     <Field key={i.name} {...i} />
                   ))}
                 </View>
-                <View style={STYLES_GLOBALS.formBtn}>
+                <View style={{ paddingBottom: 64 }}>
                   <Btn
                     title={LABELS.next}
                     theme={isValid && dirty ? "agrayu" : "agrayuDisabled"}

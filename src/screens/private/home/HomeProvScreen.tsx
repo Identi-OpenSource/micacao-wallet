@@ -101,7 +101,7 @@ export const HomeProvScreen = () => {
     await writeTransaction(wa.wif);
   };
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (
       !loadingKafe &&
       Object.keys(postKafeData).length === 0 &&
@@ -121,7 +121,7 @@ export const HomeProvScreen = () => {
       }
     }, 300000);
     return () => clearInterval(interval);
-  }, [isConnected]);
+  }, [isConnected]); */
   return (
     <SafeArea bg={"isabelline"}>
       <ScrollView>

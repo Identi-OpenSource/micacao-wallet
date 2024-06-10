@@ -126,6 +126,7 @@ export const Router = () => {
   const getData = JSON.parse(storage.getString("getGFW") || "{}");
   const district = JSON.parse(storage.getString("district") || "{}");
   const postKafe = JSON.parse(storage.getString("postKafeData") || "{}");
+  const pin = JSON.parse(storage.getString("security") || "{}");
   const getKafe = JSON.parse(storage.getString("getKafeData") || "{}");
   useEffect(() => {
     //storage.delete("parcels");

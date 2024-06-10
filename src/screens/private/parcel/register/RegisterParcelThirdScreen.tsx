@@ -153,7 +153,7 @@ const RegisterParcelThirdScreen: React.FC<RegisterParcelThirdScreenProps> = ({
               <Text style={styles.textUnique}>Foto guardada con éxito</Text>
             )}
           </View>
-          <View style={STYLES_GLOBALS.formBtn}>
+          <View style={{ paddingBottom: 64 }}>
             {
               <Btn
                 title={gps === null ? LABELS?.capturePhoto : LABELS.next}
