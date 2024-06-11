@@ -28,6 +28,7 @@ import Share from 'react-native-share'
 import {Buffer} from 'buffer'
 import RNFS from 'react-native-fs'
 import Toast from 'react-native-toast-message'
+import {dniText} from '../../../OCC/occ'
 
 const ProfileScreen = () => {
   const user: UserInterface = useContext(UsersContext)
@@ -148,11 +149,32 @@ const ProfileScreen = () => {
   }
 
   const saveJSONDownload = async () => {
+    const userData = JSON.parse(storage.getString('user') || '{}')
+    const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
+    const sales = JSON.parse(storage.getString('sales') || '[]')
+    userData.dni = await dniText(userData.dniAll)
+    delete userData.dniAll
+    delete userData.pin
+    delete userData.parcel
+    delete userData.isLogin
+    delete userData.syncUp
+    // recorrer sales y eliminar la key syncUpOCC de cada elemento con un map
+    sales.map((sale: any) => {
+      delete sale.syncUpOCC
+      delete sale.syncUp
+      return sale
+    })
+    // lo mismo para parcels
+    parcels_array.map((parcel: any) => {
+      delete parcel.syncUp
+      return parcel
+    })
     const data = {
-      user: {},
-      parcels: [],
-      sales: [],
+      user: userData,
+      parcels: parcels_array,
+      sales: sales,
     }
+    console.log('data', data)
     const jsonString = JSON.stringify(data)
     const path = RNFS.DownloadDirectoryPath + '/mi_data_miCacao.json'
     try {

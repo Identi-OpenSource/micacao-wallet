@@ -63,6 +63,15 @@ export const HomeProvScreen = () => {
         onBackPress,
       )
 
+      if (Object.keys(wallet).length > 0) {
+        console.log('wallet', wallet.isFunding)
+        if (wallet.isFunding) {
+          write()
+        } else {
+          funding()
+        }
+      }
+
       // Limpia el listener cuando la pantalla pierde el enfoque
       return () => backHandler.remove()
     }, []),
@@ -79,17 +88,6 @@ export const HomeProvScreen = () => {
     }
   }, [isConnected, dataToSync.parcels, dataToSync.sales])
 
-  useEffect(() => {
-    console.log(wallet)
-    if (Object.keys(wallet).length > 0) {
-      if (wallet.isFunding) {
-        write()
-      } else {
-        funding()
-      }
-    }
-  }, [wallet])
-
   const getWallet = () => {
     // Create Wallet
     // const wallet = {
@@ -99,16 +97,11 @@ export const HomeProvScreen = () => {
     //     wif: 'L2e3T9u1ph4nceszGLqpCmwZ8soZf19hnonUNfiFywwL2bNADxwC',
     //   },
     // }
-    console.log(wallet)
-
     //Testing Wallet
     // const wallet = newWallet()
     // const isFunding = true
-
     // const walletObj = {wallet, isFunding}
-
     // console.log(walletObj)
-
     // setWa(walletObj.wallet)
   }
 

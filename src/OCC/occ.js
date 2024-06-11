@@ -36,13 +36,11 @@ export const verificarWallet = async wallet => {
   Linking.openURL(url)
 }
 
-export const writeTransaction = async (wif, object) => {
-  const {userData, parcels_array, sales} = object
-  // Obtener DNI
+export const dniText = async dni => {
   const utf8Key = await CryptoJS.enc.Utf8.parse(
     Config.KEY_CIFRADO_KAFE_SISTEMAS,
   )
-  const encryptedHexStr = await CryptoJS.enc.Hex.parse(userData.dniAll)
+  const encryptedHexStr = await CryptoJS.enc.Hex.parse(dni)
   const encryptedBase64Str = await CryptoJS.enc.Base64.stringify(
     encryptedHexStr,
   )
@@ -50,7 +48,13 @@ export const writeTransaction = async (wif, object) => {
     mode: CryptoJS.mode.ECB,
     padding: CryptoJS.pad.Pkcs7,
   })
-  const DNI = await decrypted.toString(CryptoJS.enc.Utf8)
+  return await decrypted.toString(CryptoJS.enc.Utf8)
+}
+
+export const writeTransaction = async (wif, object) => {
+  const {userData, parcels_array, sales} = object
+  // Obtener DNI
+  const DNI = await dniText(userData.dniAll)
   let TX = []
   let newSales = []
   for (let index = 0; index < sales.length; index++) {
@@ -70,10 +74,10 @@ export const writeTransaction = async (wif, object) => {
         farmerPlot,
         DNI: hashDNI,
         variety: 'CRIOLLO',
-        moistureLevel: sale.type,
+        moistureLevel: `TYPO (${sale.type})`,
         premiumPaid: '1',
         COOPMaterialNumber: '',
-        COOPMaterialName: 'CACAO CRIOLLO (BABA)',
+        COOPMaterialName: `CACAO CRIOLLO (${sale.type})`,
         PONumber: '',
         POPosition: '',
         plannedDeliveryDate: purchaseDate,
@@ -84,8 +88,6 @@ export const writeTransaction = async (wif, object) => {
       const tx1 = await send_batch_transactions(ec_pairs, batch, res)
       TX = [...TX, tx1]
       sale.syncUpOCC = true
-      console.log(batch)
-      console.log(polygon, farmerPlot, hashDNI, sale.type)
     }
     newSales = [...newSales, sale]
   }
