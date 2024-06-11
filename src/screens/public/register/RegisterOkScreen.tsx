@@ -1,38 +1,35 @@
-import React, {useContext, useEffect, useRef, useState} from 'react'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
+import geoViewport from '@mapbox/geo-viewport'
+import Mapbox from '@rnmapbox/maps'
+import React, {useContext, useEffect, useState} from 'react'
 import {
   ActivityIndicator,
-  Animated,
   Dimensions,
-  Image,
   StyleSheet,
   Text,
   View,
 } from 'react-native'
-import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
-import {Btn} from '../../../components/button/Button'
+import Config from 'react-native-config'
+import {newWallet, fundingWallet} from '../../../OCC/occ'
+import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {storage} from '../../../config/store/db'
 import {TEXTS} from '../../../config/texts/texts'
-import {LABELS} from '../../../config/texts/labels'
-import {imgCheque} from '../../../assets/imgs'
+import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import {storage} from '../../../config/store/db'
-import {UserDispatchContext} from '../../../states/UserContext'
-import geoViewport from '@mapbox/geo-viewport'
-import {fundingWallet, newWallet} from '../../../OCC/occ'
-import CryptoJS from 'crypto-js'
-import Config from 'react-native-config'
-import Mapbox from '@rnmapbox/maps'
+import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
+
+import {useSyncData} from '../../../states/SyncDataContext'
 Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
 const {width, height} = Dimensions.get('window')
 
 export const RegisterOkScreen = () => {
   const [step, setStep] = useState({step: 0, msg: TEXTS.textH})
   const dispatch = useContext(UserDispatchContext)
-  const user = JSON.parse(storage.getString('user') || '{}')
+  const user = useContext(UsersContext)
+  const {addToSync} = useSyncData()
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
   useEffect(() => {
@@ -41,49 +38,54 @@ export const RegisterOkScreen = () => {
 
   // Inicializa el proceso de registro
   const initial = async () => {
-    await delay(1000)
-    setStep({step: 1, msg: 'Encriptando datos...'})
-    const dni = await certificateND(user.dni)
-    await delay(1000)
-    setStep({step: 2, msg: 'Guardando datos...'})
-    storage.set('user', JSON.stringify({...user, ...dni, isLogin: true}))
-    await delay(1000)
-    setStep({step: 3, msg: 'Creando wallet...'})
+    setStep({step: 1, msg: 'Creando billetera...'})
     const wallet = newWallet()
     await delay(1500)
-    setStep({step: 4, msg: 'Agregando fondos...'})
+    setStep({step: 2, msg: 'Agregando fondos...'})
     const funding = await fundingWallet(wallet.walletOFC).catch(() => ({
       status: 500,
     }))
     const isFunding = funding.status === 200
+
+    console.log({wallet, isFunding})
+
     storage.set('wallet', JSON.stringify({wallet, isFunding}))
     await delay(2000)
-    setStep({step: 5, msg: 'Descargando mapa...'})
-    descargarMapaTarapoto()
+    setStep({
+      step: 2,
+      msg: 'Descargando mapa...',
+    })
+    descargarMapaTarapoto(), descargarMapaJuanjui()
     await delay(1000)
-    setStep({step: 6, msg: 'Inicio de sesión...'})
+    setStep({step: 3, msg: 'Inicio de sesión...'})
+    await delay(1500)
+    addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')
     await delay(1500)
     const login = JSON.parse(storage.getString('user') || '{}')
     dispatch({type: 'login', payload: login})
   }
 
-  // Encripta el DNI
-  const certificateND = async (dni: string) => {
-    const paddedDNI = dni.padStart(16, '0')
-    const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
-    const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
-    const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
-      mode: CryptoJS.mode.ECB,
-      padding: CryptoJS.pad.Pkcs7,
-    })
-    const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
-    return {dni: hexResult.substr(0, 32), dniAll: hexResult}
-  }
+  const descargarMapa = async () => {
+    const minx = parseFloat(map.minx_point)
+    const maxx = parseFloat(map.maxx_point)
+    const miny = parseFloat(map.miny_point)
+    const maxy = parseFloat(map.maxy_point)
 
-  // Descargar Mapa offline
-  const descargarMapaTarapoto = async () => {
+    console.log('minxpoint ', minx)
+    console.log('maxxpoint ', maxx)
+    console.log('miny_point ', miny)
+    console.log('maxy_point ', maxy)
+    // Calcular el centro del área del mapa
+    const centerLng = (minx + maxx) / 2
+    const centerLat = (miny + maxy) / 2
+
+    console.log('latitud', centerLat)
+    console.log('longitud', centerLng)
+
+    // Calcular los límites del área del mapa
     const bounds: [number, number, number, number] = geoViewport.bounds(
-      [-78.5442722, -0.1861084],
+      [centerLng, centerLat],
+
       17,
       [width, height],
       512,
@@ -117,11 +119,86 @@ export const RegisterOkScreen = () => {
       })
   }
 
+  const descargarMapaJuanjui = async () => {
+    const bounds: [number, number, number, number] = geoViewport.bounds(
+      [-76.748, -7.181],
+      17,
+      [width, height],
+      512,
+    )
+
+    const options = {
+      name: 'JuanjuiMapTest',
+      styleURL: Mapbox.StyleURL.Satellite,
+      bounds: [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ] as [[number, number], [number, number]],
+      minZoom: 10,
+      maxZoom: 20,
+      metadata: {
+        whatIsThat: 'foo',
+      },
+    }
+    await Mapbox.offlineManager
+      .createPack(
+        options,
+        (region, status) => {
+          console.log('=> descargando mapa juanjui:', 'status: ', status)
+        },
+        error => {
+          console.log('=> error callback error:', error)
+        },
+      )
+      .catch(() => {
+        console.log('=> Mapa descargado')
+      })
+  }
+  /*   const descargarMapaQuito = async () => {
+    const bounds: [number, number, number, number] = geoViewport.bounds(
+      [-78.4678, -0.1807],
+      12,
+      [width, height],
+      512
+    );
+
+    const options = {
+      name: "QuitoMapTest",
+      styleURL: Mapbox.StyleURL.Satellite,
+      bounds: [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ] as [[number, number], [number, number]],
+      minZoom: 10,
+      maxZoom: 20,
+      metadata: {
+        whatIsThat: "foo",
+      },
+    };
+    await Mapbox.offlineManager
+      .createPack(
+        options,
+        (region, status) => {
+          console.log("=> progress callback region:", "status: ", status);
+          console.log(
+            "Progreso de descarga:",
+            status.percentage + "% completado"
+          );
+        },
+        (error) => {
+          console.log("=> error callback error:", error);
+        }
+      )
+      .catch(() => {
+        console.log("=> Mapa Quito descargado");
+      });
+  }; */
+
   return (
-    <SafeArea bg={'neutral'}>
+    <SafeArea bg={'isabelline'}>
       <ActivityIndicator
         size={moderateScale(86)}
-        color={COLORS_DF.cacao}
+        color={COLORS_DF.citrine_brown}
         style={styles.indicador}
       />
       <View style={[styles.container]}>
@@ -154,7 +231,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(32),
     fontWeight: '700',
     textAlign: 'center',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     paddingHorizontal: horizontalScale(MP_DF.large),
     paddingVertical: verticalScale(MP_DF.medium),
   },
@@ -163,7 +240,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(24),
     fontWeight: '500',
     textAlign: 'center',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
   },
   formBtn: {
     flex: 1,

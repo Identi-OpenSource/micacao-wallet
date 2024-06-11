@@ -1,19 +1,21 @@
 import React, {createContext, useReducer} from 'react'
 
 export interface UserInterface {
-  name: string
-  dni: string
-  phone: string
-  pin: string
+  name?: string
+  dni?: string
+  phone?: string
+  pin?: string
   isLogin?: boolean
   parcel?: any[]
   syncUp?: boolean
   lastSyncUp?: number
   gender?: string
+  country?: any
 }
 export interface Parcel {
+  name: ReactNode
   id?: string
-  name?: string
+  nameParcel?: string
   hectares?: number
   location?: {
     latitude: number
@@ -21,17 +23,31 @@ export interface Parcel {
   }
   polygon?: any
 }
-
+export interface saleInterface {
+  typeCacao?: string
+  kgCacao?: string
+  month?: string
+}
 export const userInicialState: UserInterface = {
   name: '',
   dni: '',
   phone: '',
   pin: '',
-  isLogin: false,
   parcel: [],
+  syncUp: false,
+  isLogin: false,
 }
 
-export type UserActions = 'login' | 'logout' | 'getLogin'
+export const ParcelState: Parcel = {
+  nameParcel: '',
+  hectares: 0,
+}
+export const CacaoState: saleInterface = {
+  typeCacao: '',
+  kgCacao: '',
+  month: '',
+}
+export type UserActions = 'login' | 'logout' | 'getLogin' | 'setUser'
 
 export interface userInicialState {
   type: UserActions
@@ -44,6 +60,8 @@ export interface ActionsInterface {
 }
 
 export const UsersContext = createContext(userInicialState)
+export const parcelContext = createContext(ParcelState)
+export const CacaoContext = createContext(CacaoState)
 export const UserDispatchContext = createContext(
   (() => {}) as React.Dispatch<ActionsInterface>,
 )
@@ -74,6 +92,12 @@ export const usersReducer = (user: UserInterface, action: ActionsInterface) => {
         ...user,
         ...action.payload,
         isLogin: true,
+      }
+    }
+
+    case 'setUser': {
+      return {
+        ...action.payload,
       }
     }
     case 'logout': {

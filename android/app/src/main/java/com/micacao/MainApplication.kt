@@ -1,4 +1,4 @@
-package com.micacao
+package digital.identi.micacao
 
 import android.app.Application
 import com.facebook.react.PackageList

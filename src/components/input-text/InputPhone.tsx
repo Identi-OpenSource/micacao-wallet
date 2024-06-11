@@ -1,13 +1,13 @@
-import React from 'react'
-import {StyleSheet, Text, TextInput, View} from 'react-native'
+import React from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
   FONT_FAMILIES,
   MP_DF,
-} from '../../config/themes/default'
-import {InputTextProps} from './interfaces'
-import {moderateScale} from '../../config/themes/metrics'
+} from "../../config/themes/default";
+import { InputTextProps } from "./interfaces";
+import { moderateScale } from "../../config/themes/metrics";
 
 export const InputPhone = (props: InputTextProps) => {
   const {
@@ -17,9 +17,9 @@ export const InputPhone = (props: InputTextProps) => {
     secureTextEntry,
     ref,
     code,
-    field: {name, value},
-    form: {handleChange, handleBlur, touched, errors},
-  } = props
+    field: { name, value },
+    form: { handleChange, handleBlur, touched, errors },
+  } = props;
 
   return (
     <View style={styles.container}>
@@ -29,10 +29,10 @@ export const InputPhone = (props: InputTextProps) => {
         <TextInput
           ref={ref}
           onBlur={handleBlur(name)}
-          onChangeText={text => handleChange(name)(text)}
+          onChangeText={(text) => handleChange(name)(text)}
           value={value}
           style={styles.input}
-          keyboardType={keyboardType || 'default'}
+          keyboardType={keyboardType || "default"}
           placeholder={placeholder}
           placeholderTextColor={COLORS_DF.gray}
           cursorColor={COLORS_DF.gray}
@@ -44,31 +44,31 @@ export const InputPhone = (props: InputTextProps) => {
         <Text style={styles.error}>{errors[name]?.toString()}</Text>
       )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     height: 120,
   },
   contenedor: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   label: {
-    fontFamily: FONT_FAMILIES.primary,
+    fontFamily: FONT_FAMILIES.bold,
     fontSize: moderateScale(16),
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: MP_DF.medium,
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
   },
   error: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(12),
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: moderateScale(20),
-    color: COLORS_DF.warning,
-    textAlign: 'right',
+    color: "red",
+    textAlign: "right",
   },
   inputCode: {
     height: 48,
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: BORDER_RADIUS_DF.small,
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(18),
-    fontWeight: '600',
+    fontWeight: "600",
     backgroundColor: COLORS_DF.white,
     color: COLORS_DF.black,
   },
@@ -92,9 +92,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: BORDER_RADIUS_DF.small,
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(18),
-    fontWeight: '600',
+    fontWeight: "600",
     backgroundColor: COLORS_DF.white,
     color: COLORS_DF.black,
     flex: 1,
   },
-})
+});

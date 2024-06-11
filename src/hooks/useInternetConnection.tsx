@@ -3,9 +3,13 @@ import NetInfo from '@react-native-community/netinfo'
 
 const useInternetConnection = () => {
   const [isConnected, setIsConnected] = useState(false)
+  const [isVisibleModal, setIsVisibleModal] = useState(false)
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
+      if (!isConnected && state.isConnected) {
+        setIsVisibleModal(true)
+      }
       setIsConnected(state.isConnected ?? false)
     })
 
@@ -15,7 +19,11 @@ const useInternetConnection = () => {
     }
   }, [])
 
-  return isConnected
+  useEffect(() => {
+    console.log('isConnected on Hook', isConnected)
+  }, [isConnected])
+
+  return {isConnected, isVisibleModal, setIsVisibleModal}
 }
 
 export default useInternetConnection

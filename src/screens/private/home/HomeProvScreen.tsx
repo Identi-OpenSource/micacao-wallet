@@ -1,5 +1,8 @@
-import React, {useCallback, useContext, useState} from 'react'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {
+  BackHandler,
   Image,
   ScrollView,
   StyleSheet,
@@ -8,7 +11,13 @@ import {
   View,
   Alert as Alerts,
 } from 'react-native'
+import {writeTransaction, newWallet, fundingWallet} from '../../../OCC/occ'
+import {imgFrame, imgLayer} from '../../../assets/imgs'
+import {LoadingSave} from '../../../components/loading/LoadinSave'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {storage} from '../../../config/store/db'
+import {LABELS} from '../../../config/texts/labels'
+import {TEXTS} from '../../../config/texts/texts'
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
@@ -17,7 +26,12 @@ import {
   MP_DF,
   getFontSize,
 } from '../../../config/themes/default'
+import {useAuth} from '../../../states/AuthContext'
+import {ConnectionContext} from '../../../states/ConnectionContext'
+import {useKafeContext} from '../../../states/KafeContext'
+import {useSyncData} from '../../../states/SyncDataContext'
 import {UserInterface, UsersContext} from '../../../states/UserContext'
+<<<<<<< HEAD
 import useInternetConnection from '../../../hooks/useInternetConnection'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {LABELS} from '../../../config/texts/labels'
@@ -48,15 +62,30 @@ const API_KEY =
 /* import {Users} from '../../../models/user'
 import {useQuery} from '@realm/react'
 import Geolocation from '@react-native-community/geolocation' */
+=======
+import Config from 'react-native-config'
+>>>>>>> braudin
 
 export const HomeProvScreen = () => {
-  const navigation = useNavigation()
   const user: UserInterface = useContext(UsersContext)
-  const isConnected = useInternetConnection()
+  const internetConnection = useContext(ConnectionContext)
+  const wallet = JSON.parse(storage.getString('wallet') || '{}')
+
+  const {isConnected} = internetConnection
+  const {toSyncData, dataToSync, loadingSync} = useSyncData()
+  const {
+    postKafeSistemas,
+    getKafeSistemas,
+    postKafeData,
+    getKafeData,
+    loadingKafe,
+  } = useKafeContext()
+  const {accessToken} = useAuth()
   const [syncUp, setSyncUp] = useState(false)
   const [TGFW, setTokenGFW] = useState(null)
   const [apiKeyGFW, setApiKeyGFW] = useState(null)
   const [loadinSync, setLoadingSync] = useState(false)
+<<<<<<< HEAD
   // const users = useQuery(Users)
 
   const [wa, setWa] = useState(null) as any
@@ -72,258 +101,113 @@ export const HomeProvScreen = () => {
         setTimeout(() => {
           navigation.navigate('RegisterParcelScreen')
         }, 1000)
+=======
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Evita que se ejecute el comportamiento predeterminado de Android
+        return true // true para indicar que el evento de retroceso ha sido manejado
+>>>>>>> braudin
       }
-    }, [isConnected]),
+
+      // Agrega un listener para el evento de retroceso de Android
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress,
+      )
+
+      if (Object.keys(wallet).length > 0) {
+        console.log('wallet', wallet.isFunding)
+        if (wallet.isFunding) {
+          write()
+        } else {
+          funding()
+        }
+      }
+
+      // Limpia el listener cuando la pantalla pierde el enfoque
+      return () => backHandler.remove()
+    }, []),
   )
 
-  // const verifySyncUp = () => {
-  //   // asyncData if not syncUp in the last 4 hours
-  //   const sync = JSON.parse(storage.getString('syncUp') || '{}')
-  //   if (
-  //     isConnected &&
-  //     sync.isSyncUp &&
-  //     sync.lastSyncUp + 14400000 < Date.now()
-  //   ) {
-  //     setSyncUp(sync.isSyncUp)
-  //   }
-  // }
+  useEffect(() => {
+    if (isConnected) {
+      if (dataToSync.parcels && !loadingSync) {
+        toSyncData('createFarm')
+      }
+      if (dataToSync.sales) {
+        toSyncData('createSale')
+      }
+    }
+  }, [isConnected, dataToSync.parcels, dataToSync.sales])
 
-  const dataSyncUp = () => {
-    setLoadingSync(true)
-    setTimeout(() => {
-      const newSync = {isSyncUp: false, lastSyncUp: Date.now()}
-      storage.set('syncUp', JSON.stringify(newSync))
-      setSyncUp(false)
-      setLoadingSync(false)
-    }, 2500)
+  const getWallet = () => {
+    // Create Wallet
+    // const wallet = {
+    //   isFunding: true,
+    //   wallet: {
+    //     walletOFC: 'R9vNe1TJLJta1srkqNo8WBrGN4JDJpTCDQ',
+    //     wif: 'L2e3T9u1ph4nceszGLqpCmwZ8soZf19hnonUNfiFywwL2bNADxwC',
+    //   },
+    // }
+    //Testing Wallet
+    // const wallet = newWallet()
+    // const isFunding = true
+    // const walletObj = {wallet, isFunding}
+    // console.log(walletObj)
+    // setWa(walletObj.wallet)
   }
 
-  const createWallet = () => {
-    const wallet = newWallet()
-    setWa(wallet)
-    Alerts.alert('Wallet Creada', wallet.walletOFC)
-    console.log('wallet', wallet)
-  }
-
-  const getFundingWallet = async () => {
-    await fundingWallet(wa.walletOFC)
-      .then(() => {
-        Alerts.alert(
-          'Fondos Agregados',
-          'Se han agregado fondos a su wallet.' + wa.walletOFC,
-        )
-      })
-      .catch(() => {
-        Alerts.alert(
-          'Error',
-          'No se han podido agregar fondos a su wallet. Parece que la red OCC no está disponible. Intente más tarde.',
-        )
-      })
+  const writeWallet = () => {
+    write()
   }
 
   const write = async () => {
-    // Wallet prueba:RXp5YtBnAFGCN1DZeChVATR3EEu5c2zjt5
-    // WIF:L3nfEsDGad8f74a28f1jrHbZCj5CmmFPmYyDSekrqeFT9tTxpy5q
-    // wif2:UvaVYYqF5r6ua7N7KChKcjGn8o8LrsX1Y4M31uYYJMUA3kQ2sjkQ
-    await writeTransaction(wa.wif)
-  }
-
-  /*  const fundingWalletOffline = async () => {
-    await fundingWalletOff(wa.ec_pairs, wa.walletOFC, wa.wifi)
-      .then(resp => {
-        console.log('fundingWalletOff', resp)
-        Alerts.alert(
-          'Fondos Fuera de linea Agregados',
-          'Se han agregado fondos a su wallet.' + wa,
-        )
-      })
-      .catch(() => {
-        Alerts.alert('Error', 'No se han podido agregar fondos a su wallet.')
-      })
-  } */
-
-  /*  const newTransaction = async () => {
-    await fundingWallet(wa)
-    //console.log(f)
-  } */
-
-  const tokenGFW = async () => {
-    await axios
-      .post(
-        'https://data-api.globalforestwatch.org/auth/token',
-        {
-          username: 'soporte@braudin.com',
-          password: 'qCd&IbS4&jt8',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      )
-      .then(resp => {
-        // setTokenGFW(resp.data)
-        setTokenGFW(resp.data.data.access_token)
-        Alerts.alert('Token GFW obtenido', resp.data.data.access_token)
-      })
-      .catch(e => {
-        Alerts.alert('Error al intentar obtener el token')
-        console.log('error', e)
-      })
-  }
-
-  const createApiKeyGFW = async () => {
-    const payload = {
-      alias: 'mi-cacao-appss' + Date.now(),
-      organization: 'GFWdata',
-      email: 'soporte@braudin.com',
-      domains: [],
-    }
-    await axios
-      .post('https://data-api.globalforestwatch.org/auth/apikey', payload, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${TGFW}`,
-        },
-      })
-      .then(resp => {
-        setApiKeyGFW(resp.data.data.api_key)
-        Alerts.alert(
-          'Api Key GFW obtenido',
-          'Se genero un api key para el alias: ' + resp.data.data.alias,
-        )
-      })
-      .catch(e => {
-        Alerts.alert('Error al intentar obtener el ApiKey')
-        console.log('error', e)
-      })
-  }
-
-  const testApiKeyGFW = async () => {
-    await axios
-      .get('https://data-api.globalforestwatch.org/datasets', {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKeyGFW,
-        },
-      })
-      .then(resp => {
-        console.log('resp', resp.data.data)
-        Alerts.alert('Api Key GFW Test', 'Api Key GFW valido')
-      })
-      .catch(e => {
-        Alerts.alert('Test Api Key GFW', 'Api Key GFW no valido')
-        console.log('error', e)
-      })
-  }
-
-  const queryPForestal = async () => {
-    const payload = {
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [103.19732666015625, 0.5537709801264608],
-            [103.24882507324219, 0.5647567848663363],
-            [103.21277618408203, 0.5932511181408705],
-            [103.19732666015625, 0.5537709801264608],
-          ],
-        ],
-      },
-      sql: 'SELECT SUM(area__ha) FROM results WHERE umd_tree_cover_loss__year=2022',
-    }
-    await axios
-      .post(
-        'https://data-api.globalforestwatch.org/dataset/umd_tree_cover_loss/latest/query',
-        payload,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKeyGFW,
-          },
-        },
-      )
-      .then(resp => {
-        console.log('resp', resp.data.data)
-        Alerts.alert(
-          'Perdida forestal',
-          `Hubo una perdida de ${resp.data.data[0].area__ha} hectáreas en 2022 para el polígono test`,
-        )
-      })
-      .catch(e => {
-        Alerts.alert(
-          'Error en la consulta',
-          'No se pudo obtener la información.',
-        )
-        console.log('error', e)
-      })
-  }
-
-  const certificateND = async (dni: string) => {
-    const paddedDNI = dni.padStart(16, '0')
-    const utf8Key = CryptoJS.enc.Utf8.parse(key)
-    const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
-
-    const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
-      mode: CryptoJS.mode.ECB,
-      padding: CryptoJS.pad.Pkcs7,
+    const userData = JSON.parse(storage.getString('user') || '{}')
+    const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
+    const sales = JSON.parse(storage.getString('sales') || '[]')
+    const [TX, newSales] = await writeTransaction(wallet.wallet.wif, {
+      userData,
+      parcels_array,
+      sales,
     })
-
-    const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
-
-    return hexResult.substr(0, 32)
+    console.log(TX)
+    storage.set('sales', JSON.stringify(newSales))
   }
 
-  const kafeSistemas = async () => {
-    const resp_kafe: any = []
-    for (let i = 0; i < DATA_KAFE.length; i++) {
-      const dniEncrypted = await certificateND(DATA_KAFE[i].dni)
-      const data = {
-        dni: dniEncrypted,
-        polygon: DATA_KAFE[i].polygon,
-        departamento: 'San Martin',
-      }
-      // axios.interceptors.request.use(request => {
-      //   console.log('Starting Request', JSON.stringify(request, null, 2))
-      //   return request
-      // })
-      await axios
-        .post(API_KAFE_SISTEMAS, data, {
-          headers: {
-            api_key: API_KEY,
-            // Authorization: `Bearer ${API_KEY}`,
-          },
-        })
-        .then(resp => {
-          console.log('resp', resp.data)
-          resp_kafe.push({
-            send: {...data, dni: DATA_KAFE[i].dni, dniEncrypted},
-            resp: resp.data,
-          })
-        })
-        .catch(e => {
-          console.log('error', e)
-        })
-    }
-    // ordenar por dni
-    resp_kafe.sort((a, b) => {
-      if (a.send.dni > b.send.dni) {
-        return 1
-      }
-      if (a.send.dni < b.send.dni) {
-        return -1
-      }
-      return 0
-    })
+  const funding = async () => {
+    const funding = await fundingWallet(wallet.wallet.walletOFC).catch(() => ({
+      status: 500,
+    }))
 
-    console.log('resp_kafe', resp_kafe)
+    const isFunding = funding.status === 200
+
+    const wallet_a = wallet.wallet
+
+    storage.set('wallet', JSON.stringify({wallet: wallet_a, isFunding}))
   }
+
+  // const createHash = async (dni: string) => {
+  //   //console.log('DNI', dni)
+  //   const date = new Date()
+  //   const paddedDNI = dni.padStart(16, '0') + date
+  //   const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
+  //   const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
+  //   const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
+  //     mode: CryptoJS.mode.ECB,
+  //     padding: CryptoJS.pad.Pkcs7,
+  //   })
+  //   const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
+  //   return {hash: hexResult.substr(0, 32), hashAll: hexResult}
+  // }
 
   return (
-    <SafeArea>
+    <SafeArea bg={'isabelline'}>
       <ScrollView>
         {!loadinSync ? (
           <View style={styles.container}>
+<<<<<<< HEAD
             <ConnectionStatus
               syncUp={syncUp}
               isConnected={isConnected}
@@ -498,6 +382,16 @@ export const HomeProvScreen = () => {
               title={'Envió de datos test'}
               theme="agrayu"
               onPress={() => kafeSistemas()}
+=======
+            <ConnectionStatus isConnected={isConnected || false} />
+            <Header {...user} />
+            <Body
+              syncUp={syncUp}
+              accessToken={accessToken}
+              getWallet={getWallet}
+              writeWallet={writeWallet}
+              isConnected={isConnected || false}
+>>>>>>> braudin
             />
           </View>
         ) : (
@@ -508,71 +402,61 @@ export const HomeProvScreen = () => {
   )
 }
 
-const ConnectionStatus = (props: {
-  syncUp: boolean
-  isConnected: boolean
-  dataSyncUp: Function
-}) => {
+const ConnectionStatus = (props: {isConnected: boolean}) => {
   const isConnected = props.isConnected
-  const syncUp = props.syncUp
-  const dataSyncUp = props.dataSyncUp
+
   return (
     <View style={styles.containerConnection}>
       <View style={styles.containerConnectionTitle}>
         <FontAwesomeIcon
           icon={'circle'}
           size={14}
-          color={!isConnected ? COLORS_DF.grayLight : COLORS_DF.greenAgrayu}
+          color={!isConnected ? COLORS_DF.grayLight : COLORS_DF.robin_egg_blue}
         />
         <Text style={styles.connectionTitle}>
           {isConnected ? LABELS.online : LABELS.offline}
         </Text>
       </View>
-      {!isConnected && (
-        <Text style={styles.connectionSubTitle}>{LABELS.offlineMessage}</Text>
-      )}
-      {isConnected && syncUp && (
-        <BtnSmall
-          theme={'agrayu'}
-          title={LABELS.asyncData}
-          icon={'rotate'}
-          onPress={() => dataSyncUp()}
-        />
-      )}
     </View>
   )
 }
 
 const Header = ({name}: UserInterface) => {
   const firstName = name.split(' ')[0]
+
   return (
     <View style={styles.header}>
       <Text style={styles.titleHeader}>
         {TEXTS.textL} {firstName}
       </Text>
+
       <Text style={styles.textHeader}>{TEXTS.textK}</Text>
     </View>
   )
 }
 
-const Body = (props: {syncUp: boolean}) => {
-  const [alert, setAlert] = useState(false)
+const Body = (props: {
+  syncUp: boolean
+  accessToken: string
+  getWallet: any
+  writeWallet: any
+  isConnected: boolean
+  Parcel: any
+  polygon: any
+  postGfw: any
+  getGfw: any
+}) => {
   const navigation = useNavigation()
+
   const syncUp = props.syncUp
-  // const onPress = () => {
-  //   if (syncUp) {
-  //     setAlert(true)
-  //     return
-  //   }
-  // }
+
+  const accessToken = props.accessToken
+  const getWallet = props.getWallet
+  const writeWallet = props.writeWallet
+  const isConnected = props.isConnected
+
   return (
     <View style={styles.bodyContainer}>
-      <Alert
-        visible={alert}
-        onVisible={setAlert}
-        icon={'exclamation-triangle'}
-        title={TEXTS.textAE}
-      />
       {/* Primer card */}
       <View style={[styles.bodyCardContainerFull]}>
         <TouchableOpacity
@@ -589,12 +473,32 @@ const Body = (props: {syncUp: boolean}) => {
         <TouchableOpacity
           style={[styles.bodyCard]}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('NewSaleOneScreen')}>
+          onPress={() => {
+            navigation.navigate('NewSaleOneScreen')
+          }}>
           <Image source={imgFrame} style={syncUp && styles.filter} />
           <Text style={[styles.titleCard, syncUp && styles.filter]}>
             {LABELS.registerVenta}
           </Text>
         </TouchableOpacity>
+
+        {/* <TouchableOpacity
+          style={[styles.bodyCard]}
+          activeOpacity={0.9}
+          onPress={() => getWallet()}>
+          <Text style={[styles.titleCard, syncUp && styles.filter]}>
+            {'get Wallet'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.bodyCard]}
+          activeOpacity={0.9}
+          onPress={() => writeWallet()}>
+          <Text style={[styles.titleCard, syncUp && styles.filter]}>
+            {'write Wallet'}
+          </Text>
+        </TouchableOpacity> */}
       </View>
     </View>
   )
@@ -612,7 +516,7 @@ const styles = StyleSheet.create({
   containerConnection: {
     height: 48,
     borderWidth: 1,
-    borderColor: COLORS_DF.cacao,
+    borderColor: COLORS_DF.citrine_brown,
     borderRadius: BORDER_RADIUS_DF.small,
     backgroundColor: COLORS_DF.white,
     flexDirection: 'row',
@@ -628,15 +532,16 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(18),
     fontWeight: 'bold',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     marginLeft: MP_DF.small,
   },
   connectionSubTitle: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: getFontSize(14),
     fontWeight: 'normal',
-    color: COLORS_DF.grayLight,
-    marginLeft: MP_DF.small,
+    color: COLORS_DF.white,
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
   header: {
     marginTop: MP_DF.large,
@@ -645,13 +550,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.xslarge,
     fontWeight: 'bold',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     marginBottom: MP_DF.small,
   },
   textHeader: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.small,
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
   },
   bodyContainer: {
     flexDirection: 'row',
@@ -683,7 +588,16 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontSize: FONT_SIZES.large,
     fontWeight: 'bold',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     textAlign: 'center',
+  },
+  buttonReload: {
+    width: 135,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS_DF.robin_egg_blue,
+    borderRadius: 5,
+    flexDirection: 'row',
   },
 })

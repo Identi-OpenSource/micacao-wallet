@@ -1,32 +1,36 @@
-import React from 'react'
+import { useNavigation } from "@react-navigation/native";
+import React, { useContext } from "react";
 import {
-  Image,
   PermissionsAndroid,
   Platform,
   StyleSheet,
   Text,
   View,
-} from 'react-native'
+} from "react-native";
+import { LocationPermision, Location_M, Location_W } from "../../../assets/svg";
+import { Btn } from "../../../components/button/Button";
+import { SafeArea } from "../../../components/safe-area/SafeArea";
+import { LABELS } from "../../../config/texts/labels";
+import { TEXTS } from "../../../config/texts/texts";
+import {
+  COLORS_DF,
+  FONT_FAMILIES,
+  MP_DF,
+} from "../../../config/themes/default";
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
-} from '../../../config/themes/metrics'
-import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {TEXTS} from '../../../config/texts/texts'
-import {Btn} from '../../../components/button/Button'
-import {LABELS} from '../../../config/texts/labels'
-import {useNavigation} from '@react-navigation/native'
-import {imgGPS} from '../../../assets/imgs'
+} from "../../../config/themes/metrics";
+import { UsersContext } from "../../../states/UserContext";
 
 export const PermissionsThreeScreen = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   // request permission to use location
 
   const requestPermission = async () => {
     try {
-      if (Platform.OS === 'android') {
+      if (Platform.OS === "android") {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
@@ -35,48 +39,63 @@ export const PermissionsThreeScreen = () => {
             buttonNeutral: LABELS.AskMeLater,
             buttonNegative: LABELS.cancel,
             buttonPositive: LABELS.permission,
-          },
-        )
+          }
+        );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          navigation.navigate('PermissionsFourScreen')
+          navigation.navigate("PermissionsFourScreen");
         } else {
-          console.log('Camera permission denied')
+          console.log("Camera permission denied");
         }
       }
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-  }
-
+  };
+  const user = useContext(UsersContext);
   return (
-    <SafeArea bg={'neutral'}>
+    <SafeArea bg={"isabelline"}>
       <View style={styles.container}>
         <View style={styles.textContainer}>
-          <Text style={[styles.textB]}>{TEXTS.textY}</Text>
-          <Image source={imgGPS} style={styles.img} />
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {user.gender === "M" && <Location_M />}
+            {user.gender === "W" && <Location_W />}
+          </View>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <LocationPermision style={styles.img} width={440} height={420} />
+          </View>
         </View>
         <View style={styles.formBtn}>
           <Btn
-            title={LABELS.requestPermissionLocation}
+            title={LABELS.continue}
             theme="agrayu"
             onPress={() => requestPermission()}
           />
         </View>
       </View>
     </SafeArea>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: horizontalScale(MP_DF.large),
+    paddingTop: 20,
   },
   img: {
-    marginVertical: verticalScale(MP_DF.large),
-    alignSelf: 'center',
-    flex: 1,
-    resizeMode: 'contain',
+    alignSelf: "center",
+    marginLeft: 35,
+    marginTop: 45,
   },
   textContainer: {
     flex: 1,
@@ -84,21 +103,21 @@ const styles = StyleSheet.create({
   textA: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(32),
-    fontWeight: '700',
-    textAlign: 'left',
+    fontWeight: "700",
+    textAlign: "left",
     color: COLORS_DF.cacao,
     paddingVertical: verticalScale(MP_DF.medium),
   },
   textB: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(24),
-    fontWeight: '500',
+    fontWeight: "500",
     lineHeight: 36,
     color: COLORS_DF.cacao,
     marginTop: MP_DF.large,
   },
   formBtn: {
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     paddingBottom: verticalScale(MP_DF.xlarge),
   },
-})
+});

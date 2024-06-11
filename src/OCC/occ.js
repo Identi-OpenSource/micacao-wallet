@@ -2,47 +2,19 @@ import axios from 'axios'
 import {Linking} from 'react-native'
 const bitGoUTXO = require('@bitgo/utxo-lib')
 const {
-  fund_offline_wallets,
   send_batch_transactions,
   get_all_ecpairs,
 } = require('transaction-js/batch')
-
-const test_batch = {
-  user: {
-    id: {value: 1, unique: true},
-    name: 'John Doe',
-    email: 'johndoe@example.com',
-    preferences: {
-      theme: 'dark',
-      notifications: {
-        email: true,
-        sms: false,
-        push: {
-          enabled: true,
-          frequency: 'daily',
-        },
-      },
-    },
-    friends: [
-      {
-        id: 2,
-        name: 'Jane Smith',
-        status: 'online',
-      },
-      {
-        id: 3,
-        name: 'Bob Johnson',
-        status: 'offline',
-        lastOnline: '2023-03-08T12:00:00Z',
-      },
-    ],
-  },
-}
+import CryptoJS from 'crypto-js'
+import Config from 'react-native-config'
+import {months} from '../config/const'
 
 export const newWallet = () => {
+  // Create
   let wallet = bitGoUTXO.ECPair.makeRandom()
   let wif = wallet.toWIF()
   let ec_pairs = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
+
   return {
     walletOFC: ec_pairs.getAddress(),
     wif,
@@ -53,32 +25,9 @@ export const fundingWallet = async wallet => {
   const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
   return await axios.get(url)
 }
-
-// export const fundingWalletOff = async (baseAddy, baseWIF) => {
-//   console.log('Start testing for Funding Wallet Offline...')
-//   //name_ecpair, baseAddy, baseWIF
-//   const test_batch = {
-//     anfp: '11000011',
-//     dfp: 'Description here Braudin',
-//     pds: '2020-03-01',
-//     pde: '2020-03-05',
-//     jds: 2,
-//     jde: 7,
-//     bbd: '2020-05-05',
-//     pc: 'DE',
-//     pl: 'Herrath',
-//     rmn: '11200100520',
-//     pon: '123072',
-//     pop: '164',
-//     mass: 1.0,
-//     percentage: null,
-//   }
-//   const res = bitGoUTXO.ECPair.fromWIF(baseWIF, bitGoUTXO.networks.kmd)
-//   const name_ecpair = get_all_ecpairs(test_batch, res)
-//   console.log('name_ecpair')
-//   const resp = await fund_offline_wallets(name_ecpair, baseAddy, baseWIF)
-//   console.log('Funding Wallet Offline', resp)
-//   return resp
+// export const fundingWallet = async wallet => {
+//   const url = `https://fund.occs.openfoodchain.org/found/${wallet}`
+//   return await axios.get(url)
 // }
 
 export const verificarWallet = async wallet => {
@@ -87,18 +36,94 @@ export const verificarWallet = async wallet => {
   Linking.openURL(url)
 }
 
-export const writeTransaction = async wif => {
-  // const wifs = 'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio'
-  // const res = bitGoUTXO.ECPair.fromWIF(
-  //   'UvjpBLS27ZhBdCyw2hQNrTksQkLWCEvybf4CiqyC6vJNM3cb6Qio',
-  //   bitGoUTXO.networks.kmd,
-  // )
-  // console.log('res', res.getAddress())
-  // const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
-  const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
-  const ec_pairs = get_all_ecpairs(test_batch, res)
-  const tx1 = await send_batch_transactions(ec_pairs, test_batch, res)
-  console.log(tx1)
+export const dniText = async dni => {
+  const utf8Key = await CryptoJS.enc.Utf8.parse(
+    Config.KEY_CIFRADO_KAFE_SISTEMAS,
+  )
+  const encryptedHexStr = await CryptoJS.enc.Hex.parse(dni)
+  const encryptedBase64Str = await CryptoJS.enc.Base64.stringify(
+    encryptedHexStr,
+  )
+  const decrypted = await CryptoJS.AES.decrypt(encryptedBase64Str, utf8Key, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.Pkcs7,
+  })
+  return await decrypted.toString(CryptoJS.enc.Utf8)
+}
+
+export const writeTransaction = async (wif, object) => {
+  const {userData, parcels_array, sales} = object
+  // Obtener DNI
+  const DNI = await dniText(userData.dniAll)
+  let TX = []
+  let newSales = []
+  for (let index = 0; index < sales.length; index++) {
+    let sale = sales[index]
+    if (!sale.syncUpOCC) {
+      const month = months.findIndex(p => p === sale.mes)
+      const purchaseDate = getFirstDayMonthPrevious(month)
+      const hashDNI = await CryptoJS.SHA256(DNI + purchaseDate).toString()
+      const polygon = convertAPolygonString(
+        parcels_array?.find(p => p.id === sale?.parcela)?.polygon,
+      )
+      const farmerPlot = await CryptoJS.SHA256(polygon).toString()
+      const batch = {
+        bnfp: {value: hashDNI, unique: true},
+        purchaseDate,
+        farmerAlias: userData.name.trim().split(' ')[0],
+        farmerPlot,
+        DNI: hashDNI,
+        variety: 'CRIOLLO',
+        moistureLevel: `TYPO (${sale.type})`,
+        premiumPaid: '1',
+        COOPMaterialNumber: '',
+        COOPMaterialName: `CACAO CRIOLLO (${sale.type})`,
+        PONumber: '',
+        POPosition: '',
+        plannedDeliveryDate: purchaseDate,
+        shipsTo: '',
+      }
+      const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
+      const ec_pairs = get_all_ecpairs(batch, res)
+      const tx1 = await send_batch_transactions(ec_pairs, batch, res)
+      TX = [...TX, tx1]
+      sale.syncUpOCC = true
+    }
+    newSales = [...newSales, sale]
+  }
+  return [TX, newSales]
+}
+
+const getFirstDayMonthPrevious = mes => {
+  const fechaActual = new Date()
+  const añoActual = fechaActual.getFullYear()
+  const mesActual = fechaActual.getMonth()
+  let añoObjetivo
+  let mesObjetivo
+  if (mesActual > mes) {
+    añoObjetivo = añoActual
+    mesObjetivo = mes
+  } else {
+    añoObjetivo = añoActual - 1
+    mesObjetivo = mes
+  }
+  const fechaObjetivo = new Date(añoObjetivo, mesObjetivo, 1)
+  const año = fechaObjetivo.getFullYear()
+  const mesStr = fechaObjetivo.getMonth()
+  return `01-${months[mesStr]}-${año}`
+}
+
+function convertAPolygonString(coordenadas) {
+  // Mappear las coordenadas a un string con el formato requerido
+  let polygonString = coordenadas
+    .map(coord => `${coord[0]} ${coord[1]}`)
+    .join(', ')
+
+  // Agregar el primer punto al final para cerrar el polígono
+  polygonString += `, ${coordenadas[0][0]} ${coordenadas[0][1]}`
+
+  // Formato final del polígono
+  return `POLYGON((${polygonString}))`
 }
 
 export const transaction = async wallet => {}

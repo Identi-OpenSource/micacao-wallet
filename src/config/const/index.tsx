@@ -1,6 +1,8 @@
 export const REGEX = {
   // phone: /^(\d{3})-(\d{3})-(\d{4})$/,
-  phone: /^(\d{7,11})$/,
+  phone: /^(\d{9,10})$/,
+  phone_co: /^(\d{10,10})$/,
+  phone_pe: /^(\d{9,9})$/,
   pin: /^\d{6,}$/,
   // namePropio: /^(?:[a-zA-ZÀ-ÿ]+['-]?)+(?:\s(?:[a-zA-ZÀ-ÿ]+['-]?)+)+$/,
   namePropio: /^[a-zA-ZÀ-ÿ,-.'\s]+$/,
@@ -10,6 +12,8 @@ export const REGEX = {
 export const GENDER = {
   man: 'Hombre',
   woman: 'Mujer',
+  id_woman: 'W',
+  id_man: 'M',
 }
 
 export const COUNTRY = {
@@ -24,3 +28,18 @@ export const COUNTRY = {
     phoneCode: '+57',
   },
 }
+
+export const months = [
+  'ENERO',
+  'FEBRERO',
+  'MARZO',
+  'ABRIL',
+  'MAYO',
+  'JUNIO',
+  'JULIO',
+  'AGOSTO',
+  'SEPTIEMBRE',
+  'OCTUBRE',
+  'NOVIEMBRE',
+  'DICIEMBRE',
+]
