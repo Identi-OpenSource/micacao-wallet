@@ -153,7 +153,7 @@ const RegisterParcelThirdScreen: React.FC<RegisterParcelThirdScreenProps> = ({
               <Text style={styles.textUnique}>Foto guardada con éxito</Text>
             )}
           </View>
-          <View style={STYLES_GLOBALS.formBtn}>
+          <View style={{ paddingBottom: 64 }}>
             {
               <Btn
                 title={gps === null ? LABELS?.capturePhoto : LABELS.next}
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     lineHeight: FONT_SIZES.xslarge * 1.5,
     color: COLORS_DF.citrine_brown,
-    marginTop: MP_DF.xxlarge,
+    marginTop: 10,
   },
   textUniqueUPPER: {
     textTransform: "uppercase",

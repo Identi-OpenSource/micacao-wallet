@@ -23,7 +23,7 @@ export const SaleScreen = () => {
   const ref = useRef<TextInput>(null);
 
   const decimals = (numero) => {
-    return /^(0|[1-9]\d{0,3})(\.\d{2})?$/.test(numero.trim());
+    return /^(0|[1-9]\d{0,4})(\.\d{2})?$/.test(numero.trim());
   };
 
   const onSubmit = () => {

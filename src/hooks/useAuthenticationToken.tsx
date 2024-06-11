@@ -4,7 +4,7 @@ import { storage } from "../config/store/db";
 import { API_INTERFACE, HTTP } from "../services/api";
 import { useAuth } from "../states/AuthContext";
 import { ConnectionContext } from "../states/ConnectionContext";
-
+import Toast from "react-native-toast-message";
 const useAuthenticationToken = (
   setAccessToken: any,
   setLoading: any,
@@ -34,7 +34,10 @@ const useAuthenticationToken = (
         storage.set("accessToken", data.access_token);
       } catch (error) {
         console.log("error", error);
-        setError(error);
+        Toast.show({
+          type: "syncToast",
+          text1: "INTENTE MAS TARDE",
+        });
       } finally {
         setLoading(false);
       }

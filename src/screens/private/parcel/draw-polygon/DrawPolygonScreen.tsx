@@ -85,10 +85,14 @@ export const DrawPolygonScreen = ({ route }: any) => {
   ] as Position;
   const [coordinates, setCoordinates] = useState<Position[]>([firstPoint]);
   const [lastCoordinate] = useState<Position>(firstPoint);
+  const [existData, setExistData] = useState<any>(false);
+  const [existDataGet, setExistDataGet] = useState<any>(false);
+  const [dataGet, setDataGet] = useState<any>({});
   const [started] = useState(true);
   const navigation = useNavigation();
   const [sumaTotalVentas, setSumaTotalVentas] = useState<any>({});
   const [totalVentas, setTotalVentas] = useState<any>({});
+  const user = JSON.parse(storage.getString("user") || "{}");
   const {
     postGfw,
     getGfw,
@@ -105,6 +109,11 @@ export const DrawPolygonScreen = ({ route }: any) => {
     calcularSumaVentas();
     calcularVentas();
   }, []);
+
+  useEffect(() => {
+    checkIfDataExists();
+    checkIfDataExistsGet();
+  }, [getData, gfwData]);
   useEffect(() => {
     // eliminar polygonTemps
     //storage.delete('polygonTemp')
@@ -150,7 +159,26 @@ export const DrawPolygonScreen = ({ route }: any) => {
 
     return sumByParcelaAndType;
   };
-
+  const checkIfDataExists = () => {
+    let exist_data = false;
+    for (let i = 0; i < gfwData.length; i++) {
+      if (gfwData[i].index === index) {
+        exist_data = true;
+      }
+    }
+    setExistData(exist_data);
+  };
+  const checkIfDataExistsGet = () => {
+    let exist_data_get = false;
+    console.log("getdata", getData);
+    for (let i = 0; i < getData.length; i++) {
+      if (getData[i].index === index) {
+        setDataGet(getData[i].data);
+        exist_data_get = true;
+      }
+    }
+    setExistDataGet(exist_data_get);
+  };
   const sumTotalByParcelaAndType = (data: any) => {
     const sumTotalByParcelaAndType = {};
 
@@ -180,7 +208,7 @@ export const DrawPolygonScreen = ({ route }: any) => {
 
   const submitPost = () => {
     if (isConnected) {
-      postGfw();
+      postGfw(index);
     } else {
       Toast.show({
         type: "syncToast",
@@ -190,8 +218,8 @@ export const DrawPolygonScreen = ({ route }: any) => {
   };
   const submitGet = () => {
     if (isConnected) {
-      getGfw();
-    } else if (JSON.stringify(getData) !== "{}") {
+      getGfw(index);
+    } else if (JSON.stringify(dataGet) !== "{}") {
       toastGetData();
     } else {
       Toast.show({
@@ -201,7 +229,7 @@ export const DrawPolygonScreen = ({ route }: any) => {
     }
   };
   const toastGetData = () => {
-    switch (getData.status) {
+    switch (dataGet?.status) {
       case "Pending":
         Toast.show({
           type: "yellowToast",
@@ -213,12 +241,12 @@ export const DrawPolygonScreen = ({ route }: any) => {
       case "Completed":
         Toast.show({
           type:
-            getData.data?.deforestation_kpis[0].IsCoverage === true
+            dataGet.data?.deforestation_kpis[0].IsCoverage === true
               ? "happyToast"
               : "redSadToast",
           text1: "Coeficientes:",
           visibilityTime: 8000,
-          text2: `Bosque conservado:${getData.data?.deforestation_kpis[0]["Natural Forest Coverage (HA) (Beta)"]} Bosque perdido:${getData.data?.deforestation_kpis[0]["Natural Forest Loss (ha) (Beta)"]}`,
+          text2: `Bosque conservado:${dataGet.data?.deforestation_kpis[0]["Natural Forest Coverage (HA) (Beta)"]} Bosque perdido:${dataGet.data?.deforestation_kpis[0]["Natural Forest Loss (ha) (Beta)"]}`,
         });
 
         break;
@@ -230,7 +258,7 @@ export const DrawPolygonScreen = ({ route }: any) => {
 
   useEffect(() => {
     toastGetData();
-  }, [getData]);
+  }, [dataGet]);
 
   useEffect(() => {
     if (errorGfw != null)
@@ -293,13 +321,7 @@ export const DrawPolygonScreen = ({ route }: any) => {
           visible={loadingGfw}
           size={100}
         />
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 15,
-          }}
-        ></View>
+
         <View
           style={{
             paddingHorizontal: 16,
@@ -350,7 +372,10 @@ export const DrawPolygonScreen = ({ route }: any) => {
                 <Text>vendidos a </Text>
               </View>
               <Text style={{ color: COLORS_DF.citrine_brown }}>
-                S/.{totalVentas[`${parcel[index]["id"]}_SECO`]}
+                S/.{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  {totalVentas[`${parcel[index]["id"]}_SECO`]}
+                </Text>
               </Text>
             </Card>
             <Card
@@ -386,7 +411,10 @@ export const DrawPolygonScreen = ({ route }: any) => {
                 <Text>vendidos a </Text>
               </View>
               <Text style={{ color: COLORS_DF.citrine_brown }}>
-                S/.{totalVentas[`${parcel[index]["id"]}_BABA`]}
+                S/.{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  {totalVentas[`${parcel[index]["id"]}_BABA`]}
+                </Text>
               </Text>
             </Card>
           </View>
@@ -395,17 +423,16 @@ export const DrawPolygonScreen = ({ route }: any) => {
         <View style={styles.containerButtonGFW}>
           <TouchableOpacity
             onPress={submitPost}
+            disabled={existData}
             style={{
-              backgroundColor:
-                JSON.stringify(gfwData) !== "{}"
-                  ? COLORS_DF.lightBlue
-                  : COLORS_DF.robin_egg_blue,
+              backgroundColor: existData
+                ? COLORS_DF.lightBlue
+                : COLORS_DF.robin_egg_blue,
               height: 44,
               borderRadius: 5,
               justifyContent: "center",
               marginTop: 15,
             }}
-            disabled={JSON.stringify(gfwData) !== "{}"}
           >
             <Text style={styles.textGfw}>
               Solicitar verificación No Deforestación
@@ -414,16 +441,15 @@ export const DrawPolygonScreen = ({ route }: any) => {
           <TouchableOpacity
             onPress={submitGet}
             style={{
-              backgroundColor:
-                JSON.stringify(gfwData) === "{}"
-                  ? COLORS_DF.lightBlue
-                  : COLORS_DF.robin_egg_blue,
+              backgroundColor: !existData
+                ? COLORS_DF.lightBlue
+                : COLORS_DF.robin_egg_blue,
               height: 44,
               borderRadius: 5,
               justifyContent: "center",
               marginTop: 15,
             }}
-            disabled={JSON.stringify(gfwData) === "{}"}
+            disabled={!existData}
           >
             <Text style={styles.textGfw}>
               Consultar verificación No Deforestación
@@ -437,19 +463,21 @@ export const DrawPolygonScreen = ({ route }: any) => {
             height: "auto",
           }}
         >
-          <View
-            style={{
-              backgroundColor: getBackgroundColor(),
-              alignItems: "center",
-              width: "100%",
-              borderRadius: 5,
-              marginBottom: 15,
-              height: 25,
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ color: "#fff" }}>{getMessage()}</Text>
-          </View>
+          {user.country?.code === "PE" && (
+            <View
+              style={{
+                backgroundColor: getBackgroundColor(),
+                alignItems: "center",
+                width: "100%",
+                borderRadius: 5,
+                marginBottom: 15,
+                height: 25,
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#fff" }}>{getMessage()}</Text>
+            </View>
+          )}
           <MapView
             ref={map}
             // key={coordinates.length}

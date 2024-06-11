@@ -15,7 +15,7 @@ import { storage } from "../config/store/db";
 import { BORDER_RADIUS_DF, COLORS_DF, MP_DF } from "../config/themes/default";
 import { HelpScreen } from "../screens/private/help/HelpScreen";
 import { HomeProvScreen } from "../screens/private/home/HomeProvScreen";
-import { TestMap } from "../screens/private/home/TestMap";
+
 import { DrawPolygonScreen } from "../screens/private/parcel/draw-polygon/DrawPolygonScreen";
 import DrawPolyline from "../screens/private/parcel/draw-polygon/DrawPolyline";
 import GradientLine from "../screens/private/parcel/draw-polygon/GradientLine";
@@ -122,13 +122,40 @@ export const Router = () => {
   const parcels = JSON.parse(storage.getString("parcels") || "[]");
   const userLogin = JSON.parse(storage.getString("user") || "{}");
   const accessToken = storage.getString("accessToken") || null;
-  const postGFW = JSON.parse(storage.getString("postGFW") || "{}");
-  const getData = JSON.parse(storage.getString("getGFW") || "{}");
+  const postGFW = JSON.parse(storage.getString("postGFW") || "[]");
+  const getData = JSON.parse(storage.getString("getGFW") || "[]");
   const district = JSON.parse(storage.getString("district") || "{}");
   const postKafe = JSON.parse(storage.getString("postKafeData") || "{}");
+  const pin = JSON.parse(storage.getString("security") || "{}");
   const getKafe = JSON.parse(storage.getString("getKafeData") || "{}");
   useEffect(() => {
-    //storage.delete("parcels");
+    // storage.delete("parcels");
+    //storage.delete("postGFW");
+    //storage.delete("getGFW");
+
+    // storage.set(
+    //   "parcels",
+    //   JSON.stringify([
+    //     {
+    //       firstPoint: [-0.0981957, -78.5091545],
+    //       hectares: 10000,
+    //       id: "1",
+    //       name: "Parcela 1",
+    //       polygon: [[Array], [Array], [Array], [Array], [Array], [Array]],
+    //       secondPoint: [-0.0981958, -78.509154],
+    //       syncUp: false,
+    //     },
+    //     {
+    //       firstPoint: [-0.0981917, -78.5091505],
+    //       hectares: 2600,
+    //       id: "2",
+    //       name: "Parcela 2",
+    //       polygon: [[Array], [Array], [Array], [Array], [Array], [Array]],
+    //       secondPoint: [-0.0981875, -78.5091644],
+    //       syncUp: false,
+    //     },
+    //   ])
+    // );
     //storage.delete("sales");
     //storage.delete("getKafeData");
     getIsLogin();
@@ -206,7 +233,7 @@ export const Router = () => {
         <StackPublic.Screen name="StartScreen" component={StartScreen} />
         <StackPublic.Screen name="IamScreen" component={IamScreen} />
         <StackPublic.Screen name="IamFromScreen" component={IamFromScreen} />
-        <StackPublic.Screen name="TestMap" component={TestMap} />
+
         <StackPublic.Screen
           name="PoligonJoystick"
           component={PoligonJoystick}
@@ -395,7 +422,6 @@ export const Router = () => {
             }}
           />
         </HomeStack.Group>
-        <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>
     );
   };
@@ -405,8 +431,6 @@ export const Router = () => {
     return (
       <HomeStack.Navigator screenOptions={{ ...slideFromRight }}>
         <HomeStack.Screen name="ProfileScreen" component={ProfileScreen} />
-
-        <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>
     );
   };

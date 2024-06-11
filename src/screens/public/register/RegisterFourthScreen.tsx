@@ -14,7 +14,6 @@ import {
   InterfaceFourth,
   SCHEMA_FOURTH,
 } from "./Interfaces";
-import { Header } from "./RegisterScreen";
 import { styles } from "./styles";
 
 interface RegisterFourthScreenProps {
@@ -24,15 +23,18 @@ const RegisterFourthScreen: React.FC<RegisterFourthScreenProps> = ({
   navigation,
 }) => {
   const submit = (values: InterfaceFourth) => {
-    sha256(values.pin)
-      .then((pinHash) => {
-        storage.set("security", JSON.stringify({ pin: pinHash }));
-        dispatch({ type: "setUser", payload: { ...user, pin: pinHash } });
+    const pin = values.pin; // Obtén el PIN directamente de los valores
 
+    sha256(pin) // Hashea el PIN
+      .then((pinHash) => {
+        //     console.log("PIN original:", pin);
+        //   console.log("PIN hasheado:", pinHash);
+        storage.set("security", JSON.stringify({ pin, pinHash }));
+        dispatch({ type: "setUser", payload: { ...user, pin: pinHash } });
         navigation.navigate("ConfirmPasswordScreen", { pin: pinHash });
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Error al hashear el PIN:", error);
       });
   };
   const user = useContext(UsersContext);

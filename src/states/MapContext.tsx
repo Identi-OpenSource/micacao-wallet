@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
+import Toast from "react-native-toast-message";
 import { API_INTERFACE, HTTP } from "../services/api";
 import { useAuth } from "./AuthContext";
-import { storage } from "../config/store/db";
 
 export interface MapInterface {
   errorMap?: any;
@@ -72,7 +72,10 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
             : JSON.stringify(error.response.data.errors);
         setErrorMap(errorText);
       } else {
-        setErrorMap(error);
+        Toast.show({
+          type: "syncToast",
+          text1: "No se escogio el distrito correctamente",
+        });
       }
     } finally {
       setLoadingMap(false);
@@ -103,7 +106,10 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
             : JSON.stringify(error.response.data.errors);
         setErrorMap(errorText);
       } else {
-        setErrorMap(error);
+        Toast.show({
+          type: "syncToast",
+          text1: "No se escogio el distrito correctamente",
+        });
       }
     } finally {
       setLoadingMap(false);
