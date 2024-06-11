@@ -129,7 +129,31 @@ export const Router = () => {
   const pin = JSON.parse(storage.getString("security") || "{}");
   const getKafe = JSON.parse(storage.getString("getKafeData") || "{}");
   useEffect(() => {
-    //storage.delete("parcels");
+    // storage.delete("parcels");
+
+    // storage.set(
+    //   "parcels",
+    //   JSON.stringify([
+    //     {
+    //       firstPoint: [-0.0981957, -78.5091545],
+    //       hectares: 10000,
+    //       id: "1",
+    //       name: "Parcela 1",
+    //       polygon: [[Array], [Array], [Array], [Array], [Array], [Array]],
+    //       secondPoint: [-0.0981958, -78.509154],
+    //       syncUp: false,
+    //     },
+    //     {
+    //       firstPoint: [-0.0981917, -78.5091505],
+    //       hectares: 2600,
+    //       id: "2",
+    //       name: "Parcela 2",
+    //       polygon: [[Array], [Array], [Array], [Array], [Array], [Array]],
+    //       secondPoint: [-0.0981875, -78.5091644],
+    //       syncUp: false,
+    //     },
+    //   ])
+    // );
     //storage.delete("sales");
     //storage.delete("getKafeData");
     getIsLogin();

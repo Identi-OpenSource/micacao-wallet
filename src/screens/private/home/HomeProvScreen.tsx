@@ -68,6 +68,8 @@ export const HomeProvScreen = () => {
 
   useEffect(() => {
     if (isConnected) {
+      console.log("dataToSync.parcels", dataToSync.parcels);
+
       if (dataToSync.parcels && !loadingSync) toSyncData("createFarm");
       if (dataToSync.sales) toSyncData("createSale");
     }

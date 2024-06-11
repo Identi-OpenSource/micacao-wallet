@@ -27,6 +27,8 @@ const useSync = (
 
       const keys = allKeys.filter((key) => names.includes(key));
 
+      console.log("keys", keys);
+
       // Establecer las claves como datos pendientes para sincronizar
       setDataToSync(
         keys.reduce((acc, key) => {
@@ -35,6 +37,8 @@ const useSync = (
             acc[key] = !value.syncUp;
           } else {
             let value = JSON.parse(storage.getString(key) || "[]");
+
+            console.log("value", value);
 
             for (let index = 0; index < value.length; index++) {
               if (value[index]["syncUp"] === false) {
@@ -108,8 +112,6 @@ const useSync = (
           createProducer(key);
           break;
         case "createFarm":
-          console.log("createFarm", dataToSync.parcels);
-
           if (dataToSync.parcels) {
             createFarm();
           }

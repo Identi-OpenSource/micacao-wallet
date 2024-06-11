@@ -59,51 +59,61 @@ const useApi = (
   };
 
   const createFarm = async () => {
-    const parcels_array = JSON.parse(storage.getString("parcels") || "[]");
-    const parcels = parcels_array[0];
+    const parcels = JSON.parse(storage.getString("parcels") || "[]");
     const user = JSON.parse(storage.getString("user") || "{}");
 
-    if (parcels.polygon && !parcels.syncUp) {
-      try {
-        setLoadingSync(true);
-        const apiRequest: API_INTERFACE = {
-          url: `${BASE_URL}/create_farm`,
-          method: "POST",
-          payload: {
-            farm_name: parcels.name,
-            hectares: parcels.hectares,
-            dni_cacao_producer: user.dni,
-            countryid: user.country?.code === "CO" ? 1 : 2,
-            polygon_coordinates: parcels.polygon.toString(),
-          },
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        };
-        const data = await HTTP(apiRequest);
-        console.log("data", data);
-        addToSync(
-          JSON.stringify([{ ...parcels, syncUp: true, id: data[0].id }]),
-          "parcels"
-        );
-      } catch (error) {
-        if (error?.response?.data) {
-          const text_error = error.response.data.errors.error;
-          const errorText =
-            text_error !== undefined
-              ? error.response.data.errors.error
-              : JSON.stringify(error.response.data.errors);
-          setErrorSync(errorText);
-        } else {
-          Toast.show({
-            type: "syncToast",
-            text1: "INTENTE MAS TARDE",
-          });
+    console.log("parcels", parcels);
+
+    for (let index = 0; index < parcels.length; index++) {
+      const element = parcels[index];
+
+      console.log("Element", element.id);
+
+      if (element.syncUp === false) {
+        if (element.polygon && !element.syncUp) {
+          try {
+            setLoadingSync(true);
+            const apiRequest: API_INTERFACE = {
+              url: `${BASE_URL}/create_farm`,
+              method: "POST",
+              payload: {
+                farm_name: element.name,
+                hectares: element.hectares,
+                dni_cacao_producer: user.dni,
+                countryid: user.country?.code === "CO" ? 1 : 2,
+                polygon_coordinates: element.polygon.toString(),
+              },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            };
+            const data = await HTTP(apiRequest);
+            console.log("data", data);
+
+            let parcels_array = parcels;
+
+            parcels_array[index] = { ...parcels_array[index], syncUp: true };
+            addToSync(JSON.stringify(parcels_array), "parcels");
+          } catch (error) {
+            if (error?.response?.data) {
+              const text_error = error.response.data.errors.error;
+              const errorText =
+                text_error !== undefined
+                  ? error.response.data.errors.error
+                  : JSON.stringify(error.response.data.errors);
+              setErrorSync(errorText);
+            } else {
+              Toast.show({
+                type: "syncToast",
+                text1: "INTENTE MAS TARDE",
+              });
+            }
+          } finally {
+            setLoadingSync(false);
+            setErrorSync(null);
+          }
         }
-      } finally {
-        setLoadingSync(false);
-        setErrorSync(null);
       }
     }
   };
