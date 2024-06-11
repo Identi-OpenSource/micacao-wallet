@@ -122,14 +122,16 @@ export const Router = () => {
   const parcels = JSON.parse(storage.getString("parcels") || "[]");
   const userLogin = JSON.parse(storage.getString("user") || "{}");
   const accessToken = storage.getString("accessToken") || null;
-  const postGFW = JSON.parse(storage.getString("postGFW") || "{}");
-  const getData = JSON.parse(storage.getString("getGFW") || "{}");
+  const postGFW = JSON.parse(storage.getString("postGFW") || "[]");
+  const getData = JSON.parse(storage.getString("getGFW") || "[]");
   const district = JSON.parse(storage.getString("district") || "{}");
   const postKafe = JSON.parse(storage.getString("postKafeData") || "{}");
   const pin = JSON.parse(storage.getString("security") || "{}");
   const getKafe = JSON.parse(storage.getString("getKafeData") || "{}");
   useEffect(() => {
     // storage.delete("parcels");
+    //storage.delete("postGFW");
+    //storage.delete("getGFW");
 
     // storage.set(
     //   "parcels",

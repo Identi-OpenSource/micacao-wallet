@@ -4,11 +4,11 @@ import { API_INTERFACE, HTTP } from "../services/api";
 import Toast from "react-native-toast-message";
 // Define el contexto de los mapas
 const GfwContext = createContext({
-  getGfw: () => {},
-  postGfw: () => {},
+  getGfw: (index: any) => {},
+  postGfw: (index: any) => {},
   errorGfw: null,
   loadingGfw: false,
-  gfwData: {},
+  gfwData: [],
   getData: {},
   setPostGFW: (value: any) => {},
   setGetGFW: (value: any) => {},
@@ -19,7 +19,7 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
   // Estado inicial de los mapas
   const [errorGfw, setErrorGfw] = useState(null);
   const [loadingGfw, setLoadingGfw] = useState(false);
-  const [gfwData, setGfwData] = useState({});
+  const [gfwData, setGfwData] = useState([]);
   const [getData, setGetData] = useState({});
   const BASE_URL = "https://geip5oadr5.execute-api.us-east-2.amazonaws.com";
 
@@ -31,20 +31,34 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // Función para obtenerel status y los kpis de coverage
-  const getGfw = async () => {
+  const getGfw = async (index: any) => {
     try {
       setLoadingGfw(true);
       setGetData({});
       storage.delete("getGFW");
+
+      const existingGetData = gfwData.findIndex((item) => item.index === index);
+
       const apiRequest: API_INTERFACE = {
         method: "GET",
-        url: `${BASE_URL}/${gfwData.listId}`,
+        url: `${BASE_URL}/${gfwData[existingGetData].data.listId}`,
         //url: `${BASE_URL}/180`,
       };
       const data = await HTTP(apiRequest);
       console.log("data", data);
-      setGetData(data);
-      storage.set("getGFW", JSON.stringify(data));
+      let data_temp_get = getData;
+      console.log("data_temp", data_temp_get);
+
+      const existingIndex = data_temp_get.findIndex(
+        (item) => item.index === index
+      );
+      if (existingIndex !== -1) {
+        data_temp_get[existingIndex] = { index: index, data: data };
+      } else {
+        data_temp_get.push({ index: index, data: data });
+      }
+      setGetData(data_temp_get);
+      storage.set("getGFW", JSON.stringify(data_temp_get));
     } catch (error) {
       if (error?.response?.data) {
         const text_error = error.response.data.errors.error;
@@ -66,10 +80,10 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // Función para mandar el poligono a GFW(Global Forest Watch)
-  const postGfw = async () => {
+  const postGfw = async (index: any) => {
     try {
       const parcels_array = JSON.parse(storage.getString("parcels") || "[]");
-      const parcels = parcels_array[0];
+      const parcels = parcels_array[index];
 
       // Verificar si hay polígonos
       if (!parcels || !parcels.polygon) {
@@ -95,8 +109,17 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
 
       const data = await HTTP(apiRequest);
       console.log("data", data);
-      setGfwData(data);
-      storage.set("postGFW", JSON.stringify(data));
+      let data_temp = gfwData;
+      console.log("data_temp", data_temp);
+
+      const existingIndex = data_temp.findIndex((item) => item.index === index);
+      if (existingIndex !== -1) {
+        data_temp[existingIndex] = { index: index, data: data };
+      } else {
+        data_temp.push({ index: index, data: data });
+      }
+      setGfwData(data_temp);
+      storage.set("postGFW", JSON.stringify(data_temp));
     } catch (error) {
       console.error("Error en la solicitud POST a GFW:", error);
       if (error?.response?.data) {
@@ -107,10 +130,8 @@ export const GwfProvider = ({ children }: { children: React.ReactNode }) => {
             : JSON.stringify(error.response.data.errors);
         setErrorGfw(errorText);
       } else {
-        Toast.show({
-          type: "syncToast",
-          text1: "INTENTE MAS TARDE",
-        });
+        setErrorGfw(error);
+        console.log(error);
       }
     } finally {
       setLoadingGfw(false);
