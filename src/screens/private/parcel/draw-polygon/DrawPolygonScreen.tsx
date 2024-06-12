@@ -496,6 +496,8 @@ export const DrawPolygonScreen = ({ route }: any) => {
             <Polygon coordinates={coordinatesWithLast} />
             {started && <Polygon coordinates={coordinatesWithLast} />}
             <Camera
+              minZoomLevel={14}
+              maxZoomLevel={18}
               defaultSettings={{
                 centerCoordinate: firstPoint,
                 zoomLevel: 17,
