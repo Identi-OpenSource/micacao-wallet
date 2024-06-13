@@ -45,7 +45,7 @@ export const MyParcelsScreen = () => {
             marginBottom: 4,
           }}>
           <Text style={styles.title}>Lista de parcelas</Text>
-          {parcels.length < 100 ? (
+          {parcels.length < 4 ? (
             <TouchableOpacity
               style={{
                 alignSelf: 'center',
