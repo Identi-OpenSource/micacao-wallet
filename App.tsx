@@ -31,7 +31,14 @@ import {
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle'
 import {NavigationContainer} from '@react-navigation/native'
 import React, {useState} from 'react'
-import {StyleSheet, Text, TouchableOpacity, View, Linking} from 'react-native'
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Linking,
+  Dimensions,
+} from 'react-native'
 import Toast, {
   BaseToast,
   ErrorToast,
@@ -162,29 +169,32 @@ function App(): React.JSX.Element {
         <View>
           <Error height={70} width={70} />
         </View>
+        {props.title && (
+          <Text style={styles.toastTextTitle}>{props.title}</Text>
+        )}
         <Text style={styles.toastText}>{text1}</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={() => {
               hideToast()
-              setTimeout(() => {
-                props?.onPress()
-              }, 200)
+              props?.onPress()
             }}
             style={styles.buttonToast}>
             <Text style={{color: '#fff', fontSize: 20}}> {props.btnText} </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={hideToast}
-            style={[
-              styles.buttonToast,
-              {
-                marginTop: 20,
-                backgroundColor: COLORS_DF.warning,
-              },
-            ]}>
-            <Text style={{color: '#fff', fontSize: 20}}> Cancelar </Text>
-          </TouchableOpacity>
+          {!props.hideCancel && (
+            <TouchableOpacity
+              onPress={hideToast}
+              style={[
+                styles.buttonToast,
+                {
+                  marginTop: 20,
+                  backgroundColor: COLORS_DF.warning,
+                },
+              ]}>
+              <Text style={{color: '#fff', fontSize: 20}}> Cancelar </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     ),
@@ -274,15 +284,24 @@ function App(): React.JSX.Element {
 }
 const styles = StyleSheet.create({
   toastContainer: {
-    width: '80%',
-    backgroundColor: '#FFF',
-    padding: 20,
+    width: Dimensions.get('window').width - 50,
+    backgroundColor: '#fff',
+    padding: 10,
+    paddingTop: 20,
     alignItems: 'center',
     borderRadius: 10,
     elevation: 5,
   },
+  toastTextTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    fontFamily: FONT_FAMILIES.primary,
+    color: COLORS_DF.citrine_brown,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
   toastText: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
     textAlign: 'center',

@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native'
+import {CommonActions, useNavigation} from '@react-navigation/native'
 import {
   Camera,
   LineLayer,
@@ -30,7 +30,9 @@ import ModalComponent from '../../../../components/modalComponent'
 import {storage} from '../../../../config/store/db'
 import {useSyncData} from '../../../../states/SyncDataContext'
 import Toast from 'react-native-toast-message'
-import {setIn} from 'formik'
+// import { setIn } from 'formik'
+import * as turf from '@turf/turf'
+import {title} from 'process'
 
 const heightMap = Dimensions.get('window').height
 const widthMap = Dimensions.get('window').width
@@ -151,6 +153,7 @@ const PoligonJoystick = ({route}: any) => {
     Number(parcel[index].firstPoint[1]),
     Number(parcel[index].firstPoint[0]),
   ] as Position
+  const [parcels, setParcels] = useState(parcel)
   const [coordinates, setCoordinates] = useState<Position[]>([])
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
   const [crosshairPos, setCrosshairPos] = useState(firstPoint)
@@ -198,42 +201,71 @@ const PoligonJoystick = ({route}: any) => {
     }
   }
 
+  const savePoligonAcept = () => {
+    //setCoordinates(polygonReview)
+    const newParcel = {
+      ...parcel[index],
+      polygon: polygonReview,
+      syncUp: false,
+    }
+    let parcels = parcel
+    parcels[index] = newParcel
+    setParcels(parcels)
+    setShowModal(true)
+  }
+
+  const savePoligon = () => {
+    Toast.show({
+      type: 'actionToast',
+      autoHide: false,
+      text1:
+        'Vamos a guardar el polígono. Recuerda que, una vez guardado, no podrás editarlo.\n\n¿Estás seguro de que deseas continuar?',
+      props: {
+        title: 'Guardar el polígono',
+        onPress: () => savePoligonAcept(),
+        btnText: 'Guardar',
+      },
+    })
+  }
+
   const onSubmit = () => {
     if (coordinatesWithLast.length < 5) {
-      Alert.alert('Error', 'El polígono debe tener al menos 4 puntos')
+      Toast.show({
+        type: 'actionToast',
+        autoHide: true,
+        visibilityTime: 3000,
+        text1: 'El polígono debe tener al menos 4 puntos',
+        props: {
+          onPress: () => {},
+          btnText: 'OK',
+          hideCancel: true,
+        },
+      })
       return
     }
+    const polygon = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[...coordinatesWithLast, coordinatesWithLast[0]]],
+      },
+    } as any
+    const area = turf?.area(polygon)
+    const areaInHectares = (area / 10000)?.toFixed(2)
     Toast.show({
       type: 'actionToast',
       text1:
-        'Revisa y ajusta los puntos del polígono, recuerda que después de guardar el polígono no podrás editarlo',
+        'Revisa y ajusta el polígono. Para editar un punto, simplemente tócalo y luego mueve la pantalla para ajustarlo.\n\nUna vez que el punto esté correctamente ajustado, presiona el botón de agregar.\n\nRecuerda que después de guardar el polígono, no podrás editarlo.',
       autoHide: false,
       props: {
         onPress: () => review(),
         btnText: 'Revisar el polígono',
+        title: `Area aproximada: ${areaInHectares} has`,
       },
     })
-    // INICIO DEL POLIGONO
-    // const newParcel = {
-    //   ...parcel[index],
-    //   polygon: [...coordinatesWithLast, coordinatesWithLast[0]],
-    //   syncUp: false,
-    // }
-
-    // let parcels = parcel
-    // parcels[index] = newParcel
-
-    // setShowModal(true)
-
-    // setTimeout(() => {
-    //   addToSync(JSON.stringify(parcels), 'parcels')
-    //   storage.delete('polygonTemp')
-    // }, 7000)
-    // FIN DEL POLIGONO
   }
 
   const review = () => {
-    console.log('review')
     setPolygonReview([...coordinatesWithLast, coordinatesWithLast[0]])
     setEditActive(true)
   }
@@ -245,7 +277,21 @@ const PoligonJoystick = ({route}: any) => {
 
   const closeModal = () => {
     setShowModal(false)
-    navigation.navigate('DrawPolygonScreen', {index})
+    storage.delete('polygonTemp')
+    // Evitar el retroceso de la pantalla de dibujo
+    const currentRoutes = navigation?.getState()?.routes
+    const newRoutes: any = currentRoutes?.slice(0, -2)
+    newRoutes?.push({
+      name: 'DrawPolygonScreen',
+      params: {index},
+    })
+    navigation.dispatch(
+      CommonActions.reset({
+        index: newRoutes.length - 1,
+        routes: newRoutes,
+      }),
+    )
+    addToSync(JSON.stringify(parcels), 'parcels')
   }
 
   const onSelected = (e: any) => {
@@ -271,8 +317,6 @@ const PoligonJoystick = ({route}: any) => {
     }, [])
   ); */
 
-  console.log('setIndexEdit', indexEdit)
-
   return (
     <View style={{flex: 1}}>
       <StatusBar backgroundColor="#8F3B06" barStyle="light-content" />
@@ -286,8 +330,12 @@ const PoligonJoystick = ({route}: any) => {
         <TouchableOpacity onPress={back} style={styles.buttonClose}>
           <Close_Map height={40} width={40} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={onSubmit} style={styles.buttonSave}>
-          <Text style={styles.textButtonSave}>Dibujo finalizado</Text>
+        <TouchableOpacity
+          onPress={editActive ? savePoligon : onSubmit}
+          style={styles.buttonSave}>
+          <Text style={styles.textButtonSave}>
+            {editActive ? 'Guardar polígono' : 'Dibujo finalizado'}
+          </Text>
         </TouchableOpacity>
       </View>
       <MapView
@@ -365,11 +413,13 @@ const PoligonJoystick = ({route}: any) => {
             {polygonReview.map((c, i) => (
               <PointAnnotation
                 onSelected={e => {
-                  setCenterCoordinate([
-                    e.geometry.coordinates[0],
-                    e.geometry.coordinates[1],
-                  ])
-                  onSelected(e)
+                  if (indexEdit === -1) {
+                    setCenterCoordinate([
+                      e.geometry.coordinates[0],
+                      e.geometry.coordinates[1],
+                    ])
+                    onSelected(e)
+                  }
                 }}
                 key={i.toString()}
                 id={i.toString()}
