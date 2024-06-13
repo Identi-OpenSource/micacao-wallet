@@ -100,7 +100,7 @@ export const HomeProvScreen = () => {
         toSyncData('createSale')
       }
     }
-  }, [isConnected, dataToSync.parcels, dataToSync.sales])
+  }, [isConnected, dataToSync?.parcels, dataToSync?.sales])
 
   const getWallet = () => {
     // Create Wallet

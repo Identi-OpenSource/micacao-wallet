@@ -111,8 +111,9 @@ const useSync = (
           createProducer(key)
           break
         case 'createFarm':
-          createFarm()
-
+          if (dataToSync.parcels) {
+            createFarm()
+          }
           break
         case 'createSale':
           createSale()
