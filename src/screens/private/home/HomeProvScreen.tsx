@@ -94,9 +94,9 @@ export const HomeProvScreen = () => {
     if (isConnected) {
       console.log('dataToSync.parcels', dataToSync.parcels)
 
-      // if (dataToSync.parcels && !loadingSync) {
-      //   toSyncData('createFarm')
-      // }
+      if (dataToSync.parcels) {
+        toSyncData('createFarm')
+      }
       if (dataToSync.sales) {
         toSyncData('createSale')
       }

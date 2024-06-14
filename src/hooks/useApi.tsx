@@ -67,12 +67,12 @@ const useApi = (
     for (let index = 0; index < parcels.length; index++) {
       const element = parcels[index]
 
-      // console.log('Element', element.id)
+      console.log('Element', element.id)
 
       if (element.syncUp === false) {
         if (element.polygon && !element.syncUp) {
           try {
-            setLoadingSync(true)
+            // setLoadingSync(true) 
             const apiRequest: API_INTERFACE = {
               url: `${BASE_URL}/create_farm`,
               method: 'POST',
@@ -130,7 +130,6 @@ const useApi = (
         if (element.syncUp === false) {
           const key = element.type === 'SECO' ? 'dry_weight' : 'baba_weight'
           try {
-            // setLoadingSync(true)
             const apiRequest: API_INTERFACE = {
               url: `${BASE_URL}/create_activities`,
               method: 'POST',
