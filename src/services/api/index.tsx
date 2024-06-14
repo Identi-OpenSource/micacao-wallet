@@ -22,7 +22,7 @@ export const HTTP = async (api: API_INTERFACE) => {
     const response = await axios(axiosConfig);
     return response.data;
   } catch (error) {
-    console.error("API Error:", error);
+    console.log("Axios Error:", axiosConfig.url, error);
     throw error; // Relanzar el error para que el llamador lo maneje
   }
 };

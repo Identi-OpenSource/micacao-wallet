@@ -50,6 +50,8 @@ export const HomeProvScreen = () => {
   const [loadinSync, setLoadingSync] = useState(false)
   const [wa, setWa] = useState(null) as any
 
+  console.log('loadingSync', loadingSync)
+
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -66,7 +68,7 @@ export const HomeProvScreen = () => {
       if (Object.keys(wallet).length > 0) {
         console.log('wallet', wallet.isFunding)
         if (wallet.isFunding) {
-          write()
+          writeWallet()
         } else {
           funding()
         }
@@ -78,14 +80,13 @@ export const HomeProvScreen = () => {
   )
 
   const funding = async () => {
-    const funding = await fundingWallet(wallet.wallet.walletOFC).catch(() => ({
-      status: 500,
-    }))
-
+    const funding = await fundingWallet(wallet.wallet.walletOFC)
+      .catch((error) => {
+        console.log(error)
+        return error
+    })
     const isFunding = funding.status === 200
-
     const wallet_a = wallet.wallet
-
     storage.set('wallet', JSON.stringify({wallet: wallet_a, isFunding}))
   }
 
@@ -103,26 +104,13 @@ export const HomeProvScreen = () => {
   }, [isConnected, dataToSync?.parcels, dataToSync?.sales])
 
   const getWallet = () => {
-    // Create Wallet
-    // const wallet = JSON.parse(storage.getString("wallet") || "{}");
-    // setWa(wallet);
-
-    //Testing Wallet
     const wallet = newWallet()
     const isFunding = true
-
     const walletObj = {wallet, isFunding}
-
-    console.log(walletObj)
-
     setWa(walletObj.wallet)
   }
 
-  const writeWallet = () => {
-    write()
-  }
-
-  const write = async () => {
+  const writeWallet = async () => {
     const userData = JSON.parse(storage.getString('user') || '{}')
     const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
     const sales = JSON.parse(storage.getString('sales') || '[]')
@@ -130,9 +118,14 @@ export const HomeProvScreen = () => {
       userData,
       parcels_array,
       sales,
+    }).catch((error) => {
+      console.log(error)
+      return [null, null]
     })
-    console.log(TX)
-    storage.set('sales', JSON.stringify(newSales))
+    if(TX){
+      console.log(TX)
+      storage.set('sales', JSON.stringify(newSales))
+    }
   }
 
   /* useEffect(() => {
@@ -200,7 +193,7 @@ const ConnectionStatus = (props: {isConnected: boolean}) => {
 }
 
 const Header = ({name}: UserInterface) => {
-  const firstName = name.split(' ')[0]
+  const firstName = name?.split(' ')[0]
 
   return (
     <View style={styles.header}>
@@ -219,19 +212,15 @@ const Body = (props: {
   getWallet: any
   writeWallet: any
   isConnected: boolean
-  Parcel: any
-  polygon: any
-  postGfw: any
-  getGfw: any
 }) => {
   const navigation = useNavigation()
 
   const syncUp = props.syncUp
 
-  const accessToken = props.accessToken
-  const getWallet = props.getWallet
-  const writeWallet = props.writeWallet
-  const isConnected = props.isConnected
+  // const accessToken = props.accessToken
+  // const getWallet = props.getWallet
+  // const writeWallet = props.writeWallet
+  // const isConnected = props.isConnected
 
   return (
     <View style={styles.bodyContainer}>

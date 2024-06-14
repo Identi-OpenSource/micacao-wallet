@@ -6,6 +6,7 @@ import {
 } from "@react-navigation/bottom-tabs";
 import {
   NativeStackNavigationOptions,
+  NativeStackScreenProps,
   createNativeStackNavigator,
 } from "@react-navigation/native-stack";
 import React, { useContext, useEffect } from "react";
@@ -59,6 +60,59 @@ import { useKafeContext } from "../states/KafeContext";
 import { useMapContext } from "../states/MapContext";
 import { useSyncData } from "../states/SyncDataContext";
 import { UserDispatchContext, UsersContext } from "../states/UserContext";
+import { CompositeScreenProps } from "@react-navigation/native";
+
+export type RootStackParamList = {
+  SplashScreen: undefined
+  PermissionsOneScreen: undefined
+  PermissionsTwoScreen: undefined
+  PermissionsThreeScreen: undefined
+  PermissionsFourScreen: undefined
+  HomeScreen: undefined
+  HomeProvScreen: undefined
+  IamScreen: undefined
+  IamFromScreen: undefined
+  RegisterScreen: undefined
+  RegisterSecondScreen: undefined
+  RegisterThirdScreen: undefined
+  RegisterFourthScreen: undefined
+  RegisterOkScreen: undefined
+  RegisterParcelScreen: undefined
+  TabPrivate: undefined
+  RegisterOneScreen: undefined
+  RegisterParcelTwoScreen: undefined
+  RegisterParcelThirdScreen: undefined
+  RegisterParcelFourthScreen: undefined
+  HelpScreen: undefined
+  MyParcelsScreen: undefined
+  PolygonScreen: undefined
+  DrawPolygonScreen: undefined
+  GradientLineRecorrer: undefined
+  NewSaleOneScreen: undefined
+  NewSaleTwoScreen: undefined
+  NewSaleThreeScreen: undefined
+  // Solo pruebas
+  TestMap: undefined
+  DrawPolyline: undefined
+  GradientLine: undefined
+  ThirdPartyVectorSource: undefined
+  GradientLineRecorrerAdd: undefined
+  PoligonJoystick: undefined
+  PoligonBTN: undefined
+}
+
+export type RootStackScreenProps<T extends keyof RootStackParamList> =
+  NativeStackScreenProps<RootStackParamList, T>
+export type ScreenProps<T extends keyof RootStackParamList> =
+  CompositeScreenProps<
+    NativeStackScreenProps<RootStackParamList, T>,
+    RootStackScreenProps<keyof RootStackParamList>
+  >
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
 
 const styles = StyleSheet.create({
   tabBarStyle: {
