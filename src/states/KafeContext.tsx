@@ -15,7 +15,6 @@ const KafeContext = createContext({
   setGetKafe: (value: any) => {},
 });
 export const KafeProvider = ({ children }: { children: React.ReactNode }) => {
-  const { accessToken } = useAuth();
   const [errorKafe, setErrorKafe] = useState(null);
   const [loadingKafe, setLoadingKafe] = useState(false);
   const [postKafeData, setPostKafeData] = useState({});
