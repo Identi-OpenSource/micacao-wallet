@@ -51,6 +51,18 @@ export const dniText = async dni => {
   return await decrypted.toString(CryptoJS.enc.Utf8)
 }
 
+export const dniEncrypt = async dni => {
+  const paddedDNI = dni.padStart(16, '0')
+  const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
+  const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
+  const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.Pkcs7,
+  })
+  const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
+  return {dni: hexResult.substr(0, 32), dniAll: hexResult}
+}
+
 export const writeTransaction = async (wif, object) => {
   const {userData, parcels_array, sales} = object
   // Obtener DNI

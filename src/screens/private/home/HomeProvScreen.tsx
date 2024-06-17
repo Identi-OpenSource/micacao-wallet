@@ -10,7 +10,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {fundingWallet, newWallet, writeTransaction} from '../../../OCC/occ'
+import {
+  dniEncrypt,
+  dniText,
+  fundingWallet,
+  newWallet,
+  writeTransaction,
+} from '../../../OCC/occ'
 import {imgFrame, imgLayer} from '../../../assets/imgs'
 import {LoadingSave} from '../../../components/loading/LoadinSave'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
@@ -92,6 +98,9 @@ export const HomeProvScreen = () => {
   }
 
   useEffect(() => {
+    //Test KS
+    testKS()
+
     if (isConnected) {
       console.log('dataToSync.parcels', dataToSync.parcels)
 
@@ -103,6 +112,14 @@ export const HomeProvScreen = () => {
       }
     }
   }, [isConnected, dataToSync?.parcels, dataToSync?.sales])
+
+  const testKS = async () => {
+    const dni = '12345678'
+    const encrypted = await dniEncrypt(dni)
+    console.log('encrypted', encrypted)
+    const dniDecrypt = await dniText(encrypted.dni)
+    console.log('dniDecrypt', dniDecrypt)
+  }
 
   const getWallet = () => {
     const wallet = newWallet()
