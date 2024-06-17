@@ -80,11 +80,12 @@ export const HomeProvScreen = () => {
   )
 
   const funding = async () => {
-    const funding = await fundingWallet(wallet.wallet.walletOFC)
-      .catch((error) => {
+    const funding = await fundingWallet(wallet.wallet.walletOFC).catch(
+      error => {
         console.log(error)
         return error
-    })
+      },
+    )
     const isFunding = funding.status === 200
     const wallet_a = wallet.wallet
     storage.set('wallet', JSON.stringify({wallet: wallet_a, isFunding}))
@@ -118,11 +119,11 @@ export const HomeProvScreen = () => {
       userData,
       parcels_array,
       sales,
-    }).catch((error) => {
+    }).catch(error => {
       console.log(error)
       return [null, null]
     })
-    if(TX){
+    if (TX) {
       console.log(TX)
       storage.set('sales', JSON.stringify(newSales))
     }

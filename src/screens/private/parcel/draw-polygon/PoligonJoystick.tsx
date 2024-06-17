@@ -254,8 +254,7 @@ const PoligonJoystick = ({route}: any) => {
     const areaInHectares = (area / 10000)?.toFixed(2)
     Toast.show({
       type: 'actionToast',
-      text1:
-        'Revisa y ajusta el polígono. Para editar un punto, simplemente tócalo y luego mueve la pantalla para ajustarlo.\n\nUna vez que el punto esté correctamente ajustado, presiona el botón de agregar.\n\nRecuerda que después de guardar el polígono, no podrás editarlo.',
+      text1: 'Revisa y edita el poligono\nLuego ya no podrá ser editado',
       autoHide: false,
       props: {
         onPress: () => review(),

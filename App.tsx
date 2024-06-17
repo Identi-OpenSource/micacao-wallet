@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   toastText: {
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
     textAlign: 'center',
