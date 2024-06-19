@@ -44,7 +44,14 @@ import Toast, {
   ErrorToast,
   ToastConfig,
 } from 'react-native-toast-message'
-import {Error, Sad, SadYellow, Happy, Whattsap} from './src/assets/svg/index'
+import {
+  Error,
+  Sad,
+  SadYellow,
+  Happy,
+  Whattsap,
+  Edit_Map,
+} from './src/assets/svg/index'
 import useInternetConnection from './src/hooks/useInternetConnection'
 import {Router} from './src/routers/Router'
 import {AuthProvider} from './src/states/AuthContext'
@@ -55,6 +62,7 @@ import {KafeProvider} from './src/states/KafeContext'
 import {COLORS_DF, FONT_FAMILIES} from './src/config/themes/default'
 import {SyncDataProvider} from './src/states/SyncDataContext'
 import {GwfProvider} from './src/states/GfwContext'
+import {Image} from 'react-native-svg'
 
 function App(): React.JSX.Element {
   // biblioteca de iconos
@@ -185,6 +193,18 @@ function App(): React.JSX.Element {
             style={styles.buttonToast}>
             <Text style={{color: '#fff', fontSize: 20}}> {props.btnText} </Text>
           </TouchableOpacity>
+          {props?.exPress && (
+            <TouchableOpacity
+              onPress={() => {
+                hideToast()
+                props?.exPress()
+              }}
+              style={styles.buttonToast}>
+              <Text style={{color: '#fff', fontSize: 20}}>
+                {props.btnExPress}
+              </Text>
+            </TouchableOpacity>
+          )}
           {!props.hideCancel && (
             <TouchableOpacity
               onPress={hideToast}
@@ -198,6 +218,16 @@ function App(): React.JSX.Element {
               <Text style={{color: '#fff', fontSize: 20}}> Cancelar </Text>
             </TouchableOpacity>
           )}
+        </View>
+      </View>
+    ),
+    modalMapToast: ({text1, props}) => (
+      <View style={styles.toastContainer}>
+        <Edit_Map />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={hideToast} style={[styles.buttonToast]}>
+            <Text style={{color: '#fff', fontSize: 20}}> Entendido </Text>
+          </TouchableOpacity>
         </View>
       </View>
     ),
@@ -307,6 +337,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
     textAlign: 'center',
+    lineHeight: 28,
   },
   toastTextGFW: {
     fontSize: 18,

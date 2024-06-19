@@ -37,29 +37,41 @@ export const verificarWallet = async wallet => {
 }
 
 export const dniText = async dni => {
-  const utf8Key = await CryptoJS.enc.Utf8.parse(
-    Config.KEY_CIFRADO_KAFE_SISTEMAS,
-  )
-  const encryptedHexStr = await CryptoJS.enc.Hex.parse(dni)
-  const encryptedBase64Str = await CryptoJS.enc.Base64.stringify(
-    encryptedHexStr,
-  )
-  const decrypted = await CryptoJS.AES.decrypt(encryptedBase64Str, utf8Key, {
+  const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
+  const encryptedHexStr = CryptoJS.enc.Hex.parse(dni)
+  const encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr)
+  const decrypted = CryptoJS.AES.decrypt(encryptedBase64Str, utf8Key, {
     mode: CryptoJS.mode.ECB,
-    padding: CryptoJS.pad.Pkcs7,
+    padding: CryptoJS.pad.NoPadding, // Sin relleno
   })
-  return await decrypted.toString(CryptoJS.enc.Utf8)
+  const decryptedUtf8 = CryptoJS.enc.Utf8.stringify(decrypted)
+  return decryptedUtf8.replace(/\0+$/, '')
 }
 
-export const dniEncrypt = async dni => {
+/*
+@braudin esta esta confirmada con KS que es correcta la clave
+  export const dniEncrypt = async dni => {
   const paddedDNI = dni.padStart(16, '0')
   const keyAll = Config.KEY_CIFRADO_KAFE_SISTEMAS
   // const key16 = `${Config.KEY_CIFRADO_KAFE_SISTEMAS}`.substring(0, 16)
-  const utf8Key = CryptoJS.enc.Utf8.parse(keyAll)
+  const utf8Key = CryptoJS.enc.Utf8.parse('6d4cf5ae259c7efdae041e7ac6ac41d7')
   const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
   const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
     mode: CryptoJS.mode.ECB,
     padding: CryptoJS.pad.Pkcs7,
+  })
+  const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
+  return {dni: hexResult, dniAll: hexResult.length}
+} */
+
+// @braudin refactorizando la funcion
+export const dniEncrypt = async dni => {
+  const paddedDNI = dni.padStart(16, '0')
+  const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
+  const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
+  const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.NoPadding, // Sin relleno
   })
   const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
   return {dni: hexResult, dniAll: hexResult.length}

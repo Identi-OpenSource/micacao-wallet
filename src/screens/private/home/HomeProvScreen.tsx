@@ -112,17 +112,18 @@ export const HomeProvScreen = () => {
     }
   }, [isConnected, dataToSync?.sales])
 
-  // const testKS = async () => {
-  //   const dni = '98765432'
-  //   const encrypted = await dniEncrypt(dni)
-  //   console.log('encrypted', encrypted)
-  //   const dniDecrypt = await dniText(encrypted.dni)
-  //   console.log('dniDecrypt', dniDecrypt)
-  //   /* TEST:
-  //   para el hash 6d4cf5ae259c7efdae041e7ac6ac41d7 es 98765432
-  //   para el hash 46143ba1e97976f3cb1abcdfc99924f3 es 2222222
-  //   */
-  // }
+  const testKS = async () => {
+    const dni = '2222222'
+    const encrypted = await dniEncrypt(dni)
+    console.log('encrypted', encrypted)
+    const dniDecrypt = await dniText(encrypted.dni)
+    // const dniDecrypt = await dniText(dniDecrypt)
+    console.log('dniDecrypt', dniDecrypt)
+    /* TEST:
+    para el hash 6d4cf5ae259c7efdae041e7ac6ac41d7 es 98765432
+    para el hash 46143ba1e97976f3cb1abcdfc99924f3 es 2222222
+    */
+  }
 
   const getWallet = () => {
     const wallet = newWallet()

@@ -173,7 +173,10 @@ const GradientLineRecorrer = ({route}: any) => {
     setCoordinates(polygonReview)
     const newParcel = {
       ...parcel[index],
-      polygon: polygonReview,
+      polygon:
+        polygonReview.length !== 0
+          ? polygonReview
+          : [...coordinatesWithLast, coordinatesWithLast[0]],
       syncUp: false,
     }
     let parcels = parcel
@@ -194,13 +197,14 @@ const GradientLineRecorrer = ({route}: any) => {
     const areaInHectares = (area / 10000)?.toFixed(2)
     Toast.show({
       type: 'actionToast',
+      text1: 'Revisa y edita el polígono luego ya  no podrá ser editado',
       autoHide: false,
-      text1:
-        'Vamos a guardar el polígono\nNo podrás editarlo\n\n¿Deseas continuar?',
       props: {
-        title: `Area aproximada: ${areaInHectares} has`,
-        onPress: () => savePoligonAcept(),
-        btnText: 'Guardar',
+        onPress: () => {},
+        btnText: 'Editar el polígono',
+        exPress: () => savePoligonAcept(),
+        btnExPress: 'Guardar',
+        title: `Área aproximada: ${areaInHectares} has`,
       },
     })
   }
@@ -232,12 +236,14 @@ const GradientLineRecorrer = ({route}: any) => {
     const areaInHectares = (area / 10000)?.toFixed(2)
     Toast.show({
       type: 'actionToast',
-      text1: 'Revisa y edita el poligono\nLuego ya no podrá ser editado',
+      text1: 'Revisa y edita el polígono luego ya  no podrá ser editado',
       autoHide: false,
       props: {
         onPress: () => review(),
-        btnText: 'Revisar el polígono',
-        title: `Area aproximada: ${areaInHectares} has`,
+        btnText: 'Editar el polígono',
+        exPress: () => savePoligonAcept(),
+        btnExPress: 'Guardar',
+        title: `Área aproximada: ${areaInHectares} has`,
       },
     })
   }
@@ -245,6 +251,11 @@ const GradientLineRecorrer = ({route}: any) => {
   const review = () => {
     setPolygonReview([...coordinatesWithLast, coordinatesWithLast[0]])
     setEditActive(true)
+    Toast.show({
+      type: 'modalMapToast',
+      text1: '',
+      autoHide: false,
+    })
   }
 
   // const onSubmit = () => {

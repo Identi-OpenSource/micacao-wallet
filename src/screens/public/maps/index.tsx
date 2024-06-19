@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {StyleSheet, View} from 'react-native'
 import {Dropdown} from 'react-native-element-dropdown'
-import {District_M, District_W} from '../../../assets/svg'
+import {District_M, District_W, Munic_M, Munic_W} from '../../../assets/svg'
 import {Btn} from '../../../components/button/Button'
 import {COLORS_DF, FONT_FAMILIES} from '../../../config/themes/default'
 import {useMapContext} from '../../../states/MapContext'
@@ -41,6 +41,24 @@ const Maps: React.FC<Maps> = ({navigation}) => {
     getMap()
     navigation.navigate('RegisterScreen')
   }
+
+  const getPlaceholder = () => {
+    if (user.country?.code === 'CO') {
+      return 'Selecciona tu municipio'
+    } else {
+      return 'Selecciona tu distrito'
+    }
+  }
+
+  const renderImgRegion = () => {
+    if (user.country?.code === 'CO') {
+      return user.gender === 'W' ? <Munic_W /> : <Munic_M />
+    }
+    if (user.country?.code === 'PE') {
+      return user.gender === 'W' ? <District_W /> : <District_M />
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Spinner color="#178B83" visible={loadingMap} size={100} />
@@ -51,7 +69,7 @@ const Maps: React.FC<Maps> = ({navigation}) => {
           marginTop: 25,
           marginBottom: 45,
         }}>
-        {user.gender === 'W' ? <District_W /> : <District_M />}
+        {renderImgRegion()}
       </View>
       <View>
         <Dropdown
@@ -68,7 +86,7 @@ const Maps: React.FC<Maps> = ({navigation}) => {
           itemContainerStyle={styles.itemContainer}
           labelField="dist_name"
           valueField="dist_id"
-          placeholder={!isFocus ? 'Selecciona tu departamento' : '...'}
+          placeholder={!isFocus && getPlaceholder()}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={(item: any) => {
