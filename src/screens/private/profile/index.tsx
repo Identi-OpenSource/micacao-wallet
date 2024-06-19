@@ -82,8 +82,6 @@ const ProfileScreen = () => {
   async function requestGalleryPermission() {
     try {
       if (Platform.OS === 'android') {
-        console.log(Platform.Version)
-
         if (Platform.Version > 30) {
           const granted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
@@ -149,10 +147,11 @@ const ProfileScreen = () => {
   }
 
   const saveJSONDownload = async () => {
+    console.log('data')
     const userData = JSON.parse(storage.getString('user') || '{}')
     const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
     const sales = JSON.parse(storage.getString('sales') || '[]')
-    userData.dni = await dniText(userData.dniAll)
+    userData.dni = await dniText(userData.dni)
     delete userData.dniAll
     delete userData.pin
     delete userData.parcel
@@ -174,7 +173,9 @@ const ProfileScreen = () => {
       parcels: parcels_array,
       sales: sales,
     }
+
     console.log('data', data)
+
     const jsonString = JSON.stringify(data)
     const path = RNFS.DownloadDirectoryPath + '/mi_data_miCacao.json'
     try {

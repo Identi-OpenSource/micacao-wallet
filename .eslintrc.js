@@ -4,5 +4,6 @@ module.exports = {
   rules: {
     semi: ['error', 'never'],
     'react-hooks/exhaustive-deps': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
   },
 }

@@ -215,13 +215,22 @@ const PoligonJoystick = ({route}: any) => {
   }
 
   const savePoligon = () => {
+    const polygon = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [polygonReview],
+      },
+    } as any
+    const area = turf?.area(polygon)
+    const areaInHectares = (area / 10000)?.toFixed(2)
     Toast.show({
       type: 'actionToast',
       autoHide: false,
       text1:
-        'Vamos a guardar el polígono. Recuerda que, una vez guardado, no podrás editarlo.\n\n¿Estás seguro de que deseas continuar?',
+        'Vamos a guardar el polígono\nNo podrás editarlo\n\n¿Deseas continuar?',
       props: {
-        title: 'Guardar el polígono',
+        title: `Area aproximada: ${areaInHectares} has`,
         onPress: () => savePoligonAcept(),
         btnText: 'Guardar',
       },
@@ -327,7 +336,7 @@ const PoligonJoystick = ({route}: any) => {
       />
       <View style={styles.containerButtonUp}>
         <TouchableOpacity onPress={back} style={styles.buttonClose}>
-          <Close_Map height={40} width={40} />
+          <Close_Map height={38} width={38} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={editActive ? savePoligon : onSubmit}
@@ -505,11 +514,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: Dimensions.get('window').width,
   },
-  buttonClose: {
-    top: 10,
-  },
+  buttonClose: {},
   buttonSave: {
-    top: 10,
+    top: 0,
     height: 40,
     alignContent: 'center',
     justifyContent: 'center',

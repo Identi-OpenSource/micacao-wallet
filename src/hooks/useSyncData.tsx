@@ -15,19 +15,12 @@ const useSync = (
   const [dataToSync, setDataToSync] = useState<DataType>({})
   const [hasDataToSync, setHasDataToSync] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.log('accessToken:', accessToken)
-    console.log('Has data to sync:', hasDataToSync)
-  }, [hasDataToSync])
-
   const fetchAllKeysAndSetDataToSync = async () => {
     try {
       const allKeys = storage.getAllKeys()
       const names = ['user', 'parcels', 'sales']
 
       const keys = allKeys.filter(key => names.includes(key))
-
-      console.log('keys', keys)
 
       // Establecer las claves como datos pendientes para sincronizar
       setDataToSync(
@@ -37,8 +30,6 @@ const useSync = (
             acc[key] = !value.syncUp
           } else {
             let value = JSON.parse(storage.getString(key) || '[]')
-
-            console.log('value', value)
 
             for (let index = 0; index < value.length; index++) {
               if (value[index].syncUp === false) {
@@ -57,8 +48,6 @@ const useSync = (
   }
 
   const addToSync = (newData: any, storageKey: string) => {
-    console.log('addToSync', newData, storageKey)
-
     try {
       storage.set(storageKey, newData)
 
@@ -75,8 +64,6 @@ const useSync = (
         for (let index = 0; index < newData.length; index++) {
           if (newData[index].syncUp === false) {
             setDataToSync(prevData => {
-              console.log('data para ver:', prevData, newData)
-
               if (true) {
                 return {
                   ...prevData,
@@ -128,7 +115,6 @@ const useSync = (
 
   useEffect(() => {
     const checkDataToSync = () => {
-      console.log('checkDataToSync', dataToSync)
       for (const key in dataToSync) {
         if (dataToSync.hasOwnProperty(key)) {
           if (dataToSync[key]) {

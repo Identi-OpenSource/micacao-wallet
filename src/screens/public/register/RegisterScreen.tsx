@@ -1,9 +1,3 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : Register screen of the application
- */
-
 import {useNavigation} from '@react-navigation/native'
 import {Field, Formik} from 'formik'
 import React, {useContext} from 'react'
@@ -11,7 +5,6 @@ import {Text, View, TouchableOpacity} from 'react-native'
 import {Dni_M, Dni_W} from '../../../assets/svg'
 import {Btn, BtnIcon} from '../../../components/button/Button'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {storage} from '../../../config/store/db'
 import {LABELS} from '../../../config/texts/labels'
 import {moderateScale} from '../../../config/themes/metrics'
 import {
@@ -22,8 +15,6 @@ import {
   SCHEMA_ONE,
 } from './Interfaces'
 import {styles} from './styles'
-import CryptoJS from 'crypto-js'
-import Config from 'react-native-config'
 import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
 import {dniEncrypt} from '../../../OCC/occ'
 
@@ -33,7 +24,6 @@ export const RegisterScreen = () => {
   const dispatch = useContext(UserDispatchContext)
   //encripta el dni
   const certificateND = async (dni: string) => {
-    console.log('DNI', dni)
     const encrypted = await dniEncrypt(dni)
     return encrypted
   }

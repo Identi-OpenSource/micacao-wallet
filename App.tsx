@@ -134,11 +134,10 @@ function App(): React.JSX.Element {
             marginTop: 20,
             flexDirection: 'row',
           }}>
-          <Text style={{color: '#fff', fontSize: 15}}>
-            Solicitar ayuda {''}
-            {''} {''}
-          </Text>
-          <Whattsap />
+          <Text style={{color: '#fff', fontSize: 15}}>Solicitar ayuda</Text>
+          <View style={styles.buttonContainer}>
+            <Whattsap />
+          </View>
         </TouchableOpacity>
       </View>
     ),
@@ -148,9 +147,11 @@ function App(): React.JSX.Element {
           <Sad height={70} width={70} />
         </View>
         <Text style={styles.toastText}>{text1}</Text>
-        <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
-          <Text style={{color: '#fff', fontSize: 15}}>Ok </Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
+            <Text style={{color: '#fff', fontSize: 15}}>Ok </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     ),
     syncToast: ({text1}) => (
@@ -159,9 +160,11 @@ function App(): React.JSX.Element {
           <Error height={70} width={70} />
         </View>
         <Text style={styles.toastText}>{text1}</Text>
-        <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
-          <Text style={{color: '#fff', fontSize: 20}}> Ok </Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
+            <Text style={{color: '#fff', fontSize: 20}}> Ok </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     ),
     actionToast: ({text1, props}) => (
@@ -269,9 +272,7 @@ function App(): React.JSX.Element {
                 <KafeProvider>
                   <NavigationContainer>
                     <Router />
-                    <>
-                      <Toast config={toastConfig} />
-                    </>
+                    <Toast config={toastConfig} />
                   </NavigationContainer>
                 </KafeProvider>
               </GwfProvider>
@@ -289,7 +290,8 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 20,
     alignItems: 'center',
-    borderRadius: 10,
+    borderBottomStartRadius: 8,
+    borderBottomEndRadius: 8,
     elevation: 5,
   },
   toastTextTitle: {
@@ -317,10 +319,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS_DF.robin_egg_blue,
-    width: '100%',
-    height: 30,
-    borderRadius: 5,
-    marginTop: 5,
+    height: 50,
+    marginTop: 20,
+    borderRadius: 8,
   },
   buttonContainer: {
     flexDirection: 'column',

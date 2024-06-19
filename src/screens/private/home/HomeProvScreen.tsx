@@ -56,8 +56,6 @@ export const HomeProvScreen = () => {
   const [loadinSync, setLoadingSync] = useState(false)
   const [wa, setWa] = useState(null) as any
 
-  console.log('loadingSync', loadingSync)
-
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -72,11 +70,10 @@ export const HomeProvScreen = () => {
       )
 
       if (Object.keys(wallet).length > 0) {
-        console.log('wallet', wallet.isFunding)
         if (wallet.isFunding) {
-          writeWallet()
+          //  writeWallet()
         } else {
-          funding()
+          //  funding()
         }
       }
 
@@ -99,27 +96,33 @@ export const HomeProvScreen = () => {
 
   useEffect(() => {
     //Test KS
-    testKS()
+    // testKS()
 
-    if (isConnected) {
-      console.log('dataToSync.parcels', dataToSync.parcels)
-
-      if (dataToSync.parcels) {
-        toSyncData('createFarm')
-      }
-      if (dataToSync.sales) {
-        toSyncData('createSale')
-      }
+    if (isConnected && dataToSync.parcels) {
+      toSyncData('createFarm')
     }
-  }, [isConnected, dataToSync?.parcels, dataToSync?.sales])
+  }, [isConnected, dataToSync?.parcels])
 
-  const testKS = async () => {
-    const dni = '12345678'
-    const encrypted = await dniEncrypt(dni)
-    console.log('encrypted', encrypted)
-    const dniDecrypt = await dniText(encrypted.dni)
-    console.log('dniDecrypt', dniDecrypt)
-  }
+  useEffect(() => {
+    //Test KS
+    // testKS()
+
+    if (isConnected && dataToSync.sales) {
+      toSyncData('createSale')
+    }
+  }, [isConnected, dataToSync?.sales])
+
+  // const testKS = async () => {
+  //   const dni = '98765432'
+  //   const encrypted = await dniEncrypt(dni)
+  //   console.log('encrypted', encrypted)
+  //   const dniDecrypt = await dniText(encrypted.dni)
+  //   console.log('dniDecrypt', dniDecrypt)
+  //   /* TEST:
+  //   para el hash 6d4cf5ae259c7efdae041e7ac6ac41d7 es 98765432
+  //   para el hash 46143ba1e97976f3cb1abcdfc99924f3 es 2222222
+  //   */
+  // }
 
   const getWallet = () => {
     const wallet = newWallet()

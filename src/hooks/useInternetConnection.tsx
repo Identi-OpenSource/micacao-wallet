@@ -19,10 +19,6 @@ const useInternetConnection = () => {
     }
   }, [])
 
-  useEffect(() => {
-    console.log('isConnected on Hook', isConnected)
-  }, [isConnected])
-
   return {isConnected, isVisibleModal, setIsVisibleModal}
 }
 

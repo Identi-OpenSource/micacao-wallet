@@ -259,10 +259,10 @@ export const DrawPolygonScreen = ({route}: any) => {
   }, [dataGet])
 
   useEffect(() => {
-    if (errorGfw != null) {
+    if (errorGfw !== null) {
       Toast.show({
         type: 'syncToast',
-        text1: errorGfw.toString(),
+        text1: 'Error, intente más tarde',
       })
     }
   }, [errorGfw])

@@ -1,76 +1,63 @@
-import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
-import { District_M, District_W } from "../../../assets/svg";
-import { Btn } from "../../../components/button/Button";
-import { COLORS_DF, FONT_FAMILIES } from "../../../config/themes/default";
-import { useMapContext } from "../../../states/MapContext";
-import { UsersContext } from "../../../states/UserContext";
-import { ConnectionContext } from "../../../states/ConnectionContext";
-import Toast from "react-native-toast-message";
-import Spinner from "react-native-loading-spinner-overlay";
-import { storage } from "../../../config/store/db";
+import React, {useContext, useEffect, useState} from 'react'
+import {StyleSheet, View} from 'react-native'
+import {Dropdown} from 'react-native-element-dropdown'
+import {District_M, District_W} from '../../../assets/svg'
+import {Btn} from '../../../components/button/Button'
+import {COLORS_DF, FONT_FAMILIES} from '../../../config/themes/default'
+import {useMapContext} from '../../../states/MapContext'
+import {UsersContext} from '../../../states/UserContext'
+import {ConnectionContext} from '../../../states/ConnectionContext'
+import Toast from 'react-native-toast-message'
+import Spinner from 'react-native-loading-spinner-overlay'
+import {storage} from '../../../config/store/db'
 interface Maps {
-  navigation: any;
+  navigation: any
 }
-const Maps: React.FC<Maps> = ({ navigation }) => {
-  const [isFocus, setIsFocus] = useState(false);
-  const {
-    districts,
-    getDistricts,
-    district,
-    saveDistrict,
-    getMap,
-    loadingMap,
-  } = useMapContext();
-  const user = useContext(UsersContext);
-  const internetConnection = useContext(ConnectionContext);
-  const { isConnected } = internetConnection;
+const Maps: React.FC<Maps> = ({navigation}) => {
+  const [isFocus, setIsFocus] = useState(false)
+  const {districts, getDistricts, district, saveDistrict, getMap, loadingMap} =
+    useMapContext()
+  const user = useContext(UsersContext)
+  const internetConnection = useContext(ConnectionContext)
+  const {isConnected} = internetConnection
   useEffect(() => {
     if (isConnected) {
-      const country_id = user.country?.code === "CO" ? 1 : 2;
-      getDistricts(country_id);
+      const country_id = user.country?.code === 'CO' ? 1 : 2
+      getDistricts(country_id)
     } else {
       Toast.show({
-        type: "syncToast",
-        text1: "¡Recuerda que necesitas estar conectado a internet !",
-      });
+        type: 'syncToast',
+        text1: '¡Recuerda que necesitas estar conectado a internet !',
+      })
     }
-  }, [user.country?.code]);
+  }, [user.country?.code])
 
   useEffect(() => {
-    // console.log("districts", districts);
-  }, [districts]);
-  useEffect(() => {
-    saveDistrict(null);
-  }, [districts]);
-  useEffect(() => {
-    console.log("district", district);
-    storage.set("district", JSON.stringify(district));
-  }, [district]);
+    saveDistrict(null)
+    storage.set('district', JSON.stringify(district))
+  }, [districts])
 
   const submit = () => {
-    getMap();
-    navigation.navigate("RegisterScreen");
-  };
+    getMap()
+    navigation.navigate('RegisterScreen')
+  }
   return (
     <View style={styles.container}>
       <Spinner color="#178B83" visible={loadingMap} size={100} />
       <View
         style={{
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: 'center',
+          alignItems: 'center',
           marginTop: 25,
           marginBottom: 45,
-        }}
-      >
-        {user.gender === "W" ? <District_W /> : <District_M />}
+        }}>
+        {user.gender === 'W' ? <District_W /> : <District_M />}
       </View>
       <View>
         <Dropdown
           style={[
             styles.dropdown,
-            isFocus && { borderColor: COLORS_DF.citrine_brown },
+            isFocus && {borderColor: COLORS_DF.citrine_brown},
           ]}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
@@ -81,26 +68,26 @@ const Maps: React.FC<Maps> = ({ navigation }) => {
           itemContainerStyle={styles.itemContainer}
           labelField="dist_name"
           valueField="dist_id"
-          placeholder={!isFocus ? "Selecciona tu departamento" : "..."}
+          placeholder={!isFocus ? 'Selecciona tu departamento' : '...'}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={(item: any) => {
-            saveDistrict(item);
-            setIsFocus(false);
+            saveDistrict(item)
+            setIsFocus(false)
           }}
         />
       </View>
       <View style={styles.formBtn}>
         <Btn
-          title={"Continuar"}
-          theme={district !== null ? "agrayu" : "agrayuDisabled"}
+          title={'Continuar'}
+          theme={district !== null ? 'agrayu' : 'agrayuDisabled'}
           onPress={submit}
           disabled={district === null}
         />
       </View>
     </View>
-  );
-};
+  )
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -110,7 +97,7 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     height: 75,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderColor: COLORS_DF.citrine_brown,
     borderWidth: 0.5,
     borderRadius: 8,
@@ -120,8 +107,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   label: {
-    position: "absolute",
-    backgroundColor: "white",
+    position: 'absolute',
+    backgroundColor: 'white',
     left: 22,
     top: 8,
     zIndex: 999,
@@ -150,13 +137,13 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     /*  borderWidth: 1,
     borderColor: "red", */
-    width: "90%",
-    justifyContent: "flex-end",
+    width: '90%',
+    justifyContent: 'flex-end',
     paddingBottom: 20,
-    alignItems: "center",
+    alignItems: 'center',
   },
   itemSelect: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 17,
     color: COLORS_DF.citrine_brown,
   },
@@ -167,5 +154,5 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderTopColor: COLORS_DF.citrine_brown,
   },
-});
-export default Maps;
+})
+export default Maps

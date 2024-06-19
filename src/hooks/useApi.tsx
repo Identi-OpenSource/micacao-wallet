@@ -31,7 +31,6 @@ const useApi = (
         },
       }
       const data = await HTTP(apiRequest)
-      console.log('data', data)
       addToSync(JSON.stringify({...user, syncUp: true}), key)
     } catch (error) {
       if (error?.response?.data) {
@@ -62,17 +61,13 @@ const useApi = (
     const parcels = JSON.parse(storage.getString('parcels') || '[]')
     const user = JSON.parse(storage.getString('user') || '{}')
 
-    console.log('parcels', parcels)
-
     for (let index = 0; index < parcels.length; index++) {
       const element = parcels[index]
-
-      console.log('Element', element.id)
 
       if (element.syncUp === false) {
         if (element.polygon && !element.syncUp) {
           try {
-            // setLoadingSync(true) 
+            // setLoadingSync(true)
             const apiRequest: API_INTERFACE = {
               url: `${BASE_URL}/create_farm`,
               method: 'POST',
@@ -88,8 +83,7 @@ const useApi = (
                 Authorization: `Bearer ${accessToken}`,
               },
             }
-            const data = await HTTP(apiRequest)
-            console.log('data', data)
+            await HTTP(apiRequest)
 
             let parcels_array = parcels
 
@@ -103,12 +97,12 @@ const useApi = (
                   ? error.response.data.errors.error
                   : JSON.stringify(error.response.data.errors)
               setErrorSync(errorText)
-            } else {
+            } /* else {
               Toast.show({
                 type: 'syncToast',
                 text1: 'INTENTE MAS TARDE',
               })
-            }
+            } */
           } finally {
             setLoadingSync(false)
             setErrorSync(null)
@@ -145,23 +139,24 @@ const useApi = (
                 Authorization: `Bearer ${accessToken}`,
               },
             }
-            const data = await HTTP(apiRequest)
-            console.log('data', data)
+            await HTTP(apiRequest)
+
             sales[index] = {...element, syncUp: true}
+            addToSync(JSON.stringify(sales), 'sales')
           } catch (error) {
             if (error?.response?.data) {
-              const text_error = error.response.data.errors.error
+              const text_error = error?.response?.data?.errors?.error
               const errorText =
                 text_error !== undefined
-                  ? error.response.data.errors.error
-                  : JSON.stringify(error.response.data.errors)
+                  ? error?.response?.data?.errors?.error
+                  : JSON.stringify(error?.response?.data?.errors)
               setErrorSync(errorText)
-            } else {
+            } /* else {
               Toast.show({
                 type: 'syncToast',
                 text1: 'INTENTE MAS TARDE',
               })
-            }
+            } */
           } finally {
             setLoadingSync(false)
             setErrorSync(null)
@@ -169,7 +164,7 @@ const useApi = (
         }
       }
 
-      addToSync(JSON.stringify(sales), 'sales')
+      // addToSync(JSON.stringify(sales), 'sales')
     }
   }
 

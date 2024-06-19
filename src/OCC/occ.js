@@ -32,7 +32,7 @@ export const fundingWallet = async wallet => {
 
 export const verificarWallet = async wallet => {
   const url = `https://blockchain-explorer.occs.openfoodchain.org/address/${wallet}`
-  console.log('Testing Wallet: ', url)
+
   Linking.openURL(url)
 }
 
@@ -53,20 +53,22 @@ export const dniText = async dni => {
 
 export const dniEncrypt = async dni => {
   const paddedDNI = dni.padStart(16, '0')
-  const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
+  const keyAll = Config.KEY_CIFRADO_KAFE_SISTEMAS
+  // const key16 = `${Config.KEY_CIFRADO_KAFE_SISTEMAS}`.substring(0, 16)
+  const utf8Key = CryptoJS.enc.Utf8.parse(keyAll)
   const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
   const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
     mode: CryptoJS.mode.ECB,
     padding: CryptoJS.pad.Pkcs7,
   })
   const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
-  return {dni: hexResult.substr(0, 32), dniAll: hexResult}
+  return {dni: hexResult, dniAll: hexResult.length}
 }
 
 export const writeTransaction = async (wif, object) => {
   const {userData, parcels_array, sales} = object
   // Obtener DNI
-  const DNI = await dniText(userData.dniAll)
+  const DNI = await dniText(userData.dni)
   let TX = []
   let newSales = []
   for (let index = 0; index < sales.length; index++) {
