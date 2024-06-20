@@ -106,7 +106,6 @@ export const HomeProvScreen = () => {
   useEffect(() => {
     //Test KS
     // testKS()
-
     if (isConnected && dataToSync.sales) {
       toSyncData('createSale')
     }
@@ -150,17 +149,18 @@ export const HomeProvScreen = () => {
     }
   }
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (
       !loadingKafe &&
       Object.keys(postKafeData).length === 0 &&
       isConnected &&
-      user.country?.code === "PE"
+      user.country?.code === 'PE'
     ) {
-      postKafeSistemas();
+      postKafeSistemas()
     }
-  }, [isConnected]);
+  }, [isConnected])
 
+  /*
   useEffect(() => {
     let interval;
 

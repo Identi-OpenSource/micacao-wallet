@@ -45,7 +45,8 @@ const Maps: React.FC<Maps> = ({navigation}) => {
   const getPlaceholder = () => {
     if (user.country?.code === 'CO') {
       return 'Selecciona tu municipio'
-    } else {
+    }
+    if (user.country?.code === 'PE') {
       return 'Selecciona tu distrito'
     }
   }
@@ -86,7 +87,7 @@ const Maps: React.FC<Maps> = ({navigation}) => {
           itemContainerStyle={styles.itemContainer}
           labelField="dist_name"
           valueField="dist_id"
-          placeholder={!isFocus && getPlaceholder()}
+          placeholder={getPlaceholder()}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={(item: any) => {
