@@ -82,7 +82,9 @@ const Maps: React.FC<Maps> = ({navigation}) => {
           selectedTextStyle={styles.selectedTextStyle}
           itemTextStyle={styles.itemSelect}
           iconStyle={styles.iconStyle}
-          data={districts}
+          data={districts.sort((a, b) =>
+            a?.dist_name.localeCompare(b?.dist_name),
+          )}
           autoScroll
           itemContainerStyle={styles.itemContainer}
           labelField="dist_name"

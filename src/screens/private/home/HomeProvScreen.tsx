@@ -94,35 +94,35 @@ export const HomeProvScreen = () => {
     storage.set('wallet', JSON.stringify({wallet: wallet_a, isFunding}))
   }
 
-  useEffect(() => {
-    //Test KS
-    // testKS()
+  // useEffect(() => {
+  //   //Test KS
+  //   // testKS()
 
-    if (isConnected && dataToSync.parcels) {
-      toSyncData('createFarm')
-    }
-  }, [isConnected, dataToSync?.parcels])
+  //   if (isConnected && dataToSync.parcels) {
+  //     toSyncData('createFarm')
+  //   }
+  // }, [isConnected, dataToSync?.parcels])
 
-  useEffect(() => {
-    //Test KS
-    // testKS()
-    if (isConnected && dataToSync.sales) {
-      toSyncData('createSale')
-    }
-  }, [isConnected, dataToSync?.sales])
+  // useEffect(() => {
+  //   //Test KS
+  //   // testKS()
+  //   if (isConnected && dataToSync.sales) {
+  //     toSyncData('createSale')
+  //   }
+  // }, [isConnected, dataToSync?.sales])
 
-  const testKS = async () => {
-    const dni = '2222222'
-    const encrypted = await dniEncrypt(dni)
-    console.log('encrypted', encrypted)
-    const dniDecrypt = await dniText(encrypted.dni)
-    // const dniDecrypt = await dniText(dniDecrypt)
-    console.log('dniDecrypt', dniDecrypt)
-    /* TEST:
-    para el hash 6d4cf5ae259c7efdae041e7ac6ac41d7 es 98765432
-    para el hash 46143ba1e97976f3cb1abcdfc99924f3 es 2222222
-    */
-  }
+  // const testKS = async () => {
+  //   const dni = '2222222'
+  //   const encrypted = await dniEncrypt(dni)
+  //   console.log('encrypted', encrypted)
+  //   const dniDecrypt = await dniText(encrypted.dni)
+  //   // const dniDecrypt = await dniText(dniDecrypt)
+  //   console.log('dniDecrypt', dniDecrypt)
+  //   /* TEST:
+  //   para el hash 6d4cf5ae259c7efdae041e7ac6ac41d7 es 98765432
+  //   para el hash 46143ba1e97976f3cb1abcdfc99924f3 es 2222222
+  //   */
+  // }
 
   const getWallet = () => {
     const wallet = newWallet()
@@ -149,16 +149,16 @@ export const HomeProvScreen = () => {
     }
   }
 
-  useEffect(() => {
-    if (
-      !loadingKafe &&
-      Object.keys(postKafeData).length === 0 &&
-      isConnected &&
-      user.country?.code === 'PE'
-    ) {
-      postKafeSistemas()
-    }
-  }, [isConnected])
+  // useEffect(() => {
+  //   if (
+  //     !loadingKafe &&
+  //     Object.keys(postKafeData).length === 0 &&
+  //     isConnected &&
+  //     user.country?.code === 'PE'
+  //   ) {
+  //     postKafeSistemas()
+  //   }
+  // }, [isConnected])
 
   /*
   useEffect(() => {

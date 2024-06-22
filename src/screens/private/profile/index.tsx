@@ -183,7 +183,7 @@ const ProfileScreen = () => {
       Toast.show({
         type: 'actionToast',
         text1:
-          'El archivo JSON se ha guardado en la carpeta de descargas, Quieres compartirlo?',
+          'El archivo se ha guardado en la carpeta de descargas. ¿Quieres compartirlo?',
         autoHide: false,
         props: {
           onPress: () => shareJSON(path),

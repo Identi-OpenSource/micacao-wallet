@@ -54,7 +54,8 @@ export const RegisterOkScreen = () => {
       step: 2,
       msg: 'Descargando mapa...',
     })
-    descargarMapa(), await delay(1000)
+    descargarMapa()
+    await delay(1000)
     setStep({step: 3, msg: 'Inicio de sesión...'})
     await delay(1500)
     addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')

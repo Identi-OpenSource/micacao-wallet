@@ -1,5 +1,5 @@
 import React, {createContext, useEffect, useState} from 'react'
-import useAuthenticationToken from '../hooks/useAuthenticationToken'
+import useAuthenticationToken from '../OCC/hooks/useAuthenticationToken'
 
 export interface AuthInterface {
   accessToken?: any

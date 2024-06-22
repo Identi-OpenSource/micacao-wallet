@@ -99,7 +99,7 @@ export const KafeProvider = ({children}: {children: React.ReactNode}) => {
         payload: {
           dni: user.dni,
           polygon: wktPolygon,
-          departamento: district.dist_name,
+          departamento: district?.dist_name,
         },
         headers: {
           'api-key': API_KEY,
@@ -113,11 +113,11 @@ export const KafeProvider = ({children}: {children: React.ReactNode}) => {
     } catch (error) {
       console.error('Error en la solicitud POST a KafeSistemas:', error)
       if (error?.response?.data) {
-        const text_error = error.response.data.errors.error
+        const text_error = error?.response?.data?.errors?.error
         const errorText =
           text_error !== undefined
-            ? error.response.data.errors.error
-            : JSON.stringify(error.response.data.errors)
+            ? error?.response?.data?.errors?.error
+            : JSON.stringify(error?.response?.data?.errors)
         setErrorKafe(errorText)
       } /*  else {
         Toast.show({

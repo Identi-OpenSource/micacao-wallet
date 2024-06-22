@@ -1,6 +1,6 @@
-import {storage} from '../config/store/db'
-import {API_INTERFACE, HTTP} from '../services/api'
-import {useAuth} from '../states/AuthContext'
+import {storage} from '../../config/store/db'
+import {API_INTERFACE, HTTP} from '../../services/api'
+import {useAuth} from '../../states/AuthContext'
 import Toast from 'react-native-toast-message'
 const useApi = (
   setLoadingSync: any,
@@ -91,11 +91,11 @@ const useApi = (
             addToSync(JSON.stringify(parcels_array), 'parcels')
           } catch (error) {
             if (error?.response?.data) {
-              const text_error = error.response.data.errors.error
+              const text_error = error?.response?.data?.errors?.error
               const errorText =
                 text_error !== undefined
-                  ? error.response.data.errors.error
-                  : JSON.stringify(error.response.data.errors)
+                  ? error?.response?.data?.errors?.error
+                  : JSON.stringify(error?.response?.data?.errors)
               setErrorSync(errorText)
             } /* else {
               Toast.show({
@@ -128,11 +128,11 @@ const useApi = (
               url: `${BASE_URL}/create_activities`,
               method: 'POST',
               payload: {
-                dni_cacao_producer: user.dni,
-                id_farm: parcels.id,
+                dni_cacao_producer: user?.dni,
+                id_farm: parcels?.id,
                 id_activity_type: 4,
-                cacao_type: element.type,
-                [key]: element.kl,
+                cacao_type: element?.type,
+                [key]: element?.kl,
               },
               headers: {
                 'Content-Type': 'application/json',

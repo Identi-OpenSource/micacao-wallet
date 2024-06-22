@@ -93,9 +93,6 @@ export const MapProvider = ({children}: {children: React.ReactNode}) => {
           Authorization: `Bearer ${accessToken}`,
         },
       }
-      const data = await HTTP(apiRequest)
-
-      setMap(data)
     } catch (error) {
       if (error?.response?.data) {
         const text_error = error.response.data.errors.error

@@ -52,7 +52,7 @@ import {
   Whattsap,
   Edit_Map,
 } from './src/assets/svg/index'
-import useInternetConnection from './src/hooks/useInternetConnection'
+import useInternetConnection from './src/OCC/hooks/useInternetConnection'
 import {Router} from './src/routers/Router'
 import {AuthProvider} from './src/states/AuthContext'
 import {ConnectionProvider} from './src/states/ConnectionContext'
