@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {storage} from '../../config/store/db'
+import {storage} from '../config/store/db'
 import useApi from './useApi'
 
 type DataType = {

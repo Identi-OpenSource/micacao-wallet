@@ -11,7 +11,6 @@ import {
 } from '@react-navigation/native-stack'
 import React, {useContext, useEffect} from 'react'
 import {StyleSheet} from 'react-native'
-import Toast from 'react-native-toast-message'
 import {storage} from '../config/store/db'
 import {BORDER_RADIUS_DF, COLORS_DF, MP_DF} from '../config/themes/default'
 import {HelpScreen} from '../screens/private/help/HelpScreen'
@@ -51,14 +50,9 @@ import {RegisterScreen} from '../screens/public/register/RegisterScreen'
 import RegisterSecondScreen from '../screens/public/register/RegisterSecondScreen'
 import RegisterThirdScreen from '../screens/public/register/RegisterThirdScreen'
 import StartScreen from '../screens/public/register/StartScreen'
-import {useAuth} from '../states/AuthContext'
 
 import {FiveSaleScreen} from '../screens/private/sale/fiveSaleScreen'
 import {Test} from '../screens/public/testing'
-import {useGfwContext} from '../states/GfwContext'
-import {useKafeContext} from '../states/KafeContext'
-import {useMapContext} from '../states/MapContext'
-import {useSyncData} from '../states/SyncDataContext'
 import {UserDispatchContext, UsersContext} from '../states/UserContext'
 import {CompositeScreenProps} from '@react-navigation/native'
 
@@ -103,11 +97,13 @@ export type RootStackParamList = {
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, T>
+
 export type ScreenProps<T extends keyof RootStackParamList> =
   CompositeScreenProps<
     NativeStackScreenProps<RootStackParamList, T>,
     RootStackScreenProps<keyof RootStackParamList>
   >
+
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}
@@ -167,119 +163,14 @@ const optionsHeadersCacao = {
 
 export const Router = () => {
   const user = useContext(UsersContext)
-  const {setAccessToken, error} = useAuth()
-  const {errorSync, errorWhattsap} = useSyncData()
-  const {errorMap, getDistrict, saveDistrict} = useMapContext()
-  const {setPostGFW, setGetGFW, errorGfw} = useGfwContext()
-  const {setPostKafe, setGetKafe} = useKafeContext()
   const dispatch = useContext(UserDispatchContext)
-  const parcels = JSON.parse(storage.getString('parcels') || '[]')
-  const userLogin = JSON.parse(storage.getString('user') || '{}')
-  const accessToken = storage.getString('accessToken') || null
-  const postGFW = JSON.parse(storage.getString('postGFW') || '[]')
-  const getData = JSON.parse(storage.getString('getGFW') || '[]')
-  const district = JSON.parse(storage.getString('district') || '{}')
-  const postKafe = JSON.parse(storage.getString('postKafeData') || '{}')
-  const pin = JSON.parse(storage.getString('security') || '{}')
-  const getKafe = JSON.parse(storage.getString('getKafeData') || '{}')
-  useEffect(() => {
-    // storage.delete("parcels");
-    //storage.delete("postGFW");
-    //storage.delete("getGFW");
-
-    // storage.set(
-    //   "parcels",
-    //   JSON.stringify([
-    //     {
-    //       firstPoint: [-0.0981957, -78.5091545],
-    //       hectares: 10000,
-    //       id: "1",
-    //       name: "Parcela 1",
-    //       polygon: [[Array], [Array], [Array], [Array], [Array], [Array]],
-    //       secondPoint: [-0.0981958, -78.509154],
-    //       syncUp: false,
-    //     },
-    //     {
-    //       firstPoint: [-0.0981917, -78.5091505],
-    //       hectares: 2600,
-    //       id: "2",
-    //       name: "Parcela 2",
-    //       polygon: [[Array], [Array], [Array], [Array], [Array], [Array]],
-    //       secondPoint: [-0.0981875, -78.5091644],
-    //       syncUp: false,
-    //     },
-    //   ])
-    // );
-    //storage.delete("sales");
-    //storage.delete("getKafeData");
-    getIsLogin()
-  }, [])
 
   useEffect(() => {
-    if (error != null) {
-      Toast.show({
-        type: 'syncToast',
-        text1: error.toString(),
-      })
-    }
-  }, [error])
-
-  //useEfffect para que el salga el toast de errorSync
-  useEffect(() => {
-    if (errorSync != null) {
-      Toast.show({
-        type: 'syncToast',
-        text1: errorSync.toString(),
-      })
-    }
-  }, [errorSync])
-
-  // useEfffect para que el salga el toast de errorMap
-  useEffect(() => {
-    if (errorMap != null) {
-      Toast.show({
-        type: 'syncToast',
-        text1: errorMap.toString(),
-      })
-    }
-  }, [errorMap])
-
-  //useEfffect para que el salga el toast de errorWhattsap
-  useEffect(() => {
-    if (errorWhattsap != null) {
-      Toast.show({
-        type: 'dniToast',
-        visibilityTime: 7000,
-        text1: errorWhattsap.toString(),
-      })
-    }
-  }, [errorWhattsap])
-
-  const getIsLogin = () => {
-    setAccessToken(accessToken)
-
+    const userLogin = JSON.parse(storage.getString('user') || '{}')
     if (userLogin?.isLogin) {
-      //login
       dispatch({type: 'login', payload: userLogin})
-
-      //POST GFW
-      setPostGFW(postGFW)
-      //GET GFW
-      setGetGFW(getData)
-      //POST Kafe
-      setPostKafe(postKafe)
-      //GET KAFE
-      setGetKafe(getKafe)
-      //GET DISTRICT
-      saveDistrict(district)
-      //TODO: Revisar el guardado
-      // dispatch({type: 'login', payload: parcels})
-      // console.log('PARCELAS', parcels)
-
-      // dispatch({type: 'login', payload: sales})
-      // console.log('ventas', sales)
     }
-  }
+  }, [])
 
   const PublicStack = () => {
     const StackPublic = createNativeStackNavigator()
@@ -552,23 +443,5 @@ export const Router = () => {
     )
   }
 
-  const getStack = () => {
-    //Change for Context
-    if (user.isLogin) {
-      return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate()
-    } else {
-      //Change for Storage
-      if (Object.values(userLogin).length > 0) {
-        if (userLogin.isLogin) {
-          return parcels.length > 0
-            ? TabPrivate()
-            : RegisterParcelStackPrivate()
-        }
-      } else {
-        return PublicStack()
-      }
-    }
-  }
-
-  return getStack()
+  return user.isLogin ? TabPrivate() : PublicStack()
 }

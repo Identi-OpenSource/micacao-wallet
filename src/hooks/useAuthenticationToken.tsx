@@ -1,9 +1,9 @@
 import {useContext} from 'react'
 //import Config from "react-native-config";
-import {storage} from '../../config/store/db'
-import {API_INTERFACE, HTTP} from '../../services/api'
-import {useAuth} from '../../states/AuthContext'
-import {ConnectionContext} from '../../states/ConnectionContext'
+import {storage} from '../config/store/db'
+import {API_INTERFACE, HTTP} from '../services/api'
+import {useAuth} from '../states/AuthContext'
+import {ConnectionContext} from '../states/_ConnectionContext'
 import Toast from 'react-native-toast-message'
 const useAuthenticationToken = (
   setAccessToken: any,

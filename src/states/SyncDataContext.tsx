@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState} from 'react'
-import useSync from '../OCC/hooks/useSyncData'
+import useSync from '../hooks/useSyncData'
 import {useAuth} from './AuthContext'
 
 export interface SyncDataInterface {

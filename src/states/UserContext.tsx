@@ -6,14 +6,15 @@ export interface UserInterface {
   phone?: string
   pin?: string
   isLogin?: boolean
-  parcel?: any[]
+  parcel?: Parcel[]
+  sales?: any[]
   syncUp?: boolean
   lastSyncUp?: number
   gender?: string
   country?: any
 }
 export interface Parcel {
-  name: ReactNode
+  name: string
   id?: string
   nameParcel?: string
   hectares?: number
@@ -47,6 +48,7 @@ export const CacaoState: saleInterface = {
   kgCacao: '',
   month: '',
 }
+
 export type UserActions = 'login' | 'logout' | 'getLogin' | 'setUser'
 
 export interface userInicialState {
@@ -94,7 +96,6 @@ export const usersReducer = (user: UserInterface, action: ActionsInterface) => {
         isLogin: true,
       }
     }
-
     case 'setUser': {
       return {
         ...action.payload,
@@ -103,7 +104,6 @@ export const usersReducer = (user: UserInterface, action: ActionsInterface) => {
     case 'logout': {
       return userInicialState
     }
-
     default: {
       throw Error('Unknown action: ' + action.type)
     }

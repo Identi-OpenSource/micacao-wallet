@@ -31,7 +31,7 @@ import {
   FONT_FAMILIES,
   FONT_SIZES,
 } from '../../../../config/themes/default'
-import {ConnectionContext} from '../../../../states/ConnectionContext'
+import {ConnectionContext} from '../../../../states/_ConnectionContext'
 import {useGfwContext} from '../../../../states/GfwContext'
 import {useKafeContext} from '../../../../states/KafeContext'
 import DrawPolyline from './DrawPolyline'

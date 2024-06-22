@@ -31,7 +31,7 @@ import {
   getFontSize,
 } from '../../../config/themes/default'
 import {useAuth} from '../../../states/AuthContext'
-import {ConnectionContext} from '../../../states/ConnectionContext'
+import {ConnectionContext} from '../../../states/_ConnectionContext'
 import {useKafeContext} from '../../../states/KafeContext'
 import {useSyncData} from '../../../states/SyncDataContext'
 import {UserInterface, UsersContext} from '../../../states/UserContext'

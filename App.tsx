@@ -1,3 +1,5 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react/no-unstable-nested-components */
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {faWhatsapp, fab} from '@fortawesome/free-brands-svg-icons'
 import {
@@ -38,6 +40,7 @@ import {
   View,
   Linking,
   Dimensions,
+  StatusBar,
 } from 'react-native'
 import Toast, {
   BaseToast,
@@ -53,9 +56,9 @@ import {
   Edit_Map,
 } from './src/assets/svg/index'
 import useInternetConnection from './src/OCC/hooks/useInternetConnection'
-import {Router} from './src/routers/Router'
+
 import {AuthProvider} from './src/states/AuthContext'
-import {ConnectionProvider} from './src/states/ConnectionContext'
+import {ConnectionProvider} from './src/states/_ConnectionContext'
 import {UserProvider} from './src/states/UserContext'
 import {MapProvider} from './src/states/MapContext'
 import {KafeProvider} from './src/states/KafeContext'
@@ -63,10 +66,13 @@ import {COLORS_DF, FONT_FAMILIES} from './src/config/themes/default'
 import {SyncDataProvider} from './src/states/SyncDataContext'
 import {GwfProvider} from './src/states/GfwContext'
 import {Image} from 'react-native-svg'
+import {Router} from './src/routers/Router'
+import {SafeAreaProvider} from 'react-native-safe-area-context'
 
 function App(): React.JSX.Element {
   // biblioteca de iconos
   const [visible, setVisible] = useState(false)
+
   library.add(
     fab,
     faArrowLeftLong,
@@ -123,7 +129,6 @@ function App(): React.JSX.Element {
         }}
       />
     ),
-
     dniToast: ({text1}) => (
       <View style={styles.toastContainer}>
         <View>
@@ -162,17 +167,22 @@ function App(): React.JSX.Element {
         </View>
       </View>
     ),
-    syncToast: ({text1}) => (
+    msgToast: ({text1, props}) => (
       <View style={styles.toastContainer}>
-        <View>
-          <Error height={70} width={70} />
-        </View>
+        <Error height={70} width={70} />
         <Text style={styles.toastText}>{text1}</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
-            <Text style={{color: '#fff', fontSize: 20}}> Ok </Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
+          <Text style={styles.buttonToastText}> Ok </Text>
+        </TouchableOpacity>
+      </View>
+    ),
+    syncToast: ({text1, props}) => (
+      <View style={styles.toastContainer}>
+        <Error height={70} width={70} />
+        <Text style={styles.toastText}>{text1}</Text>
+        <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
+          <Text style={styles.buttonToastText}> Ok </Text>
+        </TouchableOpacity>
       </View>
     ),
     actionToast: ({text1, props}) => (
@@ -290,30 +300,50 @@ function App(): React.JSX.Element {
       )
     })
   }
-  const internetConnection = useInternetConnection()
+
+  // const internetConnection = useInternetConnection()
 
   return (
-    <ConnectionProvider value={internetConnection}>
-      <AuthProvider>
-        <SyncDataProvider>
-          <UserProvider>
-            <MapProvider>
-              <GwfProvider>
-                <KafeProvider>
-                  <NavigationContainer>
-                    <Router />
-                    <Toast config={toastConfig} />
-                  </NavigationContainer>
-                </KafeProvider>
-              </GwfProvider>
-            </MapProvider>
-          </UserProvider>
-        </SyncDataProvider>
-      </AuthProvider>
-    </ConnectionProvider>
+    <SafeAreaProvider>
+      <UserProvider>
+        <NavigationContainer>
+          <Router />
+          <Toast config={toastConfig} />
+        </NavigationContainer>
+      </UserProvider>
+    </SafeAreaProvider>
   )
+
+  // return (
+  //   <ConnectionProvider value={internetConnection}>
+  //     <AuthProvider>
+  //       <SyncDataProvider>
+  //         <UserProvider>
+  //           <MapProvider>
+  //             <GwfProvider>
+  //               <KafeProvider>
+  //                 <NavigationContainer>
+  //                   <Router />
+  //                   <Toast config={toastConfig} />
+  //                 </NavigationContainer>
+  //               </KafeProvider>
+  //             </GwfProvider>
+  //           </MapProvider>
+  //         </UserProvider>
+  //       </SyncDataProvider>
+  //     </AuthProvider>
+  //   </ConnectionProvider>
+  // )
 }
 const styles = StyleSheet.create({
+  toastText: {
+    marginTop: 10,
+    fontSize: 18,
+    fontFamily: FONT_FAMILIES.primary,
+    color: COLORS_DF.citrine_brown,
+    textAlign: 'center',
+    lineHeight: 28,
+  },
   toastContainer: {
     width: Dimensions.get('window').width - 50,
     backgroundColor: '#fff',
@@ -332,13 +362,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
-  toastText: {
-    fontSize: 18,
-    fontFamily: FONT_FAMILIES.primary,
-    color: COLORS_DF.citrine_brown,
-    textAlign: 'center',
-    lineHeight: 28,
-  },
+
   toastTextGFW: {
     fontSize: 18,
     fontFamily: FONT_FAMILIES.bold,
@@ -347,12 +371,17 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   buttonToast: {
+    height: 50,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS_DF.robin_egg_blue,
-    height: 50,
     marginTop: 20,
     borderRadius: 8,
+  },
+  buttonToastText: {
+    color: '#fff',
+    fontSize: 20,
   },
   buttonContainer: {
     flexDirection: 'column',
