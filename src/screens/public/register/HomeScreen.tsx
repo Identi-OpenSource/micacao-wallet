@@ -29,6 +29,7 @@ import useFetchData, {
 } from '../../../hooks/useFetchData'
 import Config from 'react-native-config'
 import {storage} from '../../../config/store/db'
+import {STORAGE_KEYS} from '../../../config/const'
 
 export const HomeScreen = () => {
   const {isConnected} = useInternetConnection()
@@ -46,7 +47,6 @@ export const HomeScreen = () => {
       return
     }
     await postTokens()
-    await postVariables()
   }
 
   // Obtener token de acceso
@@ -61,12 +61,14 @@ export const HomeScreen = () => {
       data: formData,
     })
     if (resp?.access_token) {
-      storage.set('tokens', JSON.stringify(resp))
+      storage.set(STORAGE_KEYS.accessToken, resp.access_token)
+      postVariables()
     }
   }
 
   // Obtener las variables de la app
   const postVariables = async () => {
+    const token = storage.getString('accessToken')
     const url = Config.BASE_URL + '/app_config'
     // @Braudin: Corregir esto
     // const resp = await fetchData(url, {
@@ -74,7 +76,8 @@ export const HomeScreen = () => {
     //   headers: HEADERS,
     // })
     if (true) {
-      storage.set('tokens', JSON.stringify(MUESTRA))
+      storage.set(STORAGE_KEYS.loadData, JSON.stringify(MUESTRA))
+      navigation.navigate('IamScreen')
     }
   }
 

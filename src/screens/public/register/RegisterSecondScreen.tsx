@@ -16,6 +16,7 @@ import {
 } from './Interfaces'
 import {Header} from './RegisterScreen'
 import {styles} from './styles'
+import {storage} from '../../../config/store/db'
 
 interface RegisterSecondScreenProps {
   navigation: any
@@ -24,20 +25,11 @@ interface RegisterSecondScreenProps {
 const RegisterSecondScreen: React.FC<RegisterSecondScreenProps> = ({
   navigation,
 }) => {
-  const user = useContext(UsersContext)
-  const dispatch = useContext(UserDispatchContext)
+  const user = JSON.parse(storage.getString('user') || '{}')
 
   const submit = (values: InterfaceTwo) => {
     const phone = values.phone
-
-    dispatch({
-      type: 'setUser',
-      payload: {
-        ...user,
-        phone,
-      },
-    })
-
+    storage.set('user', JSON.stringify({...user, phone}))
     navigation.navigate('RegisterThirdScreen')
   }
 
@@ -45,8 +37,8 @@ const RegisterSecondScreen: React.FC<RegisterSecondScreenProps> = ({
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          {user.gender == 'M' && <Cellphone_M />}
-          {user.gender == 'W' && <Cellphone_W />}
+          {user.gender === 'M' && <Cellphone_M />}
+          {user.gender === 'W' && <Cellphone_W />}
         </View>
         <Formik
           initialValues={INIT_VALUES_TWO}

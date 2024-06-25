@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native'
 import {Field, Formik} from 'formik'
-import React, {useContext} from 'react'
+import React from 'react'
 import {Text, View, TouchableOpacity} from 'react-native'
 import {Dni_M, Dni_W} from '../../../assets/svg'
 import {Btn, BtnIcon} from '../../../components/button/Button'
@@ -15,13 +15,13 @@ import {
   SCHEMA_ONE,
 } from './Interfaces'
 import {styles} from './styles'
-import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
 import {dniEncrypt} from '../../../OCC/occ'
+import {storage} from '../../../config/store/db'
+import Toast from 'react-native-toast-message'
 
 export const RegisterScreen = () => {
   const navigation = useNavigation()
-  const user = useContext(UsersContext)
-  const dispatch = useContext(UserDispatchContext)
+  const user = JSON.parse(storage.getString('user') || '{}')
   //encripta el dni
   const certificateND = async (dni: string) => {
     const encrypted = await dniEncrypt(dni)
@@ -30,20 +30,16 @@ export const RegisterScreen = () => {
 
   const submit = async (values: InterfaceOne) => {
     const encryptedDNI = await certificateND(values.dni)
-    const updatedValues = {
-      ...values,
-      dni: encryptedDNI.dni,
-      dniAll: encryptedDNI.dniAll,
+    if (encryptedDNI.dniAll !== 32) {
+      Toast.show({
+        type: 'msgToast',
+        autoHide: false,
+        text1: '¡Error al encriptar los datos! Por favor, intente de nuevo.',
+      })
+      navigation.goBack()
+      return
     }
-    dispatch({
-      type: 'setUser',
-      payload: {
-        ...user,
-        ...values,
-        ...updatedValues,
-      },
-    })
-
+    storage.set('user', JSON.stringify({...user, ...encryptedDNI}))
     navigation.navigate('RegisterSecondScreen')
   }
 
@@ -90,7 +86,8 @@ export const RegisterScreen = () => {
 // Componente Header
 
 export const Header = (props: InterfaceHeader) => {
-  const {navigation, label} = props
+  const navigation = useNavigation()
+  const {label} = props
   return (
     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.header}>
       <BtnIcon

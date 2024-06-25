@@ -1,17 +1,10 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : View of entry point of the application
- */
-
 import {useNavigation} from '@react-navigation/native'
-import {Card, CheckBox} from '@rneui/themed'
-import React, {useContext, useState, useEffect} from 'react'
+import {Card} from '@rneui/themed'
+import React, {useState} from 'react'
 import {
   Image,
   ImageSourcePropType,
   PermissionsAndroid,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -21,7 +14,7 @@ import {imgCO, imgPE} from '../../../assets/imgs'
 import {Iamfrom_m, Iamfrom_w} from '../../../assets/svg'
 import {Btn} from '../../../components/button/Button'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {COUNTRY} from '../../../config/const'
+import {COUNTRY, STORAGE_KEYS} from '../../../config/const'
 import {LABELS} from '../../../config/texts/labels'
 import {
   BORDER_RADIUS_DF,
@@ -35,9 +28,7 @@ import {
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
-import {Header} from './RegisterScreen'
-import {useMapContext} from '../../../states/MapContext'
+import {storage} from '../../../config/store/db'
 interface CardProps {
   img: ImageSourcePropType
   title: string
@@ -48,12 +39,8 @@ interface CardProps {
 
 export const IamFromScreen: React.FC = () => {
   const navigation = useNavigation()
+  const user = JSON.parse(storage.getString('user') || '{}')
   const [selectedCountry, setSelectedCountry] = useState<object | null>(null)
-
-  const user = useContext(UsersContext)
-  const dispatch = useContext(UserDispatchContext)
-
-  const {saveDistricts} = useMapContext()
 
   const cards = [
     {
@@ -68,30 +55,15 @@ export const IamFromScreen: React.FC = () => {
     },
   ]
 
-  useEffect(() => {
-    saveDistricts([])
-  }, [selectedCountry])
-
-  // check permission
   const checkPermission = async () => {
-    try {
-      if (Platform.OS === 'android') {
-        const location = await PermissionsAndroid.check(
-          'android.permission.ACCESS_FINE_LOCATION',
-        )
-        const camera = await PermissionsAndroid.check(
-          'android.permission.CAMERA',
-        )
-        if (!location || !camera) {
-          navigation.navigate('PermissionsStack')
-        } else {
-          navigation.navigate('Maps')
-        }
-      } else {
-        navigation.navigate('Maps')
-      }
-    } catch (err) {
-      console.warn(err)
+    const location = await PermissionsAndroid.check(
+      'android.permission.ACCESS_FINE_LOCATION',
+    )
+    const camera = await PermissionsAndroid.check('android.permission.CAMERA')
+    if (!location || !camera) {
+      navigation.navigate('PermissionsStack')
+    } else {
+      navigation.navigate('Maps')
     }
   }
 
@@ -100,14 +72,10 @@ export const IamFromScreen: React.FC = () => {
   }
 
   const submit = () => {
-    dispatch({
-      type: 'setUser',
-      payload: {
-        ...user,
-        country: selectedCountry,
-      },
-    })
-
+    storage.set(
+      STORAGE_KEYS.user,
+      JSON.stringify({...user, country: selectedCountry}),
+    )
     checkPermission()
   }
 

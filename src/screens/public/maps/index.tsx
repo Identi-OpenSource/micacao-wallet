@@ -10,35 +10,79 @@ import {ConnectionContext} from '../../../states/_ConnectionContext'
 import Toast from 'react-native-toast-message'
 import Spinner from 'react-native-loading-spinner-overlay'
 import {storage} from '../../../config/store/db'
-interface Maps {
-  navigation: any
+import {useNavigation} from '@react-navigation/native'
+import Config from 'react-native-config'
+import useFetchData, {HEADERS} from '../../../hooks/useFetchData'
+import {STORAGE_KEYS} from '../../../config/const'
+
+interface District {
+  dist_id: number
+  dist_name: string
+  countryid: number
+  _index: number
 }
-const Maps: React.FC<Maps> = ({navigation}) => {
+
+const Maps = () => {
+  const user = JSON.parse(storage.getString('user') || '{}')
   const [isFocus, setIsFocus] = useState(false)
-  const {districts, getDistricts, district, saveDistrict, getMap, loadingMap} =
-    useMapContext()
-  const user = useContext(UsersContext)
-  const internetConnection = useContext(ConnectionContext)
-  const {isConnected} = internetConnection
+  const [districts, setDistricts] = useState<District[]>([])
+  const [district, setDistrict] = useState<District | null>(null)
+  const {loading, fetchData} = useFetchData()
+  const navigation = useNavigation()
+
   useEffect(() => {
-    if (isConnected) {
-      const country_id = user.country?.code === 'CO' ? 1 : 2
-      getDistricts(country_id)
-    } else {
-      Toast.show({
-        type: 'syncToast',
-        text1: '¡Recuerda que necesitas estar conectado a internet !',
-      })
+    getDistricts()
+  }, [])
+
+  const getDistricts = async () => {
+    const url = Config.BASE_URL + '/districts/' + user.country?.country_id
+    const resp = await fetchData(url, {
+      method: 'GET',
+      headers: HEADERS(),
+    })
+    if (!resp?.length) {
+      navigation.goBack()
+      return
     }
-  }, [user.country?.code])
+    setDistricts(resp)
+  }
 
-  useEffect(() => {
-    saveDistrict(null)
-    storage.set('district', JSON.stringify(district))
-  }, [districts])
+  // const {districts, getDistricts, district, saveDistrict, getMap, loadingMap} =
+  //   useMapContext()
+  // const internetConnection = useContext(ConnectionContext)
+  // const {isConnected} = internetConnection
+  // useEffect(() => {
+  //   if (isConnected) {
+  //     const country_id = user.country?.code === 'CO' ? 1 : 2
+  //     getDistricts(country_id)
+  //   } else {
+  //     Toast.show({
+  //       type: 'syncToast',
+  //       text1: '¡Recuerda que necesitas estar conectado a internet !',
+  //     })
+  //   }
+  // }, [user.country?.code])
 
-  const submit = () => {
-    getMap()
+  // useEffect(() => {
+  //   saveDistrict(null)
+  //   storage.set('district', JSON.stringify(district))
+  // }, [districts])
+
+  const submit = async () => {
+    const url = Config.BASE_URL + '/coordinates/' + district?.dist_id
+    console.log('URL', url)
+    const resp = await fetchData(url, {
+      method: 'GET',
+      headers: HEADERS(),
+    })
+    if (!resp?.center_point) {
+      navigation.goBack()
+      return
+    }
+    storage.set(
+      STORAGE_KEYS.user,
+      JSON.stringify({...user, district: {...district, ...resp}}),
+    )
     navigation.navigate('RegisterScreen')
   }
 
@@ -62,7 +106,7 @@ const Maps: React.FC<Maps> = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Spinner color="#178B83" visible={loadingMap} size={100} />
+      <Spinner color="#178B83" visible={loading} size={100} />
       <View
         style={{
           justifyContent: 'center',
@@ -78,11 +122,13 @@ const Maps: React.FC<Maps> = ({navigation}) => {
             styles.dropdown,
             isFocus && {borderColor: COLORS_DF.citrine_brown},
           ]}
+          containerStyle={styles.dropdownContainer}
+          showsVerticalScrollIndicator={false}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           itemTextStyle={styles.itemSelect}
           iconStyle={styles.iconStyle}
-          data={districts.sort((a, b) =>
+          data={districts?.sort((a, b) =>
             a?.dist_name.localeCompare(b?.dist_name),
           )}
           autoScroll
@@ -93,7 +139,7 @@ const Maps: React.FC<Maps> = ({navigation}) => {
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={(item: any) => {
-            saveDistrict(item)
+            setDistrict(item)
             setIsFocus(false)
           }}
         />
@@ -110,6 +156,12 @@ const Maps: React.FC<Maps> = ({navigation}) => {
   )
 }
 const styles = StyleSheet.create({
+  dropdownContainer: {
+    backgroundColor: 'transparent',
+    borderBlockColor: 'transparent',
+    borderWidth: 0,
+    elevation: 0,
+  },
   container: {
     flex: 1,
     paddingTop: 40,
@@ -169,6 +221,7 @@ const styles = StyleSheet.create({
     color: COLORS_DF.citrine_brown,
   },
   itemContainer: {
+    backgroundColor: COLORS_DF.white,
     borderColor: COLORS_DF.citrine_brown,
     borderWidth: 1,
     borderRadius: 5,

@@ -22,50 +22,62 @@ import {
 import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
 import {useMapContext} from '../../../states/MapContext'
 import {useSyncData} from '../../../states/SyncDataContext'
+import Toast from 'react-native-toast-message'
+import {useNavigation} from '@react-navigation/native'
+import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
 Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN || '')
 const {width, height} = Dimensions.get('window')
 
 export const RegisterOkScreen = () => {
   const [step, setStep] = useState({step: 0, msg: TEXTS.textH})
   const dispatch = useContext(UserDispatchContext)
-  const user = useContext(UsersContext)
-  const {map} = useMapContext()
-  const {addToSync} = useSyncData()
+  const user = JSON.parse(storage.getString('user') || '{}')
+  const map = user?.district
+  const navigation = useNavigation()
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
   useEffect(() => {
     initial()
   }, [])
 
-  // Inicializa el proceso de registro
-  const initial = async () => {
-    setStep({step: 1, msg: 'Creando billetera...'})
-    const wallet = newWallet()
-    await delay(1500)
-    setStep({step: 2, msg: 'Agregando fondos...'})
-    const funding = await fundingWallet(wallet.walletOFC).catch(() => ({
-      status: 500,
-    }))
-    const isFunding = funding.status === 200
-
-    storage.set('wallet', JSON.stringify({wallet, isFunding}))
-    await delay(2000)
-    setStep({
-      step: 2,
-      msg: 'Descargando mapa...',
+  const errorToas = (msg: string) => {
+    Toast.show({
+      type: 'msgToast',
+      autoHide: false,
+      text1: msg,
     })
-    descargarMapa()
-    await delay(1000)
-    setStep({step: 3, msg: 'Inicio de sesión...'})
+    navigation.goBack()
+  }
+  const initial = async () => {
+    setStep({step: 1, msg: 'Creando billetera'})
+    const wallet = newWallet()
+    if (wallet.walletOFC === null) {
+      errorToas('¡Error al crear la billetera! Por favor, intente de nuevo.')
+      return
+    }
     await delay(1500)
-    addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')
+    setStep({step: 2, msg: 'Agregando fondos'})
+    const funding = await fundingWallet(wallet.walletOFC)
+    const isFunding = funding.status === 200
+    storage.set(STORAGE_KEYS.wallet, JSON.stringify({wallet, isFunding}))
+    await delay(1000)
+    setStep({step: 3, msg: 'Descargando mapa'})
+    await descargarMapa()
+    await delay(1000)
+    setStep({step: 4, msg: 'Inicio de sesión'})
+    await delay(1500)
+    storage.set(STORAGE_KEYS.user, JSON.stringify({...user, isLogin: true}))
+    const syncUp = [{type: SYNC_UP_TYPES.user, data: user}]
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify({...user}))
+    // Se deveria sincronizar la app con el servidor
+    // addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')
     await delay(1500)
     const login = JSON.parse(storage.getString('user') || '{}')
     dispatch({type: 'login', payload: login})
   }
 
   const descargarMapa = async () => {
-    const minx = parseFloat(map.minx_point)
+    const minx = parseFloat(map.minx_point + 35)
     const maxx = parseFloat(map.maxx_point)
     const miny = parseFloat(map.miny_point)
     const maxy = parseFloat(map.maxy_point)
@@ -83,7 +95,7 @@ export const RegisterOkScreen = () => {
     )
 
     const options = {
-      name: 'MapTest',
+      name: 'MapTests',
       styleURL: Mapbox.StyleURL.Satellite,
       bounds: [
         [bounds[0], bounds[1]],
@@ -99,6 +111,10 @@ export const RegisterOkScreen = () => {
       .createPack(
         options,
         (region, status) => {
+          setStep({
+            step: 3,
+            msg: 'Descargando mapa ' + status.percentage + '%',
+          })
           console.log('=> descargando mapa :', 'status: ', status)
         },
         error => {

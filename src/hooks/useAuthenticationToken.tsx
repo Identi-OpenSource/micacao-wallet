@@ -5,6 +5,7 @@ import {API_INTERFACE, HTTP} from '../services/api'
 import {useAuth} from '../states/AuthContext'
 import {ConnectionContext} from '../states/_ConnectionContext'
 import Toast from 'react-native-toast-message'
+import {STORAGE_KEYS} from '../config/const'
 const useAuthenticationToken = (
   setAccessToken: any,
   setLoading: any,
@@ -31,7 +32,7 @@ const useAuthenticationToken = (
         }
         const data = await HTTP(apiRequest)
         setAccessToken(data.access_token)
-        storage.set('accessToken', data.access_token)
+        storage.set(STORAGE_KEYS.accessToken, data.access_token)
       } catch (error) {
         Toast.show({
           type: 'syncToast',

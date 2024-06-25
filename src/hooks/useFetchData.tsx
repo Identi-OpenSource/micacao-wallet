@@ -5,6 +5,7 @@
 import {useState, useCallback} from 'react'
 import axios, {AxiosError, AxiosRequestConfig} from 'axios'
 import Toast from 'react-native-toast-message'
+import {storage} from '../config/store/db'
 
 const useFetchData = () => {
   const [loading, setLoading] = useState(false)
@@ -53,8 +54,12 @@ const useFetchData = () => {
 
 export default useFetchData
 
-export const HEADERS = {
-  'Content-Type': 'application/json',
+export const HEADERS = () => {
+  const accessToken = storage.getString('accessToken')
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${accessToken}`,
+  }
 }
 
 export const HEADERS_FORM_DATA = {

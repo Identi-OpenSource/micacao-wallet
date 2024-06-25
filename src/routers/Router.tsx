@@ -85,6 +85,9 @@ export type RootStackParamList = {
   NewSaleOneScreen: undefined
   NewSaleTwoScreen: undefined
   NewSaleThreeScreen: undefined
+  StartScreen: undefined
+  PermissionsStack: undefined
+  Maps: undefined
   // Solo pruebas
   TestMap: undefined
   DrawPolyline: undefined

@@ -17,15 +17,17 @@ export const GENDER = {
 }
 
 export const COUNTRY = {
-  peru: {
-    name: 'Perú',
-    code: 'PE',
-    phoneCode: '+51',
-  },
   colombia: {
     name: 'Colombia',
     code: 'CO',
     phoneCode: '+57',
+    country_id: 1,
+  },
+  peru: {
+    name: 'Perú',
+    code: 'PE',
+    phoneCode: '+51',
+    country_id: 2,
   },
 }
 
@@ -43,3 +45,24 @@ export const months = [
   'NOVIEMBRE',
   'DICIEMBRE',
 ]
+
+export const SYNC_UP_TYPES = {
+  user: 'user',
+  parcels: 'parcels',
+  sales: 'sales',
+}
+
+export const STORAGE_KEYS = {
+  accessToken: 'accessToken',
+  loadData: 'loadData',
+  wallet: 'wallet',
+  user: 'user',
+  parcels: 'parcels',
+  sales: 'sales',
+  district: 'district',
+  districts: 'districts',
+  getGFW: 'getGFW',
+  postGFW: 'postGFW',
+  syncUp: 'syncUp',
+  security: 'security',
+}

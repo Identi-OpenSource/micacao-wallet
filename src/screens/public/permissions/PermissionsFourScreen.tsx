@@ -1,12 +1,6 @@
 import {useNavigation} from '@react-navigation/native'
-import React, {useContext} from 'react'
-import {
-  PermissionsAndroid,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
+import React from 'react'
+import {PermissionsAndroid, Platform, StyleSheet, View} from 'react-native'
 import {CameraPermision, Camera_M, Camera_W} from '../../../assets/svg'
 import {Btn} from '../../../components/button/Button'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
@@ -19,41 +13,33 @@ import {
   verticalScale,
 } from '../../../config/themes/metrics'
 import {RootStackParamList} from '../../../routers/Router'
-import {UsersContext} from '../../../states/UserContext'
+import {storage} from '../../../config/store/db'
 export const PermissionsFourScreen = () => {
-  const user = useContext(UsersContext)
+  const user = JSON.parse(storage.getString('user') || '{}')
   const navigation = useNavigation()
   // request permission to use location
 
   const requestPermission = async () => {
-    try {
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          {
-            title: TEXTS.textU,
-            message: TEXTS.textX,
-            buttonNeutral: LABELS.AskMeLater,
-            buttonNegative: LABELS.cancel,
-            buttonPositive: LABELS.permission,
-          },
-        )
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      {
+        title: TEXTS.textU,
+        message: TEXTS.textX,
+        buttonNeutral: LABELS.AskMeLater,
+        buttonNegative: LABELS.cancel,
+        buttonPositive: LABELS.permission,
+      },
+    )
 
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          let initialRouteName: keyof RootStackParamList = 'TabPrivate'
-          if (!user.isLogin) {
-            initialRouteName = 'Maps'
-          }
-          if (user.isLogin && user?.parcel?.length === 0) {
-            initialRouteName = 'RegisterParcelScreen'
-          }
-          navigation.navigate(initialRouteName)
-        } else {
-          console.log('Camera permission denied')
-        }
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      let initialRouteName: keyof RootStackParamList = 'TabPrivate'
+      if (!user.isLogin) {
+        initialRouteName = 'Maps'
       }
-    } catch (err) {
-      console.warn(err)
+      if (user.isLogin && user?.parcel?.length === 0) {
+        initialRouteName = 'RegisterParcelScreen'
+      }
+      navigation.navigate(initialRouteName)
     }
   }
 

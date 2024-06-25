@@ -1,7 +1,8 @@
 /**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : View of entry point of the application
+ * @component IamScreen - Componente de selección de género
+ * @description Componente de vista
+ * Funciones:
+ * En este componente se selecciona el género del usuario
  */
 
 import React, {useContext} from 'react'
@@ -27,14 +28,15 @@ import {
 
 import {useNavigation} from '@react-navigation/native'
 import {imgMan, imgWoman} from '../../../assets/imgs'
-import {GENDER} from '../../../config/const'
+import {GENDER, STORAGE_KEYS} from '../../../config/const'
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
+// import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
 import {Header} from './RegisterScreen'
+import {storage} from '../../../config/store/db'
 
 export const IamScreen = () => {
   const navigation = useNavigation()
@@ -56,17 +58,8 @@ export const IamScreen = () => {
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} label={'Atras'} />
-        <Text
-          style={{
-            fontFamily: FONT_FAMILIES.primary,
-            fontSize: moderateScale(30),
-            fontWeight: 'bold',
-            color: COLORS_DF.citrine_brown,
-            paddingLeft: 10,
-          }}>
-          Yo soy...
-        </Text>
+        <Header label={'Atrás'} />
+        <Text style={styles.Iam}>Yo soy...</Text>
         {cards.map((c, i) => (
           <Card img={c.img} title={c.title} value={c.value} key={i} id={c.id} />
         ))}
@@ -82,22 +75,23 @@ const Card = (props: {
 }) => {
   const navigation = useNavigation()
 
-  const user = useContext(UsersContext)
+  // const user = useContext(UsersContext)
 
-  const dispatch = useContext(UserDispatchContext)
+  // const dispatch = useContext(UserDispatchContext)
 
-  const setGender = (newGender: string) => {
-    dispatch({
-      type: 'setUser',
-      payload: {
-        ...user,
-        gender: newGender,
-      },
-    })
-  }
+  // const setGender = (newGender: string) => {
+  //   dispatch({
+  //     type: 'setUser',
+  //     payload: {
+  //       ...user,
+  //       gender: newGender,
+  //     },
+  //   })
+  // }
 
   const submit = () => {
-    setGender(props.id)
+    // setGender(props.id)
+    storage.set(STORAGE_KEYS.user, JSON.stringify({gender: props.id}))
     navigation.navigate('StartScreen')
   }
   return (
@@ -114,6 +108,13 @@ const Card = (props: {
 }
 
 const styles = StyleSheet.create({
+  Iam: {
+    fontFamily: FONT_FAMILIES.primary,
+    fontSize: moderateScale(30),
+    fontWeight: 'bold',
+    color: COLORS_DF.citrine_brown,
+    paddingLeft: 10,
+  },
   container: {
     flex: 1,
     paddingHorizontal: horizontalScale(MP_DF.large),

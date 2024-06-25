@@ -15,6 +15,7 @@ import {
 } from './Interfaces'
 import {Header} from './RegisterScreen'
 import {styles} from './styles'
+import {storage} from '../../../config/store/db'
 
 interface RegisterThirdScreenProps {
   navigation: any
@@ -23,17 +24,10 @@ interface RegisterThirdScreenProps {
 const RegisterThirdScreen: React.FC<RegisterThirdScreenProps> = ({
   navigation,
 }) => {
-  const user = useContext(UsersContext)
-  const dispatch = useContext(UserDispatchContext)
+  const user = JSON.parse(storage.getString('user') || '{}')
 
   const submit = (values: InterfaceThree) => {
-    dispatch({
-      type: 'setUser',
-      payload: {
-        ...user,
-        ...values,
-      },
-    })
+    storage.set('user', JSON.stringify({...user, ...values}))
     navigation.navigate('RegisterFourthScreen')
   }
 
@@ -41,8 +35,8 @@ const RegisterThirdScreen: React.FC<RegisterThirdScreenProps> = ({
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          {user.gender == 'M' && <Name_M />}
-          {user.gender == 'W' && <Name_W />}
+          {user.gender === 'M' && <Name_M />}
+          {user.gender === 'W' && <Name_W />}
         </View>
         <Formik
           initialValues={INIT_VALUES_THREE}
