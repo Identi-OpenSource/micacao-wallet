@@ -34,6 +34,8 @@ import Toast from 'react-native-toast-message'
 import * as turf from '@turf/turf'
 import {title} from 'process'
 import {on} from 'events'
+import {Parcel} from '../../../../states/UserContext'
+import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../../config/const'
 
 const heightMap = Dimensions.get('window').height
 const widthMap = Dimensions.get('window').width
@@ -147,12 +149,16 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
 }
 
 const PoligonJoystick = ({route}: any) => {
-  const {index} = route.params
-  const parcel = JSON.parse(storage.getString('parcels') || '[]')
+  const params = route.params
+  const parcelsList = JSON.parse(
+    storage.getString(STORAGE_KEYS.parcels) || '[]',
+  )
+  const parcel = parcelsList.find((p: Parcel) => p.id === params?.id)
+  const parcelIndex = parcelsList.findIndex((p: Parcel) => p.id === params?.id)
 
   const firstPoint = [
-    Number(parcel[index].firstPoint[1]),
-    Number(parcel[index].firstPoint[0]),
+    Number(parcel.firstPoint[1]),
+    Number(parcel.firstPoint[0]),
   ] as Position
   const [parcels, setParcels] = useState(parcel)
   const [coordinates, setCoordinates] = useState<Position[]>([])
@@ -175,28 +181,23 @@ const PoligonJoystick = ({route}: any) => {
   const ref2 = useRef<Camera>(null)
 
   useEffect(() => {
-    if (parcel[index].polygon) {
-      setCoordinates(parcel[index].polygon)
+    if (parcel.polygon) {
+      setCoordinates(parcel.polygon)
     } else {
-      if (storage.getString('polygonTemp')) {
-        const coordinateTemp = JSON.parse(
-          storage.getString('polygonTemp') || '',
-        )
+      const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
+      if (poligonT) {
+        const coordinateTemp = JSON.parse(poligonT)
         setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
         setCoordinates(coordinateTemp)
       }
     }
   }, [])
 
-  // useEffect(() => {
-  //   coorInitRef.current = lastCoordinate
-  // }, [coordinates])
-
   const deletePoint = () => {
     if (coordinates.length > 1) {
       setCoordinates(prev => {
         const newCoordinates = prev.slice(0, -1)
-        storage.set('polygonTemp', JSON.stringify(newCoordinates))
+        storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(newCoordinates))
         return newCoordinates
       })
     }
@@ -205,15 +206,22 @@ const PoligonJoystick = ({route}: any) => {
   const savePoligonAcept = () => {
     //setCoordinates(polygonReview)
     const newParcel = {
-      ...parcel[index],
+      ...parcel,
       polygon:
         polygonReview.length !== 0
           ? polygonReview
           : [...coordinatesWithLast, coordinatesWithLast[0]],
-      syncUp: false,
     }
-    let parcels = parcel
-    parcels[index] = newParcel
+    parcelsList[parcelIndex] = newParcel
+    storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcelsList))
+
+    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
+    const syncUpNew = [
+      ...syncUp,
+      {type: SYNC_UP_TYPES.parcels, data: newParcel},
+    ]
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+
     setParcels(parcels)
     setShowModal(true)
   }
@@ -291,19 +299,19 @@ const PoligonJoystick = ({route}: any) => {
   }
 
   const back = () => {
-    storage.delete('polygonTemp')
+    storage.delete(STORAGE_KEYS.polygonTemp)
     navigation.goBack()
   }
 
   const closeModal = () => {
     setShowModal(false)
-    storage.delete('polygonTemp')
+    storage.delete(STORAGE_KEYS.polygonTemp)
     // Evitar el retroceso de la pantalla de dibujo
     const currentRoutes = navigation?.getState()?.routes
     const newRoutes: any = currentRoutes?.slice(0, -2)
     newRoutes?.push({
       name: 'DrawPolygonScreen',
-      params: {index},
+      params: {id: params?.id},
     })
     navigation.dispatch(
       CommonActions.reset({
@@ -311,7 +319,7 @@ const PoligonJoystick = ({route}: any) => {
         routes: newRoutes,
       }),
     )
-    addToSync(JSON.stringify(parcels), 'parcels')
+    // addToSync(JSON.stringify(parcels), 'parcels')
   }
 
   const onSelected = (e: any) => {
@@ -486,7 +494,7 @@ const PoligonJoystick = ({route}: any) => {
           onPress={() => {
             if (!editActive) {
               const DATA = [...coordinates, lastCoordinate]
-              storage.set('polygonTemp', JSON.stringify(DATA))
+              storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
               setCoordinates(DATA)
             } else {
               setIndexEdit(-1)
@@ -515,7 +523,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: 40,
     paddingHorizontal: 25,
-    marginTop: -100,
+    marginTop: -130,
   },
   containerButtonUp: {
     position: 'absolute',

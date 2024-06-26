@@ -35,6 +35,7 @@ import {Walk_Parcel_M, Walk_Parcel_W} from '../../../../assets/svg'
 import {storage} from '../../../../config/store/db'
 import {MSG_ERROR} from '../../../../config/texts/erros'
 import {UserInterface, UsersContext} from '../../../../states/UserContext'
+import {STORAGE_KEYS} from '../../../../config/const'
 
 interface RegisterParcelThirdScreenProps {
   navigation: any
@@ -42,10 +43,10 @@ interface RegisterParcelThirdScreenProps {
 const RegisterParcelThirdScreen: React.FC<RegisterParcelThirdScreenProps> = ({
   navigation,
 }) => {
-  const user: UserInterface = useContext(UsersContext)
+  const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
   const [gps, setGps] = useState<any>(null)
   const [loading, setLoading] = useState(false)
-  const [imgP1, setImgP1] = useState('')
+  // const [imgP1, setImgP1] = useState('')
 
   // capture photo
   const photo = async () => {
@@ -74,7 +75,7 @@ const RegisterParcelThirdScreen: React.FC<RegisterParcelThirdScreenProps> = ({
     Geolocation.getCurrentPosition(
       position => {
         setTimeout(() => {
-          setImgP1(img.base64)
+          // setImgP1(img.base64)
           setGps(position)
           setLoading(false)
         }, 1500)
@@ -111,9 +112,11 @@ const RegisterParcelThirdScreen: React.FC<RegisterParcelThirdScreenProps> = ({
   const onSubmit = () => {
     if (gps?.coords) {
       const firstPoint = [gps?.coords?.latitude, gps?.coords.longitude]
-      const parcelTemp = JSON.parse(storage.getString('parcelTemp') || '{}')
+      const parcelTemp = JSON.parse(
+        storage.getString(STORAGE_KEYS.parcelTemp) || '{}',
+      )
       storage.set(
-        'parcelTemp',
+        STORAGE_KEYS.parcelTemp,
         JSON.stringify({...parcelTemp, firstPoint /*  , imgP1 */}),
       )
 
@@ -126,8 +129,8 @@ const RegisterParcelThirdScreen: React.FC<RegisterParcelThirdScreenProps> = ({
       <View style={styles.container}>
         <HeaderActions title={''} navigation={navigation} />
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          {user.gender == 'M' && <Walk_Parcel_M />}
-          {user.gender == 'W' && <Walk_Parcel_W />}
+          {user.gender === 'M' && <Walk_Parcel_M />}
+          {user.gender === 'W' && <Walk_Parcel_W />}
         </View>
         <View style={styles.formContainer}>
           <View style={styles.formInput}>
@@ -152,15 +155,13 @@ const RegisterParcelThirdScreen: React.FC<RegisterParcelThirdScreenProps> = ({
               <Text style={styles.textUnique}>Foto guardada con éxito</Text>
             )}
           </View>
-          <View style={{paddingBottom: 64}}>
-            {
-              <Btn
-                title={gps === null ? LABELS?.capturePhoto : LABELS.next}
-                theme={!loading ? 'agrayu' : 'agrayuDisabled'}
-                disabled={loading}
-                onPress={gps === null ? photo : onSubmit}
-              />
-            }
+          <View style={{paddingBottom: 100}}>
+            <Btn
+              title={gps === null ? LABELS?.capturePhoto : LABELS.next}
+              theme={!loading ? 'agrayu' : 'agrayuDisabled'}
+              disabled={loading}
+              onPress={gps === null ? photo : onSubmit}
+            />
           </View>
         </View>
       </View>

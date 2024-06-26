@@ -1,61 +1,52 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useRef, useState } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { Btn } from "../../../components/button/Button";
-import {
-  HeaderActions,
-  SafeArea,
-} from "../../../components/safe-area/SafeArea";
-import {
-  COLORS_DF,
-  FONT_FAMILIES,
-  MP_DF,
-} from "../../../config/themes/default";
-import { styles as ST } from "./NewSaleOneScreen";
-import { Dropdown } from "react-native-element-dropdown";
-import Toast from "react-native-toast-message";
-import { storage } from "../../../config/store/db";
-const { width, height } = Dimensions.get("window");
+import {useNavigation} from '@react-navigation/native'
+import React, {useRef, useState} from 'react'
+import {Dimensions, StyleSheet, Text, View} from 'react-native'
+import {Btn} from '../../../components/button/Button'
+import {HeaderActions, SafeArea} from '../../../components/safe-area/SafeArea'
+import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
+import {styles as ST} from './NewSaleOneScreen'
+import {Dropdown} from 'react-native-element-dropdown'
+import Toast from 'react-native-toast-message'
+import {storage} from '../../../config/store/db'
+import {STORAGE_KEYS} from '../../../config/const'
+const {width, height} = Dimensions.get('window')
 
 export const FiveSaleScreen = () => {
-  const parcels = JSON.parse(storage.getString("parcels") || "[]");
+  const parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
 
-  console.log("parcels", parcels);
-
-  const navigation = useNavigation();
-  const [parcela, setParcela] = useState("");
-  const [isFocus, setIsFocus] = useState(false);
+  const navigation = useNavigation()
+  const [parcela, setParcela] = useState('')
+  const [isFocus, setIsFocus] = useState(false)
 
   const onSubmit = () => {
     // Si no se ha seleccionado una parcela, mostrar un mensaje de error y retornar
     if (!parcela) {
       Toast.show({
-        type: "syncToast",
-        text1: "¡Por favor selecciona una parcela!",
-      });
-      return;
+        type: 'syncToast',
+        text1: '¡Por favor selecciona una parcela!',
+      })
+      return
     }
-    const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
-    console.log("saletemp precio", saleTemp);
-    const sale = { ...saleTemp, parcela };
-    storage.set("saleTemp", JSON.stringify(sale));
-    console.log("DE QUE PARCELA SALE EL CACAO", sale);
+    const saleTemp = JSON.parse(
+      storage.getString(STORAGE_KEYS.saleTemp) || '{}',
+    )
+    const sale = {...saleTemp, parcela}
+    storage.set(STORAGE_KEYS.saleTemp, JSON.stringify(sale))
     // Navegar a la siguiente pantalla
-    navigation.navigate("NewSaleThreeScreen");
-  };
+    navigation.navigate('NewSaleThreeScreen')
+  }
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <HeaderActions title={"Paso 4 de 5"} navigation={navigation} />
+        <HeaderActions title={'Paso 4 de 5'} navigation={navigation} />
         <View
           style={{
             width: width * 0.8,
             marginLeft: 16,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
           <Text style={styles.title}>¿DE QUÉ PARCELA LO COSECHASTE?</Text>
         </View>
         <View style={styles.containerBTN}>
@@ -63,7 +54,7 @@ export const FiveSaleScreen = () => {
             <Dropdown
               style={[
                 styles.dropdown,
-                isFocus && { borderColor: COLORS_DF.citrine_brown },
+                isFocus && {borderColor: COLORS_DF.citrine_brown},
               ]}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
@@ -74,19 +65,19 @@ export const FiveSaleScreen = () => {
               itemContainerStyle={styles.itemContainer}
               labelField="name"
               valueField="id"
-              placeholder={!isFocus ? "Selecciona Parcela" : "..."}
+              placeholder={!isFocus ? 'Selecciona Parcela' : '...'}
               value={parcela} // Añadir el valor seleccionado
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               onChange={(item: any) => {
-                setParcela(item.id); // Guardar el id de la parcela seleccionada
-                setIsFocus(true);
+                setParcela(item.id) // Guardar el id de la parcela seleccionada
+                setIsFocus(true)
               }}
             />
           </View>
-          <View style={{ marginBottom: height * 0.09 }}>
+          <View style={{marginBottom: height * 0.09}}>
             <Btn
-              theme={parcela === "" ? "agrayuDisabled" : "agrayu"}
+              theme={parcela === '' ? 'agrayuDisabled' : 'agrayu'}
               title="CONFIRMAR"
               onPress={() => onSubmit()}
             />
@@ -94,14 +85,14 @@ export const FiveSaleScreen = () => {
         </View>
       </View>
     </SafeArea>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   ...ST,
   dropdown: {
     height: 60,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderColor: COLORS_DF.light,
     borderWidth: 0.7,
     borderRadius: 8,
@@ -111,8 +102,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   label: {
-    position: "absolute",
-    backgroundColor: "white",
+    position: 'absolute',
+    backgroundColor: 'white',
     left: 22,
     top: 8,
     zIndex: 999,
@@ -141,13 +132,13 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     /*  borderWidth: 1,
     borderColor: "red", */
-    width: "90%",
-    justifyContent: "flex-end",
+    width: '90%',
+    justifyContent: 'flex-end',
     paddingBottom: 20,
-    alignItems: "center",
+    alignItems: 'center',
   },
   itemSelect: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 17,
     color: COLORS_DF.citrine_brown,
   },
@@ -160,7 +151,7 @@ const styles = StyleSheet.create({
   },
   containerBTN: {
     marginTop: MP_DF.large,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     flex: 1,
     paddingBottom: MP_DF.large,
   },
@@ -171,30 +162,30 @@ const styles = StyleSheet.create({
     color: COLORS_DF.citrine_brown,
     fontSize: 30,
     borderBottomColor: COLORS_DF.citrine_brown,
-    textAlign: "center",
-    textAlignVertical: "center",
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
   containerKL: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginTop: MP_DF.xlarge,
     borderWidth: 1,
   },
   KLV: {
     fontSize: 30,
-    textAlign: "center",
+    textAlign: 'center',
     borderBottomWidth: 1,
     width: 250,
     color: COLORS_DF.citrine_brown,
     fontFamily: FONT_FAMILIES.primary,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   KL: {
     fontSize: 30,
-    textAlign: "center",
+    textAlign: 'center',
     marginLeft: 10,
     color: COLORS_DF.citrine_brown,
     fontFamily: FONT_FAMILIES.primary,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
-});
+})

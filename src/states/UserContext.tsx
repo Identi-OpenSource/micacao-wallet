@@ -15,7 +15,7 @@ export interface UserInterface {
 }
 export interface Parcel {
   name: string
-  id?: string
+  id: string
   nameParcel?: string
   hectares?: number
   location?: {

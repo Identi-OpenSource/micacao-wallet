@@ -12,7 +12,7 @@ import {useNavigation} from '@react-navigation/native'
 
 export const PolygonScreen = ({route}: any) => {
   const navigation = useNavigation()
-  const {index} = route.params
+  const params = route.params
 
   return (
     <SafeArea>
@@ -22,13 +22,17 @@ export const PolygonScreen = ({route}: any) => {
         </Text>
         <Btn
           title="Recorre tu parcela"
-          onPress={() => navigation.navigate('GradientLineRecorrer', {index})}
+          onPress={() =>
+            navigation.navigate('GradientLineRecorrer', {id: params?.id})
+          }
           theme="agrayu"
         />
         <View style={styles.space} />
         <Btn
           title="Dibuja tu parcela"
-          onPress={() => navigation.navigate('PoligonJoystick', {index})}
+          onPress={() =>
+            navigation.navigate('PoligonJoystick', {id: params?.id})
+          }
           theme="agrayu"
         />
       </View>

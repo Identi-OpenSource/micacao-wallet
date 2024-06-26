@@ -152,4 +152,10 @@ function convertAPolygonString(coordenadas) {
   return `POLYGON((${polygonString}))`
 }
 
+export const generateUniqueID = () => {
+  const randomValue = Math.random().toString()
+  const hash = CryptoJS.MD5(randomValue).toString()
+  return hash
+}
+
 export const transaction = async wallet => {}

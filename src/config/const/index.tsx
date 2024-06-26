@@ -53,11 +53,15 @@ export const SYNC_UP_TYPES = {
 }
 
 export const STORAGE_KEYS = {
+  getKafeData: 'getKafeData',
   accessToken: 'accessToken',
+  saleTemp: 'saleTemp',
+  polygonTemp: 'polygonTemp',
   loadData: 'loadData',
   wallet: 'wallet',
   user: 'user',
   parcels: 'parcels',
+  parcelTemp: 'parcelTemp',
   sales: 'sales',
   district: 'district',
   districts: 'districts',

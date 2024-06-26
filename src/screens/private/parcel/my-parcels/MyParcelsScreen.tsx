@@ -20,16 +20,19 @@ import {
   MP_DF,
 } from '../../../../config/themes/default'
 import {Parcel} from '../../../../states/UserContext'
+import {STORAGE_KEYS} from '../../../../config/const'
 
-const {width, height} = Dimensions.get('window')
+const {width} = Dimensions.get('window')
 
 export const MyParcelsScreen = () => {
-  const navigation = useNavigation()
   const [parcels, setParcels] = useState([] as Parcel[])
+  const navigation = useNavigation()
 
   useFocusEffect(
     useCallback(() => {
-      const parc: Parcel[] = JSON.parse(storage.getString('parcels') || '[]')
+      const parc: Parcel[] = JSON.parse(
+        storage.getString(STORAGE_KEYS.parcels) || '[]',
+      )
       setParcels(parc)
     }, []),
   )
@@ -40,25 +43,12 @@ export const MyParcelsScreen = () => {
         <View
           style={{
             justifyContent: 'center',
-            /*borderColor: "red",
-            borderWidth: 1, */
             marginBottom: 4,
           }}>
           <Text style={styles.title}>Lista de parcelas</Text>
           {parcels.length < 4 ? (
             <TouchableOpacity
-              style={{
-                alignSelf: 'center',
-                backgroundColor: '#fff',
-                width: width * 0.85,
-                height: height * 0.07,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderColor: COLORS_DF.robin_egg_blue,
-                borderWidth: 1,
-                borderRadius: 5,
-                flexDirection: 'row',
-              }}
+              style={styles.btnAdd}
               onPress={() => {
                 navigation.navigate('RegisterParcel')
               }}>
@@ -68,7 +58,7 @@ export const MyParcelsScreen = () => {
                   fontSize: width * 0.045,
                   marginRight: 2,
                 }}>
-                Registrar más parcelas{' '}
+                Registrar más parcelas
               </Text>
               <Add />
             </TouchableOpacity>
@@ -84,65 +74,49 @@ export const MyParcelsScreen = () => {
             </Text>
           )}
         </View>
-        {parcels.map((parcel, index) => CardParcel(parcel, navigation, index))}
+        {parcels.map(parcel => CardParcel(parcel, navigation))}
       </ScrollView>
     </SafeArea>
   )
 }
 
-const CardParcel = (props: Parcel, navigation: any, index: any) => {
+const CardParcel = (parcel: Parcel, navigation: any) => {
   return (
-    <View style={styles.cardContainer} key={props.name}>
+    <View style={styles.cardContainer} key={parcel.id}>
       <View style={styles.cardHeader}>
         <View style={styles.cardHeaderTS}>
-          <Text style={styles.cardTitle}>{props.name}</Text>
+          <Text style={styles.cardTitle}>{parcel.name}</Text>
           <Text
             style={
               styles.cardST
-            }>{`Área de parcela: ${props.hectares} Ha`}</Text>
+            }>{`Área de parcela: ${parcel.hectares} Ha`}</Text>
         </View>
       </View>
 
       {
         <Btn
-          title={!props.polygon ? 'Falta dibujar mapa' : 'Ver polígono en mapa'}
+          title={
+            !parcel.polygon ? 'Falta dibujar mapa' : 'Ver polígono en mapa'
+          }
           onPress={() =>
-            !props.polygon
-              ? navigation.navigate('PolygonScreen', {index})
-              : navigation.navigate('DrawPolygonScreen', {index})
+            !parcel.polygon
+              ? navigation.navigate('PolygonScreen', {id: parcel?.id})
+              : navigation.navigate('DrawPolygonScreen', {id: parcel?.id})
           }
           theme="warning"
           style={containerBTN}
         />
       }
-      {/*       {props.polygon && (
-        <>
-          <Btn
-            title="Solicitar certificado Propiedad"
-            onPress={() => certificateND()}
-            theme="agrayu"
-            style={containerBTN}
-          />
-        </>
-      )} */}
 
       <TouchableOpacity
         onPress={() => {
-          !props.polygon
-            ? navigation.navigate('PolygonScreen', {index})
-            : navigation.navigate('DrawPolygonScreen', {index})
+          !parcel.polygon
+            ? navigation.navigate('PolygonScreen', {id: parcel?.id})
+            : navigation.navigate('DrawPolygonScreen', {id: parcel?.id})
         }}
         style={{justifyContent: 'center', alignItems: 'center'}}>
-        {!props.polygon ? <Parcels /> : <ParcelColor />}
+        {!parcel.polygon ? <Parcels /> : <ParcelColor />}
       </TouchableOpacity>
-
-      {/*         <Btn
-          title="Presione para dibujar"
-          icon={"hand-pointer"}
-          onPress={() => {}}
-          theme="transparent"
-          style={containerBTN}
-      /> */}
     </View>
   )
 }
@@ -192,5 +166,19 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontWeight: 'bold',
     color: COLORS_DF.citrine_brown,
+    marginBottom: MP_DF.small,
+  },
+  btnAdd: {
+    alignSelf: 'center',
+    backgroundColor: '#fff',
+    width: '100%',
+    height: 62,
+    marginBottom: MP_DF.small,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: COLORS_DF.robin_egg_blue,
+    borderWidth: 1,
+    borderRadius: 5,
+    flexDirection: 'row',
   },
 })

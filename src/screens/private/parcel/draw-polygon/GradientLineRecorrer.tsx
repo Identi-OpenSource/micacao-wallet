@@ -34,6 +34,8 @@ import {useSyncData} from '../../../../states/SyncDataContext'
 import Toast from 'react-native-toast-message'
 import * as turf from '@turf/turf'
 import {Add_Location} from '../../../../assets/svg'
+import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../../config/const'
+import {Parcel} from '../../../../states/UserContext'
 type Position = [number, number]
 
 const lineLayerStyle = {
@@ -67,11 +69,16 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
 }
 
 const GradientLineRecorrer = ({route}: any) => {
-  const {index} = route.params
-  const parcel = JSON.parse(storage.getString('parcels') || '[]')
+  const params = route.params
+  const parcelsList = JSON.parse(
+    storage.getString(STORAGE_KEYS.parcels) || '[]',
+  )
+  const parcel = parcelsList.find((p: Parcel) => p.id === params?.id)
+  const parcelIndex = parcelsList.findIndex((p: Parcel) => p.id === params?.id)
+
   const firstPoint = [
-    Number(parcel[index].firstPoint[1]),
-    Number(parcel[index].firstPoint[0]),
+    Number(parcel.firstPoint[1]),
+    Number(parcel.firstPoint[0]),
   ] as Position
   const {addToSync} = useSyncData()
   const [coordinates, setCoordinates] = useState<Position[]>([firstPoint])
@@ -109,12 +116,12 @@ const GradientLineRecorrer = ({route}: any) => {
   }, [ejecutado])
 
   useEffect(() => {
-    if (parcel[index].polygon) {
-      setCoordinates(parcel[index].polygon)
+    if (parcel.polygon) {
+      setCoordinates(parcel.polygon)
     } else {
-      if (storage.getString('polygonTemp')) {
+      if (storage.getString(STORAGE_KEYS.polygonTemp)) {
         const coordinateTemp = JSON.parse(
-          storage.getString('polygonTemp') || '',
+          storage.getString(STORAGE_KEYS.polygonTemp) || '',
         )
         setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
         setCoordinates(coordinateTemp)
@@ -132,7 +139,7 @@ const GradientLineRecorrer = ({route}: any) => {
               ...prevPositions,
               [position.coords.longitude, position.coords.latitude],
             ]
-            storage.set('polygonTemp', JSON.stringify(DATA))
+            storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
             return DATA
           })
           setCam([position.coords.longitude, position.coords.latitude])
@@ -157,12 +164,12 @@ const GradientLineRecorrer = ({route}: any) => {
     // eliminar polygonTemp
     //storage.delete("polygonTemp");
 
-    if (parcel[index].polygon) {
-      setCoordinates(parcel[index].polygon)
+    if (parcel.polygon) {
+      setCoordinates(parcel.polygon)
     } else {
-      if (storage.getString('polygonTemp')) {
+      if (storage.getString(STORAGE_KEYS.polygonTemp)) {
         const coordinateTemp = JSON.parse(
-          storage.getString('polygonTemp') || '',
+          storage.getString(STORAGE_KEYS.polygonTemp) || '',
         )
         setCoordinates(coordinateTemp)
       }
@@ -172,15 +179,21 @@ const GradientLineRecorrer = ({route}: any) => {
   const savePoligonAcept = () => {
     setCoordinates(polygonReview)
     const newParcel = {
-      ...parcel[index],
+      ...parcel,
       polygon:
         polygonReview.length !== 0
           ? polygonReview
           : [...coordinatesWithLast, coordinatesWithLast[0]],
-      syncUp: false,
     }
-    let parcels = parcel
-    parcels[index] = newParcel
+    parcelsList[parcelIndex] = newParcel
+    storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcelsList))
+
+    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
+    const syncUpNew = [
+      ...syncUp,
+      {type: SYNC_UP_TYPES.parcels, data: newParcel},
+    ]
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
     setParcels(parcels)
     setShowModal(true)
   }
@@ -265,7 +278,7 @@ const GradientLineRecorrer = ({route}: any) => {
   //   }
   //   // Guardar en la lista de polígonos
   //   const newParcel = {
-  //     ...parcel[index],
+  //     ...parcel,
   //     polygon: [...coordinatesWithLast, coordinatesWithLast[0]],
   //     syncUp: false,
   //   }
@@ -283,13 +296,13 @@ const GradientLineRecorrer = ({route}: any) => {
 
   const closeModal = () => {
     setShowModal(false)
-    storage.delete('polygonTemp')
+    storage.delete(STORAGE_KEYS.polygonTemp)
     // Evitar el retroceso de la pantalla de dibujo
     const currentRoutes = navigation?.getState()?.routes
     const newRoutes: any = currentRoutes?.slice(0, -2)
     newRoutes?.push({
       name: 'DrawPolygonScreen',
-      params: {index},
+      params: {id: params?.id},
     })
     navigation.dispatch(
       CommonActions.reset({
@@ -297,17 +310,17 @@ const GradientLineRecorrer = ({route}: any) => {
         routes: newRoutes,
       }),
     )
-    addToSync(JSON.stringify(parcels), 'parcels')
+    // addToSync(JSON.stringify(parcels), 'parcels')
   }
   const back = () => {
-    storage.delete('polygonTemp')
+    storage.delete(STORAGE_KEYS.polygonTemp)
     navigation.goBack()
   }
   const deletePoint = () => {
     if (coordinates.length > 1) {
       setCoordinates(prev => {
         const newCoordinates = prev.slice(0, -1)
-        storage.set('polygonTemp', JSON.stringify(newCoordinates))
+        storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(newCoordinates))
         return newCoordinates
       })
     }
@@ -317,7 +330,7 @@ const GradientLineRecorrer = ({route}: any) => {
     setCoordinates(prev => {
       const updatedCoordinates = [...prev]
       updatedCoordinates[index] = newCoordinate
-      storage.set('polygonTemp', JSON.stringify(updatedCoordinates))
+      storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(updatedCoordinates))
       return updatedCoordinates
     })
   }
@@ -611,7 +624,7 @@ const GradientLineRecorrer = ({route}: any) => {
               onPress={() => {
                 if (!editActive) {
                   const DATA = [...coordinates, lastCoordinate]
-                  storage.set('polygonTemp', JSON.stringify(DATA))
+                  storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
                   setCoordinates(DATA)
                 } else {
                   setIndexEdit(-1)

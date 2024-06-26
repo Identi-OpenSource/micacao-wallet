@@ -1,85 +1,77 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import {useNavigation} from '@react-navigation/native'
+import React, {useState} from 'react'
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import { imgCheque } from "../../../assets/imgs";
-import { Btn } from "../../../components/button/Button";
-import {
-  HeaderActions,
-  SafeArea,
-} from "../../../components/safe-area/SafeArea";
-import { storage } from "../../../config/store/db";
+} from 'react-native'
+import {HeaderActions, SafeArea} from '../../../components/safe-area/SafeArea'
+import {storage} from '../../../config/store/db'
 import {
   COLORS_DF,
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
-} from "../../../config/themes/default";
-import { useSyncData } from "../../../states/SyncDataContext";
-import { styles as ST } from "./NewSaleOneScreen";
+} from '../../../config/themes/default'
+import {styles as ST} from './NewSaleOneScreen'
+import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
 
 export const NewSaleThreeScreen = () => {
-  const [p, setP] = useState(0);
-  const navigation = useNavigation();
+  const [p, setP] = useState(0)
+  const navigation = useNavigation()
   const MESES: string[] = [
-    "ENERO",
-    "FEBRERO",
-    "MARZO",
-    "ABRIL",
-    "MAYO",
-    "JUNIO",
-    "JULIO",
-    "AGOSTO",
-    "SEPTIEMBRE",
-    "OCTUBRE",
-    "NOVIEMBRE",
-    "DICIEMBRE",
-  ];
-  const { addToSync } = useSyncData();
+    'ENERO',
+    'FEBRERO',
+    'MARZO',
+    'ABRIL',
+    'MAYO',
+    'JUNIO',
+    'JULIO',
+    'AGOSTO',
+    'SEPTIEMBRE',
+    'OCTUBRE',
+    'NOVIEMBRE',
+    'DICIEMBRE',
+  ]
 
   const onSubmit = async (mes: string) => {
-    setP(1);
-    const saleTemp = JSON.parse(storage.getString("saleTemp") || "{}");
-    const sales = JSON.parse(storage.getString("sales") || "[]");
-    const sale = { ...saleTemp, mes, syncUp: false };
+    setP(1)
+    const saleTemp = JSON.parse(
+      storage.getString(STORAGE_KEYS.saleTemp) || '{}',
+    )
+    const sales = JSON.parse(storage.getString(STORAGE_KEYS.sales) || '[]')
+    const sale = {...saleTemp, mes}
+    storage.set(STORAGE_KEYS.sales, JSON.stringify([...sales, sale]))
+    storage.delete(STORAGE_KEYS.saleTemp)
 
-    try {
-      storage.set("saleTemp", JSON.stringify({}));
-      addToSync(JSON.stringify([...sales, sale]), "sales");
-      console.log("Todas las ventas", sales);
-
-      navigation.navigate("NewSaleFourScreen");
-    } catch (error) {
-      console.error("Error al guardar la venta:", error);
-      setP(0); // Reinicia el estado en caso de error
-    }
-  };
+    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
+    const syncUpNew = [...syncUp, {type: SYNC_UP_TYPES.sales, data: sale}]
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+    setTimeout(() => {
+      navigation.navigate('NewSaleFourScreen')
+    }, 2000)
+  }
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         {p === 0 && (
           <>
-            <HeaderActions title={"Paso 5 de 5"} navigation={navigation} />
+            <HeaderActions title={'Paso 5 de 5'} navigation={navigation} />
             <Text style={styles.title}>¿CUÁNDO LO COSECHASTE?</Text>
             <View style={styles.containerBTN}>
               <FlatList
                 data={MESES}
                 numColumns={2}
                 keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
+                renderItem={({item}) => (
                   <TouchableOpacity
                     activeOpacity={0.8}
                     style={styles.select}
-                    onPress={() => onSubmit(item)}
-                  >
+                    onPress={() => onSubmit(item)}>
                     <Text style={styles.textSelect}>{item}</Text>
                   </TouchableOpacity>
                 )}
@@ -99,14 +91,14 @@ export const NewSaleThreeScreen = () => {
         )}
       </View>
     </SafeArea>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   ...ST,
   containerBTN: {
     marginTop: MP_DF.large,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     flex: 1,
     paddingBottom: MP_DF.large,
   },
@@ -117,17 +109,17 @@ const styles = StyleSheet.create({
     margin: MP_DF.small,
     flex: 1,
     height: 60,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textSelect: {
     color: COLORS_DF.white,
     fontFamily: FONT_FAMILIES.primary,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   containerSpiner: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingTop: MP_DF.xxxlarge * 2,
   },
   colorSpiner: {
@@ -135,9 +127,9 @@ const styles = StyleSheet.create({
   },
   spiner: {},
   title2: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: FONT_SIZES.xslarge,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontFamily: FONT_FAMILIES.primary,
     color: COLORS_DF.citrine_brown,
     marginTop: MP_DF.large,
@@ -145,8 +137,8 @@ const styles = StyleSheet.create({
   img: {
     width: 250,
     height: 140,
-    resizeMode: "contain",
-    alignSelf: "center",
+    resizeMode: 'contain',
+    alignSelf: 'center',
     marginTop: MP_DF.large,
   },
-});
+})

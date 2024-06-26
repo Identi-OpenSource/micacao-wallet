@@ -68,15 +68,15 @@ export const HomeScreen = () => {
 
   // Obtener las variables de la app
   const postVariables = async () => {
-    const token = storage.getString('accessToken')
     const url = Config.BASE_URL + '/app_config'
-    // @Braudin: Corregir esto
-    // const resp = await fetchData(url, {
-    //   method: 'GET',
-    //   headers: HEADERS,
-    // })
-    if (true) {
-      storage.set(STORAGE_KEYS.loadData, JSON.stringify(MUESTRA))
+
+    const resp = await fetchData(url, {
+      method: 'GET',
+      headers: {'app-config-key': Config.APP_CONFIG_KEY},
+    })
+
+    if (!resp.isAxiosError) {
+      storage.set(STORAGE_KEYS.loadData, JSON.stringify(resp))
       navigation.navigate('IamScreen')
     }
   }

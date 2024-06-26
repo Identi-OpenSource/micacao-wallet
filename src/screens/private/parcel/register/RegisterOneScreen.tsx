@@ -1,5 +1,5 @@
 import {Field, Formik} from 'formik'
-import React, {useContext, useEffect} from 'react'
+import React, {useContext} from 'react'
 import {StyleSheet, View} from 'react-native'
 import {object, string} from 'yup'
 import {Parcel_Name_M, Parcel_Name_W} from '../../../../assets/svg'
@@ -15,11 +15,8 @@ import {MSG_ERROR} from '../../../../config/texts/erros'
 import {LABELS} from '../../../../config/texts/labels'
 import {MP_DF} from '../../../../config/themes/default'
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
-import {
-  UsersContext,
-  UserDispatchContext,
-  parcelContext,
-} from '../../../../states/UserContext'
+import {UsersContext} from '../../../../states/UserContext'
+import {STORAGE_KEYS} from '../../../../config/const'
 export interface Interface {
   name: string
 }
@@ -43,19 +40,19 @@ interface RegisterOneScreenProps {
   navigation: any
 }
 const RegisterOneScreen: React.FC<RegisterOneScreenProps> = ({navigation}) => {
+  const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
+
   const onSubmit = (values: Interface) => {
-    storage.set('parcelTemp', JSON.stringify({...values}))
+    storage.set(STORAGE_KEYS.parcelTemp, JSON.stringify({...values}))
     navigation.navigate('RegisterParcelTwoScreen')
   }
-
-  const user = useContext(UsersContext)
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <HeaderActions title={''} navigation={navigation} />
-        {user.gender == 'M' && <Parcel_Name_M />}
-        {user.gender == 'W' && <Parcel_Name_W />}
+        {user.gender === 'M' && <Parcel_Name_M />}
+        {user.gender === 'W' && <Parcel_Name_W />}
 
         <Formik
           initialValues={VALUES}

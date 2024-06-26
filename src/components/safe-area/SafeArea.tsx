@@ -86,7 +86,7 @@ export const HeaderActions = (props: InterfaceHeader) => {
 }
 
 interface InterfaceHeader {
-  navigation: NavigationProp<ReactNavigation.RootParamList>
+  navigation: any
   title: string
 }
 

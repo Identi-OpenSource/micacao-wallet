@@ -16,5 +16,7 @@
     "whatsapp",
     "Whattsap",
     "xxlarge"
-  ]
+  ],
+  "editor.inlayHints.fontFamily": "'Cascadia Code', Consolas, 'Courier New', monospace",
+  "editor.inlayHints.fontSize": 0
 }

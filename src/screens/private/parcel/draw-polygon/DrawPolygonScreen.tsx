@@ -36,6 +36,8 @@ import {useGfwContext} from '../../../../states/GfwContext'
 import {useKafeContext} from '../../../../states/KafeContext'
 import DrawPolyline from './DrawPolyline'
 import * as turf from '@turf/turf'
+import {Parcel} from '../../../../states/UserContext'
+import {STORAGE_KEYS} from '../../../../config/const'
 
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
@@ -84,12 +86,14 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
 }
 
 export const DrawPolygonScreen = ({route}: any) => {
-  const {index} = route.params
+  const params = route.params
+  const id = params?.id
+  const parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
+  const parcel = parcels.find((p: Parcel) => p.id === id)
 
-  const parcel = JSON.parse(storage.getString('parcels') || '[]')
   const firstPoint = [
-    Number(parcel[index].firstPoint[1]),
-    Number(parcel[index].firstPoint[0]),
+    Number(parcel.firstPoint[1]),
+    Number(parcel.firstPoint[0]),
   ] as Position
   const [coordinates, setCoordinates] = useState<Position[]>([firstPoint])
   const [lastCoordinate] = useState<Position>(firstPoint)
@@ -100,7 +104,7 @@ export const DrawPolygonScreen = ({route}: any) => {
   const navigation = useNavigation()
   const [sumaTotalVentas, setSumaTotalVentas] = useState<any>({})
   const [totalVentas, setTotalVentas] = useState<any>({})
-  const user = JSON.parse(storage.getString('user') || '{}')
+  const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
   const {postGfw, getGfw, gfwData, loadingGfw, getData, errorGfw} =
     useGfwContext()
   const [centerCoordinate, setCenterCoordinate] = useState<Position>(firstPoint)
@@ -120,12 +124,12 @@ export const DrawPolygonScreen = ({route}: any) => {
   }, [getData, gfwData])
 
   useEffect(() => {
-    if (parcel[index].polygon) {
-      setCoordinates(parcel[index].polygon)
+    if (parcel.polygon) {
+      setCoordinates(parcel.polygon)
     } else {
-      if (storage.getString('polygonTemp')) {
+      if (storage.getString(STORAGE_KEYS.polygonTemp)) {
         const coordinateTemp = JSON.parse(
-          storage.getString('polygonTemp') || '',
+          storage.getString(STORAGE_KEYS.polygonTemp) || '',
         )
         setCoordinates(coordinateTemp)
       }
@@ -139,7 +143,7 @@ export const DrawPolygonScreen = ({route}: any) => {
   const map = useRef<MapView>(null)
 
   const calcularSumaVentas = () => {
-    const salesString = storage.getString('sales') || '[]'
+    const salesString = storage.getString(STORAGE_KEYS.sales) || '[]'
     const sales = JSON.parse(salesString)
     const sumKlByParcelaAndType = sumKilosByParcelaAndType(sales)
     setSumaTotalVentas(sumKlByParcelaAndType)
@@ -196,7 +200,7 @@ export const DrawPolygonScreen = ({route}: any) => {
   }
 
   const calcularVentas = () => {
-    const salesString = storage.getString('sales') || '[]'
+    const salesString = storage.getString(STORAGE_KEYS.sales) || '[]'
     const sales = JSON.parse(salesString)
 
     const sumTlByParcelaAndType = sumTotalByParcelaAndType(sales)
@@ -267,7 +271,9 @@ export const DrawPolygonScreen = ({route}: any) => {
     }
   }, [errorGfw])
 
-  const getKafe = JSON.parse(storage.getString('getKafeData') || '{}')
+  const getKafe = JSON.parse(
+    storage.getString(STORAGE_KEYS.getKafeData) || '{}',
+  )
 
   const getBackgroundColor = () => {
     switch (getKafe.state) {
@@ -394,7 +400,7 @@ export const DrawPolygonScreen = ({route}: any) => {
                   marginTop: 5,
                 }}>
                 <Text style={styles.kg}>
-                  {sumaTotalVentas[`${parcel[index].id}_SECO`]}{' '}
+                  {sumaTotalVentas[`${parcel.id}_SECO`]}{' '}
                   <Text style={{fontWeight: 'normal', marginLeft: 45}}>
                     {' '}
                     Kg.
@@ -407,7 +413,7 @@ export const DrawPolygonScreen = ({route}: any) => {
               <Text style={{color: COLORS_DF.citrine_brown}}>
                 S/.{' '}
                 <Text style={{fontWeight: 'bold'}}>
-                  {totalVentas[`${parcel[index].id}_SECO`]}
+                  {totalVentas[`${parcel.id}_SECO`]}
                 </Text>
               </Text>
             </Card>
@@ -434,7 +440,7 @@ export const DrawPolygonScreen = ({route}: any) => {
                   marginTop: 5,
                 }}>
                 <Text style={styles.kg}>
-                  {sumaTotalVentas[`${parcel[index].id}_BABA`]}{' '}
+                  {sumaTotalVentas[`${parcel.id}_BABA`]}{' '}
                   <Text style={{fontWeight: 'normal'}}>Kg.</Text>{' '}
                 </Text>
               </View>
@@ -444,7 +450,7 @@ export const DrawPolygonScreen = ({route}: any) => {
               <Text style={{color: COLORS_DF.citrine_brown}}>
                 S/.{' '}
                 <Text style={{fontWeight: 'bold'}}>
-                  {totalVentas[`${parcel[index].id}_BABA`]}
+                  {totalVentas[`${parcel.id}_BABA`]}
                 </Text>
               </Text>
             </Card>

@@ -19,9 +19,7 @@ import {
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
-import {useMapContext} from '../../../states/MapContext'
-import {useSyncData} from '../../../states/SyncDataContext'
+import {UserDispatchContext} from '../../../states/UserContext'
 import Toast from 'react-native-toast-message'
 import {useNavigation} from '@react-navigation/native'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
@@ -63,12 +61,11 @@ export const RegisterOkScreen = () => {
     await delay(1000)
     setStep({step: 3, msg: 'Descargando mapa'})
     await descargarMapa()
-    await delay(1000)
-    setStep({step: 4, msg: 'Inicio de sesión'})
-    await delay(1500)
+    await delay(3000)
     storage.set(STORAGE_KEYS.user, JSON.stringify({...user, isLogin: true}))
     const syncUp = [{type: SYNC_UP_TYPES.user, data: user}]
-    storage.set(STORAGE_KEYS.syncUp, JSON.stringify({...user}))
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUp))
+    setStep({step: 4, msg: 'Inicio de sesión'})
     // Se deveria sincronizar la app con el servidor
     // addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')
     await delay(1500)

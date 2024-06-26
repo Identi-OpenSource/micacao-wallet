@@ -79,22 +79,26 @@ export type RootStackParamList = {
   RegisterParcelFourthScreen: undefined
   HelpScreen: undefined
   MyParcelsScreen: undefined
-  PolygonScreen: undefined
-  DrawPolygonScreen: undefined
-  GradientLineRecorrer: undefined
+  PolygonScreen: {id: string}
+  DrawPolygonScreen: {id: string}
+  RegisterParcel: undefined
+  GradientLineRecorrer: {id: string}
   NewSaleOneScreen: undefined
   NewSaleTwoScreen: undefined
   NewSaleThreeScreen: undefined
   StartScreen: undefined
   PermissionsStack: undefined
   Maps: undefined
+  PoligonJoystick: {id: string}
+  SaleScreen: undefined
+  FiveSaleScreen: undefined
+  NewSaleFourScreen: undefined
   // Solo pruebas
   TestMap: undefined
   DrawPolyline: undefined
   GradientLine: undefined
   ThirdPartyVectorSource: undefined
   GradientLineRecorrerAdd: undefined
-  PoligonJoystick: undefined
   PoligonBTN: undefined
 }
 
