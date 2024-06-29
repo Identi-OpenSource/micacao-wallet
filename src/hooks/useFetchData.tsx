@@ -11,7 +11,7 @@ const useFetchData = () => {
   const [loading, setLoading] = useState(false)
 
   const fetchData = useCallback(
-    async (url: string, options?: AxiosRequestConfig) => {
+    async (url: string, options?: AxiosRequestConfig, isError?: boolean) => {
       setLoading(true)
       try {
         // Configurar los headers predeterminados
@@ -36,11 +36,14 @@ const useFetchData = () => {
         const errorText = axiosError.response
           ? axiosError.response.status
           : 'genérico'
-        Toast.show({
-          type: 'msgToast',
-          autoHide: false,
-          text1: 'No se pudo obtener los datos\n\n Error: ' + errorText,
-        })
+        !isError &&
+          Toast.show({
+            type: 'msgToast',
+            autoHide: false,
+            text1: 'No se pudo obtener los datos\n\n Error: ' + errorText,
+          })
+        console.log('URL:', url)
+        console.log('ERROR => ', err.response?.data)
         return err
       } finally {
         setLoading(false)

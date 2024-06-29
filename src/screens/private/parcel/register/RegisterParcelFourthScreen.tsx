@@ -116,7 +116,7 @@ const RegisterParcelFourthScreen: React.FC<RegisterParcelFourthScreenProps> = ({
     const newParcel = {
       ...parcelTemp,
       secondPoint,
-      id: generateUniqueID(),
+      id: parcels.length + 1,
     }
     const addParcel = [...parcels, newParcel]
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(addParcel))

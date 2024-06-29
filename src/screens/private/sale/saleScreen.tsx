@@ -16,8 +16,8 @@ export const SaleScreen = () => {
   const [precio, setPrecio] = useState('')
   const ref = useRef<TextInput>(null)
 
-  const decimals = numero => {
-    return /^(0|[1-9]\d{0,4})(\.\d{2})?$/.test(numero.trim())
+  const decimals = (numero: any) => {
+    return /^(0|[1-9]\d{0,3})(\.\d{1,2})?$/.test(numero.trim())
   }
 
   const onSubmit = () => {

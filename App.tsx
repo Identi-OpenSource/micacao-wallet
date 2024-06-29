@@ -169,7 +169,7 @@ function App(): React.JSX.Element {
     ),
     msgToast: ({text1, props}) => (
       <View style={styles.toastContainer}>
-        <Error height={70} width={70} />
+        {props.icon ? props.icon : <Error height={70} width={70} />}
         <Text style={styles.toastText}>{text1}</Text>
         <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
           <Text style={styles.buttonToastText}> Ok </Text>

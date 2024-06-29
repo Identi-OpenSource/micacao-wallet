@@ -32,12 +32,14 @@ import {dniText} from '../../../OCC/occ'
 
 const ProfileScreen = () => {
   const user: UserInterface = useContext(UsersContext)
-  const {postKafeSistemas, getKafeSistemas} = useKafeContext()
   const [pinAproved, setPinApproved] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
-  const [showRequestPin, setShowRequestPin] = useState(false)
+  const [showRequestPin, setShowRequestPin] = useState<any>([false, null])
   const [showInfo, setShowInfo] = useState(false)
-  //const [wallet, setWallet] = useState<any>(null);
+
+  useEffect(() => {
+    requestStoragePermission()
+  }, [])
 
   useFocusEffect(
     useCallback(() => {
@@ -73,11 +75,38 @@ const ProfileScreen = () => {
   }, [])
 
   useEffect(() => {
-    if (pinAproved) {
+    if (pinAproved && showRequestPin[1] === 'export') {
       saveJSONDownload()
       setPinApproved(false)
     }
   }, [pinAproved])
+
+  const requestStoragePermission = async () => {
+    try {
+      if (Platform.OS === 'android' && Platform.Version < 29) {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Permiso para almacenamiento externo',
+            message:
+              'MiCacao necesita acceso al almacenamiento externo para exportar e importar el archivo de respaldo.',
+            buttonNeutral: 'Preguntar luego',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'OK',
+          },
+        )
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Permiso concedido')
+        } else {
+          console.log('Permiso denegado')
+        }
+      } else {
+        console.log('No es necesario pedir permiso para Android 10 y superior')
+      }
+    } catch (err) {
+      console.warn(err)
+    }
+  }
 
   async function requestGalleryPermission() {
     try {
@@ -121,6 +150,7 @@ const ProfileScreen = () => {
       console.warn('Error al solicitar permiso:', err)
     }
   }
+
   const handleChooseImage = () => {
     const options = {
       title: 'Seleccionar imagen',
@@ -147,7 +177,6 @@ const ProfileScreen = () => {
   }
 
   const saveJSONDownload = async () => {
-    console.log('data')
     const userData = JSON.parse(storage.getString('user') || '{}')
     const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
     const sales = JSON.parse(storage.getString('sales') || '[]')
@@ -173,11 +202,14 @@ const ProfileScreen = () => {
       parcels: parcels_array,
       sales: sales,
     }
-
-    console.log('data', data)
-
+    // console.log('data', JSON.stringify(data))
     const jsonString = JSON.stringify(data)
-    const path = RNFS.DownloadDirectoryPath + '/mi_data_miCacao.json'
+    const name =
+      'data_miCacao_' +
+      new Date().toISOString().split('T')[0] +
+      new Date().getTime() +
+      '.json'
+    const path = RNFS.DownloadDirectoryPath + '/' + name
     try {
       await RNFS.writeFile(path, jsonString, 'utf8')
       Toast.show({
@@ -186,7 +218,7 @@ const ProfileScreen = () => {
           'El archivo se ha guardado en la carpeta de descargas. ¿Quieres compartirlo?',
         autoHide: false,
         props: {
-          onPress: () => shareJSON(path),
+          onPress: () => shareJSON(path, name),
           btnText: 'Compartir',
         },
       })
@@ -195,13 +227,13 @@ const ProfileScreen = () => {
     }
   }
 
-  const shareJSON = async (path: string) => {
+  const shareJSON = async (path: string, name: string) => {
     const options = {
       title: 'Compartir o descargar mi datos',
       url: 'file://' + path,
       type: 'application/json',
       message: 'Compartir o descargar mi datos',
-      filename: 'mi_data_miCacao.json',
+      filename: name,
     }
     await Share.open(options)
   }
@@ -242,12 +274,6 @@ const ProfileScreen = () => {
           )}
           {showInfo && (
             <>
-              {/*  <View style={{ marginRight: 280 }}>
-              <Text style={styles.textUpCard}>DNI</Text>
-            </View>
-            <Card containerStyle={styles.card}>
-              <Text style={styles.textCard}>{user.dni}</Text>
-            </Card> */}
               <View style={{marginRight: 250, marginTop: 25}}>
                 <Text style={styles.textUpCard}>Telefóno</Text>
               </View>
@@ -263,14 +289,20 @@ const ProfileScreen = () => {
               <Btn
                 title="Exportar Data"
                 theme="agrayu"
-                onPress={() => setShowRequestPin(true)}
+                onPress={() => setShowRequestPin([true, 'export'])}
+                style={{container: {width: '80%', marginTop: MP_DF.xxlarge}}}
+              />
+              <Btn
+                title="Importar Data"
+                theme="agrayu"
+                onPress={() => setShowRequestPin([true, 'import'])}
                 style={{container: {width: '80%', marginTop: MP_DF.xxlarge}}}
               />
             </>
           )}
         </View>
       </ScrollView>
-      {showRequestPin && (
+      {showRequestPin[0] && (
         <PinRequest
           setShowRequestPin={setShowRequestPin}
           setPinApproved={setPinApproved}

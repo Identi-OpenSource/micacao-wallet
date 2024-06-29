@@ -39,11 +39,18 @@ export const NewSaleThreeScreen = () => {
 
   const onSubmit = async (mes: string) => {
     setP(1)
+    const mesIndex = MESES.findIndex(m => m === mes)
+    const mesActual = new Date().getMonth()
+    let year = new Date().getFullYear()
+    if (mesIndex > mesActual) {
+      year = year - 1
+    }
+    const mesYear = mes + '-' + year
     const saleTemp = JSON.parse(
       storage.getString(STORAGE_KEYS.saleTemp) || '{}',
     )
     const sales = JSON.parse(storage.getString(STORAGE_KEYS.sales) || '[]')
-    const sale = {...saleTemp, mes}
+    const sale = {...saleTemp, mes: mesYear}
     storage.set(STORAGE_KEYS.sales, JSON.stringify([...sales, sale]))
     storage.delete(STORAGE_KEYS.saleTemp)
 

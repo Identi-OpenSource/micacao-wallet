@@ -25,7 +25,7 @@ import {
 import Config from 'react-native-config'
 import Spinner from 'react-native-loading-spinner-overlay'
 import Toast from 'react-native-toast-message'
-import {Baba, Seco} from '../../../../assets/svg'
+import {Baba, Error, Happy, Sad, Seco} from '../../../../assets/svg'
 import HeaderComponent from '../../../../components/Header'
 import {storage} from '../../../../config/store/db'
 import {
@@ -41,8 +41,9 @@ import {useKafeContext} from '../../../../states/KafeContext'
 import DrawPolyline from './DrawPolyline'
 import * as turf from '@turf/turf'
 import {Parcel} from '../../../../states/UserContext'
-import {STORAGE_KEYS} from '../../../../config/const'
+import {KF_STATES, STORAGE_KEYS} from '../../../../config/const'
 import useFetchData from '../../../../hooks/useFetchData'
+import {dniEncrypt} from '../../../../OCC/occ'
 
 if (Config.MAPBOX_ACCESS_TOKEN) {
   Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
@@ -105,12 +106,12 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   const parcel = parcels.find((p: Parcel) => p.id === id)
   const indexParcel = parcels.findIndex((p: Parcel) => p.id === id)
   const firstPoint = [
-    Number(parcel.firstPoint[1]),
-    Number(parcel.firstPoint[0]),
+    Number(parcel?.firstPoint[1]),
+    Number(parcel?.firstPoint[0]),
   ] as Position
   const secondPoint = [
-    Number(parcel.secondPoint[1]),
-    Number(parcel.secondPoint[0]),
+    Number(parcel?.secondPoint[1]),
+    Number(parcel?.secondPoint[0]),
   ] as Position
 
   const [centerCoordinate, setCenterCoordinate] = useState<Position>(firstPoint)
@@ -148,6 +149,9 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
 
   useEffect(() => {
     centerMap()
+    postKafeSistemas()
+    getKafeSistemas()
+    rePostGfw()
   }, [])
 
   const centerMap = () => {
@@ -184,18 +188,59 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     setCenterCoordinate([center[0], center[1]])
   }
 
-  const postGfw = async () => {
+  const rePostGfw = async () => {
+    const send = new Date(parcel?.gfw?.send)
+    const now = new Date()
+    const diferencia = now?.getTime() - send?.getTime()
+    const horas = diferencia / (1000 * 60 * 60)
+
+    if (
+      parcel?.gfw === 'undefined' ||
+      parcel?.gfw?.status !== 'Pending' ||
+      horas < 24
+    ) {
+      return
+    }
     //@braudin debe venir desde el servidor
     const url = 'https://geip5oadr5.execute-api.us-east-2.amazonaws.com/upload'
-    const startDate = new Date()
-    startDate.setFullYear(startDate.getFullYear() - 5)
-    const endDate = new Date()
     const formData = {
       coordinates: parcel.polygon
         .map((coordenada: Position) => `${coordenada[1]} ${coordenada[0]}`)
         .join(';'),
-      start_date: startDate.toISOString().split('T')[0],
-      end_date: endDate.toISOString().split('T')[0],
+      start_date: '2020-01-01',
+      end_date: new Date().toISOString().split('T')[0],
+    }
+    const resp = await fetchData(
+      url,
+      {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        data: formData,
+      },
+      true,
+    )
+    if (resp?.response?.status) {
+      return
+    }
+    // agregar la respuesta a la parcela
+    const updatedParcel = {
+      ...parcel,
+      gfw: {...resp, send: new Date().toISOString()},
+    }
+    parcels[indexParcel] = updatedParcel
+    storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
+    navigation.navigate('DrawPolygonScreen', {id: id})
+  }
+
+  const postGfw = async () => {
+    //@braudin debe venir desde el servidor
+    const url = 'https://geip5oadr5.execute-api.us-east-2.amazonaws.com/upload'
+    const formData = {
+      coordinates: parcel.polygon
+        .map((coordenada: Position) => `${coordenada[1]} ${coordenada[0]}`)
+        .join(';'),
+      start_date: '2020-01-01',
+      end_date: new Date().toISOString().split('T')[0],
     }
     const resp = await fetchData(url, {
       method: 'POST',
@@ -208,13 +253,13 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     // agregar la respuesta a la parcela
     const updatedParcel = {
       ...parcel,
-      gfw: resp,
+      gfw: {...resp, send: new Date().toISOString()},
     }
     parcels[indexParcel] = updatedParcel
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
     Toast.show({
       type: 'msgToast',
-      text1: 'Se ha enviado la solicitud, puede consultar el estado mas tarde',
+      text1: 'Solicitud enviada. Puedes verificar el estado más tarde.',
       autoHide: false,
       props: {
         onPress: () => {},
@@ -229,11 +274,15 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     //@braudin debe venir desde el servidor
     const idlistId = parcel?.gfw?.listId
     const url = `https://geip5oadr5.execute-api.us-east-2.amazonaws.com/${idlistId}`
-    const resp = await fetchData(url, {
-      method: 'GET',
-      headers: {'Content-Type': 'application/json'},
-    })
-    if (resp?.listId) {
+    const resp = await fetchData(
+      url,
+      {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'},
+      },
+      true,
+    )
+    if (resp?.listId && resp.status !== 'Pending') {
       const updatedParcel = {
         ...parcel,
         gfw: resp,
@@ -264,35 +313,94 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   }
 
   const optionsUiKs = () => {
-    switch (parcel?.kf?.state) {
-      case 'ok':
+    switch (parcel?.kf?.Code) {
+      case KF_STATES.accepted:
         return ['#22C55E', 'Estado de titularidad aprobado']
-      case 'notapproved':
+      case KF_STATES.rejected:
         return ['#EF4444', 'Estado de titularidad no aprobado']
-      case 'onhold':
+      case KF_STATES.failure:
+        return ['#EF4444', 'Estado de titularidad fallido']
+      case KF_STATES.pending:
       default:
         return ['#F59E0B', 'Estado de titularidad en espera ']
     }
   }
 
-  const optionsUiGFW = () => {
+  const optionsUiGFW = (): [string, string, any] => {
     if (parcel?.gfw?.status === 'Completed') {
-      return ['#22C55E', 'Validación no deforestación aprobada']
-    }
-    if (parcel?.gfw?.status.includes('Error')) {
-      return ['#EF4444', 'Validación no deforestación no aprobada']
-    }
-    return ['#F59E0B', 'Validación no deforestación pendiente']
+      const classify = classifyDeforestation(
+        Number(
+          parcel?.gfw?.data?.deforestation_kpis[0][
+            'Natural Forest Coverage (HA) (Beta)'
+          ],
+        ),
+        Number(
+          parcel?.gfw?.data?.deforestation_kpis[0][
+            'Natural Forest Loss (ha) (Beta)'
+          ],
+        ),
+        Number(parcel?.gfw?.data?.deforestation_kpis[0]['Negligible Risk (%)']),
+      )
 
-    // switch (parcel?.gfw?.status) {
-    //   case 'Completed':
-    //     return ['#22C55E', 'Validación de deforestación aprobada']
-    //   case 'notapproved':
-    //     return ['#EF4444', 'Validación de deforestación no aprobada']
-    //   case 'onhold':
-    //   default:
-    //     return ['#F59E0B', 'Validación de deforestación en espera']
-    // }
+      return [
+        classify[1],
+        'Validación no deforestación ' + classify[0],
+        classify[2],
+      ]
+    }
+    if (parcel?.gfw?.status?.includes('Error')) {
+      return [
+        '#EF4444',
+        'Validación no deforestación No Aceptado',
+        <Sad height={70} width={70} />,
+      ]
+    }
+    return [
+      '#F59E0B',
+      'Validación no deforestación pendiente',
+      <Error width={70} height={70} />,
+    ]
+  }
+
+  const classifyDeforestation = (
+    coberturaBosque: number,
+    perdidaBosque: number,
+    riesgoInsignificante: number,
+  ): [string, string, any] => {
+    // Clasificación de la cobertura de bosque natural
+    let coberturaClasificacion
+    if (coberturaBosque > 0) {
+      coberturaClasificacion = 'Alta'
+    } else {
+      coberturaClasificacion = 'Baja'
+    }
+
+    // Clasificación de la pérdida de bosque natural
+    let perdidaClasificacion
+    if (perdidaBosque === 0) {
+      perdidaClasificacion = 'Ninguna'
+    } else {
+      perdidaClasificacion = 'Alta'
+    }
+
+    // Clasificación del riesgo insignificante
+    let riesgoClasificacion
+    if (riesgoInsignificante === 0) {
+      riesgoClasificacion = 'Aceptado'
+    } else {
+      riesgoClasificacion = 'No Aceptado'
+    }
+
+    // Clasificación final basada en los tres indicadores
+    if (
+      coberturaClasificacion === 'Alta' &&
+      perdidaClasificacion === 'Ninguna' &&
+      riesgoClasificacion === 'Aceptado'
+    ) {
+      return ['Aceptado', '#22C55E', <Happy width={70} height={70} />]
+    } else {
+      return ['No Aceptado', '#EF4444', <Sad width={70} height={70} />]
+    }
   }
 
   const btnGFW = () => {
@@ -301,11 +409,111 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     }
     if (
       parcel?.gfw?.status === 'Completed' ||
-      parcel?.gfw?.status.includes('Error')
+      parcel?.gfw?.status?.includes('Error')
     ) {
       return false
     }
     return true
+  }
+
+  const calculateDeforestationPercentage = (
+    coberturaBosque: number,
+    perdidaBosque: number,
+  ) => {
+    if (coberturaBosque === 0) {
+      return 0
+    }
+    return (perdidaBosque / coberturaBosque) * 100
+  }
+
+  const toasMessage = (msg: string, icon?: any) => {
+    Toast.show({
+      type: 'msgToast',
+      text1: msg,
+      autoHide: false,
+      props: {
+        icon: icon,
+        onPress: () => {},
+        btnText: 'OK',
+      },
+    })
+  }
+
+  const postKafeSistemas = async () => {
+    if (parcel?.kf !== undefined) {
+      return
+    }
+    const polygonCoordinates = parcel.polygon
+      .map((coordenada: Position) => `${coordenada[1]} ${coordenada[0]}`)
+      .join(', ')
+    const wktPolygon = `POLYGON((${polygonCoordinates}))`
+    // @braudin debe venir desde el servidor
+    const url = 'http://148.113.174.223/api/v1/pe/land-request/polygon'
+    const API_KEY_KAFE_SISTEMAS =
+      'fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4'
+    const resp = await fetchData(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-key': API_KEY_KAFE_SISTEMAS,
+        },
+        data: {
+          dni: user.dni,
+          polygon: wktPolygon,
+          departamento: user?.district?.dist_name,
+        },
+      },
+      true,
+    )
+    if (resp?.response?.status) {
+      return
+    }
+    // agregar la respuesta a la parcela
+    const updatedParcel = {
+      ...parcel,
+      kf: {...resp, send: new Date().toISOString()},
+    }
+    parcels[indexParcel] = updatedParcel
+    storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
+    navigation.navigate('DrawPolygonScreen', {id: id})
+  }
+
+  const getKafeSistemas = async () => {
+    // hacer esto solo si no se hizo el post y send es mayor a 24 horas y si  statys es On Hold
+    if (
+      parcel?.kf !== undefined &&
+      parcel?.kf?.Code === 2 &&
+      Date.now() - new Date(parcel?.kf?.send).getTime() < 24 * 60 * 60 * 1000
+    ) {
+      return
+    }
+
+    const url = Config.BASE_URL + '/field_state/' + user.dni
+    const KAFE_SISTEMAS_KEY =
+      'cFZmeGpSOUdWUUI0UXpYcWc2Y0swaFRMUXM4aDBDMkxPRVRrSnRWc0wwSldoMjR0WXBSZzk5dVNFUzdXYVRrdg=='
+    const resp = await fetchData(
+      url,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'kafe-sistemas-key': KAFE_SISTEMAS_KEY,
+        },
+      },
+      true,
+    )
+    if (resp?.response?.status) {
+      return
+    }
+    const updatedParcel = {
+      ...parcel,
+      kf: {...resp, send: new Date().toISOString()},
+    }
+    parcels[indexParcel] = updatedParcel
+    storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
+    navigation.navigate('DrawPolygonScreen', {id: id})
   }
 
   // const [coordinates, setCoordinates] = useState<Position[]>([firstPoint])
@@ -704,7 +912,34 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
             </View>
           )}
           {parcel?.gfw && (
-            <View
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => {
+                if (parcel?.gfw?.status?.includes('Error')) {
+                  toasMessage(parcel?.gfw?.msg, <Sad height={70} width={70} />)
+                  return
+                }
+                if (parcel?.gfw?.status === 'Completed') {
+                  toasMessage(
+                    'Validación de no deforestación aprobada, porcentaje de deforestación: ' +
+                      calculateDeforestationPercentage(
+                        Number(
+                          parcel?.gfw?.data?.deforestation_kpis[0][
+                            'Natural Forest Coverage (HA) (Beta)'
+                          ],
+                        ),
+                        Number(
+                          parcel?.gfw?.data?.deforestation_kpis[0][
+                            'Natural Forest Loss (ha) (Beta)'
+                          ],
+                        ),
+                      ).toFixed(2) +
+                      '%',
+                    optionsUiGFW()[2],
+                  )
+                  return
+                }
+              }}
               style={{
                 backgroundColor: optionsUiGFW()[0],
                 alignItems: 'center',
@@ -716,7 +951,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
               <Text style={{color: '#fff', fontSize: 16, fontWeight: 'bold'}}>
                 {optionsUiGFW()[1]}
               </Text>
-            </View>
+            </TouchableOpacity>
           )}
           <MapView
             ref={map}

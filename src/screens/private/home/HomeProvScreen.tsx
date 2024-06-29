@@ -1,6 +1,6 @@
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {useNavigation} from '@react-navigation/native'
-import React from 'react'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import React, {useCallback} from 'react'
 import {
   Image,
   ScrollView,
@@ -24,12 +24,132 @@ import {
 import {UserInterface} from '../../../states/UserContext'
 import {storage} from '../../../config/store/db'
 import useInternetConnection from '../../../hooks/useInternetConnection'
-import {STORAGE_KEYS} from '../../../config/const'
+import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
+import Config from 'react-native-config'
+import useFetchData, {HEADERS} from '../../../hooks/useFetchData'
+import {fundingWallet} from '../../../OCC/occ'
 
 export const HomeProvScreen = () => {
+  const {isConnected} = useInternetConnection()
+  const {loading, fetchData} = useFetchData()
   const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
+  const wallet = JSON.parse(storage.getString(STORAGE_KEYS.wallet) || '{}')
+  console.log('user', wallet)
+
+  useFocusEffect(
+    useCallback(() => {
+      asyncData()
+      fundingW()
+    }, []),
+  )
+
+  const fundingW = async () => {
+    const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
+    const differenceInMilliseconds = Math.abs(
+      dataExt?.fundingWallet - new Date().getTime(),
+    )
+    const differenceInHours = differenceInMilliseconds / 3600000
+    if (!isConnected || differenceInHours > 720) {
+      return
+    }
+    const funding = await fundingWallet(wallet.walletOFC)
+    const isFunding = funding.status === 200
+    if (!isFunding) {
+      return
+    }
+    storage.set('wallet', JSON.stringify({...wallet, isFunding}))
+    storage.set(
+      STORAGE_KEYS.dataExt,
+      JSON.stringify({...dataExt, fundingWallet: new Date().getTime()}),
+    )
+  }
+
+  const asyncData = async () => {
+    const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
+    const differenceInMilliseconds = Math.abs(
+      dataExt?.syncUpLast - new Date().getTime(),
+    )
+    const differenceInHours = differenceInMilliseconds / 3600000
+    if (!isConnected || differenceInHours > 4) {
+      return
+    }
+    const indexAsync: number[] = []
+    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
+    for (let index = 0; index < syncUp?.length; index++) {
+      const element = syncUp[index]
+      if (element.type === SYNC_UP_TYPES.user) {
+        const url = Config.BASE_URL + '/create_producer'
+        const data = {
+          dni: element.data.dni,
+          name: element.data.name,
+          phone: element.data.phone,
+          gender: element.data.gender === 'M' ? 'MALE' : 'FEMALE',
+          countryid: element.data.country?.country_id,
+        }
+        const resp = await sendFetch(url, data)
+        if (resp) {
+          indexAsync.push(index)
+        }
+      }
+      if (element.type === SYNC_UP_TYPES.parcels) {
+        const url = Config.BASE_URL + '/create_farm'
+        const data = {
+          farm_name: element?.data?.name,
+          hectares: element?.data?.hectares,
+          polygon_coordinates: element?.data?.polygon?.toString(),
+          dni_cacao_producer: user.dni,
+          countryid: user.country?.country_id,
+        }
+        const resp = await sendFetch(url, data)
+        if (resp) {
+          indexAsync.push(index)
+        }
+      }
+      if (element.type === SYNC_UP_TYPES.sales) {
+        const url = Config.BASE_URL + '/create_activities'
+        const data = {
+          dni_cacao_producer: user.dni,
+          id_farm: element?.data?.parcela,
+          id_activity_type: 4, // para ventas siempre es 4
+          dry_weight: element?.data?.type === 'SECO' ? element?.data?.kl : 0,
+          baba_weight: element?.data?.type === 'BABA' ? element?.data?.kl : 0,
+          cacao_type: element?.data?.type?.toLowerCase(),
+        }
+        const resp = await sendFetch(url, data)
+        if (resp) {
+          indexAsync.push(index)
+        }
+      }
+    }
+    storage.set(
+      STORAGE_KEYS.dataExt,
+      JSON.stringify({...dataExt, syncUpLast: new Date().getTime()}),
+    )
+
+    const newSyncUp = syncUp?.filter((element: any, index: number) => {
+      if (indexAsync?.includes(index)) {
+        return element
+      }
+    })
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(newSyncUp))
+  }
+
+  const sendFetch = async (url: string, data: any) => {
+    const resp = await fetchData(
+      url,
+      {method: 'POST', headers: HEADERS(), data},
+      true,
+    )
+    // console.log('resp', resp?.response?.data)
+    return resp?.response?.status ? false : true
+  }
+
   // pruebas
+  // const sales = JSON.parse(storage.getString(STORAGE_KEYS.sales) || '[]')
+  // console.log('sales', sales)
   // storage.delete(STORAGE_KEYS.parcels)
+  // storage.delete(STORAGE_KEYS.sales)
+
   return (
     <SafeArea bg={'isabelline'}>
       <ScrollView>

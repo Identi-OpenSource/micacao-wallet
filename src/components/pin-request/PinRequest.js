@@ -18,9 +18,11 @@ import {verticalScale} from '../../config/themes/metrics'
 import {sha256} from 'react-native-sha256'
 import {UsersContext} from '../../states/UserContext'
 import Toast from 'react-native-toast-message'
+import {storage} from '../../config/store/db'
+import {STORAGE_KEYS} from '../../config/const'
 
 export const PinRequest = ({setShowRequestPin, setPinApproved}) => {
-  const user = useContext(UsersContext)
+  const pin = JSON.parse(storage.getString(STORAGE_KEYS.security) || '{}')?.pin
   const formiRef = useRef(null)
   useEffect(() => {
     const backAction = () => {
@@ -38,7 +40,7 @@ export const PinRequest = ({setShowRequestPin, setPinApproved}) => {
 
   const submit = async values => {
     const pinHash = await sha256(values.pin)
-    if (pinHash !== user.pin) {
+    if (pinHash !== pin) {
       Toast.show({
         type: 'syncToast',
         text1: 'EL Pin ingresado es incorrecto, por favor intente de nuevo',

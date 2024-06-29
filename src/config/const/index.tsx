@@ -1,3 +1,5 @@
+import {feature} from '@turf/turf'
+
 export const REGEX = {
   // phone: /^(\d{3})-(\d{3})-(\d{4})$/,
   phone: /^(\d{9,10})$/,
@@ -69,4 +71,12 @@ export const STORAGE_KEYS = {
   postGFW: 'postGFW',
   syncUp: 'syncUp',
   security: 'security',
+  dataExt: 'dataExt',
+}
+
+export const KF_STATES = {
+  failure: 0,
+  pending: 2,
+  rejected: 3,
+  accepted: 1,
 }
