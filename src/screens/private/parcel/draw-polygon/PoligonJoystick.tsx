@@ -36,6 +36,7 @@ import {title} from 'process'
 import {on} from 'events'
 import {Parcel} from '../../../../states/UserContext'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../../config/const'
+import Geolocation from 'react-native-geolocation-service'
 
 const heightMap = Dimensions.get('window').height
 const widthMap = Dimensions.get('window').width
@@ -161,6 +162,10 @@ const PoligonJoystick = ({route}: any) => {
     Number(parcel.firstPoint[0]),
   ] as Position
   const [parcels, setParcels] = useState(parcel)
+  const [firstPointGps, setFirstPointGps] = useState<[number, number] | null>(
+    null,
+  )
+  const [loadInit, setLoadInit] = useState(false)
   const [coordinates, setCoordinates] = useState<Position[]>([])
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
   const [crosshairPos, setCrosshairPos] = useState(firstPoint)
@@ -181,20 +186,64 @@ const PoligonJoystick = ({route}: any) => {
   const ref2 = useRef<Camera>(null)
 
   useEffect(() => {
-    if (parcel.polygon) {
-      setCoordinates(parcel.polygon)
-    } else {
-      const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
-      if (poligonT) {
-        const coordinateTemp = JSON.parse(poligonT)
-        setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
-        setCoordinates(coordinateTemp)
-      }
-    }
+    getGps()
+    // if (parcel.polygon) {
+    //   setCoordinates(parcel.polygon)
+    // } else {
+    //   const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
+    //   if (poligonT) {
+    //     const coordinateTemp = JSON.parse(poligonT)
+    //     setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
+    //     setCoordinates(coordinateTemp)
+    //   }
+    // }
   }, [])
 
+  useEffect(() => {
+    if (firstPointGps) {
+      setLastCoordinate(firstPointGps)
+      setCrosshairPos(firstPointGps)
+      setCenterCoordinate(firstPointGps)
+      setLoadInit(true)
+    }
+  }, [firstPointGps])
+
+  // capture GPS
+  const getGps = async () => {
+    if (parcel.polygon) {
+      setCoordinates(parcel.polygon)
+      setLoadInit(true)
+      return
+    }
+    const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
+
+    if (poligonT) {
+      const coordinateTemp = JSON.parse(poligonT)
+      setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
+      setCoordinates(coordinateTemp)
+      setLoadInit(true)
+      return
+    }
+    Geolocation.getCurrentPosition(
+      position => {
+        const point = [
+          position.coords.longitude,
+          position.coords.latitude,
+        ] as Position
+        setFirstPointGps(point)
+      },
+      error => {
+        console.log(error)
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+      },
+    )
+  }
+
   const deletePoint = () => {
-    if (coordinates.length > 1) {
+    if (coordinates.length > 0) {
       setCoordinates(prev => {
         const newCoordinates = prev.slice(0, -1)
         storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(newCoordinates))
@@ -299,7 +348,6 @@ const PoligonJoystick = ({route}: any) => {
   }
 
   const back = () => {
-    storage.delete(STORAGE_KEYS.polygonTemp)
     navigation.goBack()
   }
 
@@ -345,7 +393,7 @@ const PoligonJoystick = ({route}: any) => {
     }, [])
   ); */
 
-  return (
+  return loadInit ? (
     <View style={{flex: 1}}>
       <StatusBar backgroundColor="#8F3B06" barStyle="light-content" />
       <ModalComponent
@@ -404,7 +452,9 @@ const PoligonJoystick = ({route}: any) => {
         {!editActive && (
           <>
             <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />
-            <Polygon coordinates={coordinatesWithLast} />
+            {coordinatesWithLast.length > 1 && (
+              <Polygon coordinates={coordinatesWithLast} />
+            )}
             {coordinatesWithLast.map((c, i) => (
               <PointAnnotation
                 // onSelected={onSelected}
@@ -505,6 +555,8 @@ const PoligonJoystick = ({route}: any) => {
         </TouchableOpacity>
       </View>
     </View>
+  ) : (
+    <></>
   )
 }
 

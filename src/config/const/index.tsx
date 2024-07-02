@@ -72,6 +72,7 @@ export const STORAGE_KEYS = {
   syncUp: 'syncUp',
   security: 'security',
   dataExt: 'dataExt',
+  writeBlockchain: 'writeBlockchain',
 }
 
 export const KF_STATES = {

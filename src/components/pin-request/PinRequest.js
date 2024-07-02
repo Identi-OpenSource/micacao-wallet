@@ -21,7 +21,7 @@ import Toast from 'react-native-toast-message'
 import {storage} from '../../config/store/db'
 import {STORAGE_KEYS} from '../../config/const'
 
-export const PinRequest = ({setShowRequestPin, setPinApproved}) => {
+export const PinRequest = ({setShowRequestPin, setPinApproved, text}) => {
   const pin = JSON.parse(storage.getString(STORAGE_KEYS.security) || '{}')?.pin
   const formiRef = useRef(null)
   useEffect(() => {
@@ -54,10 +54,7 @@ export const PinRequest = ({setShowRequestPin, setPinApproved}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>PIN de seguridad</Text>
-      <Text style={styles.text}>
-        Para continuar con la transacción, por favor introduzca el PIN de
-        seguridad
-      </Text>
+      <Text style={styles.text}>{text}</Text>
       <Formik
         innerRef={formiRef}
         initialValues={INIT_VALUES_FOURTH}

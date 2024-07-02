@@ -80,8 +80,12 @@ const GradientLineRecorrer = ({route}: any) => {
     Number(parcel.firstPoint[1]),
     Number(parcel.firstPoint[0]),
   ] as Position
+  const [firstPointGps, setFirstPointGps] = useState<[number, number] | null>(
+    null,
+  )
+  const [loadInit, setLoadInit] = useState(false)
   const {addToSync} = useSyncData()
-  const [coordinates, setCoordinates] = useState<Position[]>([firstPoint])
+  const [coordinates, setCoordinates] = useState<Position[]>([])
   const [cam, setCam] = useState<Position>(firstPoint)
   const [started, setStarted] = useState(false)
   const navigation = useNavigation()
@@ -163,18 +167,65 @@ const GradientLineRecorrer = ({route}: any) => {
   useEffect(() => {
     // eliminar polygonTemp
     //storage.delete("polygonTemp");
+    getGps()
 
+    // if (parcel.polygon) {
+    //   setCoordinates(parcel.polygon)
+    // } else {
+    //   if (storage.getString(STORAGE_KEYS.polygonTemp)) {
+    //     const coordinateTemp = JSON.parse(
+    //       storage.getString(STORAGE_KEYS.polygonTemp) || '',
+    //     )
+    //     setCoordinates(coordinateTemp)
+    //   }
+    // }
+  }, [])
+
+  useEffect(() => {
+    if (firstPointGps) {
+      setLastCoordinate(firstPointGps)
+      setCrosshairPos(firstPointGps)
+      setCenterCoordinate(firstPointGps)
+      setCam(firstPointGps)
+      setLastCoordinate(firstPointGps)
+      setCrosshairPos(firstPointGps)
+      setLoadInit(true)
+    }
+  }, [firstPointGps])
+
+  // capture GPS
+  const getGps = async () => {
     if (parcel.polygon) {
       setCoordinates(parcel.polygon)
-    } else {
-      if (storage.getString(STORAGE_KEYS.polygonTemp)) {
-        const coordinateTemp = JSON.parse(
-          storage.getString(STORAGE_KEYS.polygonTemp) || '',
-        )
-        setCoordinates(coordinateTemp)
-      }
+      setLoadInit(true)
+      return
     }
-  }, [])
+    const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
+    if (poligonT) {
+      const coordinateTemp = JSON.parse(poligonT)
+      setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
+      setCam(coordinateTemp[coordinateTemp.length - 1])
+      setCoordinates(coordinateTemp)
+      setLoadInit(true)
+      return
+    }
+    Geolocation.getCurrentPosition(
+      position => {
+        const point = [
+          position.coords.longitude,
+          position.coords.latitude,
+        ] as Position
+        setFirstPointGps(point)
+      },
+      error => {
+        console.log(error)
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+      },
+    )
+  }
 
   const savePoligonAcept = () => {
     setCoordinates(polygonReview)
@@ -313,11 +364,11 @@ const GradientLineRecorrer = ({route}: any) => {
     // addToSync(JSON.stringify(parcels), 'parcels')
   }
   const back = () => {
-    storage.delete(STORAGE_KEYS.polygonTemp)
+    // storage.delete(STORAGE_KEYS.polygonTemp)
     navigation.goBack()
   }
   const deletePoint = () => {
-    if (coordinates.length > 1) {
+    if (coordinates.length > 0) {
       setCoordinates(prev => {
         const newCoordinates = prev.slice(0, -1)
         storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(newCoordinates))
@@ -431,7 +482,7 @@ const GradientLineRecorrer = ({route}: any) => {
     lineWidth: 4,
   }
 
-  return (
+  return loadInit ? (
     <View style={{flex: 1}}>
       <StatusBar backgroundColor="#8F3B06" barStyle="light-content" />
 
@@ -642,6 +693,8 @@ const GradientLineRecorrer = ({route}: any) => {
         />
       </View>
     </View>
+  ) : (
+    <></>
   )
 }
 const styles = StyleSheet.create({

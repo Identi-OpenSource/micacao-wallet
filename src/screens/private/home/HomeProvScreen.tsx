@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
-import React, {useCallback} from 'react'
+import React, {useCallback, useState} from 'react'
 import {
   Image,
   ScrollView,
@@ -27,21 +28,51 @@ import useInternetConnection from '../../../hooks/useInternetConnection'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
 import Config from 'react-native-config'
 import useFetchData, {HEADERS} from '../../../hooks/useFetchData'
-import {fundingWallet} from '../../../OCC/occ'
+import {fundingWallet, writeTransaction} from '../../../OCC/occ'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 export const HomeProvScreen = () => {
+  const [loadDataAsync, setLoadDataAsync] = useState(false)
   const {isConnected} = useInternetConnection()
   const {loading, fetchData} = useFetchData()
   const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
   const wallet = JSON.parse(storage.getString(STORAGE_KEYS.wallet) || '{}')
-  console.log('user', wallet)
-
+  // storage.set(STORAGE_KEYS.writeBlockchain, JSON.stringify([]))
+  // storage.set(STORAGE_KEYS.sales, JSON.stringify([]))
   useFocusEffect(
     useCallback(() => {
-      asyncData()
-      fundingW()
-    }, []),
+      isConnected && init()
+    }, [isConnected]),
   )
+
+  const init = async () => {
+    await loadData()
+    await asyncData()
+    await fundingW()
+    setLoadDataAsync(true)
+    await writeBlockchain()
+    setLoadDataAsync(false)
+  }
+
+  const loadData = async () => {
+    // Obtener las variables de la app
+    const data = JSON.parse(storage.getString(STORAGE_KEYS.loadData) || '{}')
+    const toDay = new Date().getTime()
+    if (data.update + 86400000 > toDay) {
+      return
+    }
+    const url = Config.BASE_URL + '/app_config'
+    const resp = await fetchData(url, {
+      method: 'GET',
+      headers: {'app-config-key': Config.APP_CONFIG_KEY},
+    })
+    if (!resp.isAxiosError) {
+      storage.set(
+        STORAGE_KEYS.loadData,
+        JSON.stringify({...resp, update: new Date().getTime()}),
+      )
+    }
+  }
 
   const fundingW = async () => {
     const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
@@ -65,12 +96,7 @@ export const HomeProvScreen = () => {
   }
 
   const asyncData = async () => {
-    const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
-    const differenceInMilliseconds = Math.abs(
-      dataExt?.syncUpLast - new Date().getTime(),
-    )
-    const differenceInHours = differenceInMilliseconds / 3600000
-    if (!isConnected || differenceInHours > 4) {
+    if (!isConnected) {
       return
     }
     const indexAsync: number[] = []
@@ -87,6 +113,7 @@ export const HomeProvScreen = () => {
           countryid: element.data.country?.country_id,
         }
         const resp = await sendFetch(url, data)
+
         if (resp) {
           indexAsync.push(index)
         }
@@ -94,6 +121,7 @@ export const HomeProvScreen = () => {
       if (element.type === SYNC_UP_TYPES.parcels) {
         const url = Config.BASE_URL + '/create_farm'
         const data = {
+          id: element?.data?.id,
           farm_name: element?.data?.name,
           hectares: element?.data?.hectares,
           polygon_coordinates: element?.data?.polygon?.toString(),
@@ -117,21 +145,45 @@ export const HomeProvScreen = () => {
         }
         const resp = await sendFetch(url, data)
         if (resp) {
+          const writeBlockchain = JSON.parse(
+            storage.getString(STORAGE_KEYS.writeBlockchain) || '[]',
+          )
+          writeBlockchain.push(element)
+          storage.set(
+            STORAGE_KEYS.writeBlockchain,
+            JSON.stringify(writeBlockchain),
+          )
           indexAsync.push(index)
         }
       }
     }
-    storage.set(
-      STORAGE_KEYS.dataExt,
-      JSON.stringify({...dataExt, syncUpLast: new Date().getTime()}),
-    )
 
     const newSyncUp = syncUp?.filter((element: any, index: number) => {
-      if (indexAsync?.includes(index)) {
+      if (!indexAsync?.includes(index)) {
         return element
       }
     })
     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(newSyncUp))
+  }
+
+  const writeBlockchain = async () => {
+    const dataWrite = JSON.parse(
+      storage.getString(STORAGE_KEYS.writeBlockchain) || '[]',
+    )
+    const wallet = JSON.parse(storage.getString(STORAGE_KEYS.wallet) || '{}')
+    const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
+    const parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
+
+    if (!dataWrite.length || !isConnected || !wallet.isFunding) {
+      return
+    }
+    const write = await writeTransaction({
+      wallet,
+      dataWrite,
+      user,
+      parcels,
+    })
+    console.log('writeTransaction => ', write)
   }
 
   const sendFetch = async (url: string, data: any) => {
@@ -140,7 +192,6 @@ export const HomeProvScreen = () => {
       {method: 'POST', headers: HEADERS(), data},
       true,
     )
-    // console.log('resp', resp?.response?.data)
     return resp?.response?.status ? false : true
   }
 
@@ -159,6 +210,14 @@ export const HomeProvScreen = () => {
           <Body />
         </View>
       </ScrollView>
+      <Spinner
+        color={COLORS_DF.robin_egg_blue}
+        visible={loadDataAsync}
+        textContent="Sincronizando datos"
+        textStyle={{color: COLORS_DF.citrine_brown}}
+        overlayColor="rgba(255, 255, 255, 0.9)"
+        size={100}
+      />
     </SafeArea>
   )
 }

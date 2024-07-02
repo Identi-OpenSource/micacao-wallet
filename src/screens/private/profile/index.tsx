@@ -1,4 +1,4 @@
-import {useFocusEffect} from '@react-navigation/native'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {Card} from '@rneui/base'
 import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {
@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native'
 import * as ImagePicker from 'react-native-image-picker'
-import {Arrow_Right, IconProfile, Person} from '../../../assets/svg'
+import {Arrow_Right, Happy, IconProfile, Person} from '../../../assets/svg'
 import HeaderComponent from '../../../components/Header'
 import {storage} from '../../../config/store/db'
 import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
@@ -29,6 +29,8 @@ import {Buffer} from 'buffer'
 import RNFS from 'react-native-fs'
 import Toast from 'react-native-toast-message'
 import {dniText} from '../../../OCC/occ'
+import DocumentPicker, {types} from 'react-native-document-picker'
+import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
 
 const ProfileScreen = () => {
   const user: UserInterface = useContext(UsersContext)
@@ -36,6 +38,7 @@ const ProfileScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null)
   const [showRequestPin, setShowRequestPin] = useState<any>([false, null])
   const [showInfo, setShowInfo] = useState(false)
+  const navigation = useNavigation()
 
   useEffect(() => {
     requestStoragePermission()
@@ -73,17 +76,120 @@ const ProfileScreen = () => {
 
     fetchImageUri()
   }, [])
-
+  // 18326988
   useEffect(() => {
     if (pinAproved && showRequestPin[1] === 'export') {
       saveJSONDownload()
       setPinApproved(false)
     }
+    if (pinAproved && showRequestPin[1] === 'import') {
+      console.log('pinAproved')
+      pickDocument()
+      setPinApproved(false)
+    }
   }, [pinAproved])
+
+  const pickDocument = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [types.json], // Esto permitirá archivos de texto plano incluyendo .json
+      })
+      const fileUri = res[0]?.uri
+      const fileName = res[0]?.name
+      if (fileName?.endsWith('.json')) {
+        readJsonFile(fileUri)
+      } else {
+        Toast.show({
+          type: 'msgToast',
+          text1: 'Error al leer el archivo',
+          autoHide: false,
+        })
+      }
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        console.log('User cancelled the picker')
+      } else {
+        console.log('Unknown error: ', err)
+      }
+    }
+  }
+
+  const readJsonFile = async (fileUri: string) => {
+    try {
+      const fileContent = await RNFS.readFile(fileUri, 'utf8')
+      const json = JSON.parse(fileContent)
+      const userLogin = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
+      const userDni = await dniText(userLogin?.dni)
+      if (userDni !== json?.user?.dni) {
+        Toast.show({
+          type: 'msgToast',
+          text1: 'El archivo contiene datos de otro usuario',
+          autoHide: false,
+        })
+        return
+      }
+      const parcels = json.parcels
+      const sales = json.sales
+      storage.set(
+        STORAGE_KEYS.user,
+        JSON.stringify({...user, ...json.user, dni: userLogin?.dni}),
+      )
+      storage.delete(STORAGE_KEYS.parcels)
+      for (let index = 0; index < parcels.length; index++) {
+        const element = parcels[index]
+        const parcelsList = JSON.parse(
+          storage.getString(STORAGE_KEYS.parcels) || '[]',
+        )
+        parcelsList.push(element)
+        storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcelsList))
+        if (element.polygon) {
+          const syncUp = JSON.parse(
+            storage.getString(STORAGE_KEYS.syncUp) || '[]',
+          )
+          const syncUpNew = [
+            ...syncUp,
+            {type: SYNC_UP_TYPES.parcels, data: element},
+          ]
+          storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+        }
+      }
+      storage.delete(STORAGE_KEYS.sales)
+      for (let index = 0; index < sales.length; index++) {
+        const element = sales[index]
+        const salesList = JSON.parse(
+          storage.getString(STORAGE_KEYS.sales) || '[]',
+        )
+        salesList.push(element)
+        storage.set(STORAGE_KEYS.sales, JSON.stringify(salesList))
+        const syncUp = JSON.parse(
+          storage.getString(STORAGE_KEYS.syncUp) || '[]',
+        )
+        const syncUpNew = [
+          ...syncUp,
+          {type: SYNC_UP_TYPES.sales, data: element},
+        ]
+        storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+      }
+      Toast.show({
+        type: 'msgToast',
+        text1: 'Datos importados correctamente',
+        autoHide: false,
+        props: {
+          icon: <Happy height={70} width={70} />,
+        },
+      })
+    } catch (err) {
+      Toast.show({
+        type: 'msgToast',
+        text1: 'Error al leer el archivo',
+        autoHide: false,
+      })
+    }
+  }
 
   const requestStoragePermission = async () => {
     try {
-      if (Platform.OS === 'android' && Platform.Version < 29) {
+      if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
           {
@@ -163,11 +269,11 @@ const ProfileScreen = () => {
     ImagePicker.launchImageLibrary(options, async response => {
       if (!response.didCancel) {
         console.log('Respuesta de ImagePicker:', response)
-        setSelectedImage(response.assets[0].uri)
+        setSelectedImage(response?.assets[0]?.uri)
 
         try {
           // Guardar la ruta de la imagen seleccionada en MMKV
-          storage.set('selectedImageUri', response.assets[0].uri)
+          storage.set('selectedImageUri', response?.assets[0]?.uri)
           console.log('Imagen guardada en MMKV')
         } catch (error) {
           console.error('Error al guardar la imagen en MMKV:', error)
@@ -289,13 +395,25 @@ const ProfileScreen = () => {
               <Btn
                 title="Exportar Data"
                 theme="agrayu"
-                onPress={() => setShowRequestPin([true, 'export'])}
+                onPress={() =>
+                  setShowRequestPin([
+                    true,
+                    'export',
+                    'Para continuar con el respaldo de datos, por favor introduzca el PIN de seguridad',
+                  ])
+                }
                 style={{container: {width: '80%', marginTop: MP_DF.xxlarge}}}
               />
               <Btn
                 title="Importar Data"
                 theme="agrayu"
-                onPress={() => setShowRequestPin([true, 'import'])}
+                onPress={() =>
+                  setShowRequestPin([
+                    true,
+                    'import',
+                    'Para continuar con la importación de datos de respaldo, por favor introduzca el PIN de seguridad\n\nRecuerde que esta acción va a sobrescribir los datos actuales',
+                  ])
+                }
                 style={{container: {width: '80%', marginTop: MP_DF.xxlarge}}}
               />
             </>
@@ -304,6 +422,7 @@ const ProfileScreen = () => {
       </ScrollView>
       {showRequestPin[0] && (
         <PinRequest
+          text={showRequestPin[2]}
           setShowRequestPin={setShowRequestPin}
           setPinApproved={setPinApproved}
         />

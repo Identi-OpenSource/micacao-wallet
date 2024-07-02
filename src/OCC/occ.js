@@ -7,7 +7,24 @@ const {
 } = require('transaction-js/batch')
 import CryptoJS from 'crypto-js'
 import Config from 'react-native-config'
-import {months} from '../config/const'
+import {STORAGE_KEYS, months} from '../config/const'
+import {storage} from '../config/store/db'
+
+const KEYS_WALLET = [
+  'purchaseDate',
+  'farmerAlias',
+  'farmerPlot',
+  'DNI',
+  'variety',
+  'moistureLevel',
+  'premiumPaid',
+  'COOPMaterialNumber',
+  'COOPMaterialName',
+  'PONumber',
+  'POPosition',
+  'plannedDeliveryDate',
+  'shipsTo',
+]
 
 export const newWallet = () => {
   // Create
@@ -24,7 +41,7 @@ export const newWallet = () => {
 export const fundingWallet = async wallet => {
   const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
   return await axios.get(url).catch(error => {
-    console.log('error', error)
+    console.log('error fundingWallet', error)
     return error
   })
 }
@@ -80,47 +97,71 @@ export const dniEncrypt = async dni => {
   return {dni: hexResult, dniAll: hexResult.length}
 }
 
-export const writeTransaction = async (wif, object) => {
-  const {userData, parcels_array, sales} = object
+export const writeTransaction = async ({wallet, dataWrite, user, parcels}) => {
+  // console.log('wallet', wallet)
+  // console.log('dataWrite', dataWrite)
+  // console.log('user', user)
+  // console.log('parcels', parcels)
   // Obtener DNI
-  const DNI = await dniText(userData.dni)
-  let TX = []
-  let newSales = []
-  for (let index = 0; index < sales.length; index++) {
-    let sale = sales[index]
-    if (!sale.syncUpOCC) {
-      const month = months.findIndex(p => p === sale.mes)
-      const purchaseDate = getFirstDayMonthPrevious(month)
-      const hashDNI = await CryptoJS.SHA256(DNI + purchaseDate).toString()
-      const polygon = convertAPolygonString(
-        parcels_array?.find(p => p.id === sale?.parcela)?.polygon,
-      )
-      const farmerPlot = await CryptoJS.SHA256(polygon).toString()
-      const batch = {
-        bnfp: {value: hashDNI, unique: true},
-        purchaseDate,
-        farmerAlias: userData.name.trim().split(' ')[0],
-        farmerPlot,
-        DNI: hashDNI,
-        variety: 'CRIOLLO',
-        moistureLevel: `TYPO (${sale.type})`,
-        premiumPaid: '1',
-        COOPMaterialNumber: '',
-        COOPMaterialName: `CACAO CRIOLLO (${sale.type})`,
-        PONumber: '',
-        POPosition: '',
-        plannedDeliveryDate: purchaseDate,
-        shipsTo: '',
-      }
-      const res = bitGoUTXO.ECPair.fromWIF(wif, bitGoUTXO.networks.kmd, true)
-      const ec_pairs = get_all_ecpairs(batch, res)
-      const tx1 = await send_batch_transactions(ec_pairs, batch, res)
-      TX = [...TX, tx1]
-      sale.syncUpOCC = true
+  const DNI = await dniText(user.dni)
+  const writeOK = []
+  const indexDelete = []
+  for (let index = 0; index < dataWrite.length; index++) {
+    let sale = dataWrite[index]?.data
+    const purchaseDate = '01-' + sale.mes
+    const hashDNI = await CryptoJS.SHA256(DNI + purchaseDate).toString()
+    const parcel = parcels?.find(p => p.id === sale?.parcela)
+    const polygon = convertAPolygonString(
+      parcels?.find(p => p.id === sale?.parcela)?.polygon,
+    )
+    const farmerPlot = await CryptoJS.SHA256(polygon).toString()
+    const batch = {
+      bnfp: {value: hashDNI, unique: true},
+      purchaseDate,
+      farmerAlias: user.name.trim().split(' ')[0],
+      farmerPlot,
+      DNI: hashDNI,
+      variety: 'CRIOLLO',
+      moistureLevel: `TYPO (${sale.type})`,
+      premiumPaid: '1',
+      COOPMaterialNumber: '',
+      COOPMaterialName: `CACAO CRIOLLO (${sale.type})`,
+      PONumber: '',
+      POPosition: '',
+      plannedDeliveryDate: purchaseDate,
+      shipsTo: '',
     }
-    newSales = [...newSales, sale]
+    const res = bitGoUTXO.ECPair.fromWIF(
+      wallet?.wallet?.wif,
+      bitGoUTXO.networks.kmd,
+      true,
+    )
+    const ec_pairs = get_all_ecpairs(batch, res)
+    const tx1 = await send_batch_transactions(ec_pairs, batch, res)
+    console.log('tx-' + index, tx1)
+    const isSend = countMatches(KEYS_WALLET, tx1)
+    if (isSend) {
+      writeOK.push(true)
+      indexDelete.push(index)
+    } else {
+      writeOK.push(false)
+    }
   }
-  return [TX, newSales]
+  // filtra los elementos que no se han enviado
+  const newDataWrite = dataWrite?.filter((element, index) => {
+    if (!indexDelete?.includes(index)) {
+      return element
+    }
+  })
+  storage.set(STORAGE_KEYS.writeBlockchain, JSON.stringify(newDataWrite))
+  return writeOK
+}
+
+const countMatches = (constantArr, dynamicArr) => {
+  // Filtra los elementos de constantArray que están presentes en dynamicArray
+  const matches = constantArr.filter(item => dynamicArr.includes(item))
+  // Retorna true si hay al menos 3 coincidencias, de lo contrario false
+  return matches.length <= 4
 }
 
 const getFirstDayMonthPrevious = mes => {
@@ -145,8 +186,8 @@ const getFirstDayMonthPrevious = mes => {
 function convertAPolygonString(coordenadas) {
   // Mappear las coordenadas a un string con el formato requerido
   let polygonString = coordenadas
-    .map(coord => `${coord[0]} ${coord[1]}`)
-    .join(', ')
+    ?.map(coord => `${coord[0]} ${coord[1]}`)
+    ?.join(', ')
 
   // Agregar el primer punto al final para cerrar el polígono
   polygonString += `, ${coordenadas[0][0]} ${coordenadas[0][1]}`
