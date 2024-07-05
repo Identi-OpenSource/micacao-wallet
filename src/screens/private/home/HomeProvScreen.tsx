@@ -75,24 +75,25 @@ export const HomeProvScreen = () => {
   }
 
   const fundingW = async () => {
-    const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
-    const differenceInMilliseconds = Math.abs(
-      dataExt?.fundingWallet - new Date().getTime(),
-    )
-    const differenceInHours = differenceInMilliseconds / 3600000
-    if (!isConnected || differenceInHours > 720) {
-      return
-    }
-    const funding = await fundingWallet(wallet.walletOFC)
-    const isFunding = funding.status === 200
-    if (!isFunding) {
-      return
-    }
-    storage.set('wallet', JSON.stringify({...wallet, isFunding}))
-    storage.set(
-      STORAGE_KEYS.dataExt,
-      JSON.stringify({...dataExt, fundingWallet: new Date().getTime()}),
-    )
+    const funding = await fundingWallet(wallet.wallet.walletOFC)
+    // const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
+    // const differenceInMilliseconds = Math.abs(
+    //   dataExt?.fundingWallet - new Date().getTime(),
+    // )
+    // const differenceInHours = differenceInMilliseconds / 3600000
+    // if (!isConnected || differenceInHours > 720) {
+    //   return
+    // }
+    // const funding = await fundingWallet(wallet.walletOFC)
+    // const isFunding = funding.status === 200
+    // if (!isFunding) {
+    //   return
+    // }
+    // storage.set('wallet', JSON.stringify({...wallet, isFunding}))
+    // storage.set(
+    //   STORAGE_KEYS.dataExt,
+    //   JSON.stringify({...dataExt, fundingWallet: new Date().getTime()}),
+    // )
   }
 
   const asyncData = async () => {
@@ -101,6 +102,7 @@ export const HomeProvScreen = () => {
     }
     const indexAsync: number[] = []
     const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
+    console.log('syncUp', syncUp)
     for (let index = 0; index < syncUp?.length; index++) {
       const element = syncUp[index]
       if (element.type === SYNC_UP_TYPES.user) {
@@ -143,6 +145,7 @@ export const HomeProvScreen = () => {
           baba_weight: element?.data?.type === 'BABA' ? element?.data?.kl : 0,
           cacao_type: element?.data?.type?.toLowerCase(),
         }
+        console.log('data', data)
         const resp = await sendFetch(url, data)
         if (resp) {
           const writeBlockchain = JSON.parse(
@@ -200,6 +203,7 @@ export const HomeProvScreen = () => {
   // console.log('sales', sales)
   // storage.delete(STORAGE_KEYS.parcels)
   // storage.delete(STORAGE_KEYS.sales)
+  // storage.delete(STORAGE_KEYS.syncUp)
 
   return (
     <SafeArea bg={'isabelline'}>

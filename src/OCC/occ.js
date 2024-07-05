@@ -39,9 +39,13 @@ export const newWallet = () => {
 }
 
 export const fundingWallet = async wallet => {
+  console.log('wallet', wallet)
+  // const url = `https://fund.occs.openfoodchain.org/found/${wallet}`
   const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
+  console.log('url', url)
   return await axios.get(url).catch(error => {
-    console.log('error fundingWallet', error)
+    console.log(error)
+    // console.log('error fundingWallet', error)
     return error
   })
 }
@@ -121,11 +125,11 @@ export const writeTransaction = async ({wallet, dataWrite, user, parcels}) => {
       farmerAlias: user.name.trim().split(' ')[0],
       farmerPlot,
       DNI: hashDNI,
-      variety: 'CRIOLLO',
+      variety: `CACAO (${sale.type})`,
       moistureLevel: `TYPO (${sale.type})`,
       premiumPaid: '1',
       COOPMaterialNumber: '',
-      COOPMaterialName: `CACAO CRIOLLO (${sale.type})`,
+      COOPMaterialName: `CACAO (${sale.type})`,
       PONumber: '',
       POPosition: '',
       plannedDeliveryDate: purchaseDate,

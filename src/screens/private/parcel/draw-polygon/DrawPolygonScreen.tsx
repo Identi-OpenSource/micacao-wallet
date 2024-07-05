@@ -151,7 +151,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     centerMap()
     postKafeSistemas()
     getKafeSistemas()
-    rePostGfw()
+    // rePostGfw()
   }, [])
 
   const centerMap = () => {
@@ -188,7 +188,10 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     setCenterCoordinate([center[0], center[1]])
   }
 
+  // console.log('parcel', parcel)
+
   const rePostGfw = async () => {
+    console.log('rePostGfw')
     const send = new Date(parcel?.gfw?.send)
     const now = new Date()
     const diferencia = now?.getTime() - send?.getTime()
@@ -202,14 +205,15 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       return
     }
     //@braudin debe venir desde el servidor
-    const url = 'https://geip5oadr5.execute-api.us-east-2.amazonaws.com/upload'
+    const url = `${Config.URL_GFW}/upload`
     const formData = {
       coordinates: parcel.polygon
-        .map((coordenada: Position) => `${coordenada[1]} ${coordenada[0]}`)
+        .map((coordenada: Position) => `${coordenada[0]} ${coordenada[1]}`)
         .join(';'),
       start_date: '2020-01-01',
       end_date: new Date().toISOString().split('T')[0],
     }
+    console.log('formData', formData)
     const resp = await fetchData(
       url,
       {
@@ -219,6 +223,8 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
+
+    console.log('resp', resp)
     if (resp?.response?.status) {
       return
     }
@@ -234,10 +240,10 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
 
   const postGfw = async () => {
     //@braudin debe venir desde el servidor
-    const url = 'https://geip5oadr5.execute-api.us-east-2.amazonaws.com/upload'
+    const url = `${Config.URL_GFW}/upload`
     const formData = {
       coordinates: parcel.polygon
-        .map((coordenada: Position) => `${coordenada[1]} ${coordenada[0]}`)
+        .map((coordenada: Position) => `${coordenada[0]} ${coordenada[1]}`)
         .join(';'),
       start_date: '2020-01-01',
       end_date: new Date().toISOString().split('T')[0],
@@ -273,7 +279,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   const getGfw = async () => {
     //@braudin debe venir desde el servidor
     const idlistId = parcel?.gfw?.listId
-    const url = `https://geip5oadr5.execute-api.us-east-2.amazonaws.com/${idlistId}`
+    const url = `${Config.URL_GFW}/${idlistId}`
     const resp = await fetchData(
       url,
       {
@@ -282,6 +288,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
+    console.log('resp', resp)
     if (resp?.listId && resp.status !== 'Pending') {
       const updatedParcel = {
         ...parcel,
@@ -330,16 +337,18 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     if (parcel?.gfw?.status === 'Completed') {
       const classify = classifyDeforestation(
         Number(
-          parcel?.gfw?.data?.deforestation_kpis[0][
+          parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
             'Natural Forest Coverage (HA) (Beta)'
           ],
         ),
         Number(
-          parcel?.gfw?.data?.deforestation_kpis[0][
+          parcel?.gfw?.data?.deforestation_kpis?.[0][
             'Natural Forest Loss (ha) (Beta)'
           ],
         ),
-        Number(parcel?.gfw?.data?.deforestation_kpis[0]['Negligible Risk (%)']),
+        Number(
+          parcel?.gfw?.data?.deforestation_kpis?.[0]['Negligible Risk (%)'],
+        ),
       )
 
       return [

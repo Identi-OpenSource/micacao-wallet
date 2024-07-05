@@ -417,6 +417,7 @@ const PoligonJoystick = ({route}: any) => {
       <MapView
         ref={map}
         styleURL={StyleURL.Satellite}
+        // styleURL="https://api.maptiler.com/maps/satellite/style.json?key=fh2hRVLtuNuRzkTOINtk"
         style={{
           height: heightMap,
           width: widthMap,
@@ -477,8 +478,8 @@ const PoligonJoystick = ({route}: any) => {
                 centerCoordinate: firstPoint,
                 zoomLevel: 17,
               }}
-              minZoomLevel={14}
-              maxZoomLevel={18}
+              minZoomLevel={12}
+              maxZoomLevel={20}
               animationMode={'flyTo'}
               animationDuration={100}
               centerCoordinate={centerCoordinate}
