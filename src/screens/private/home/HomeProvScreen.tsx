@@ -55,10 +55,14 @@ export const HomeProvScreen = () => {
   }
 
   const loadData = async () => {
-    // Obtener las variables de la app
+    // revisar si hay actualización en las variables de env
     const data = JSON.parse(storage.getString(STORAGE_KEYS.loadData) || '{}')
-    const toDay = new Date().getTime()
-    if (data.update + 86400000 > toDay) {
+    const urlConfig = Config.BASE_URL || ''
+    const configResp = await fetchData(urlConfig, {
+      method: 'GET',
+      headers: {'app-config-key': Config.APP_CONFIG_KEY},
+    })
+    if (configResp.isAxiosError || data.update === configResp?.last_update) {
       return
     }
     const url = Config.BASE_URL + '/app_config'
@@ -69,7 +73,7 @@ export const HomeProvScreen = () => {
     if (!resp.isAxiosError) {
       storage.set(
         STORAGE_KEYS.loadData,
-        JSON.stringify({...resp, update: new Date().getTime()}),
+        JSON.stringify({...resp, update: configResp?.last_update}),
       )
     }
   }
