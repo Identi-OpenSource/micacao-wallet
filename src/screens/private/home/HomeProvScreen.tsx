@@ -47,11 +47,52 @@ export const HomeProvScreen = () => {
 
   const init = async () => {
     await loadData()
+    await asyncDataOld()
     await asyncData()
     await fundingW()
     setLoadDataAsync(true)
     await writeBlockchain()
     setLoadDataAsync(false)
+  }
+
+  const asyncDataOld = async () => {
+    const loadData = JSON.parse(
+      storage.getString(STORAGE_KEYS.loadData) || '{}',
+    )
+    if (loadData?.syncUpOld === 'v1') {
+      return
+    }
+    console.log('loadData')
+    const dataoOld = JSON.parse(storage.getString(STORAGE_KEYS?.syncUp) || '[]')
+    const syncUpUser = [{type: SYNC_UP_TYPES.user, data: dataoOld}]
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpUser))
+
+    const parcels = JSON.parse(storage.getString(STORAGE_KEYS?.parcels) || '[]')
+    for (let index = 0; index < parcels.length; index++) {
+      const element = parcels[index]
+      if (element.polygon) {
+        const syncUp = JSON.parse(
+          storage.getString(STORAGE_KEYS.syncUp) || '[]',
+        )
+        const syncUpNew = [
+          ...syncUp,
+          {type: SYNC_UP_TYPES.parcels, data: element},
+        ]
+        storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+      }
+    }
+    const sales = JSON.parse(storage.getString(STORAGE_KEYS?.sales) || '[]')
+    for (let index = 0; index < sales.length; index++) {
+      const element = sales[index]
+      const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
+      const syncUpNew = [...syncUp, {type: SYNC_UP_TYPES.sales, data: element}]
+      storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+    }
+    const data = JSON.parse(storage.getString(STORAGE_KEYS?.loadData) || '{}')
+    storage.set(
+      STORAGE_KEYS?.loadData,
+      JSON.stringify({...data, syncUpOld: 'v1'}),
+    )
   }
 
   const loadData = async () => {
@@ -79,25 +120,26 @@ export const HomeProvScreen = () => {
   }
 
   const fundingW = async () => {
+    // const funding = await fundingWallet(wallet.wallet.walletOFC)
+    const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
+    const differenceInMilliseconds = Math.abs(
+      dataExt?.fundingWallet - new Date().getTime(),
+    )
+    const differenceInHours = differenceInMilliseconds / 3600000
+    if (!isConnected || differenceInHours > 720) {
+      return
+    }
     const funding = await fundingWallet(wallet.wallet.walletOFC)
-    // const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
-    // const differenceInMilliseconds = Math.abs(
-    //   dataExt?.fundingWallet - new Date().getTime(),
-    // )
-    // const differenceInHours = differenceInMilliseconds / 3600000
-    // if (!isConnected || differenceInHours > 720) {
-    //   return
-    // }
-    // const funding = await fundingWallet(wallet.walletOFC)
-    // const isFunding = funding.status === 200
-    // if (!isFunding) {
-    //   return
-    // }
-    // storage.set('wallet', JSON.stringify({...wallet, isFunding}))
-    // storage.set(
-    //   STORAGE_KEYS.dataExt,
-    //   JSON.stringify({...dataExt, fundingWallet: new Date().getTime()}),
-    // )
+    const isFunding = funding.status === 200
+    if (!isFunding) {
+      return
+    }
+    // console.log('fundingWallet')
+    storage.set('wallet', JSON.stringify({...wallet, isFunding}))
+    storage.set(
+      STORAGE_KEYS.dataExt,
+      JSON.stringify({...dataExt, fundingWallet: new Date().getTime()}),
+    )
   }
 
   const asyncData = async () => {
@@ -106,7 +148,6 @@ export const HomeProvScreen = () => {
     }
     const indexAsync: number[] = []
     const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
-    console.log('syncUp', syncUp)
     for (let index = 0; index < syncUp?.length; index++) {
       const element = syncUp[index]
       if (element.type === SYNC_UP_TYPES.user) {
@@ -149,7 +190,6 @@ export const HomeProvScreen = () => {
           baba_weight: element?.data?.type === 'BABA' ? element?.data?.kl : 0,
           cacao_type: element?.data?.type?.toLowerCase(),
         }
-        console.log('data', data)
         const resp = await sendFetch(url, data)
         if (resp) {
           const writeBlockchain = JSON.parse(
@@ -190,7 +230,6 @@ export const HomeProvScreen = () => {
       user,
       parcels,
     })
-    console.log('writeTransaction => ', write)
   }
 
   const sendFetch = async (url: string, data: any) => {

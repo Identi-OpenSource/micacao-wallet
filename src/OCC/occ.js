@@ -142,7 +142,7 @@ export const writeTransaction = async ({wallet, dataWrite, user, parcels}) => {
     )
     const ec_pairs = get_all_ecpairs(batch, res)
     const tx1 = await send_batch_transactions(ec_pairs, batch, res)
-    console.log('tx-' + index, tx1)
+    // console.log('tx-' + index, tx1)
     const isSend = countMatches(KEYS_WALLET, tx1)
     if (isSend) {
       writeOK.push(true)

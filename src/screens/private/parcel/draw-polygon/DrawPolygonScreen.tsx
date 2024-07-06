@@ -151,7 +151,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     centerMap()
     postKafeSistemas()
     getKafeSistemas()
-    // rePostGfw()
+    rePostGfw()
   }, [])
 
   const centerMap = () => {
@@ -191,7 +191,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   // console.log('parcel', parcel)
 
   const rePostGfw = async () => {
-    console.log('rePostGfw')
     const send = new Date(parcel?.gfw?.send)
     const now = new Date()
     const diferencia = now?.getTime() - send?.getTime()
@@ -213,7 +212,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       start_date: '2020-01-01',
       end_date: new Date().toISOString().split('T')[0],
     }
-    console.log('formData', formData)
     const resp = await fetchData(
       url,
       {
@@ -224,7 +222,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       true,
     )
 
-    console.log('resp', resp)
     if (resp?.response?.status) {
       return
     }
@@ -288,7 +285,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
-    console.log('resp', resp)
+
     if (resp?.listId && resp.status !== 'Pending') {
       const updatedParcel = {
         ...parcel,
@@ -335,82 +332,99 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
 
   const optionsUiGFW = (): [string, string, any] => {
     if (parcel?.gfw?.status === 'Completed') {
-      const classify = classifyDeforestation(
-        Number(
-          parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
-            'Natural Forest Coverage (HA) (Beta)'
-          ],
-        ),
-        Number(
-          parcel?.gfw?.data?.deforestation_kpis?.[0][
-            'Natural Forest Loss (ha) (Beta)'
-          ],
-        ),
-        Number(
-          parcel?.gfw?.data?.deforestation_kpis?.[0]['Negligible Risk (%)'],
-        ),
-      )
-
+      const NFL =
+        parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
+          'Natural Forest Loss (ha) (Beta)'
+        ] || null
+      if (Number(NFL) < 6) {
+        return [
+          '#22C55E',
+          'Validación no deforestación Aprobado',
+          <Happy width={70} height={70} />,
+        ]
+      }
       return [
-        classify[1],
-        'Validación no deforestación ' + classify[0],
-        classify[2],
+        '#22C55E',
+        'Validación no deforestación No Aprobado',
+        <Happy width={70} height={70} />,
       ]
+
+      // const classify = classifyDeforestation(
+      //   Number(
+      //     parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
+      //       'Natural Forest Coverage (HA) (Beta)'
+      //     ],
+      //   ),
+      //   Number(
+      //     parcel?.gfw?.data?.deforestation_kpis?.[0][
+      //       'Natural Forest Loss (ha) (Beta)'
+      //     ],
+      //   ),
+      //   Number(
+      //     parcel?.gfw?.data?.deforestation_kpis?.[0]['Negligible Risk (%)'],
+      //   ),
+      // )
+
+      // return [
+      //   classify[1],
+      //   'Validación no deforestación ' + classify[0],
+      //   classify[2],
+      // ]
     }
     if (parcel?.gfw?.status?.includes('Error')) {
       return [
         '#EF4444',
-        'Validación no deforestación No Aceptado',
+        'Validación no deforestación ' + 'No Aceptado',
         <Sad height={70} width={70} />,
       ]
     }
     return [
       '#F59E0B',
-      'Validación no deforestación pendiente',
+      'Validación no deforestación Pendiente',
       <Error width={70} height={70} />,
     ]
   }
 
-  const classifyDeforestation = (
-    coberturaBosque: number,
-    perdidaBosque: number,
-    riesgoInsignificante: number,
-  ): [string, string, any] => {
-    // Clasificación de la cobertura de bosque natural
-    let coberturaClasificacion
-    if (coberturaBosque > 0) {
-      coberturaClasificacion = 'Alta'
-    } else {
-      coberturaClasificacion = 'Baja'
-    }
+  // const classifyDeforestation = (
+  //   coberturaBosque: number,
+  //   perdidaBosque: number,
+  //   riesgoInsignificante: number,
+  // ): [string, string, any] => {
+  //   // Clasificación de la cobertura de bosque natural
+  //   let coberturaClasificacion
+  //   if (coberturaBosque > 0) {
+  //     coberturaClasificacion = 'Alta'
+  //   } else {
+  //     coberturaClasificacion = 'Baja'
+  //   }
 
-    // Clasificación de la pérdida de bosque natural
-    let perdidaClasificacion
-    if (perdidaBosque === 0) {
-      perdidaClasificacion = 'Ninguna'
-    } else {
-      perdidaClasificacion = 'Alta'
-    }
+  //   // Clasificación de la pérdida de bosque natural
+  //   let perdidaClasificacion
+  //   if (perdidaBosque === 0) {
+  //     perdidaClasificacion = 'Ninguna'
+  //   } else {
+  //     perdidaClasificacion = 'Alta'
+  //   }
 
-    // Clasificación del riesgo insignificante
-    let riesgoClasificacion
-    if (riesgoInsignificante === 0) {
-      riesgoClasificacion = 'Aceptado'
-    } else {
-      riesgoClasificacion = 'No Aceptado'
-    }
+  //   // Clasificación del riesgo insignificante
+  //   let riesgoClasificacion
+  //   if (riesgoInsignificante === 0) {
+  //     riesgoClasificacion = 'Aceptado'
+  //   } else {
+  //     riesgoClasificacion = 'No Aceptado'
+  //   }
 
-    // Clasificación final basada en los tres indicadores
-    if (
-      coberturaClasificacion === 'Alta' &&
-      perdidaClasificacion === 'Ninguna' &&
-      riesgoClasificacion === 'Aceptado'
-    ) {
-      return ['Aceptado', '#22C55E', <Happy width={70} height={70} />]
-    } else {
-      return ['No Aceptado', '#EF4444', <Sad width={70} height={70} />]
-    }
-  }
+  //   // Clasificación final basada en los tres indicadores
+  //   if (
+  //     coberturaClasificacion === 'Alta' &&
+  //     perdidaClasificacion === 'Ninguna' &&
+  //     riesgoClasificacion === 'Aceptado'
+  //   ) {
+  //     return ['Aceptado', '#22C55E', <Happy width={70} height={70} />]
+  //   } else {
+  //     return ['No Aceptado', '#EF4444', <Sad width={70} height={70} />]
+  //   }
+  // }
 
   const btnGFW = () => {
     if (parcel?.gfw?.status === 'Pending') {
@@ -429,6 +443,8 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     coberturaBosque: number,
     perdidaBosque: number,
   ) => {
+    console.log('coberturaBosque', coberturaBosque)
+    console.log('perdidaBosque', perdidaBosque)
     if (coberturaBosque === 0) {
       return 0
     }
@@ -457,7 +473,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       .join(', ')
     const wktPolygon = `POLYGON((${polygonCoordinates}))`
     // @braudin debe venir desde el servidor
-    const url = 'http://148.113.174.223/api/v1/pe/land-request/polygon'
+    const url = 'http://148.113.174.223:5000/api/v1/pe/land-request/polygon'
     const API_KEY_KAFE_SISTEMAS =
       'fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4'
     const resp = await fetchData(
@@ -488,12 +504,11 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
     navigation.navigate('DrawPolygonScreen', {id: id})
   }
-
   const getKafeSistemas = async () => {
     // hacer esto solo si no se hizo el post y send es mayor a 24 horas y si  statys es On Hold
     if (
-      parcel?.kf !== undefined &&
-      parcel?.kf?.Code === 2 &&
+      parcel?.kf === undefined ||
+      parcel?.kf?.Code === 2 ||
       Date.now() - new Date(parcel?.kf?.send).getTime() < 24 * 60 * 60 * 1000
     ) {
       return
@@ -930,7 +945,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
                 }
                 if (parcel?.gfw?.status === 'Completed') {
                   toasMessage(
-                    'Validación de no deforestación aprobada, porcentaje de deforestación: ' +
+                    'Validación de no deforestación aprobada, perdida de bosque natural: ' +
                       calculateDeforestationPercentage(
                         Number(
                           parcel?.gfw?.data?.deforestation_kpis[0][

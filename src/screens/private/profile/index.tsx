@@ -119,15 +119,6 @@ const ProfileScreen = () => {
       const fileContent = await RNFS.readFile(fileUri, 'utf8')
       const json = JSON.parse(fileContent)
       const userLogin = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
-      const userDni = await dniText(userLogin?.dni)
-      if (userDni !== json?.user?.dni) {
-        Toast.show({
-          type: 'msgToast',
-          text1: 'El archivo contiene datos de otro usuario',
-          autoHide: false,
-        })
-        return
-      }
       const parcels = json.parcels
       const sales = json.sales
       storage.set(
