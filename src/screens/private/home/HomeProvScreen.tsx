@@ -50,9 +50,9 @@ export const HomeProvScreen = () => {
     await asyncDataOld()
     await asyncData()
     await fundingW()
-    setLoadDataAsync(true)
-    await writeBlockchain()
-    setLoadDataAsync(false)
+    // setLoadDataAsync(true)
+    // await writeBlockchain()
+    // setLoadDataAsync(false)
   }
 
   const asyncDataOld = async () => {
@@ -98,18 +98,24 @@ export const HomeProvScreen = () => {
   const loadData = async () => {
     // revisar si hay actualización en las variables de env
     const data = JSON.parse(storage.getString(STORAGE_KEYS.loadData) || '{}')
-    const urlConfig = Config.BASE_URL || ''
+    const urlConfig = 'https://api-micacao.dev.identi.digital'
     const configResp = await fetchData(urlConfig, {
       method: 'GET',
-      headers: {'app-config-key': Config.APP_CONFIG_KEY},
+      headers: {
+        'app-config-key':
+          'QPJafbhIUAYoSumieivWSs1t7o008TsudePD8qdRTl2xPZPmO5LrmV14kOmhssbt',
+      },
     })
     if (configResp.isAxiosError || data.update === configResp?.last_update) {
       return
     }
-    const url = Config.BASE_URL + '/app_config'
+    const url = 'https://api-micacao.dev.identi.digital/app_config'
     const resp = await fetchData(url, {
       method: 'GET',
-      headers: {'app-config-key': Config.APP_CONFIG_KEY},
+      headers: {
+        'app-config-key':
+          'QPJafbhIUAYoSumieivWSs1t7o008TsudePD8qdRTl2xPZPmO5LrmV14kOmhssbt',
+      },
     })
     if (!resp.isAxiosError) {
       storage.set(
@@ -151,7 +157,8 @@ export const HomeProvScreen = () => {
     for (let index = 0; index < syncUp?.length; index++) {
       const element = syncUp[index]
       if (element.type === SYNC_UP_TYPES.user) {
-        const url = Config.BASE_URL + '/create_producer'
+        console.log('creando productor =>', 'Start')
+        const url = 'https://api-micacao.dev.identi.digital/create_producer'
         const data = {
           dni: element.data.dni,
           name: element.data.name,
@@ -164,9 +171,11 @@ export const HomeProvScreen = () => {
         if (resp) {
           indexAsync.push(index)
         }
+        console.log('creando productor =>', resp)
       }
       if (element.type === SYNC_UP_TYPES.parcels) {
-        const url = Config.BASE_URL + '/create_farm'
+        console.log('creando farm =>', 'Start')
+        const url = 'https://api-micacao.dev.identi.digital/create_farm'
         const data = {
           id: element?.data?.id,
           farm_name: element?.data?.name,
@@ -179,9 +188,11 @@ export const HomeProvScreen = () => {
         if (resp) {
           indexAsync.push(index)
         }
+        console.log('creando farm =>', resp)
       }
       if (element.type === SYNC_UP_TYPES.sales) {
-        const url = Config.BASE_URL + '/create_activities'
+        console.log('creando venta =>', 'Start')
+        const url = 'https://api-micacao.dev.identi.digital/create_activities'
         const data = {
           dni_cacao_producer: user.dni,
           id_farm: element?.data?.parcela,
@@ -202,6 +213,7 @@ export const HomeProvScreen = () => {
           )
           indexAsync.push(index)
         }
+        console.log('creando venta =>', resp)
       }
     }
 
@@ -230,6 +242,7 @@ export const HomeProvScreen = () => {
       user,
       parcels,
     })
+    console.log('write', write)
   }
 
   const sendFetch = async (url: string, data: any) => {
@@ -238,12 +251,14 @@ export const HomeProvScreen = () => {
       {method: 'POST', headers: HEADERS(), data},
       true,
     )
+    // console.log('sendFetch', data)
     return resp?.response?.status ? false : true
   }
 
   // pruebas
   // const sales = JSON.parse(storage.getString(STORAGE_KEYS.sales) || '[]')
   // console.log('sales', sales)
+  console.log('user', user)
   // storage.delete(STORAGE_KEYS.parcels)
   // storage.delete(STORAGE_KEYS.sales)
   // storage.delete(STORAGE_KEYS.syncUp)

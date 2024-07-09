@@ -40,11 +40,11 @@ export const newWallet = () => {
 
 export const fundingWallet = async wallet => {
   console.log('wallet', wallet)
-  // const url = `https://fund.occs.openfoodchain.org/found/${wallet}`
-  const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
+  const url = `https://fund.occs.openfoodchain.org/fund/${wallet}`
+  // const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
   console.log('url', url)
   return await axios.get(url).catch(error => {
-    console.log(error)
+    console.log('response =>', error.response.data)
     // console.log('error fundingWallet', error)
     return error
   })
@@ -61,7 +61,7 @@ export const verificarWallet = async wallet => {
 }
 
 export const dniText = async dni => {
-  const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
+  const utf8Key = CryptoJS.enc.Utf8.parse('2acdugezqflwuz8oc58j4n2tmkzsdhd8')
   const encryptedHexStr = CryptoJS.enc.Hex.parse(dni)
   const encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr)
   const decrypted = CryptoJS.AES.decrypt(encryptedBase64Str, utf8Key, {
@@ -91,7 +91,7 @@ export const dniText = async dni => {
 // @braudin refactorizando la funcion
 export const dniEncrypt = async dni => {
   const paddedDNI = dni.padStart(16, '0')
-  const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS)
+  const utf8Key = CryptoJS.enc.Utf8.parse('2acdugezqflwuz8oc58j4n2tmkzsdhd8')
   const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
   const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
     mode: CryptoJS.mode.ECB,
@@ -107,29 +107,27 @@ export const writeTransaction = async ({wallet, dataWrite, user, parcels}) => {
   // console.log('user', user)
   // console.log('parcels', parcels)
   // Obtener DNI
-  const DNI = await dniText(user.dni)
+  const DNI = await dniText(user?.dni)
   const writeOK = []
   const indexDelete = []
   for (let index = 0; index < dataWrite.length; index++) {
     let sale = dataWrite[index]?.data
-    const purchaseDate = '01-' + sale.mes
-    const hashDNI = await CryptoJS.SHA256(DNI + purchaseDate).toString()
-    const parcel = parcels?.find(p => p.id === sale?.parcela)
-    const polygon = convertAPolygonString(
-      parcels?.find(p => p.id === sale?.parcela)?.polygon,
-    )
-    const farmerPlot = await CryptoJS.SHA256(polygon).toString()
+    const purchaseDate = sale?.mes
+    const hashDNI = await CryptoJS.SHA256(DNI + purchaseDate)?.toString()
+    const parcel = parcels?.find(p => p?.id === sale?.parcela)
+    const polygon = convertAPolygonString(parcel?.polygon)
+    const farmerPlot = await CryptoJS.SHA256(polygon)?.toString()
     const batch = {
       bnfp: {value: hashDNI, unique: true},
       purchaseDate,
-      farmerAlias: user.name.trim().split(' ')[0],
+      farmerAlias: user?.name?.trim()?.split(' ')[0],
       farmerPlot,
       DNI: hashDNI,
-      variety: `CACAO (${sale.type})`,
-      moistureLevel: `TYPO (${sale.type})`,
+      variety: `CACAO (${sale?.type})`,
+      moistureLevel: `TYPO (${sale?.type})`,
       premiumPaid: '1',
       COOPMaterialNumber: '',
-      COOPMaterialName: `CACAO (${sale.type})`,
+      COOPMaterialName: `CACAO (${sale?.type})`,
       PONumber: '',
       POPosition: '',
       plannedDeliveryDate: purchaseDate,
@@ -137,7 +135,7 @@ export const writeTransaction = async ({wallet, dataWrite, user, parcels}) => {
     }
     const res = bitGoUTXO.ECPair.fromWIF(
       wallet?.wallet?.wif,
-      bitGoUTXO.networks.kmd,
+      bitGoUTXO?.networks?.kmd,
       true,
     )
     const ec_pairs = get_all_ecpairs(batch, res)

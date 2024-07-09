@@ -29,6 +29,7 @@ const useFetchData = () => {
             ...options?.headers,
           },
         }
+        console.log('url', url)
         const response = await axios(url, combinedOptions)
         return response?.data
       } catch (err: any) {

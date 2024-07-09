@@ -23,7 +23,9 @@ import {UserDispatchContext} from '../../../states/UserContext'
 import Toast from 'react-native-toast-message'
 import {useNavigation} from '@react-navigation/native'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
-Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN || '')
+Mapbox.setAccessToken(
+  'sk.eyJ1IjoiYWNob3JyZXMiLCJhIjoiY2x0aGNhenRtMDNlYzJpazl2eWF2emZ6ZCJ9.1AbQAkG2QBZyWRGSwgFe-g',
+)
 const {width, height} = Dimensions.get('window')
 
 export const RegisterOkScreen = () => {
@@ -74,7 +76,7 @@ export const RegisterOkScreen = () => {
   }
 
   const descargarMapa = async () => {
-    const minx = parseFloat(map.minx_point + 35)
+    const minx = parseFloat(map.minx_point)
     const maxx = parseFloat(map.maxx_point)
     const miny = parseFloat(map.miny_point)
     const maxy = parseFloat(map.maxy_point)
@@ -104,6 +106,7 @@ export const RegisterOkScreen = () => {
         whatIsThat: 'foo',
       },
     }
+    console.log('options', options)
     await Mapbox.offlineManager
       .createPack(
         options,

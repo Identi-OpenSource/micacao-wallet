@@ -45,9 +45,11 @@ import {KF_STATES, STORAGE_KEYS} from '../../../../config/const'
 import useFetchData from '../../../../hooks/useFetchData'
 import {dniEncrypt} from '../../../../OCC/occ'
 
-if (Config.MAPBOX_ACCESS_TOKEN) {
-  Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
-}
+// if (Config.MAPBOX_ACCESS_TOKEN) {
+Mapbox.setAccessToken(
+  'sk.eyJ1IjoiYWNob3JyZXMiLCJhIjoiY2x0aGNhenRtMDNlYzJpazl2eWF2emZ6ZCJ9.1AbQAkG2QBZyWRGSwgFe-g',
+)
+// }
 const {width, height} = Dimensions.get('window')
 type Position = [number, number]
 
@@ -204,7 +206,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       return
     }
     //@braudin debe venir desde el servidor
-    const url = `${Config.URL_GFW}/upload`
+    const url = 'https://gfw-api.dev.identi.digital/upload'
     const formData = {
       coordinates: parcel.polygon
         .map((coordenada: Position) => `${coordenada[0]} ${coordenada[1]}`)
@@ -237,7 +239,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
 
   const postGfw = async () => {
     //@braudin debe venir desde el servidor
-    const url = `${Config.URL_GFW}/upload`
+    const url = 'https://gfw-api.dev.identi.digital/upload'
     const formData = {
       coordinates: parcel.polygon
         .map((coordenada: Position) => `${coordenada[0]} ${coordenada[1]}`)
@@ -276,7 +278,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   const getGfw = async () => {
     //@braudin debe venir desde el servidor
     const idlistId = parcel?.gfw?.listId
-    const url = `${Config.URL_GFW}/${idlistId}`
+    const url = `https://gfw-api.dev.identi.digital/${idlistId}`
     const resp = await fetchData(
       url,
       {
@@ -514,7 +516,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       return
     }
 
-    const url = Config.BASE_URL + '/field_state/' + user.dni
+    const url = 'https://api-micacao.dev.identi.digital/field_state/' + user.dni
     const KAFE_SISTEMAS_KEY =
       'cFZmeGpSOUdWUUI0UXpYcWc2Y0swaFRMUXM4aDBDMkxPRVRrSnRWc0wwSldoMjR0WXBSZzk5dVNFUzdXYVRrdg=='
     const resp = await fetchData(

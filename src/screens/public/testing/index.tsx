@@ -20,7 +20,9 @@ import {
 import {useNavigation} from '@react-navigation/native'
 import {useMapContext} from '../../../states/MapContext'
 import {Camera, MapView, MarkerView, StyleURL} from '@rnmapbox/maps'
-Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
+Mapbox.setAccessToken(
+  'sk.eyJ1IjoiYWNob3JyZXMiLCJhIjoiY2x0aGNhenRtMDNlYzJpazl2eWF2emZ6ZCJ9.1AbQAkG2QBZyWRGSwgFe-g',
+)
 const {width, height} = Dimensions.get('window')
 
 export const Test = () => {

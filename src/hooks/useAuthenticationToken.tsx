@@ -25,9 +25,9 @@ const useAuthenticationToken = (
     if (isConnected && accessToken === null) {
       try {
         const apiRequest: API_INTERFACE = {
-          url: `${Config.BASE_URL}/token`,
+          url: 'https://api-micacao.dev.identi.digital/token',
           method: 'POST',
-          payload: {username: Config.USERNAME, password: Config.PASSWORD},
+          payload: {username: 'wallet_user', password: 'wallet_user'},
           headers: {'Content-Type': 'multipart/form-data'},
         }
         const data = await HTTP(apiRequest)

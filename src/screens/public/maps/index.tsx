@@ -35,7 +35,9 @@ const Maps = () => {
   }, [])
 
   const getDistricts = async () => {
-    const url = Config.BASE_URL + '/districts/' + user.country?.country_id
+    const url =
+      'https://api-micacao.dev.identi.digital/districts/' +
+      user.country?.country_id
     const resp = await fetchData(url, {
       method: 'GET',
       headers: HEADERS(),
@@ -69,7 +71,8 @@ const Maps = () => {
   // }, [districts])
 
   const submit = async () => {
-    const url = Config.BASE_URL + '/coordinates/' + district?.dist_id
+    const url =
+      'https://api-micacao.dev.identi.digital/coordinates/' + district?.dist_id
     console.log('URL', url)
     const resp = await fetchData(url, {
       method: 'GET',
@@ -79,6 +82,7 @@ const Maps = () => {
       navigation.goBack()
       return
     }
+    console.log('resp =>', resp)
     storage.set(
       STORAGE_KEYS.user,
       JSON.stringify({...user, district: {...district, ...resp}}),

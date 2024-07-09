@@ -51,13 +51,13 @@ export const HomeScreen = () => {
 
   // Obtener token de acceso
   const postTokens = async () => {
-    const url = Config.BASE_URL + '/token'
+    const url = 'https://api-micacao.dev.identi.digital/token'
     const formData = new FormData()
-    formData.append('username', Config.USERNAME)
-    formData.append('password', Config.PASSWORD)
+    formData.append('username', 'wallet_user')
+    formData.append('password', 'wallet_user')
     const resp = await fetchData(url, {
       method: 'POST',
-      headers: HEADERS_FORM_DATA,
+      headers: {'Content-Type': 'multipart/form-data'},
       data: formData,
     })
     if (resp?.access_token) {
@@ -68,11 +68,14 @@ export const HomeScreen = () => {
 
   // Obtener las variables de la app
   const postVariables = async () => {
-    const url = Config.BASE_URL + '/app_config'
+    const url = 'https://api-micacao.dev.identi.digital/app_config'
 
     const resp = await fetchData(url, {
       method: 'GET',
-      headers: {'app-config-key': Config.APP_CONFIG_KEY},
+      headers: {
+        'app-config-key':
+          'QPJafbhIUAYoSumieivWSs1t7o008TsudePD8qdRTl2xPZPmO5LrmV14kOmhssbt',
+      },
     })
 
     if (!resp.isAxiosError) {
