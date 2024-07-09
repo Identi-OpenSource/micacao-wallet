@@ -11,20 +11,24 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: horizontalScale(MP_DF.large),
     paddingTop: verticalScale(MP_DF.medium),
+
   },
   header: {
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+    
   },
   btnIcon: {
     alignSelf: 'flex-start',
     marginLeft: -6,
+    
+    
   },
   title: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(28),
     fontWeight: '700',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     marginTop: verticalScale(MP_DF.medium),
   },
   formContainer: {

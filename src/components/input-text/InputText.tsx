@@ -1,15 +1,14 @@
-import React from 'react'
-import {StyleSheet, Text, TextInput, View} from 'react-native'
+import React from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import {
   BORDER_RADIUS_DF,
   COLORS_DF,
   FONT_FAMILIES,
   MP_DF,
-} from '../../config/themes/default'
-import {InputTextProps} from './interfaces'
-import {formatPhone} from '../../utils/formatPhone'
-import {formatPin} from '../../utils/formatPin'
-import {moderateScale} from '../../config/themes/metrics'
+} from "../../config/themes/default";
+import { InputTextProps } from "./interfaces";
+import { formatPin } from "../../utils/formatPin";
+import { moderateScale } from "../../config/themes/metrics";
 
 export const InputText = (props: InputTextProps) => {
   const {
@@ -19,21 +18,25 @@ export const InputText = (props: InputTextProps) => {
     preFormate,
     secureTextEntry,
     ref,
-    field: {name, value},
-    form: {handleChange, handleBlur, touched, errors},
-  } = props
+    field: { name, value },
+    form: { handleChange, handleBlur, touched, errors },
+  } = props;
 
   const onChangeText = (text: string) => {
-    let textFormate = text
-    if (preFormate === 'phone') {
-      textFormate = formatPhone(text)
+    let textFormate = text;
+    // if (preFormate === 'phone') {
+    //   textFormate = formatPhone(text)
+    // }
+    if (preFormate === "pin") {
+      textFormate = formatPin(text);
     }
-    if (preFormate === 'pin') {
-      textFormate = formatPin(text)
+    if (preFormate === "decimal") {
+      textFormate = textFormate.replace(/,/g, ".");
+      textFormate = textFormate.replace(/(\d*\.\d\d).*/, "$1");
     }
 
-    handleChange(name)(textFormate)
-  }
+    handleChange(name)(textFormate);
+  };
 
   return (
     <View style={styles.container}>
@@ -44,7 +47,7 @@ export const InputText = (props: InputTextProps) => {
         onBlur={handleBlur(name)}
         value={value}
         style={styles.input}
-        keyboardType={keyboardType || 'default'}
+        keyboardType={keyboardType || "default"}
         placeholder={placeholder}
         placeholderTextColor={COLORS_DF.gray}
         cursorColor={COLORS_DF.gray}
@@ -55,27 +58,27 @@ export const InputText = (props: InputTextProps) => {
         <Text style={styles.error}>{errors[name]?.toString()}</Text>
       )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     height: 120,
   },
   label: {
-    fontFamily: FONT_FAMILIES.primary,
+    fontFamily: FONT_FAMILIES.bold,
     fontSize: moderateScale(16),
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: MP_DF.medium,
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
   },
   error: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(12),
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: moderateScale(20),
     color: COLORS_DF.warning,
-    textAlign: 'right',
+    textAlign: "right",
   },
   input: {
     height: 48,
@@ -85,7 +88,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS_DF.small,
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(18),
-    fontWeight: '600',
+    fontWeight: "600",
     backgroundColor: COLORS_DF.white,
+    color: COLORS_DF.black,
   },
-})
+});
