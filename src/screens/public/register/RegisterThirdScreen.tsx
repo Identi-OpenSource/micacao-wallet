@@ -1,46 +1,51 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : Register screen of the application
- */
-
-import React from 'react'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {Keyboard, View} from 'react-native'
-import {Btn} from '../../../components/button/Button'
-import {TEXTS} from '../../../config/texts/texts'
 import {Field, Formik} from 'formik'
+import React, {useContext} from 'react'
+import {View} from 'react-native'
+import {Name_M, Name_W} from '../../../assets/svg'
+import {Btn} from '../../../components/button/Button'
+import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {LABELS} from '../../../config/texts/labels'
+import {ScreenProps} from '../../../routers/Router'
+import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
 import {
   INIT_VALUES_THREE,
   INPUTS_THREE,
   InterfaceThree,
   SCHEMA_THREE,
 } from './Interfaces'
-import {LABELS} from '../../../config/texts/labels'
-import {styles} from './styles'
-import {ScreenProps} from '../../../routers/Router'
 import {Header} from './RegisterScreen'
+import {styles} from './styles'
 
-export const RegisterThirdScreen = ({
-  route,
+interface RegisterThirdScreenProps {
+  navigation: any
+}
+
+const RegisterThirdScreen: React.FC<RegisterThirdScreenProps> = ({
   navigation,
-}: ScreenProps<'RegisterThirdScreen'>) => {
-  const params = route.params
+}) => {
+  const user = useContext(UsersContext)
+  const dispatch = useContext(UserDispatchContext)
 
-  const onSubmit = (values: InterfaceThree) => {
-    Keyboard.dismiss()
-    setTimeout(() => {
-      navigation.navigate('RegisterFourthScreen', {...params, ...values})
-    }, 100)
+  const submit = (values: InterfaceThree) => {
+    dispatch({
+      type: 'setUser',
+      payload: {
+        ...user,
+        ...values,
+      },
+    })
+    navigation.navigate('RegisterFourthScreen')
   }
 
   return (
-    <SafeArea bg="neutral" isForm>
+    <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={TEXTS.textE} />
+        <Header navigation={navigation} title={''} />
+        {user.gender == 'M' && <Name_M />}
+        {user.gender == 'W' && <Name_W />}
         <Formik
           initialValues={INIT_VALUES_THREE}
-          onSubmit={values => onSubmit(values)}
+          onSubmit={values => submit(values)}
           validationSchema={SCHEMA_THREE}>
           {({handleSubmit, isValid, dirty}) => (
             <>
@@ -66,3 +71,5 @@ export const RegisterThirdScreen = ({
     </SafeArea>
   )
 }
+
+export default RegisterThirdScreen

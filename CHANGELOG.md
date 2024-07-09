@@ -1,4 +1,4 @@
-## <small>0.0.1 (2024-1-11)</small>
+<!-- ## <small>0.0.1 (2024-1-11)</small>
 
 * feat: :sparkles: add navigation and config ([68776bf](https://github.com/identi-digital/micacao-wallet-concept/commit/68776bf))
 * fix: :sparkles: nuevas configuraciones agregadas ([a61a2c8](https://github.com/identi-digital/micacao-wallet-concept/commit/a61a2c8))
@@ -12,3 +12,4 @@
 
 
 
+ -->

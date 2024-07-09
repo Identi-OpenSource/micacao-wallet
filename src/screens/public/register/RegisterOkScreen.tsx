@@ -1,114 +1,194 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : View of entry point of the application
- */
-
-import React, {useContext, useEffect, useRef, useState} from 'react'
-import {SafeArea} from '../../../components/safe-area/SafeArea'
+import geoViewport from '@mapbox/geo-viewport'
+import Mapbox from '@rnmapbox/maps'
+import React, {useContext, useEffect, useState} from 'react'
 import {
   ActivityIndicator,
-  Animated,
-  Image,
+  Dimensions,
   StyleSheet,
   Text,
   View,
 } from 'react-native'
-import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
-import {Btn} from '../../../components/button/Button'
+import Config from 'react-native-config'
+import {newWallet, fundingWallet} from '../../../OCC/occ'
+import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {storage} from '../../../config/store/db'
 import {TEXTS} from '../../../config/texts/texts'
-
-import {LABELS} from '../../../config/texts/labels'
-import {imgCheque} from '../../../assets/imgs'
+import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import {ScreenProps} from '../../../routers/Router'
-import {storage} from '../../../config/store/db'
-import {UserDispatchContext} from '../../../states/UserContext'
+import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
 
-export const RegisterOkScreen = ({route}: ScreenProps<'RegisterOkScreen'>) => {
-  const params = route.params
-  const [step, setStep] = useState(0)
+import {useSyncData} from '../../../states/SyncDataContext'
+Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
+const {width, height} = Dimensions.get('window')
+
+export const RegisterOkScreen = () => {
+  const [step, setStep] = useState({step: 0, msg: TEXTS.textH})
   const dispatch = useContext(UserDispatchContext)
-  const fadeAnim = useRef(new Animated.Value(0)).current
+  const user = useContext(UsersContext)
+  const {addToSync} = useSyncData()
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-  // Save data
   useEffect(() => {
-    storage.set('user', JSON.stringify({...params, isLogin: true}))
+    initial()
   }, [])
 
-  // Login
-  const isLogin = () => {
-    dispatch({type: 'login', payload: {...params, isLogin: true}})
+  // Inicializa el proceso de registro
+  const initial = async () => {
+    setStep({step: 1, msg: 'Creando billetera...'})
+    const wallet = newWallet()
+    await delay(1500)
+    setStep({step: 2, msg: 'Agregando fondos...'})
+    const funding = await fundingWallet(wallet.walletOFC).catch(() => ({
+      status: 500,
+    }))
+    const isFunding = funding.status === 200
+
+    console.log({wallet, isFunding})
+
+    storage.set('wallet', JSON.stringify({wallet, isFunding}))
+    await delay(2000)
+    setStep({
+      step: 2,
+      msg: 'Descargando mapa...',
+    })
+    descargarMapaTarapoto(), descargarMapaJuanjui()
+    await delay(1000)
+    setStep({step: 3, msg: 'Inicio de sesión...'})
+    await delay(1500)
+    addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')
+    await delay(1500)
+    const login = JSON.parse(storage.getString('user') || '{}')
+    dispatch({type: 'login', payload: login})
   }
 
-  // Animation
-  useEffect(() => {
-    if (step === 0) {
-      // Fade in
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 2000,
-        useNativeDriver: true,
-      }).start(() => {
-        // Fade out after fade in is complete
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 500,
-          delay: 1500,
-          useNativeDriver: true,
-        }).start(() => {
-          // nimero aleatorio ente 500 y 2500
-          setStep(1)
-        })
-      })
-    } else if (step === 1) {
-      fadeAnim.setValue(0)
-      // Fade in
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start()
-    }
-  }, [fadeAnim, step])
+  const descargarMapaTarapoto = async () => {
+    const bounds: [number, number, number, number] = geoViewport.bounds(
+      [-78.5442722, -0.1861084],
+      17,
+      [width, height],
+      512,
+    )
 
-  console.log('params', params)
+    const options = {
+      name: 'TarapotoMapTest',
+      styleURL: Mapbox.StyleURL.Satellite,
+      bounds: [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ] as [[number, number], [number, number]],
+      minZoom: 10,
+      maxZoom: 20,
+      metadata: {
+        whatIsThat: 'foo',
+      },
+    }
+    await Mapbox.offlineManager
+      .createPack(
+        options,
+        (region, status) => {
+          console.log('=> progress callback region:', 'status: ', status)
+        },
+        error => {
+          console.log('=> error callback error:', error)
+        },
+      )
+      .catch(() => {
+        console.log('=> Mapa descargado')
+      })
+  }
+
+  const descargarMapaJuanjui = async () => {
+    const bounds: [number, number, number, number] = geoViewport.bounds(
+      [-76.748, -7.181],
+      17,
+      [width, height],
+      512,
+    )
+
+    const options = {
+      name: 'JuanjuiMapTest',
+      styleURL: Mapbox.StyleURL.Satellite,
+      bounds: [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ] as [[number, number], [number, number]],
+      minZoom: 10,
+      maxZoom: 20,
+      metadata: {
+        whatIsThat: 'foo',
+      },
+    }
+    await Mapbox.offlineManager
+      .createPack(
+        options,
+        (region, status) => {
+          console.log('=> descargando mapa juanjui:', 'status: ', status)
+        },
+        error => {
+          console.log('=> error callback error:', error)
+        },
+      )
+      .catch(() => {
+        console.log('=> Mapa descargado')
+      })
+  }
+  /*   const descargarMapaQuito = async () => {
+    const bounds: [number, number, number, number] = geoViewport.bounds(
+      [-78.4678, -0.1807],
+      12,
+      [width, height],
+      512
+    );
+
+    const options = {
+      name: "QuitoMapTest",
+      styleURL: Mapbox.StyleURL.Satellite,
+      bounds: [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ] as [[number, number], [number, number]],
+      minZoom: 10,
+      maxZoom: 20,
+      metadata: {
+        whatIsThat: "foo",
+      },
+    };
+    await Mapbox.offlineManager
+      .createPack(
+        options,
+        (region, status) => {
+          console.log("=> progress callback region:", "status: ", status);
+          console.log(
+            "Progreso de descarga:",
+            status.percentage + "% completado"
+          );
+        },
+        (error) => {
+          console.log("=> error callback error:", error);
+        }
+      )
+      .catch(() => {
+        console.log("=> Mapa Quito descargado");
+      });
+  }; */
 
   return (
-    <SafeArea bg={'neutral'}>
-      {step === 0 && (
-        <>
-          <ActivityIndicator
-            size={moderateScale(86)}
-            color={COLORS_DF.cacao}
-            style={styles.indicador}
-          />
-          <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
-            <View style={styles.textContainer}>
-              <Text style={[styles.textA]}>{TEXTS.textG}</Text>
-              <Text style={[styles.textB]}>{TEXTS.textH}</Text>
-            </View>
-          </Animated.View>
-        </>
-      )}
-      {step === 1 && (
-        <>
-          <Image source={imgCheque} style={[styles.img, styles.indicador]} />
-          <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
-            <View style={styles.textContainer}>
-              <Text style={[styles.textA]}>{TEXTS.textI}</Text>
-              <Text style={[styles.textB]}>{TEXTS.textJ}</Text>
-            </View>
-            <View style={styles.formBtn}>
-              <Btn title={LABELS.continue} theme="agrayu" onPress={isLogin} />
-            </View>
-          </Animated.View>
-        </>
-      )}
+    <SafeArea bg={'isabelline'}>
+      <ActivityIndicator
+        size={moderateScale(86)}
+        color={COLORS_DF.citrine_brown}
+        style={styles.indicador}
+      />
+      <View style={[styles.container]}>
+        <View style={styles.textContainer}>
+          <Text style={[styles.textA]}>{TEXTS.textG}</Text>
+          <Text style={[styles.textB]}>{step.msg}</Text>
+        </View>
+      </View>
     </SafeArea>
   )
 }
@@ -133,7 +213,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(32),
     fontWeight: '700',
     textAlign: 'center',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
     paddingHorizontal: horizontalScale(MP_DF.large),
     paddingVertical: verticalScale(MP_DF.medium),
   },
@@ -142,7 +222,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(24),
     fontWeight: '500',
     textAlign: 'center',
-    color: COLORS_DF.cacao,
+    color: COLORS_DF.citrine_brown,
   },
   formBtn: {
     flex: 1,
