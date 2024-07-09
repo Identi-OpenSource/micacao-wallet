@@ -76,37 +76,37 @@ export const RegisterOkScreen = () => {
   }
 
   const descargarMapa = async () => {
-    const minx = parseFloat(map.minx_point)
-    const maxx = parseFloat(map.maxx_point)
-    const miny = parseFloat(map.miny_point)
-    const maxy = parseFloat(map.maxy_point)
-
-    const centerLng = (minx + maxx) / 2
-    const centerLat = (miny + maxy) / 2
-
-    // Calcular los límites del área del mapa
-    const bounds: [number, number, number, number] = geoViewport.bounds(
-      [centerLng, centerLat],
-
-      17,
-      [width, height],
-      512,
-    )
-
+    console.log('map', map)
+    // const minx = parseFloat(map.minx_point)
+    // const maxx = parseFloat(map.maxx_point)
+    // const miny = parseFloat(map.miny_point)
+    // const maxy = parseFloat(map.maxy_point)
+    // const centerLng = (minx + maxx) / 2
+    // const centerLat = (miny + maxy) / 2
+    // // Calcular los límites del área del mapa
+    // const bounds: [number, number, number, number] = geoViewport.bounds(
+    //   [centerLng, centerLat],
+    //   17,
+    //   [width, height],
+    //   512,
+    // )
+    const minx_point = parseFloat(map.minx_point.replace(/,/g, '.'))
+    const maxx_point = parseFloat(map.maxx_point.replace(/,/g, '.'))
+    const miny_point = parseFloat(map.miny_point.replace(/,/g, '.'))
+    const maxy_point = parseFloat(map.maxy_point.replace(/,/g, '.'))
     const options = {
       name: 'MapTests',
       styleURL: Mapbox.StyleURL.Satellite,
       bounds: [
-        [bounds[0], bounds[1]],
-        [bounds[2], bounds[3]],
+        [minx_point, miny_point],
+        [maxx_point, maxy_point],
       ] as [[number, number], [number, number]],
       minZoom: 10,
-      maxZoom: 20,
-      metadata: {
-        whatIsThat: 'foo',
-      },
+      maxZoom: 24,
     }
+    console.log('map', map)
     console.log('options', options)
+    // console.log('options', options)
     await Mapbox.offlineManager
       .createPack(
         options,
@@ -117,11 +117,11 @@ export const RegisterOkScreen = () => {
           })
         },
         error => {
-          console.log('=> error callback error:', error)
+          console.log('Error al crear el pack:', error)
         },
       )
       .catch(() => {
-        console.log('=> Mapa descargado')
+        console.log('Error al descargar el mapa')
       })
   }
 
