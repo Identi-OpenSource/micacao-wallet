@@ -115,7 +115,6 @@ export const RegisterOkScreen = () => {
             step: 3,
             msg: 'Descargando mapa ' + status.percentage + '%',
           })
-          console.log('=> descargando mapa :', 'status: ', status)
         },
         error => {
           console.log('=> error callback error:', error)
