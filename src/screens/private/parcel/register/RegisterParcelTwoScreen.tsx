@@ -55,11 +55,17 @@ const RegisterParcelTwoScreen: React.FC<RegisterParcelTwoScreenProps> = ({
     const parcelTemp = JSON.parse(
       storage.getString(STORAGE_KEYS.parcelTemp) || '{}',
     )
-    storage.set(
-      STORAGE_KEYS.parcelTemp,
-      JSON.stringify({...parcelTemp, hectares}),
-    )
-    navigation.navigate('RegisterParcelThirdScreen')
+    const parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
+    const newParcel = {
+      ...parcelTemp,
+      hectares,
+      id: parcels.length + 1,
+    }
+    const addParcel = [...parcels, newParcel]
+    storage.set(STORAGE_KEYS.parcels, JSON.stringify(addParcel))
+
+    storage.delete(STORAGE_KEYS.parcelTemp)
+    navigation.navigate('MyParcelsScreen')
   }
 
   return (

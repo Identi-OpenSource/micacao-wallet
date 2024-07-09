@@ -70,16 +70,17 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
 
 const GradientLineRecorrer = ({route}: any) => {
   const params = route.params
+  const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
+  const centerPoint = user?.district?.center_point?.split(' ')
+  const centerX = centerPoint?.[0]?.replace(/,/g, '.') || 0
+  const centerY = centerPoint?.[1]?.replace(/,/g, '.') || 0
   const parcelsList = JSON.parse(
     storage.getString(STORAGE_KEYS.parcels) || '[]',
   )
   const parcel = parcelsList.find((p: Parcel) => p.id === params?.id)
   const parcelIndex = parcelsList.findIndex((p: Parcel) => p.id === params?.id)
 
-  const firstPoint = [
-    Number(parcel.firstPoint[1]),
-    Number(parcel.firstPoint[0]),
-  ] as Position
+  const firstPoint = [Number(centerY), Number(centerX)] as Position
   const [firstPointGps, setFirstPointGps] = useState<[number, number] | null>(
     null,
   )
