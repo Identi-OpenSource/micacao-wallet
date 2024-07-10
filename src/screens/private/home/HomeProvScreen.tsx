@@ -126,15 +126,16 @@ export const HomeProvScreen = () => {
   const fundingW = async () => {
     // const funding = await fundingWallet(wallet.wallet.walletOFC)
     const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
+    console.log('dataExt', dataExt)
     const differenceInMilliseconds = Math.abs(
       dataExt?.fundingWallet - new Date().getTime(),
     )
     const differenceInHours = differenceInMilliseconds / 3600000
-    if (!isConnected || differenceInHours > 720) {
+    if (!isConnected || differenceInHours < 720) {
       return
     }
-    const funding = await fundingWallet(wallet.wallet.walletOFC)
-    const isFunding = funding.status === 200
+    const funding = await fundingWallet(wallet?.wallet?.walletOFC)
+    const isFunding = funding?.status === 200
     if (!isFunding) {
       return
     }
