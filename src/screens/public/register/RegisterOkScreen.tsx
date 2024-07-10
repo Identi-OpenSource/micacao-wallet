@@ -1,14 +1,7 @@
-import geoViewport from '@mapbox/geo-viewport'
+import Config from 'react-native-config'
 import Mapbox from '@rnmapbox/maps'
 import React, {useContext, useEffect, useState} from 'react'
-import {
-  ActivityIndicator,
-  Dimensions,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
-import Config from 'react-native-config'
+import {ActivityIndicator, StyleSheet, Text, View} from 'react-native'
 import {newWallet, fundingWallet} from '../../../OCC/occ'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {storage} from '../../../config/store/db'
@@ -23,10 +16,7 @@ import {UserDispatchContext} from '../../../states/UserContext'
 import Toast from 'react-native-toast-message'
 import {useNavigation} from '@react-navigation/native'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
-Mapbox.setAccessToken(
-  'sk.eyJ1IjoiYWNob3JyZXMiLCJhIjoiY2x0aGNhenRtMDNlYzJpazl2eWF2emZ6ZCJ9.1AbQAkG2QBZyWRGSwgFe-g',
-)
-const {width, height} = Dimensions.get('window')
+Mapbox.setAccessToken(Config?.MAPBOX_ACCESS_TOKEN || '')
 
 export const RegisterOkScreen = () => {
   const [step, setStep] = useState({step: 0, msg: TEXTS.textH})
@@ -76,20 +66,6 @@ export const RegisterOkScreen = () => {
   }
 
   const descargarMapa = async () => {
-    console.log('map', map)
-    // const minx = parseFloat(map.minx_point)
-    // const maxx = parseFloat(map.maxx_point)
-    // const miny = parseFloat(map.miny_point)
-    // const maxy = parseFloat(map.maxy_point)
-    // const centerLng = (minx + maxx) / 2
-    // const centerLat = (miny + maxy) / 2
-    // // Calcular los límites del área del mapa
-    // const bounds: [number, number, number, number] = geoViewport.bounds(
-    //   [centerLng, centerLat],
-    //   17,
-    //   [width, height],
-    //   512,
-    // )
     const minx_point = parseFloat(map.minx_point.replace(/,/g, '.'))
     const maxx_point = parseFloat(map.maxx_point.replace(/,/g, '.'))
     const miny_point = parseFloat(map.miny_point.replace(/,/g, '.'))
@@ -104,8 +80,8 @@ export const RegisterOkScreen = () => {
       minZoom: 10,
       maxZoom: 24,
     }
-    console.log('map', map)
-    console.log('options', options)
+    // console.log('map', map)
+    // console.log('options', options)
     // console.log('options', options)
     await Mapbox.offlineManager
       .createPack(

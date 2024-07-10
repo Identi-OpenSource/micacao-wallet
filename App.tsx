@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
+import Config from 'react-native-config'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {faWhatsapp, fab} from '@fortawesome/free-brands-svg-icons'
 import {
@@ -40,7 +41,6 @@ import {
   View,
   Linking,
   Dimensions,
-  StatusBar,
 } from 'react-native'
 import Toast, {
   BaseToast,
@@ -55,17 +55,8 @@ import {
   Whattsap,
   Edit_Map,
 } from './src/assets/svg/index'
-// import useInternetConnection from './src/OCC/hooks/useInternetConnection'
-
-import {AuthProvider} from './src/states/AuthContext'
-import {ConnectionProvider} from './src/states/_ConnectionContext'
 import {UserProvider} from './src/states/UserContext'
-import {MapProvider} from './src/states/MapContext'
-import {KafeProvider} from './src/states/KafeContext'
 import {COLORS_DF, FONT_FAMILIES} from './src/config/themes/default'
-import {SyncDataProvider} from './src/states/SyncDataContext'
-import {GwfProvider} from './src/states/GfwContext'
-import {Image} from 'react-native-svg'
 import {Router} from './src/routers/Router'
 import {SafeAreaProvider} from 'react-native-safe-area-context'
 
@@ -170,7 +161,10 @@ function App(): React.JSX.Element {
     msgToast: ({text1, props}) => (
       <View style={styles.toastContainer}>
         {props.icon ? props.icon : <Error height={70} width={70} />}
-        <Text style={styles.toastText}>{text1}</Text>
+        <Text style={styles.toastTextTitle}>{text1}</Text>
+        {props?.textSub && (
+          <Text style={styles.toastText}>{props?.textSub}</Text>
+        )}
         <TouchableOpacity onPress={hideToast} style={styles.buttonToast}>
           <Text style={styles.buttonToastText}> Ok </Text>
         </TouchableOpacity>
@@ -294,7 +288,7 @@ function App(): React.JSX.Element {
   }
 
   const linkWhattsap = () => {
-    Linking.openURL('whatsapp://send?phone=+5117064556').catch(() => {
+    Linking.openURL(`whatsapp://send?phone=${Config.WS_NUMBER}`).catch(() => {
       Linking.openURL(
         'https://play.google.com/store/apps/details?id=com.whatsapp',
       )
@@ -313,27 +307,6 @@ function App(): React.JSX.Element {
       </UserProvider>
     </SafeAreaProvider>
   )
-
-  // return (
-  //   <ConnectionProvider value={internetConnection}>
-  //     <AuthProvider>
-  //       <SyncDataProvider>
-  //         <UserProvider>
-  //           <MapProvider>
-  //             <GwfProvider>
-  //               <KafeProvider>
-  //                 <NavigationContainer>
-  //                   <Router />
-  //                   <Toast config={toastConfig} />
-  //                 </NavigationContainer>
-  //               </KafeProvider>
-  //             </GwfProvider>
-  //           </MapProvider>
-  //         </UserProvider>
-  //       </SyncDataProvider>
-  //     </AuthProvider>
-  //   </ConnectionProvider>
-  // )
 }
 const styles = StyleSheet.create({
   toastText: {

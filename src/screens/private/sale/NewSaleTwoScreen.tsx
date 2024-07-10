@@ -14,8 +14,13 @@ export const NewSaleTwoScreen = () => {
   const [kl, setKl] = useState('')
   const ref = useRef<TextInput>(null)
 
-  const decimals = (numero: any) => {
-    return /^(0|[1-9]\d{0,3})(\.\d{1,2})?$/.test(numero.trim())
+  const decimals = (numero: string) => {
+    // Reemplazar comas decimales por puntos decimales
+    const sanitizedNumber = numero.replace(',', '.').trim()
+
+    // Validar que el número tiene hasta 8 cifras en total y máximo 2 decimales
+    const regex = /^\d{1,8}(\.\d{1,2})?$/
+    return regex.test(sanitizedNumber)
   }
 
   const onSubmit = () => {
@@ -23,8 +28,11 @@ export const NewSaleTwoScreen = () => {
     // kl es un numero y mayor a 0
     if (isNaN(Number(kl)) || Number(kl) <= 0 || !decimals(kl)) {
       Toast.show({
-        type: 'syncToast',
-        text1: '¡Número Inválido!',
+        type: 'msgToast',
+        text1: 'Cantidad inválida',
+        props: {
+          textSub: 'Menos de 100,000,000 y solo 2 decimales',
+        },
       })
       return
     }
@@ -40,14 +48,13 @@ export const NewSaleTwoScreen = () => {
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <HeaderActions title={'Paso 2 de 5'} navigation={navigation} />
-        <Text style={styles.title}>¿CUÁNTO VAS A VENDER?</Text>
+        <Text style={styles.title}>¿CUÁNTOS KILOS VAS A VENDER?</Text>
         <View style={styles.containerBTN}>
           <TouchableOpacity
             style={styles.containerKL}
             activeOpacity={1}
             onPress={() => (ref.current as any)?.focus()}>
             <Text style={styles.KLV}>{kl}</Text>
-            <Text style={styles.KL}>Kg.</Text>
           </TouchableOpacity>
           <View style={{marginBottom: 25}}>
             <Btn

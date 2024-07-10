@@ -60,6 +60,11 @@ export const NewSaleThreeScreen = () => {
   const onSubmit = async () => {
     const regex = /^\d{4}-\d{1,2}-\d{1,2}$/
     if (!fecha.match(regex)) {
+      Toast.show({
+        type: 'msgToast',
+        text1: 'La fecha no es válida',
+        autoHide: false,
+      })
       return false
     }
     const parts = fecha.split('-')

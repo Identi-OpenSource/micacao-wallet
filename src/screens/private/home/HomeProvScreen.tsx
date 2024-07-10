@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-shadow */
+import Config from 'react-native-config'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import React, {useCallback, useState} from 'react'
@@ -26,7 +27,6 @@ import {UserInterface} from '../../../states/UserContext'
 import {storage} from '../../../config/store/db'
 import useInternetConnection from '../../../hooks/useInternetConnection'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
-import Config from 'react-native-config'
 import useFetchData, {HEADERS} from '../../../hooks/useFetchData'
 import {fundingWallet, writeTransaction} from '../../../OCC/occ'
 import Spinner from 'react-native-loading-spinner-overlay'
@@ -51,7 +51,7 @@ export const HomeProvScreen = () => {
     await asyncData()
     await fundingW()
     // setLoadDataAsync(true)
-    // await writeBlockchain()
+    await writeBlockchain()
     // setLoadDataAsync(false)
   }
 
@@ -98,23 +98,21 @@ export const HomeProvScreen = () => {
   const loadData = async () => {
     // revisar si hay actualización en las variables de env
     const data = JSON.parse(storage.getString(STORAGE_KEYS.loadData) || '{}')
-    const urlConfig = 'https://api-micacao.dev.identi.digital'
+    const urlConfig = Config?.BASE_URL || ''
     const configResp = await fetchData(urlConfig, {
       method: 'GET',
       headers: {
-        'app-config-key':
-          'QPJafbhIUAYoSumieivWSs1t7o008TsudePD8qdRTl2xPZPmO5LrmV14kOmhssbt',
+        'app-config-key': Config?.APP_CONFIG_KEY || '',
       },
     })
     if (configResp.isAxiosError || data.update === configResp?.last_update) {
       return
     }
-    const url = 'https://api-micacao.dev.identi.digital/app_config'
+    const url = `${Config?.BASE_URL}/app_config`
     const resp = await fetchData(url, {
       method: 'GET',
       headers: {
-        'app-config-key':
-          'QPJafbhIUAYoSumieivWSs1t7o008TsudePD8qdRTl2xPZPmO5LrmV14kOmhssbt',
+        'app-config-key': Config?.APP_CONFIG_KEY || '',
       },
     })
     if (!resp.isAxiosError) {
@@ -157,8 +155,8 @@ export const HomeProvScreen = () => {
     for (let index = 0; index < syncUp?.length; index++) {
       const element = syncUp[index]
       if (element.type === SYNC_UP_TYPES.user) {
-        console.log('creando productor =>', 'Start')
-        const url = 'https://api-micacao.dev.identi.digital/create_producer'
+        // console.log('creando productor =>', 'Start')
+        const url = `${Config?.BASE_URL}/create_producer`
         const data = {
           dni: element.data.dni,
           name: element.data.name,
@@ -171,11 +169,11 @@ export const HomeProvScreen = () => {
         if (resp) {
           indexAsync.push(index)
         }
-        console.log('creando productor =>', resp)
+        // console.log('creando productor =>', resp)
       }
       if (element.type === SYNC_UP_TYPES.parcels) {
-        console.log('creando farm =>', 'Start')
-        const url = 'https://api-micacao.dev.identi.digital/create_farm'
+        // console.log('creando farm =>', 'Start')
+        const url = `${Config?.BASE_URL}/create_farm`
         const data = {
           id: element?.data?.id,
           farm_name: element?.data?.name,
@@ -188,11 +186,11 @@ export const HomeProvScreen = () => {
         if (resp) {
           indexAsync.push(index)
         }
-        console.log('creando farm =>', resp)
+        // console.log('creando farm =>', resp)
       }
       if (element.type === SYNC_UP_TYPES.sales) {
-        console.log('creando venta =>', 'Start')
-        const url = 'https://api-micacao.dev.identi.digital/create_activities'
+        // console.log('creando venta =>', 'Start')
+        const url = `${Config?.BASE_URL}/create_activities`
         const data = {
           dni_cacao_producer: user.dni,
           id_farm: element?.data?.parcela,
@@ -213,7 +211,7 @@ export const HomeProvScreen = () => {
           )
           indexAsync.push(index)
         }
-        console.log('creando venta =>', resp)
+        // console.log('creando venta =>', resp)
       }
     }
 
@@ -258,7 +256,7 @@ export const HomeProvScreen = () => {
   // pruebas
   // const sales = JSON.parse(storage.getString(STORAGE_KEYS.sales) || '[]')
   // console.log('sales', sales)
-  console.log('user', user)
+  // console.log('user', user)
   // storage.delete(STORAGE_KEYS.parcels)
   // storage.delete(STORAGE_KEYS.sales)
   // storage.delete(STORAGE_KEYS.syncUp)

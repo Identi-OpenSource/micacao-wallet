@@ -1,13 +1,12 @@
+import Config from 'react-native-config'
 import axios from 'axios'
-import {Linking} from 'react-native'
 const bitGoUTXO = require('@bitgo/utxo-lib')
 const {
   send_batch_transactions,
   get_all_ecpairs,
 } = require('transaction-js/batch')
 import CryptoJS from 'crypto-js'
-import Config from 'react-native-config'
-import {STORAGE_KEYS, months} from '../config/const'
+import {STORAGE_KEYS} from '../config/const'
 import {storage} from '../config/store/db'
 
 const KEYS_WALLET = [
@@ -40,28 +39,18 @@ export const newWallet = () => {
 
 export const fundingWallet = async wallet => {
   console.log('wallet', wallet)
-  const url = `https://fund.occs.openfoodchain.org/fund/${wallet}`
-  // const url = `http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=${wallet}`
+  const url = `${Config?.WALLET_FUND}/fund/${wallet}`
   console.log('url', url)
   return await axios.get(url).catch(error => {
-    console.log('response =>', error.response.data)
-    // console.log('error fundingWallet', error)
+    console.log('error fundingWallet => ', error)
     return error
   })
 }
-// export const fundingWallet = async wallet => {
-//   const url = `https://fund.occs.openfoodchain.org/found/${wallet}`
-//   return await axios.get(url)
-// }
-
-export const verificarWallet = async wallet => {
-  const url = `https://blockchain-explorer.occs.openfoodchain.org/address/${wallet}`
-
-  Linking.openURL(url)
-}
 
 export const dniText = async dni => {
-  const utf8Key = CryptoJS.enc.Utf8.parse('2acdugezqflwuz8oc58j4n2tmkzsdhd8')
+  const utf8Key = CryptoJS.enc.Utf8.parse(
+    Config?.KEY_CIFRADO_KAFE_SISTEMAS || '',
+  )
   const encryptedHexStr = CryptoJS.enc.Hex.parse(dni)
   const encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr)
   const decrypted = CryptoJS.AES.decrypt(encryptedBase64Str, utf8Key, {
@@ -72,26 +61,12 @@ export const dniText = async dni => {
   return decryptedUtf8.replace(/\0+$/, '')
 }
 
-/*
-@braudin esta esta confirmada con KS que es correcta la clave
-  export const dniEncrypt = async dni => {
-  const paddedDNI = dni.padStart(16, '0')
-  const keyAll = Config.KEY_CIFRADO_KAFE_SISTEMAS
-  // const key16 = `${Config.KEY_CIFRADO_KAFE_SISTEMAS}`.substring(0, 16)
-  const utf8Key = CryptoJS.enc.Utf8.parse('6d4cf5ae259c7efdae041e7ac6ac41d7')
-  const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
-  const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
-    mode: CryptoJS.mode.ECB,
-    padding: CryptoJS.pad.Pkcs7,
-  })
-  const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex)
-  return {dni: hexResult, dniAll: hexResult.length}
-} */
-
 // @braudin refactorizando la funcion
 export const dniEncrypt = async dni => {
   const paddedDNI = dni.padStart(16, '0')
-  const utf8Key = CryptoJS.enc.Utf8.parse('2acdugezqflwuz8oc58j4n2tmkzsdhd8')
+  const utf8Key = CryptoJS.enc.Utf8.parse(
+    Config?.KEY_CIFRADO_KAFE_SISTEMAS || '',
+  )
   const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI)
   const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
     mode: CryptoJS.mode.ECB,
@@ -102,11 +77,6 @@ export const dniEncrypt = async dni => {
 }
 
 export const writeTransaction = async ({wallet, dataWrite, user, parcels}) => {
-  // console.log('wallet', wallet)
-  // console.log('dataWrite', dataWrite)
-  // console.log('user', user)
-  // console.log('parcels', parcels)
-  // Obtener DNI
   const DNI = await dniText(user?.dni)
   const writeOK = []
   const indexDelete = []
@@ -140,7 +110,6 @@ export const writeTransaction = async ({wallet, dataWrite, user, parcels}) => {
     )
     const ec_pairs = get_all_ecpairs(batch, res)
     const tx1 = await send_batch_transactions(ec_pairs, batch, res)
-    // console.log('tx-' + index, tx1)
     const isSend = countMatches(KEYS_WALLET, tx1)
     if (isSend) {
       writeOK.push(true)
@@ -164,25 +133,6 @@ const countMatches = (constantArr, dynamicArr) => {
   const matches = constantArr.filter(item => dynamicArr.includes(item))
   // Retorna true si hay al menos 3 coincidencias, de lo contrario false
   return matches.length <= 4
-}
-
-const getFirstDayMonthPrevious = mes => {
-  const fechaActual = new Date()
-  const añoActual = fechaActual.getFullYear()
-  const mesActual = fechaActual.getMonth()
-  let añoObjetivo
-  let mesObjetivo
-  if (mesActual > mes) {
-    añoObjetivo = añoActual
-    mesObjetivo = mes
-  } else {
-    añoObjetivo = añoActual - 1
-    mesObjetivo = mes
-  }
-  const fechaObjetivo = new Date(añoObjetivo, mesObjetivo, 1)
-  const año = fechaObjetivo.getFullYear()
-  const mesStr = fechaObjetivo.getMonth()
-  return `01-${months[mesStr]}-${año}`
 }
 
 function convertAPolygonString(coordenadas) {

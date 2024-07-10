@@ -1,6 +1,13 @@
 import {useNavigation} from '@react-navigation/native'
 import React, {useRef, useState} from 'react'
-import {Dimensions, StyleSheet, Text, TextInput, View} from 'react-native'
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import Toast from 'react-native-toast-message'
 import {Btn} from '../../../components/button/Button'
 import {HeaderActions, SafeArea} from '../../../components/safe-area/SafeArea'
@@ -16,8 +23,13 @@ export const SaleScreen = () => {
   const [precio, setPrecio] = useState('')
   const ref = useRef<TextInput>(null)
 
-  const decimals = (numero: any) => {
-    return /^(0|[1-9]\d{0,3})(\.\d{1,2})?$/.test(numero.trim())
+  const decimals = (numero: string) => {
+    // Reemplazar comas decimales por puntos decimales
+    const sanitizedNumber = numero.replace(',', '.').trim()
+
+    // Validar que el número tiene hasta 8 cifras en total y máximo 2 decimales
+    const regex = /^\d{1,8}(\.\d{1,2})?$/
+    return regex.test(sanitizedNumber)
   }
 
   const onSubmit = () => {
@@ -25,8 +37,11 @@ export const SaleScreen = () => {
 
     if (isNaN(Number(precio)) || Number(precio) <= 0 || !decimals(precio)) {
       Toast.show({
-        type: 'syncToast',
-        text1: '¡Número Inválido!',
+        type: 'msgToast',
+        text1: 'Cantidad inválida',
+        props: {
+          textSub: 'Menos de 100,000,000 y solo 2 decimales',
+        },
       })
       return
     }
@@ -48,13 +63,18 @@ export const SaleScreen = () => {
           <Text style={styles.title}>¿CUÁNTO TE ESTAN PAGANDO POR KILO?</Text>
         </View>
         <View style={styles.containerBTN}>
+          <TouchableOpacity
+            style={styles.containerKL}
+            activeOpacity={1}
+            onPress={() => (ref.current as any)?.focus()}>
+            <Text style={styles.KLV}>{precio}</Text>
+          </TouchableOpacity>
           <View
             style={{
               justifyContent: 'center',
               alignItems: 'center',
               flexDirection: 'row',
             }}>
-            <Text style={styles.KL}>S/.</Text>
             <TextInput
               ref={ref}
               style={styles.input}
@@ -90,20 +110,12 @@ const styles = StyleSheet.create({
     paddingBottom: MP_DF.large,
   },
   input: {
-    height: height * 0.09,
-    width: width * 0.5,
-    borderBottomWidth: 1,
-    color: COLORS_DF.citrine_brown,
-    fontSize: 30,
-    borderBottomColor: COLORS_DF.citrine_brown,
-    textAlign: 'center',
-    textAlignVertical: 'center',
+    height: 0,
   },
   containerKL: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: MP_DF.xlarge,
-    borderWidth: 1,
   },
   KLV: {
     fontSize: 30,

@@ -1,3 +1,4 @@
+import Config from 'react-native-config'
 import geoViewport from '@mapbox/geo-viewport'
 import Mapbox from '@rnmapbox/maps'
 import React, {useEffect, useState} from 'react'
@@ -8,7 +9,6 @@ import {
   Text,
   View,
 } from 'react-native'
-import Config from 'react-native-config'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {TEXTS} from '../../../config/texts/texts'
 import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
@@ -20,9 +20,7 @@ import {
 import {useNavigation} from '@react-navigation/native'
 import {useMapContext} from '../../../states/MapContext'
 import {Camera, MapView, MarkerView, StyleURL} from '@rnmapbox/maps'
-Mapbox.setAccessToken(
-  'sk.eyJ1IjoiYWNob3JyZXMiLCJhIjoiY2x0aGNhenRtMDNlYzJpazl2eWF2emZ6ZCJ9.1AbQAkG2QBZyWRGSwgFe-g',
-)
+Mapbox.setAccessToken(Config?.MAPBOX_ACCESS_TOKEN || '')
 const {width, height} = Dimensions.get('window')
 
 export const Test = () => {

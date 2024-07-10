@@ -51,10 +51,10 @@ export const HomeScreen = () => {
 
   // Obtener token de acceso
   const postTokens = async () => {
-    const url = 'https://api-micacao.dev.identi.digital/token'
+    const url = `${Config?.BASE_URL}/token`
     const formData = new FormData()
-    formData.append('username', 'wallet_user')
-    formData.append('password', 'wallet_user')
+    formData.append('username', Config.USERNAME)
+    formData.append('password', Config.PASSWORD)
     const resp = await fetchData(url, {
       method: 'POST',
       headers: {'Content-Type': 'multipart/form-data'},
@@ -68,13 +68,12 @@ export const HomeScreen = () => {
 
   // Obtener las variables de la app
   const postVariables = async () => {
-    const url = 'https://api-micacao.dev.identi.digital/app_config'
+    const url = `${Config?.BASE_URL}/app_config`
 
     const resp = await fetchData(url, {
       method: 'GET',
       headers: {
-        'app-config-key':
-          'QPJafbhIUAYoSumieivWSs1t7o008TsudePD8qdRTl2xPZPmO5LrmV14kOmhssbt',
+        'app-config-key': Config?.APP_CONFIG_KEY || '',
       },
     })
 
@@ -141,25 +140,3 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 })
-
-const MUESTRA = {
-  ks: {
-    key_cifrado: 'llavesecretakafesistemasidenti12',
-    api_key: 'fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4',
-    kafe_sistemas_key:
-      'cFZmeGpSOUdWUUI0UXpYcWc2Y0swaFRMUXM4aDBDMkxPRVRrSnRWc0wwSldoMjR0WXBSZzk5dVNFUzdXYVRrdg',
-    api: 'http://148.113.174.223:5001/api/v1/pe/land-request/polygon',
-  },
-  gfw: {
-    api: 'https://geip5oadr5.execute-api.us-east-2.amazonaws.com',
-    api_key: '',
-  },
-  blockchain: {
-    funding:
-      'http://v1.funding.coingateways.com/fund.php?PROJECT=occs&RADDRESS=',
-  },
-  settings: {
-    write_allways: 'on',
-    app_version: '1.0.1',
-  },
-}

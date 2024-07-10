@@ -1,3 +1,4 @@
+import Config from 'react-native-config'
 import {storage} from '../config/store/db'
 import {API_INTERFACE, HTTP} from '../services/api'
 import {useAuth} from '../states/AuthContext'
@@ -9,14 +10,13 @@ const useApi = (
   setErrorWhattsap: any,
 ) => {
   const {accessToken} = useAuth()
-  const BASE_URL = 'https://api-micacao.dev.identi.digital'
 
   const createProducer = async (key: string) => {
     setLoadingSync(true)
     try {
       const user = JSON.parse(storage.getString(key) || '{}')
       const apiRequest: API_INTERFACE = {
-        url: `${BASE_URL}/create_producer`,
+        url: `${Config?.BASE_URL}/create_producer`,
         method: 'POST',
         payload: {
           dni: user.dni,

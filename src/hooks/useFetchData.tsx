@@ -43,7 +43,6 @@ const useFetchData = () => {
             autoHide: false,
             text1: 'No se pudo obtener los datos\n\n Error: ' + errorText,
           })
-        console.log('URL:', url)
         console.log('ERROR => ', err.response?.data)
         return err
       } finally {

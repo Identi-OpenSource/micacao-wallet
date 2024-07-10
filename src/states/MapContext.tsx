@@ -2,6 +2,7 @@ import React, {createContext, useContext, useState} from 'react'
 import Toast from 'react-native-toast-message'
 import {API_INTERFACE, HTTP} from '../services/api'
 import {useAuth} from './AuthContext'
+import Config from 'react-native-config'
 
 export interface MapInterface {
   errorMap?: any
@@ -35,7 +36,7 @@ export const MapProvider = ({children}: {children: React.ReactNode}) => {
   const [district, setDistrict] = useState(null)
   const {accessToken} = useAuth()
   /*   const BASE_URL_LOCAL = "http://192.168.100.40:3000"; */
-  const BASE_URL = 'https://api-micacao.dev.identi.digital'
+  const BASE_URL = Config?.BASE_URL || ''
 
   const saveDistricts = (districts: any) => {
     setDistricts(districts)

@@ -1,3 +1,4 @@
+import Config from 'react-native-config'
 import React, {createContext, useContext, useState} from 'react'
 import Toast from 'react-native-toast-message'
 import {storage} from '../config/store/db'
@@ -19,11 +20,10 @@ export const KafeProvider = ({children}: {children: React.ReactNode}) => {
   const [loadingKafe, setLoadingKafe] = useState(false)
   const [postKafeData, setPostKafeData] = useState({})
   const [getKafeData, setGetKafeData] = useState({})
-  const BASE_URL = 'http://148.113.174.223/api/v1/pe/land-request/polygon'
+  const BASE_URL = Config?.API_KAFE_SISTEMAS || ''
   //const BASE_URL = "http://192.168.100.40:3000/submit";
-  const GET_BASE_URL = 'https://api-micacao.dev.identi.digital'
-  const API_KEY =
-    'fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4'
+  const GET_BASE_URL = Config?.BASE_URL || ''
+  const API_KEY = Config?.API_KEY_KAFE_SISTEMAS || ''
   const KAFE_SISTEMAS_KEY =
     'cFZmeGpSOUdWUUI0UXpYcWc2Y0swaFRMUXM4aDBDMkxPRVRrSnRWc0wwSldoMjR0WXBSZzk5dVNFUzdXYVRrdg=='
   const setPostKafe = (value: any) => {

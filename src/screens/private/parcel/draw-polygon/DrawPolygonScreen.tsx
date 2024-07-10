@@ -1,4 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
+import Config from 'react-native-config'
 import {useNavigation} from '@react-navigation/native'
 import {Card} from '@rneui/base'
 import {CheckBox} from '@rneui/themed'
@@ -22,7 +23,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import Config from 'react-native-config'
 import Spinner from 'react-native-loading-spinner-overlay'
 import Toast from 'react-native-toast-message'
 import {Baba, Error, Happy, Sad, Seco} from '../../../../assets/svg'
@@ -46,9 +46,8 @@ import useFetchData from '../../../../hooks/useFetchData'
 import {dniEncrypt} from '../../../../OCC/occ'
 
 // if (Config.MAPBOX_ACCESS_TOKEN) {
-Mapbox.setAccessToken(
-  'sk.eyJ1IjoiYWNob3JyZXMiLCJhIjoiY2x0aGNhenRtMDNlYzJpazl2eWF2emZ6ZCJ9.1AbQAkG2QBZyWRGSwgFe-g',
-)
+Mapbox.setAccessToken(Config?.MAPBOX_ACCESS_TOKEN || '')
+
 // }
 const {width, height} = Dimensions.get('window')
 type Position = [number, number]
@@ -107,14 +106,11 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   const parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
   const parcel = parcels.find((p: Parcel) => p.id === id)
   const indexParcel = parcels.findIndex((p: Parcel) => p.id === id)
-  const firstPoint = [
-    Number(parcel?.firstPoint[1]),
-    Number(parcel?.firstPoint[0]),
-  ] as Position
-  const secondPoint = [
-    Number(parcel?.secondPoint[1]),
-    Number(parcel?.secondPoint[0]),
-  ] as Position
+  const centerPoint = user?.district?.center_point?.split(' ')
+  const centerX = centerPoint?.[0]?.replace(/,/g, '.') || 0
+  const centerY = centerPoint?.[1]?.replace(/,/g, '.') || 0
+  const firstPoint = [Number(centerY), Number(centerX)] as Position
+  const secondPoint = [Number(centerY), Number(centerX)] as Position
 
   const [centerCoordinate, setCenterCoordinate] = useState<Position>(firstPoint)
   const [zoomLevel, setZoomLevel] = useState(17)
@@ -206,7 +202,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       return
     }
     //@braudin debe venir desde el servidor
-    const url = 'https://gfw-api.dev.identi.digital/upload'
+    const url = `${Config?.URL_GFW}/upload`
     const formData = {
       coordinates: parcel.polygon
         .map((coordenada: Position) => `${coordenada[0]} ${coordenada[1]}`)
@@ -239,7 +235,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
 
   const postGfw = async () => {
     //@braudin debe venir desde el servidor
-    const url = 'https://gfw-api.dev.identi.digital/upload'
+    const url = `${Config?.URL_GFW}/upload`
     const formData = {
       coordinates: parcel.polygon
         .map((coordenada: Position) => `${coordenada[0]} ${coordenada[1]}`)
@@ -278,7 +274,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   const getGfw = async () => {
     //@braudin debe venir desde el servidor
     const idlistId = parcel?.gfw?.listId
-    const url = `https://gfw-api.dev.identi.digital/${idlistId}`
+    const url = `${Config?.URL_GFW}/${idlistId}`
     const resp = await fetchData(
       url,
       {
@@ -445,8 +441,8 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     coberturaBosque: number,
     perdidaBosque: number,
   ) => {
-    console.log('coberturaBosque', coberturaBosque)
-    console.log('perdidaBosque', perdidaBosque)
+    // console.log('coberturaBosque', coberturaBosque)
+    // console.log('perdidaBosque', perdidaBosque)
     if (coberturaBosque === 0) {
       return 0
     }
@@ -475,9 +471,8 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       .join(', ')
     const wktPolygon = `POLYGON((${polygonCoordinates}))`
     // @braudin debe venir desde el servidor
-    const url = 'http://148.113.174.223:5000/api/v1/pe/land-request/polygon'
-    const API_KEY_KAFE_SISTEMAS =
-      'fec9eecf43ac2f75f3f6f3edc70bcaf043729409fc2faeee8ce6821d5666c2e4'
+    const url = Config?.API_KAFE_SISTEMAS || ''
+    const API_KEY_KAFE_SISTEMAS = Config?.API_KEY_KAFE_SISTEMAS || ''
     const resp = await fetchData(
       url,
       {
@@ -516,9 +511,8 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       return
     }
 
-    const url = 'https://api-micacao.dev.identi.digital/field_state/' + user.dni
-    const KAFE_SISTEMAS_KEY =
-      'cFZmeGpSOUdWUUI0UXpYcWc2Y0swaFRMUXM4aDBDMkxPRVRrSnRWc0wwSldoMjR0WXBSZzk5dVNFUzdXYVRrdg=='
+    const url = `${Config?.BASE_URL}/field_state/${user.dni}`
+    const KAFE_SISTEMAS_KEY = Config?.KAFE_SISTEMAS_KEY || ''
     const resp = await fetchData(
       url,
       {
@@ -542,236 +536,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     navigation.navigate('DrawPolygonScreen', {id: id})
   }
 
-  // const [coordinates, setCoordinates] = useState<Position[]>([firstPoint])
-  // const [lastCoordinate] = useState<Position>(firstPoint)
-  // const [existData, setExistData] = useState<any>(false)
-  // const [existDataGet, setExistDataGet] = useState<any>(false)
-  // const [dataGet, setDataGet] = useState<any>({})
-  // // const [started] = useState(true)
-  // const navigation = useNavigation()
-  // const [sumaTotalVentas, setSumaTotalVentas] = useState<any>({})
-  // const [totalVentas, setTotalVentas] = useState<any>({})
-  // const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
-  // const {postGfw, getGfw, gfwData, loadingGfw, getData, errorGfw} =
-  //   useGfwContext()
-  // const [centerCoordinate, setCenterCoordinate] = useState<Position>(firstPoint)
-  // const [zoomLevel, setZoomLevel] = useState(17)
-  // const {} = useKafeContext()
-  // const internetConnection = useContext(ConnectionContext)
-  // const {isConnected} = internetConnection
-
-  // useEffect(() => {
-  //   // Obtener la suma total de ventas del almacenamiento local al cargar el componente
-  //   calcularSumaVentas()
-  //   calcularVentas()
-  // }, [])
-
-  // useEffect(() => {
-  //   checkIfDataExists()
-  //   checkIfDataExistsGet()
-  // }, [getData, gfwData])
-
-  // useEffect(() => {
-  //   if (parcel.polygon) {
-  //     setCoordinates(parcel.polygon)
-  //   } else {
-  //     if (storage.getString(STORAGE_KEYS.polygonTemp)) {
-  //       const coordinateTemp = JSON.parse(
-  //         storage.getString(STORAGE_KEYS.polygonTemp) || '',
-  //       )
-  //       setCoordinates(coordinateTemp)
-  //     }
-  //   }
-  // }, [])
-
-  // const coordinatesWithLast = useMemo(() => {
-  //   const newCoordinates = [...coordinates, lastCoordinate]
-  //   return [...newCoordinates]
-  // }, [coordinates])
-
-  // const calcularSumaVentas = () => {
-  //   const salesString = storage.getString(STORAGE_KEYS.sales) || '[]'
-  //   const sales = JSON.parse(salesString)
-  //   const sumKlByParcelaAndType = sumKilosByParcelaAndType(sales)
-  //   setSumaTotalVentas(sumKlByParcelaAndType)
-  // }
-
-  // const sumKilosByParcelaAndType = (data: any) => {
-  //   const sumByParcelaAndType = {}
-
-  //   data.forEach(item => {
-  //     const key = `${item.parcela}_${item.type}`
-  //     const kilos = item.kl
-
-  //     // Si la clave ya está en el objeto sumByParcelaAndType, agregamos los kilos, de lo contrario, inicializamos con los kilos actuales
-  //     sumByParcelaAndType[key] = sumByParcelaAndType[key]
-  //       ? sumByParcelaAndType[key] + kilos
-  //       : kilos
-  //   })
-
-  //   return sumByParcelaAndType
-  // }
-  // const checkIfDataExists = () => {
-  //   let exist_data = false
-  //   for (let i = 0; i < gfwData.length; i++) {
-  //     if (gfwData[i].index === index) {
-  //       exist_data = true
-  //     }
-  //   }
-  //   setExistData(exist_data)
-  // }
-  // const checkIfDataExistsGet = () => {
-  //   let exist_data_get = false
-  //   for (let i = 0; i < getData.length; i++) {
-  //     if (getData[i].index === index) {
-  //       setDataGet(getData[i].data)
-  //       exist_data_get = true
-  //     }
-  //   }
-  //   setExistDataGet(exist_data_get)
-  // }
-  // const sumTotalByParcelaAndType = (data: any) => {
-  //   const sumTotalByParcelaAndType = {}
-
-  //   data.forEach((item: any) => {
-  //     const key = `${item.parcela}_${item.type}`
-  //     const total = item.kl * parseFloat(item.precio)
-
-  //     // Si la clave ya está en el objeto sumByParcelaAndType, agregamos los kilos, de lo contrario, inicializamos con los kilos actuales
-  //     sumTotalByParcelaAndType[key] = sumTotalByParcelaAndType[key]
-  //       ? sumTotalByParcelaAndType[key] + total
-  //       : total
-  //   })
-
-  //   return sumTotalByParcelaAndType
-  // }
-
-  // const calcularVentas = () => {
-  //   const salesString = storage.getString(STORAGE_KEYS.sales) || '[]'
-  //   const sales = JSON.parse(salesString)
-
-  //   const sumTlByParcelaAndType = sumTotalByParcelaAndType(sales)
-
-  //   setTotalVentas(sumTlByParcelaAndType)
-  // }
-
-  // const submitPost = () => {
-  //   if (isConnected) {
-  //     postGfw(index)
-  //   } else {
-  //     Toast.show({
-  //       type: 'syncToast',
-  //       text1: '¡Recuerda que necesitas estar conectado a internet !',
-  //     })
-  //   }
-  // }
-  // const submitGet = () => {
-  //   if (isConnected) {
-  //     getGfw(index)
-  //   } else if (JSON.stringify(dataGet) !== '{}') {
-  //     toastGetData()
-  //   } else {
-  //     Toast.show({
-  //       type: 'syncToast',
-  //       text1: '¡Recuerda que necesitas estar conectado a internet !',
-  //     })
-  //   }
-  // }
-  // const toastGetData = () => {
-  //   switch (dataGet?.status) {
-  //     case 'Pending':
-  //       Toast.show({
-  //         type: 'yellowToast',
-  //         text1: 'No encontramos respuesta alguna. Intente más tarde',
-  //         visibilityTime: 8000,
-  //       })
-  //       break
-
-  //     case 'Completed':
-  //       Toast.show({
-  //         type:
-  //           dataGet.data?.deforestation_kpis[0].IsCoverage === true
-  //             ? 'happyToast'
-  //             : 'redSadToast',
-  //         text1: 'Coeficientes:',
-  //         visibilityTime: 8000,
-  //         text2: `Bosque conservado:${dataGet.data?.deforestation_kpis[0]['Natural Forest Coverage (HA) (Beta)']} Bosque perdido:${dataGet.data?.deforestation_kpis[0]['Natural Forest Loss (ha) (Beta)']}`,
-  //       })
-
-  //       break
-
-  //     default:
-  //       break
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   toastGetData()
-  // }, [dataGet])
-
-  // useEffect(() => {
-  //   if (errorGfw !== null) {
-  //     Toast.show({
-  //       type: 'syncToast',
-  //       text1: 'Error, intente más tarde',
-  //     })
-  //   }
-  // }, [errorGfw])
-
-  // const getKafe = JSON.parse(
-  //   storage.getString(STORAGE_KEYS.getKafeData) || '{}',
-  // )
-
-  // const getMessage = () => {
-  //   switch (getKafe.state) {
-  //     case 'ok':
-  //       return 'Estado de titularidad aprobado '
-  //     case 'not approved':
-  //       return 'Estado de titularidad no aprobado '
-  //     case 'on hold':
-  //     default:
-  //       return 'Estado de titularidad en espera '
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   centerMap()
-  // }, [coordinatesWithLast])
-
-  // // center camara
-  // const centerMap = () => {
-  //   const feature = {
-  //     type: 'FeatureCollection',
-  //     features: [
-  //       {
-  //         type: 'Feature',
-  //         id: 'a-feature',
-  //         geometry: {
-  //           type: 'Polygon',
-  //           coordinates: [coordinatesWithLast],
-  //         },
-  //         properties: {},
-  //       } as const,
-  //     ],
-  //   } as any
-
-  //   const bbox = turf.bbox(feature)
-  //   const center = turf.center(feature).geometry.coordinates
-  //   const [minLng, minLat, maxLng, maxLat] = bbox
-  //   const lngDelta = maxLng - minLng
-  //   const latDelta = maxLat - minLat
-  //   const padding = 0.1 // Optional padding to add some margin around the polygon
-
-  //   const zoom =
-  //     Math.min(Math.log2(360 / lngDelta), Math.log2(180 / latDelta)) - padding
-  //   // zoom comvertir en enteros
-
-  //   const zoomLevel = Math.round(zoom)
-  //   if (zoomLevel > 10 && zoomLevel < 24) {
-  //     setZoomLevel(zoomLevel)
-  //   }
-  //   setCenterCoordinate([center[0], center[1]])
-  // }
   return (
     <View
       style={{
@@ -844,9 +608,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
               </View>
               <View
                 style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-                <Text style={{color: COLORS_DF.citrine_brown, marginRight: 10}}>
-                  S/.
-                </Text>
                 <Text
                   style={{color: COLORS_DF.citrine_brown, fontWeight: 'bold'}}>
                   {sumSalesSeco}
@@ -884,9 +645,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
               </View>
               <View
                 style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-                <Text style={{color: COLORS_DF.citrine_brown, marginRight: 10}}>
-                  S/.
-                </Text>
                 <Text
                   style={{color: COLORS_DF.citrine_brown, fontWeight: 'bold'}}>
                   {sumSalesBaba}
