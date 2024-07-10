@@ -126,7 +126,7 @@ export const HomeProvScreen = () => {
   const fundingW = async () => {
     // const funding = await fundingWallet(wallet.wallet.walletOFC)
     const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
-    console.log('dataExt', dataExt)
+    // console.log('dataExt', dataExt)
     const differenceInMilliseconds = Math.abs(
       dataExt?.fundingWallet - new Date().getTime(),
     )
