@@ -504,7 +504,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     navigation.navigate('DrawPolygonScreen', {id: id})
   }
   const getKafeSistemas = async () => {
-    // hacer esto solo si no se hizo el post y send es mayor a 24 horas y si  statys es On Hold
+    // hacer esto solo si se hizo el post y send es mayor a 24 horas y si  statys es On Hold
     if (
       parcel?.kf === undefined ||
       parcel?.kf?.Code === 2 ||
