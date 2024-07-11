@@ -87,9 +87,10 @@ export const RegisterOkScreen = () => {
       .createPack(
         options,
         (region, status) => {
+          const percentage = status.percentage.toFixed(2)
           setStep({
             step: 3,
-            msg: 'Descargando mapa ' + status.percentage + '%',
+            msg: 'Descargando mapa ' + percentage + '%',
           })
         },
         error => {

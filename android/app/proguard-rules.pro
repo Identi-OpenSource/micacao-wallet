@@ -10,3 +10,4 @@
 # Add any project specific keep options here:
 -dontwarn com.facebook.imagepipeline.animated.factory.AnimatedFactoryImpl
 -dontwarn com.tobrun.datacompat.annotation.Default
+-keep class digital.identi.micacao.BuildConfig { *; }
