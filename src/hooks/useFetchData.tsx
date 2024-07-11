@@ -11,7 +11,11 @@ const useFetchData = () => {
   const [loading, setLoading] = useState(false)
 
   const fetchData = useCallback(
-    async (url: string, options?: AxiosRequestConfig, isError?: boolean) => {
+    async (
+      url: string,
+      options?: AxiosRequestConfig,
+      isError: boolean = true,
+    ) => {
       setLoading(true)
       try {
         // Configurar los headers predeterminados

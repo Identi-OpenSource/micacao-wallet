@@ -473,6 +473,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     // @braudin debe venir desde el servidor
     const url = Config?.API_KAFE_SISTEMAS || ''
     const API_KEY_KAFE_SISTEMAS = Config?.API_KEY_KAFE_SISTEMAS || ''
+    console.log('user.dni', user.dni)
     const resp = await fetchData(
       url,
       {
@@ -489,6 +490,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
+    console.log('resp', resp)
     if (resp?.response?.status) {
       return
     }

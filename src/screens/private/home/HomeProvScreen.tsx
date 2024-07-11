@@ -54,7 +54,6 @@ export const HomeProvScreen = () => {
     await writeBlockchain()
     // setLoadDataAsync(false)
   }
-
   // const asyncDataOld = async () => {
   //   const loadData = JSON.parse(
   //     storage.getString(STORAGE_KEYS.loadData) || '{}',

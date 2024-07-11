@@ -40,7 +40,7 @@ export const newWallet = () => {
 export const fundingWallet = async wallet => {
   console.log('wallet', wallet)
   const url = `${Config?.WALLET_FUND}/fund/${wallet}`
-  console.log('url', url)
+  // console.log('url', url)
   return await axios.get(url).catch(error => {
     console.log('error fundingWallet => ', error)
     return error
