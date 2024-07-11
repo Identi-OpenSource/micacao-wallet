@@ -47,7 +47,7 @@ export const HomeProvScreen = () => {
 
   const init = async () => {
     await loadData()
-    await asyncDataOld()
+    // await asyncDataOld()
     await asyncData()
     await fundingW()
     // setLoadDataAsync(true)
@@ -55,45 +55,44 @@ export const HomeProvScreen = () => {
     // setLoadDataAsync(false)
   }
 
-  const asyncDataOld = async () => {
-    const loadData = JSON.parse(
-      storage.getString(STORAGE_KEYS.loadData) || '{}',
-    )
-    if (loadData?.syncUpOld === 'v1') {
-      return
-    }
-    console.log('loadData')
-    const dataoOld = JSON.parse(storage.getString(STORAGE_KEYS?.syncUp) || '[]')
-    const syncUpUser = [{type: SYNC_UP_TYPES.user, data: dataoOld}]
-    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpUser))
+  // const asyncDataOld = async () => {
+  //   const loadData = JSON.parse(
+  //     storage.getString(STORAGE_KEYS.loadData) || '{}',
+  //   )
+  //   if (loadData?.syncUpOld === 'v1') {
+  //     return
+  //   }
+  //   const dataoOld = JSON.parse(storage.getString(STORAGE_KEYS?.syncUp) || '[]')
+  //   const syncUpUser = [{type: SYNC_UP_TYPES.user, data: dataoOld}]
+  //   storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpUser))
 
-    const parcels = JSON.parse(storage.getString(STORAGE_KEYS?.parcels) || '[]')
-    for (let index = 0; index < parcels.length; index++) {
-      const element = parcels[index]
-      if (element.polygon) {
-        const syncUp = JSON.parse(
-          storage.getString(STORAGE_KEYS.syncUp) || '[]',
-        )
-        const syncUpNew = [
-          ...syncUp,
-          {type: SYNC_UP_TYPES.parcels, data: element},
-        ]
-        storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
-      }
-    }
-    const sales = JSON.parse(storage.getString(STORAGE_KEYS?.sales) || '[]')
-    for (let index = 0; index < sales.length; index++) {
-      const element = sales[index]
-      const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
-      const syncUpNew = [...syncUp, {type: SYNC_UP_TYPES.sales, data: element}]
-      storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
-    }
-    const data = JSON.parse(storage.getString(STORAGE_KEYS?.loadData) || '{}')
-    storage.set(
-      STORAGE_KEYS?.loadData,
-      JSON.stringify({...data, syncUpOld: 'v1'}),
-    )
-  }
+  //   const parcels = JSON.parse(storage.getString(STORAGE_KEYS?.parcels) || '[]')
+  //   for (let index = 0; index < parcels.length; index++) {
+  //     const element = parcels[index]
+  //     if (element.polygon) {
+  //       const syncUp = JSON.parse(
+  //         storage.getString(STORAGE_KEYS.syncUp) || '[]',
+  //       )
+  //       const syncUpNew = [
+  //         ...syncUp,
+  //         {type: SYNC_UP_TYPES.parcels, data: element},
+  //       ]
+  //       storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+  //     }
+  //   }
+  //   const sales = JSON.parse(storage.getString(STORAGE_KEYS?.sales) || '[]')
+  //   for (let index = 0; index < sales.length; index++) {
+  //     const element = sales[index]
+  //     const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
+  //     const syncUpNew = [...syncUp, {type: SYNC_UP_TYPES.sales, data: element}]
+  //     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+  //   }
+  //   const data = JSON.parse(storage.getString(STORAGE_KEYS?.loadData) || '{}')
+  //   storage.set(
+  //     STORAGE_KEYS?.loadData,
+  //     JSON.stringify({...data, syncUpOld: 'v1'}),
+  //   )
+  // }
 
   const loadData = async () => {
     // revisar si hay actualización en las variables de env
@@ -156,6 +155,7 @@ export const HomeProvScreen = () => {
     for (let index = 0; index < syncUp?.length; index++) {
       const element = syncUp[index]
       if (element.type === SYNC_UP_TYPES.user) {
+        console.log('creando productor =>', element.data)
         // console.log('creando productor =>', 'Start')
         const url = `${Config?.BASE_URL}/create_producer`
         const data = {
