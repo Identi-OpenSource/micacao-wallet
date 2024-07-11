@@ -111,8 +111,9 @@ export const NewSaleThreeScreen = () => {
             <View style={styles.containerHere}>
               <Text style={styles.title}>¿CUÁNDO LO VENDISTE?</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, dia === '' ? styles.textNoSelect : null]}
                 placeholder="Dia del mes"
+                caretHidden={true}
                 value={dia}
                 onChangeText={text => {
                   setDia(text)
@@ -213,6 +214,9 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILIES.primary,
     fontWeight: 'bold',
   },
+  textNoSelect: {
+    fontWeight: '400',
+  },
   containerSpiner: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -307,11 +311,12 @@ const styles = StyleSheet.create({
   },
   input: {
     marginTop: MP_DF.large,
-    height: height * 0.09,
-    width: width * 0.5,
+    height: 60,
+    width: 250,
     borderBottomWidth: 1,
     color: COLORS_DF.citrine_brown,
     fontSize: 30,
+    fontWeight: 'bold',
     borderBottomColor: COLORS_DF.citrine_brown,
     textAlign: 'center',
     textAlignVertical: 'center',

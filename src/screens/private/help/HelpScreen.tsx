@@ -1,9 +1,17 @@
 import React from 'react'
-import {Linking, ScrollView, StyleSheet, Text, View} from 'react-native'
+import {
+  Dimensions,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 import HeaderComponent from '../../../components/Header'
 import {Btn} from '../../../components/button/Button'
 import {COLORS_DF, MP_DF} from '../../../config/themes/default'
 import {useNavigation} from '@react-navigation/native'
+import Config from 'react-native-config'
 export const HelpScreen = () => {
   const navigation = useNavigation()
   const onPress = () => {
@@ -29,14 +37,15 @@ export const HelpScreen = () => {
           theme="agrayu"
           icon={'fa-brands fa-whatsapp'}
           onPress={onPress}
-          style={{container: {marginVertical: MP_DF.large}}}
+          style={{container: {marginVertical: MP_DF.small}}}
         />
         <ScrollView
+          style={{flex: 1, minHeight: Dimensions.get('window').height / 2}}
           horizontal={false}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}>
           <View style={styles.separator} />
-          <Text style={styles.title}>¿Debo activar el GPS?</Text>
+          {/* <Text style={styles.title}>¿Debo activar el GPS?</Text>
           <Text style={styles.subTitle}>Si bla bla bla bla</Text>
           <View style={styles.separator} />
           <Text style={styles.title}>¿Debo activar el GPS?</Text>
@@ -79,9 +88,10 @@ export const HelpScreen = () => {
           <Text style={styles.subTitle}>Si bla bla bla bla</Text>
           <View style={styles.separator} />
           <Text style={styles.title}>¿Debo activar el GPS?</Text>
-          <Text style={styles.subTitle}>Si bla bla bla bla</Text>
+          <Text style={styles.subTitle}>Si bla bla bla bla</Text> */}
           <View style={styles.separatorEnd} />
         </ScrollView>
+        <Text style={styles.version}>MiCacao v{Config.VERSION_NAME}</Text>
       </View>
     </View>
   )
@@ -135,5 +145,11 @@ const styles = StyleSheet.create({
   img: {
     width: 30,
     height: 30,
+  },
+  version: {
+    fontSize: 10,
+    color: COLORS_DF.citrine_brown,
+    textAlign: 'center',
+    marginTop: MP_DF.large,
   },
 })

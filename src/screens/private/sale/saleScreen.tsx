@@ -60,14 +60,16 @@ export const SaleScreen = () => {
       <View style={styles.container}>
         <HeaderActions title={'Paso 3 de 5'} navigation={navigation} />
         <View style={{width: width * 0.8, marginLeft: 16}}>
-          <Text style={styles.title}>¿CUÁNTO TE ESTAN PAGANDO POR KILO?</Text>
+          <Text style={styles.title}>¿CUÁNTO TE ESTÁN PAGANDO POR KILO?</Text>
         </View>
         <View style={styles.containerBTN}>
           <TouchableOpacity
             style={styles.containerKL}
             activeOpacity={1}
             onPress={() => (ref.current as any)?.focus()}>
-            <Text style={styles.KLV}>{precio}</Text>
+            <Text style={precio ? styles.KLV : styles.KLVDisabled}>
+              {precio || 'EN TU MONEDA LOCAL'}
+            </Text>
           </TouchableOpacity>
           <View
             style={{
@@ -79,6 +81,7 @@ export const SaleScreen = () => {
               ref={ref}
               style={styles.input}
               value={precio}
+              placeholder="EN TU MONEDA LOCAL"
               onChangeText={text => {
                 text = text.replace(/,/g, '.')
                 text = text.replace(/(\..*)\./g, '$1')
@@ -117,7 +120,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: MP_DF.xlarge,
   },
+  KLVDisabled: {
+    fontSize: 20,
+    textAlign: 'center',
+    borderBottomWidth: 1,
+    width: 250,
+    color: COLORS_DF.gray,
+    fontFamily: FONT_FAMILIES.primary,
+    height: 45,
+  },
   KLV: {
+    height: 45,
     fontSize: 30,
     textAlign: 'center',
     borderBottomWidth: 1,
