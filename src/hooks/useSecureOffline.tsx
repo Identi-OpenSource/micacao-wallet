@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store'
-import {LABELS} from '../config/texts/labels'
-import {MSG_ERROR} from '../config/texts/erros'
+import {LABELS} from '../../config/texts/labels'
+import {MSG_ERROR} from '../../config/texts/erros'
 import {Alert} from 'react-native'
 
 export const useSecureOffline = (key: string) => {

@@ -1,14 +1,7 @@
-import geoViewport from '@mapbox/geo-viewport'
+import Config from 'react-native-config'
 import Mapbox from '@rnmapbox/maps'
 import React, {useContext, useEffect, useState} from 'react'
-import {
-  ActivityIndicator,
-  Dimensions,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
-import Config from 'react-native-config'
+import {ActivityIndicator, StyleSheet, Text, View} from 'react-native'
 import {newWallet, fundingWallet} from '../../../OCC/occ'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
 import {storage} from '../../../config/store/db'
@@ -19,162 +12,95 @@ import {
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import {UserDispatchContext, UsersContext} from '../../../states/UserContext'
-
-import {useSyncData} from '../../../states/SyncDataContext'
-Mapbox.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
-const {width, height} = Dimensions.get('window')
+import {UserDispatchContext} from '../../../states/UserContext'
+import Toast from 'react-native-toast-message'
+import {useNavigation} from '@react-navigation/native'
+import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
+Mapbox.setAccessToken(Config?.MAPBOX_ACCESS_TOKEN || '')
 
 export const RegisterOkScreen = () => {
   const [step, setStep] = useState({step: 0, msg: TEXTS.textH})
   const dispatch = useContext(UserDispatchContext)
-  const user = useContext(UsersContext)
-  const {addToSync} = useSyncData()
+  const user = JSON.parse(storage.getString('user') || '{}')
+  const map = user?.district
+  const navigation = useNavigation()
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
   useEffect(() => {
     initial()
   }, [])
 
-  // Inicializa el proceso de registro
-  const initial = async () => {
-    setStep({step: 1, msg: 'Creando billetera...'})
-    const wallet = newWallet()
-    await delay(1500)
-    setStep({step: 2, msg: 'Agregando fondos...'})
-    const funding = await fundingWallet(wallet.walletOFC).catch(() => ({
-      status: 500,
-    }))
-    const isFunding = funding.status === 200
-
-    console.log({wallet, isFunding})
-
-    storage.set('wallet', JSON.stringify({wallet, isFunding}))
-    await delay(2000)
-    setStep({
-      step: 2,
-      msg: 'Descargando mapa...',
+  const errorToas = (msg: string) => {
+    Toast.show({
+      type: 'msgToast',
+      autoHide: false,
+      text1: msg,
     })
-    descargarMapaTarapoto(), descargarMapaJuanjui()
-    await delay(1000)
-    setStep({step: 3, msg: 'Inicio de sesión...'})
+    navigation.goBack()
+  }
+  const initial = async () => {
+    setStep({step: 1, msg: 'Creando billetera'})
+    const wallet = newWallet()
+    if (wallet.walletOFC === null) {
+      errorToas('¡Error al crear la billetera! Por favor, intente de nuevo.')
+      return
+    }
     await delay(1500)
-    addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')
+    setStep({step: 2, msg: 'Agregando fondos'})
+    const funding = await fundingWallet(wallet.walletOFC)
+    const isFunding = funding.status === 200
+    storage.set(STORAGE_KEYS.wallet, JSON.stringify({wallet, isFunding}))
+    await delay(1000)
+    setStep({step: 3, msg: 'Descargando mapa'})
+    await descargarMapa()
+    await delay(3000)
+    storage.set(STORAGE_KEYS.user, JSON.stringify({...user, isLogin: true}))
+    const syncUp = [{type: SYNC_UP_TYPES.user, data: user}]
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUp))
+    setStep({step: 4, msg: 'Inicio de sesión'})
+    // Se deveria sincronizar la app con el servidor
+    // addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')
     await delay(1500)
     const login = JSON.parse(storage.getString('user') || '{}')
     dispatch({type: 'login', payload: login})
   }
 
-  const descargarMapaTarapoto = async () => {
-    const bounds: [number, number, number, number] = geoViewport.bounds(
-      [-78.5442722, -0.1861084],
-      17,
-      [width, height],
-      512,
-    )
-
+  const descargarMapa = async () => {
+    const minx_point = parseFloat(map.minx_point.replace(/,/g, '.'))
+    const maxx_point = parseFloat(map.maxx_point.replace(/,/g, '.'))
+    const miny_point = parseFloat(map.miny_point.replace(/,/g, '.'))
+    const maxy_point = parseFloat(map.maxy_point.replace(/,/g, '.'))
     const options = {
-      name: 'TarapotoMapTest',
+      name: 'MapTests',
       styleURL: Mapbox.StyleURL.Satellite,
       bounds: [
-        [bounds[0], bounds[1]],
-        [bounds[2], bounds[3]],
+        [minx_point, miny_point],
+        [maxx_point, maxy_point],
       ] as [[number, number], [number, number]],
       minZoom: 10,
-      maxZoom: 20,
-      metadata: {
-        whatIsThat: 'foo',
-      },
+      maxZoom: 24,
     }
+    // console.log('map', map)
+    // console.log('options', options)
+    // console.log('options', options)
     await Mapbox.offlineManager
       .createPack(
         options,
         (region, status) => {
-          console.log('=> progress callback region:', 'status: ', status)
+          const percentage = status.percentage.toFixed(2)
+          setStep({
+            step: 3,
+            msg: 'Descargando mapa ' + percentage + '%',
+          })
         },
         error => {
-          console.log('=> error callback error:', error)
+          console.log('Error al crear el pack:', error)
         },
       )
       .catch(() => {
-        console.log('=> Mapa descargado')
+        console.log('Error al descargar el mapa')
       })
   }
-
-  const descargarMapaJuanjui = async () => {
-    const bounds: [number, number, number, number] = geoViewport.bounds(
-      [-76.748, -7.181],
-      17,
-      [width, height],
-      512,
-    )
-
-    const options = {
-      name: 'JuanjuiMapTest',
-      styleURL: Mapbox.StyleURL.Satellite,
-      bounds: [
-        [bounds[0], bounds[1]],
-        [bounds[2], bounds[3]],
-      ] as [[number, number], [number, number]],
-      minZoom: 10,
-      maxZoom: 20,
-      metadata: {
-        whatIsThat: 'foo',
-      },
-    }
-    await Mapbox.offlineManager
-      .createPack(
-        options,
-        (region, status) => {
-          console.log('=> descargando mapa juanjui:', 'status: ', status)
-        },
-        error => {
-          console.log('=> error callback error:', error)
-        },
-      )
-      .catch(() => {
-        console.log('=> Mapa descargado')
-      })
-  }
-  /*   const descargarMapaQuito = async () => {
-    const bounds: [number, number, number, number] = geoViewport.bounds(
-      [-78.4678, -0.1807],
-      12,
-      [width, height],
-      512
-    );
-
-    const options = {
-      name: "QuitoMapTest",
-      styleURL: Mapbox.StyleURL.Satellite,
-      bounds: [
-        [bounds[0], bounds[1]],
-        [bounds[2], bounds[3]],
-      ] as [[number, number], [number, number]],
-      minZoom: 10,
-      maxZoom: 20,
-      metadata: {
-        whatIsThat: "foo",
-      },
-    };
-    await Mapbox.offlineManager
-      .createPack(
-        options,
-        (region, status) => {
-          console.log("=> progress callback region:", "status: ", status);
-          console.log(
-            "Progreso de descarga:",
-            status.percentage + "% completado"
-          );
-        },
-        (error) => {
-          console.log("=> error callback error:", error);
-        }
-      )
-      .catch(() => {
-        console.log("=> Mapa Quito descargado");
-      });
-  }; */
 
   return (
     <SafeArea bg={'isabelline'}>

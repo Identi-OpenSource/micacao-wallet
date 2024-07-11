@@ -11,12 +11,16 @@ export interface SyncDataInterface {
   errorSync?: any
   setLoadingSync?: any
   setErrorSync?: any
+  setErrorWhattsap?: any
+  errorWhattsap?: any
 }
 
 export const syncDataInicialState: SyncDataInterface = {
   hasDataToSync: false,
   loadingSync: false,
   errorSync: null,
+  setErrorWhattsap: null,
+  errorWhattsap: null,
   setLoadingSync: null,
   setErrorSync: null,
   dataToSync: null,
@@ -37,7 +41,7 @@ export const SyncDataDispatchContext = createContext(
 export const SyncDataProvider = ({children}: {children: React.ReactNode}) => {
   const [loadingSync, setLoadingSync] = useState(false)
   const [errorSync, setErrorSync] = useState(null)
-
+  const [errorWhattsap, setErrorWhattsap] = useState(null)
   const {accessToken} = useAuth()
 
   // revisar loading y error de AuthContext
@@ -46,6 +50,7 @@ export const SyncDataProvider = ({children}: {children: React.ReactNode}) => {
     accessToken,
     setLoadingSync,
     setErrorSync,
+    setErrorWhattsap,
   )
 
   return (
@@ -57,6 +62,7 @@ export const SyncDataProvider = ({children}: {children: React.ReactNode}) => {
         loadingSync,
         errorSync,
         dataToSync,
+        errorWhattsap,
       }}>
       {children}
     </SyncDataContext.Provider>

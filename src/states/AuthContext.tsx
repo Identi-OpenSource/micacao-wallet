@@ -1,50 +1,46 @@
-import React, { createContext, useEffect, useState } from "react";
-import useAuthenticationToken from "../hooks/useAuthenticationToken";
+import React, {createContext, useEffect, useState} from 'react'
+import useAuthenticationToken from '../hooks/useAuthenticationToken'
 
 export interface AuthInterface {
-  accessToken?: any;
-  setAccessToken?: any;
-  getToken?: any;
-  loading?: boolean;
-  error?: any;
-  setLoading?: any;
-  setError?: any;
+  accessToken?: any
+  setAccessToken?: any
+  getToken?: any
+  loading?: boolean
+  error?: any
+  setLoading?: any
+  setError?: any
 }
 
 export const authInicialState: AuthInterface = {
   accessToken: null,
   loading: false,
   error: null,
-};
-
-export type AuthActions = "getAccessToken";
-
-export interface ActionsInterface {
-  type: AuthActions;
-  payload: AuthInterface;
 }
 
-export const AuthContext = createContext(authInicialState);
-export const AuthDispatchContext = createContext((() => {}) as React.Dispatch<
-  ActionsInterface
->);
+export type AuthActions = 'getAccessToken'
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [accessToken, setAccessToken] = useState(null);
+export interface ActionsInterface {
+  type: AuthActions
+  payload: AuthInterface
+}
 
-  const [loading, setLoading] = useState(false);
+export const AuthContext = createContext(authInicialState)
+export const AuthDispatchContext = createContext(
+  (() => {}) as React.Dispatch<ActionsInterface>,
+)
 
-  const [error, setError] = useState(null);
+export const AuthProvider = ({children}: {children: React.ReactNode}) => {
+  const [accessToken, setAccessToken] = useState(null)
 
-  const { getToken } = useAuthenticationToken(
+  const [loading, setLoading] = useState(false)
+
+  const [error, setError] = useState(null)
+
+  const {getToken} = useAuthenticationToken(
     setAccessToken,
     setLoading,
-    setError
-  );
-
-  useEffect(() => {
-    console.log("AccessToken on Context", accessToken);
-  }, [accessToken]);
+    setError,
+  )
 
   return (
     <AuthContext.Provider
@@ -54,11 +50,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         error,
         setAccessToken,
         getToken,
-      }}
-    >
+      }}>
       {children}
     </AuthContext.Provider>
-  );
-};
+  )
+}
 
-export const useAuth = () => React.useContext(AuthContext);
+export const useAuth = () => React.useContext(AuthContext)

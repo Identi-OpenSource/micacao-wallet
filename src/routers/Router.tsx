@@ -4,20 +4,18 @@ import {
   BottomTabNavigationOptions,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs'
-import {useRoute} from '@react-navigation/native'
 import {
   NativeStackNavigationOptions,
+  NativeStackScreenProps,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack'
 import React, {useContext, useEffect} from 'react'
 import {StyleSheet} from 'react-native'
-import Toast from 'react-native-toast-message'
 import {storage} from '../config/store/db'
 import {BORDER_RADIUS_DF, COLORS_DF, MP_DF} from '../config/themes/default'
-import {SplashScreen} from '../screens/SplashScreen'
 import {HelpScreen} from '../screens/private/help/HelpScreen'
 import {HomeProvScreen} from '../screens/private/home/HomeProvScreen'
-import {TestMap} from '../screens/private/home/TestMap'
+
 import {DrawPolygonScreen} from '../screens/private/parcel/draw-polygon/DrawPolygonScreen'
 import DrawPolyline from '../screens/private/parcel/draw-polygon/DrawPolyline'
 import GradientLine from '../screens/private/parcel/draw-polygon/GradientLine'
@@ -38,6 +36,8 @@ import {NewSaleFourScreen} from '../screens/private/sale/NewSaleFourScreen'
 import {NewSaleOneScreen} from '../screens/private/sale/NewSaleOneScreen'
 import {NewSaleThreeScreen} from '../screens/private/sale/NewSaleThreeScreen'
 import {NewSaleTwoScreen} from '../screens/private/sale/NewSaleTwoScreen'
+import {SaleScreen} from '../screens/private/sale/saleScreen'
+import Maps from '../screens/public/maps/index'
 import {PermissionsFourScreen} from '../screens/public/permissions/PermissionsFourScreen'
 import {PermissionsThreeScreen} from '../screens/public/permissions/PermissionsThreeScreen'
 import ConfirmPasswordScreen from '../screens/public/register/ConfirmPasswordScreen'
@@ -50,10 +50,72 @@ import {RegisterScreen} from '../screens/public/register/RegisterScreen'
 import RegisterSecondScreen from '../screens/public/register/RegisterSecondScreen'
 import RegisterThirdScreen from '../screens/public/register/RegisterThirdScreen'
 import StartScreen from '../screens/public/register/StartScreen'
-import {useAuth} from '../states/AuthContext'
 
-import {useSyncData} from '../states/SyncDataContext'
+import {FiveSaleScreen} from '../screens/private/sale/fiveSaleScreen'
+import {Test} from '../screens/public/testing'
 import {UserDispatchContext, UsersContext} from '../states/UserContext'
+import {CompositeScreenProps} from '@react-navigation/native'
+
+export type RootStackParamList = {
+  SplashScreen: undefined
+  PermissionsOneScreen: undefined
+  PermissionsTwoScreen: undefined
+  PermissionsThreeScreen: undefined
+  PermissionsFourScreen: undefined
+  HomeScreen: undefined
+  HomeProvScreen: undefined
+  IamScreen: undefined
+  IamFromScreen: undefined
+  RegisterScreen: undefined
+  RegisterSecondScreen: undefined
+  RegisterThirdScreen: undefined
+  RegisterFourthScreen: undefined
+  RegisterOkScreen: undefined
+  RegisterParcelScreen: undefined
+  TabPrivate: undefined
+  RegisterOneScreen: undefined
+  RegisterParcelTwoScreen: undefined
+  RegisterParcelThirdScreen: undefined
+  RegisterParcelFourthScreen: undefined
+  HelpScreen: undefined
+  MyParcelsScreen: undefined
+  PolygonScreen: {id: string}
+  DrawPolygonScreen: {id: string}
+  RegisterParcel: undefined
+  GradientLineRecorrer: {id: string}
+  NewSaleOneScreen: undefined
+  NewSaleTwoScreen: undefined
+  NewSaleThreeScreen: undefined
+  StartScreen: undefined
+  PermissionsStack: undefined
+  Maps: undefined
+  PoligonJoystick: {id: string}
+  SaleScreen: undefined
+  FiveSaleScreen: undefined
+  NewSaleFourScreen: undefined
+  // Solo pruebas
+  TestMap: undefined
+  DrawPolyline: undefined
+  GradientLine: undefined
+  ThirdPartyVectorSource: undefined
+  GradientLineRecorrerAdd: undefined
+  PoligonBTN: undefined
+}
+
+export type RootStackScreenProps<T extends keyof RootStackParamList> =
+  NativeStackScreenProps<RootStackParamList, T>
+
+export type ScreenProps<T extends keyof RootStackParamList> =
+  CompositeScreenProps<
+    NativeStackScreenProps<RootStackParamList, T>,
+    RootStackScreenProps<keyof RootStackParamList>
+  >
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -108,64 +170,30 @@ const optionsHeadersCacao = {
 
 export const Router = () => {
   const user = useContext(UsersContext)
-  const {setAccessToken, error} = useAuth()
-  const {errorSync} = useSyncData()
   const dispatch = useContext(UserDispatchContext)
-  const parcels = JSON.parse(storage.getString('parcels') || '[]')
-  const userLogin = JSON.parse(storage.getString('user') || '{}')
-  const accessToken = storage.getString('accessToken') || null
 
   useEffect(() => {
-    //storage.delete('parcels')
-    //storage.delete('sales')
-    getIsLogin()
-  }, [])
-
-  useEffect(() => {
-    if (error != null)
-      Toast.show({
-        type: 'syncToast',
-        text1: error.toString(),
-      })
-  }, [error])
-
-  //Usas otro useEfffect para que el salga el toast de errorSync
-  useEffect(() => {
-    if (errorSync != null)
-      Toast.show({
-        type: 'syncToast',
-        text1: errorSync.toString(),
-      })
-  }, [errorSync])
-
-  const getIsLogin = () => {
-    //accessToken
-    console.log('accessToken en Router', accessToken)
-    setAccessToken(accessToken)
-
+    const userLogin = JSON.parse(storage.getString('user') || '{}')
     if (userLogin?.isLogin) {
-      //login
       dispatch({type: 'login', payload: userLogin})
-
-      //TODO: Revisar el guardado
-      // dispatch({type: 'login', payload: parcels})
-      // console.log('PARCELAS', parcels)
-
-      // dispatch({type: 'login', payload: sales})
-      // console.log('ventas', sales)
     }
-  }
+  }, [])
 
   const PublicStack = () => {
     const StackPublic = createNativeStackNavigator()
     return (
       <StackPublic.Navigator screenOptions={{...slideFromRight}}>
-        <StackPublic.Screen name="SplashScreen" component={SplashScreen} />
-        <StackPublic.Screen name="StartScreen" component={StartScreen} />
         <StackPublic.Screen name="HomeScreen" component={HomeScreen} />
+        <StackPublic.Screen name="StartScreen" component={StartScreen} />
         <StackPublic.Screen name="IamScreen" component={IamScreen} />
         <StackPublic.Screen name="IamFromScreen" component={IamFromScreen} />
 
+        <StackPublic.Screen
+          name="PoligonJoystick"
+          component={PoligonJoystick}
+        />
+        <StackPublic.Screen name="Test" component={Test} />
+        <StackPublic.Screen name="Maps" component={Maps} />
         <StackPublic.Screen
           name="PermissionsStack"
           component={PermissionsStack}
@@ -215,6 +243,36 @@ export const Router = () => {
     )
   }
 
+  const RegisterParcelStackPrivate = () => {
+    const RegisterParcelStack = createNativeStackNavigator()
+    return (
+      <RegisterParcelStack.Navigator screenOptions={{...slideFromRight}}>
+        <RegisterParcelStack.Screen
+          name="RegisterParcelScreen"
+          component={RegisterParcelScreen}
+        />
+        <RegisterParcelStack.Screen
+          name="RegisterOneScreen"
+          component={RegisterOneScreen}
+        />
+        <RegisterParcelStack.Screen
+          name="RegisterParcelTwoScreen"
+          component={RegisterParcelTwoScreen}
+        />
+        <RegisterParcelStack.Screen
+          name="RegisterParcelThirdScreen"
+          component={RegisterParcelThirdScreen}
+        />
+        <RegisterParcelStack.Screen
+          name="RegisterParcelFourthScreen"
+          component={RegisterParcelFourthScreen}
+        />
+
+        <RegisterParcelStack.Screen name="TabPrivate" component={TabPrivate} />
+      </RegisterParcelStack.Navigator>
+    )
+  }
+
   const HomeStackPrivate = () => {
     const HomeStack = createNativeStackNavigator()
     return (
@@ -233,6 +291,8 @@ export const Router = () => {
             name="NewSaleThreeScreen"
             component={NewSaleThreeScreen}
           />
+          <HomeStack.Screen name="SaleScreen" component={SaleScreen} />
+          <HomeStack.Screen name="FiveSaleScreen" component={FiveSaleScreen} />
           <HomeStack.Screen
             name="NewSaleFourScreen"
             component={NewSaleFourScreen}
@@ -307,39 +367,16 @@ export const Router = () => {
               title: 'Poligon Joystick',
             }}
           />
+
+          <HomeStack.Screen
+            name="RegisterParcel"
+            component={RegisterParcelStackPrivate}
+            options={{
+              title: 'RegisterParcel',
+            }}
+          />
         </HomeStack.Group>
-        <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>
-    )
-  }
-
-  const RegisterParcelStackPrivate = () => {
-    const RegisterParcelStack = createNativeStackNavigator()
-    return (
-      <RegisterParcelStack.Navigator screenOptions={{...slideFromRight}}>
-        <RegisterParcelStack.Screen
-          name="RegisterParcelScreen"
-          component={RegisterParcelScreen}
-        />
-        <RegisterParcelStack.Screen
-          name="RegisterOneScreen"
-          component={RegisterOneScreen}
-        />
-        <RegisterParcelStack.Screen
-          name="RegisterParcelTwoScreen"
-          component={RegisterParcelTwoScreen}
-        />
-        <RegisterParcelStack.Screen
-          name="RegisterParcelThirdScreen"
-          component={RegisterParcelThirdScreen}
-        />
-        <RegisterParcelStack.Screen
-          name="RegisterParcelFourthScreen"
-          component={RegisterParcelFourthScreen}
-        />
-
-        <RegisterParcelStack.Screen name="TabPrivate" component={TabPrivate} />
-      </RegisterParcelStack.Navigator>
     )
   }
 
@@ -348,15 +385,12 @@ export const Router = () => {
     return (
       <HomeStack.Navigator screenOptions={{...slideFromRight}}>
         <HomeStack.Screen name="ProfileScreen" component={ProfileScreen} />
-
-        <HomeStack.Screen name="TestMap" component={TestMap} />
       </HomeStack.Navigator>
     )
   }
 
   const HelpStackPrivate = () => {
     const HelpStack = createNativeStackNavigator()
-    const route = useRoute()
 
     const screenOptions = () => {
       return {
@@ -416,23 +450,5 @@ export const Router = () => {
     )
   }
 
-  const getStack = () => {
-    //Change for Context
-    if (user.isLogin) {
-      return parcels.length > 0 ? TabPrivate() : RegisterParcelStackPrivate()
-    } else {
-      //Change for Storage
-      if (Object.values(userLogin).length > 0) {
-        if (userLogin.isLogin) {
-          return parcels.length > 0
-            ? TabPrivate()
-            : RegisterParcelStackPrivate()
-        }
-      } else {
-        return PublicStack()
-      }
-    }
-  }
-
-  return getStack()
+  return user.isLogin ? TabPrivate() : PublicStack()
 }

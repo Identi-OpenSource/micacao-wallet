@@ -11,9 +11,12 @@ import {
   INPUTS_TWO,
   InterfaceTwo,
   SCHEMA_TWO,
+  SCHEMA_CO,
+  SCHEMA_PE,
 } from './Interfaces'
 import {Header} from './RegisterScreen'
 import {styles} from './styles'
+import {storage} from '../../../config/store/db'
 
 interface RegisterSecondScreenProps {
   navigation: any
@@ -22,37 +25,27 @@ interface RegisterSecondScreenProps {
 const RegisterSecondScreen: React.FC<RegisterSecondScreenProps> = ({
   navigation,
 }) => {
-  const user = useContext(UsersContext)
-  const dispatch = useContext(UserDispatchContext)
-
-  useEffect(() => {
-    console.log('INIT_VALUES_TWO', JSON.stringify(INIT_VALUES_TWO))
-  }, [])
+  const user = JSON.parse(storage.getString('user') || '{}')
 
   const submit = (values: InterfaceTwo) => {
     const phone = values.phone
-
-    dispatch({
-      type: 'setUser',
-      payload: {
-        ...user,
-        phone,
-      },
-    })
-
+    storage.set('user', JSON.stringify({...user, phone}))
     navigation.navigate('RegisterThirdScreen')
   }
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={''} />
-        {user.gender == 'M' && <Cellphone_M />}
-        {user.gender == 'W' && <Cellphone_W />}
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          {user.gender === 'M' && <Cellphone_M />}
+          {user.gender === 'W' && <Cellphone_W />}
+        </View>
         <Formik
           initialValues={INIT_VALUES_TWO}
           onSubmit={values => submit(values)}
-          validationSchema={SCHEMA_TWO}>
+          validationSchema={
+            user?.country?.code === 'CO' ? SCHEMA_CO : SCHEMA_PE
+          }>
           {({handleSubmit, isValid, dirty}) => (
             <>
               <View style={styles.formContainer}>

@@ -18,20 +18,21 @@ import {
 } from '../../../config/themes/default'
 import {imgBaba, imgTostado} from '../../../assets/imgs'
 import {storage} from '../../../config/store/db'
+import {STORAGE_KEYS} from '../../../config/const'
 
 export const NewSaleOneScreen = () => {
   const navigation = useNavigation()
 
   const onSubmit = (type: string) => {
     const sale = {type}
-    storage.set('saleTemp', JSON.stringify(sale))
+    storage.set(STORAGE_KEYS.saleTemp, JSON.stringify(sale))
     navigation.navigate('NewSaleTwoScreen')
   }
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <HeaderActions title={'Paso 1 de 3'} navigation={navigation} />
+        <HeaderActions title={'Paso 1 de 5'} navigation={navigation} />
         <Text style={styles.title}>¿QUÉ VAS A VENDER?</Text>
         <ScrollView style={styles.containerBTN}>
           <TouchableOpacity

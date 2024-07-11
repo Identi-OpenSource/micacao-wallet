@@ -67,6 +67,7 @@ yarn-error.log
 .env
 .env.sandbox
 .env.production
+.env.local
 
 # Expo
 .expo

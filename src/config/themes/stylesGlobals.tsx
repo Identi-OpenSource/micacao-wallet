@@ -1,4 +1,4 @@
-import {MP_DF} from './default'
+import { MP_DF } from "./default";
 
 export const STYLES_GLOBALS = {
   formContainer: {
@@ -10,6 +10,6 @@ export const STYLES_GLOBALS = {
     flex: 1,
   },
   formBtn: {
-    paddingBottom: MP_DF.xxlarge,
+    paddingBottom: 35,
   },
-}
+};

@@ -1,28 +1,20 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : View of entry point of the application
- */
-
 import {useNavigation} from '@react-navigation/native'
-import {Card, CheckBox} from '@rneui/themed'
-import React, {useContext, useEffect, useState} from 'react'
+import {Card} from '@rneui/themed'
+import React, {useState} from 'react'
 import {
   Image,
   ImageSourcePropType,
+  PermissionsAndroid,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Platform,
-  PermissionsAndroid,
 } from 'react-native'
 import {imgCO, imgPE} from '../../../assets/imgs'
 import {Iamfrom_m, Iamfrom_w} from '../../../assets/svg'
 import {Btn} from '../../../components/button/Button'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
-import {COUNTRY} from '../../../config/const'
-import {storage} from '../../../config/store/db'
+import {COUNTRY, STORAGE_KEYS} from '../../../config/const'
 import {LABELS} from '../../../config/texts/labels'
 import {
   BORDER_RADIUS_DF,
@@ -36,9 +28,7 @@ import {
   moderateScale,
   verticalScale,
 } from '../../../config/themes/metrics'
-import {UsersContext, UserDispatchContext} from '../../../states/UserContext'
-import {Header} from './RegisterScreen'
-
+import {storage} from '../../../config/store/db'
 interface CardProps {
   img: ImageSourcePropType
   title: string
@@ -49,10 +39,8 @@ interface CardProps {
 
 export const IamFromScreen: React.FC = () => {
   const navigation = useNavigation()
+  const user = JSON.parse(storage.getString('user') || '{}')
   const [selectedCountry, setSelectedCountry] = useState<object | null>(null)
-
-  const user = useContext(UsersContext)
-  const dispatch = useContext(UserDispatchContext)
 
   const cards = [
     {
@@ -67,26 +55,15 @@ export const IamFromScreen: React.FC = () => {
     },
   ]
 
-  // check permission
   const checkPermission = async () => {
-    try {
-      if (Platform.OS === 'android') {
-        const location = await PermissionsAndroid.check(
-          'android.permission.ACCESS_FINE_LOCATION',
-        )
-        const camera = await PermissionsAndroid.check(
-          'android.permission.CAMERA',
-        )
-        if (!location || !camera) {
-          navigation.navigate('PermissionsStack')
-        } else {
-          navigation.navigate('RegisterScreen')
-        }
-      } else {
-        navigation.navigate('RegisterScreen')
-      }
-    } catch (err) {
-      console.warn(err)
+    const location = await PermissionsAndroid.check(
+      'android.permission.ACCESS_FINE_LOCATION',
+    )
+    const camera = await PermissionsAndroid.check('android.permission.CAMERA')
+    if (!location || !camera) {
+      navigation.navigate('PermissionsStack')
+    } else {
+      navigation.navigate('Maps')
     }
   }
 
@@ -95,24 +72,20 @@ export const IamFromScreen: React.FC = () => {
   }
 
   const submit = () => {
-    dispatch({
-      type: 'setUser',
-      payload: {
-        ...user,
-        country: selectedCountry,
-      },
-    })
-
+    storage.set(
+      STORAGE_KEYS.user,
+      JSON.stringify({...user, country: selectedCountry}),
+    )
     checkPermission()
   }
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={''} />
-        {user.gender === 'M' && <Iamfrom_m />}
-        {user.gender === 'W' && <Iamfrom_w />}
-
+        <View style={styles.containerSvg}>
+          {user.gender === 'M' && <Iamfrom_m />}
+          {user.gender === 'W' && <Iamfrom_w />}
+        </View>
         <View style={styles.bodyContainer}>
           {cards.map((c, i) => (
             <Card1
@@ -165,16 +138,7 @@ const Card1: React.FC<CardProps> = ({
             onPress={() => handleCountrySelection(value)}>
             <Image source={img} style={styles.img} />
             <Text style={styles.titleCard}>{title}</Text>
-            <View style={styles.icon}>
-              <CheckBox
-                containerStyle={{}}
-                checked={selectedCountry === value}
-                checkedIcon="dot-circle-o"
-                uncheckedIcon="circle-o"
-                checkedColor="#ff5722"
-                onPress={() => handleCountrySelection(value)}
-              />
-            </View>
+            <View style={styles.icon} />
           </TouchableOpacity>
         </Card>
       </View>
@@ -186,6 +150,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: horizontalScale(MP_DF.large),
+    paddingTop: 36,
   },
   bodyContainer: {
     flexDirection: 'row',
@@ -243,6 +208,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     paddingBottom: verticalScale(MP_DF.xlarge),
+  },
+  containerSvg: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
 

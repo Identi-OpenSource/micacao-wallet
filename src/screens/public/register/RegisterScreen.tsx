@@ -1,91 +1,75 @@
-/**
- * @author : Braudin Laya
- * @since : 15/09/2021
- * @summary : Register screen of the application
- */
-
-import { useNavigation } from "@react-navigation/native";
-import { Field, Formik } from "formik";
-import React, { useContext } from "react";
-import { Text, View } from "react-native";
-import { Dni_M, Dni_W } from "../../../assets/svg";
-import { Btn, BtnIcon } from "../../../components/button/Button";
-import { SafeArea } from "../../../components/safe-area/SafeArea";
-import { storage } from "../../../config/store/db";
-import { LABELS } from "../../../config/texts/labels";
-import { moderateScale } from "../../../config/themes/metrics";
+import {useNavigation} from '@react-navigation/native'
+import {Field, Formik} from 'formik'
+import React from 'react'
+import {Text, View, TouchableOpacity} from 'react-native'
+import {Dni_M, Dni_W} from '../../../assets/svg'
+import {Btn, BtnIcon} from '../../../components/button/Button'
+import {SafeArea} from '../../../components/safe-area/SafeArea'
+import {LABELS} from '../../../config/texts/labels'
+import {moderateScale} from '../../../config/themes/metrics'
 import {
   INIT_VALUES_ONE,
   INPUTS_ONE,
   InterfaceHeader,
   InterfaceOne,
   SCHEMA_ONE,
-} from "./Interfaces";
-import { styles } from "./styles";
-import CryptoJS from "crypto-js";
-import Config from "react-native-config";
-import { UserDispatchContext, UsersContext } from "../../../states/UserContext";
+} from './Interfaces'
+import {styles} from './styles'
+import {dniEncrypt} from '../../../OCC/occ'
+import {storage} from '../../../config/store/db'
+import Toast from 'react-native-toast-message'
 
 export const RegisterScreen = () => {
-  const navigation = useNavigation();
-  const user = useContext(UsersContext);
-  const dispatch = useContext(UserDispatchContext);
+  const navigation = useNavigation()
+  const user = JSON.parse(storage.getString('user') || '{}')
   //encripta el dni
   const certificateND = async (dni: string) => {
-    console.log("DNI", dni);
+    const encrypted = await dniEncrypt(dni)
+    return encrypted
+  }
 
-    const paddedDNI = dni.padStart(16, "0");
-    const utf8Key = CryptoJS.enc.Utf8.parse(Config.KEY_CIFRADO_KAFE_SISTEMAS);
-    const utf8DNI = CryptoJS.enc.Utf8.parse(paddedDNI);
-    const encrypted = CryptoJS.AES.encrypt(utf8DNI, utf8Key, {
-      mode: CryptoJS.mode.ECB,
-      padding: CryptoJS.pad.Pkcs7,
-    });
-    const hexResult = encrypted.ciphertext.toString(CryptoJS.enc.Hex);
-    return { dni: hexResult.substr(0, 32), dniAll: hexResult };
-  };
   const submit = async (values: InterfaceOne) => {
-    const encryptedDNI = await certificateND(values.dni);
-    const updatedValues = {
-      ...values,
-      dni: encryptedDNI.dni,
-      dniAll: encryptedDNI.dniAll,
-    };
-    dispatch({
-      type: "setUser",
-      payload: {
-        ...user,
-        ...values,
-        ...updatedValues,
-      },
-    });
-
-    navigation.navigate("RegisterSecondScreen");
-  };
+    const encryptedDNI = await certificateND(values.dni)
+    if (encryptedDNI.dniAll !== 32) {
+      Toast.show({
+        type: 'msgToast',
+        autoHide: false,
+        text1: '¡Error al encriptar los datos! Por favor, intente de nuevo.',
+      })
+      navigation.goBack()
+      return
+    }
+    storage.set('user', JSON.stringify({...user, ...encryptedDNI}))
+    navigation.navigate('RegisterSecondScreen')
+  }
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
-        <Header navigation={navigation} title={""} />
-        {user.gender == "M" && <Dni_M />}
-        {user.gender == "W" && <Dni_W />}
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          {user.gender == 'M' && <Dni_M />}
+          {user.gender == 'W' && <Dni_W />}
+        </View>
         <Formik
           initialValues={INIT_VALUES_ONE}
-          onSubmit={(values) => submit(values)}
-          validationSchema={SCHEMA_ONE}
-        >
-          {({ handleSubmit, isValid, dirty }) => (
+          onSubmit={values => submit(values)}
+          validationSchema={SCHEMA_ONE}>
+          {({handleSubmit, isValid, dirty}) => (
             <>
               <View style={styles.formContainer}>
                 <View style={styles.formInput}>
-                  {INPUTS_ONE.map((i) => (
+                  {INPUTS_ONE.map(i => (
                     <Field key={i.name} {...i} />
                   ))}
                 </View>
                 <View style={styles.formBtn}>
                   <Btn
                     title={LABELS.next}
-                    theme={isValid && dirty ? "agrayu" : "agrayuDisabled"}
+                    theme={isValid && dirty ? 'agrayu' : 'agrayuDisabled'}
                     onPress={handleSubmit}
                     disabled={!isValid || !dirty}
                   />
@@ -96,23 +80,23 @@ export const RegisterScreen = () => {
         </Formik>
       </View>
     </SafeArea>
-  );
-};
+  )
+}
 
 // Componente Header
 
 export const Header = (props: InterfaceHeader) => {
-  const { navigation, title } = props;
+  const navigation = useNavigation()
+  const {label} = props
   return (
-    <View style={styles.header}>
+    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.header}>
       <BtnIcon
         theme="transparent"
         icon="angle-left"
         size={moderateScale(30)}
-        style={{ container: styles.btnIcon }}
         onPress={() => navigation.goBack()}
       />
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
-};
+      <Text style={styles.title}>{label}</Text>
+    </TouchableOpacity>
+  )
+}

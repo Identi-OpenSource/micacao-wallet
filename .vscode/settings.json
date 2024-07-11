@@ -2,12 +2,24 @@
   "cSpell.words": [
     "agrayu",
     "braudin",
+    "colombia",
+    "countryid",
     "erros",
     "formik",
     "Formik",
     "guión",
+    "Iamfrom",
+    "isabelline",
+    "Kafe",
     "Mapbox",
+    "notapproved",
+    "onhold",
     "Pressable",
-    "rnmapbox"
-  ]
+    "rnmapbox",
+    "whatsapp",
+    "Whattsap",
+    "xxlarge"
+  ],
+  "editor.inlayHints.fontFamily": "'Cascadia Code', Consolas, 'Courier New', monospace",
+  "editor.inlayHints.fontSize": 0
 }

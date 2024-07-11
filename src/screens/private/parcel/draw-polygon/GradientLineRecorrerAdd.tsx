@@ -7,17 +7,15 @@ import {
   StyleURL,
   UserLocation,
 } from '@rnmapbox/maps'
-import {Button, View} from 'react-native'
 import React, {
-  useState,
-  useRef,
   ComponentProps,
-  useMemo,
   forwardRef,
-  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react'
+import {Button, View} from 'react-native'
 import {storage} from '../../../../config/store/db'
-import Geolocation from 'react-native-geolocation-service'
 
 type Position = [number, number]
 
@@ -102,7 +100,6 @@ const lineLayerStyle = {
 }
 
 const Polygon = ({coordinates}: {coordinates: Position[]}) => {
-  console.log('=> coordinatessssss', coordinates)
   const features: GeoJSON.FeatureCollection = useMemo(() => {
     return {
       type: 'FeatureCollection',
@@ -133,7 +130,7 @@ const GradientLineRecorrerAdd = () => {
     Number(parcel[0].firstPoint[1]),
     Number(parcel[0].firstPoint[0]),
   ] as Position
-  console.log('=> firstPoint', firstPoint)
+
   const [coordinates, setCoordinates] = useState<Position[]>([firstPoint])
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
   const [location, setLocation] = useState<Location>()
@@ -143,8 +140,6 @@ const GradientLineRecorrerAdd = () => {
   }, [coordinates, lastCoordinate])
 
   const map = useRef<MapView>(null)
-
-  console.log('=> coordinates', coordinatesWithLast)
 
   return (
     <View style={{flex: 1}}>

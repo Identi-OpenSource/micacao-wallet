@@ -16,6 +16,7 @@ import {LABELS} from '../../../../config/texts/labels'
 import {MP_DF} from '../../../../config/themes/default'
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
 import {UsersContext} from '../../../../states/UserContext'
+import {STORAGE_KEYS} from '../../../../config/const'
 export interface Interface {
   hectares: string
 }
@@ -47,20 +48,32 @@ interface RegisterParcelTwoScreenProps {
 const RegisterParcelTwoScreen: React.FC<RegisterParcelTwoScreenProps> = ({
   navigation,
 }) => {
+  const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
+
   const onSubmit = (values: Interface) => {
     const hectares = Number(values.hectares)
-    const parcelTemp = JSON.parse(storage.getString('parcelTemp') || '{}')
-    storage.set('parcelTemp', JSON.stringify({...parcelTemp, hectares}))
-    navigation.navigate('RegisterParcelThirdScreen')
+    const parcelTemp = JSON.parse(
+      storage.getString(STORAGE_KEYS.parcelTemp) || '{}',
+    )
+    const parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
+    const newParcel = {
+      ...parcelTemp,
+      hectares,
+      id: parcels.length + 1,
+    }
+    const addParcel = [...parcels, newParcel]
+    storage.set(STORAGE_KEYS.parcels, JSON.stringify(addParcel))
+
+    storage.delete(STORAGE_KEYS.parcelTemp)
+    navigation.navigate('MyParcelsScreen')
   }
-  const user = useContext(UsersContext)
 
   return (
     <SafeArea bg="isabelline" isForm>
       <View style={styles.container}>
         <HeaderActions title={''} navigation={navigation} />
-        {user.gender == 'M' && <Hectare_M />}
-        {user.gender == 'W' && <Hectare_W />}
+        {user.gender === 'M' && <Hectare_M />}
+        {user.gender === 'W' && <Hectare_W />}
         <Formik
           initialValues={VALUES}
           onSubmit={values => onSubmit(values)}
@@ -73,7 +86,7 @@ const RegisterParcelTwoScreen: React.FC<RegisterParcelTwoScreenProps> = ({
                     <Field key={i.name} {...i} />
                   ))}
                 </View>
-                <View style={STYLES_GLOBALS.formBtn}>
+                <View style={{paddingBottom: 64}}>
                   <Btn
                     title={LABELS.next}
                     theme={isValid && dirty ? 'agrayu' : 'agrayuDisabled'}

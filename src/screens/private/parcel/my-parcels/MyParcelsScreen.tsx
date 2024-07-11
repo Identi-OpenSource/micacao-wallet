@@ -1,114 +1,131 @@
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { useCallback, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Parcels, ParcelColor } from "../../../../assets/svg";
-import { Btn } from "../../../../components/button/Button";
-import { SafeArea } from "../../../../components/safe-area/SafeArea";
-import { storage } from "../../../../config/store/db";
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import React, {useCallback, useState} from 'react'
+import Toast from 'react-native-toast-message'
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import {Add, ParcelColor, Parcels} from '../../../../assets/svg'
+import {Btn} from '../../../../components/button/Button'
+import {SafeArea} from '../../../../components/safe-area/SafeArea'
+import {storage} from '../../../../config/store/db'
 import {
   COLORS_DF,
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
-} from "../../../../config/themes/default";
-import { Parcel } from "../../../../states/UserContext";
+} from '../../../../config/themes/default'
+import {Parcel} from '../../../../states/UserContext'
+import {STORAGE_KEYS} from '../../../../config/const'
+
+const {width} = Dimensions.get('window')
 
 export const MyParcelsScreen = () => {
-  const navigation = useNavigation();
-  const [parcels, setParcels] = useState([] as Parcel[]);
+  const [parcels, setParcels] = useState([] as Parcel[])
+  const navigation = useNavigation()
 
   useFocusEffect(
     useCallback(() => {
-      const parc: Parcel[] = JSON.parse(storage.getString("parcels") || "[]");
-      setParcels(parc);
-    }, [])
-  );
+      const parc: Parcel[] = JSON.parse(
+        storage.getString(STORAGE_KEYS.parcels) || '[]',
+      )
+      setParcels(parc)
+    }, []),
+  )
 
   return (
     <SafeArea>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View
           style={{
-            justifyContent: "center",
-            /*   borderColor: "red",
-            borderWidth: 1, */
+            justifyContent: 'center',
             marginBottom: 4,
-          }}
-        >
+          }}>
           <Text style={styles.title}>Lista de parcelas</Text>
+          {parcels.length < 4 ? (
+            <TouchableOpacity
+              style={styles.btnAdd}
+              onPress={() => {
+                navigation.navigate('RegisterParcel')
+              }}>
+              <Text
+                style={{
+                  color: COLORS_DF.robin_egg_blue,
+                  fontSize: width * 0.045,
+                  marginRight: 2,
+                }}>
+                Registrar más parcelas
+              </Text>
+              <Add />
+            </TouchableOpacity>
+          ) : (
+            <Text
+              style={{
+                color: '#EE7B34',
+                fontSize: width * 0.037,
+                marginVertical: 10, // Espacio vertical adicional
+                fontFamily: FONT_FAMILIES.bold,
+              }}>
+              Has completado el límite de parcelas registradas
+            </Text>
+          )}
         </View>
-        {parcels.map((parcel) => CardParcel(parcel, navigation))}
-      </View>
+        {parcels.map(parcel => CardParcel(parcel, navigation))}
+      </ScrollView>
     </SafeArea>
-  );
-};
+  )
+}
 
-const CardParcel = (props: Parcel, navigation: any) => {
-  //  const user: UserInterface = useContext(UsersContext)
-
-  const certificateND = async () => {};
-
+const CardParcel = (parcel: Parcel, navigation: any) => {
   return (
-    <View style={styles.cardContainer} key={props.name}>
+    <View style={styles.cardContainer} key={parcel.id}>
       <View style={styles.cardHeader}>
         <View style={styles.cardHeaderTS}>
-          <Text style={styles.cardTitle}>{props.name}</Text>
+          <Text style={styles.cardTitle}>{parcel.name}</Text>
           <Text
-            style={styles.cardST}
-          >{`Área de parcela: ${props.hectares} Ha`}</Text>
+            style={
+              styles.cardST
+            }>{`Área de parcela: ${parcel.hectares} Ha`}</Text>
         </View>
       </View>
 
       {
         <Btn
-          title={!props.polygon ? "Falta dibujar mapa" : "Ver polígono en mapa"}
+          title={
+            !parcel.polygon ? 'Falta dibujar mapa' : 'Ver polígono en mapa'
+          }
           onPress={() =>
-            !props.polygon
-              ? navigation.navigate("PolygonScreen")
-              : navigation.navigate("DrawPolygonScreen")
+            !parcel.polygon
+              ? navigation.navigate('PolygonScreen', {id: parcel?.id})
+              : navigation.navigate('DrawPolygonScreen', {id: parcel?.id})
           }
           theme="warning"
           style={containerBTN}
         />
       }
-      {/*       {props.polygon && (
-        <>
-          <Btn
-            title="Solicitar certificado Propiedad"
-            onPress={() => certificateND()}
-            theme="agrayu"
-            style={containerBTN}
-          />
-        </>
-      )} */}
 
       <TouchableOpacity
         onPress={() => {
-          !props.polygon
-            ? navigation.navigate("PolygonScreen")
-            : navigation.navigate("DrawPolygonScreen");
+          !parcel.polygon
+            ? navigation.navigate('PolygonScreen', {id: parcel?.id})
+            : navigation.navigate('DrawPolygonScreen', {id: parcel?.id})
         }}
-        style={{ justifyContent: "center", alignItems: "center" }}
-      >
-        {!props.polygon ? <Parcels /> : <ParcelColor />}
+        style={{justifyContent: 'center', alignItems: 'center'}}>
+        {!parcel.polygon ? <Parcels /> : <ParcelColor />}
       </TouchableOpacity>
-
-      {/*         <Btn
-          title="Presione para dibujar"
-          icon={"hand-pointer"}
-          onPress={() => {}}
-          theme="transparent"
-          style={containerBTN}
-      /> */}
     </View>
-  );
-};
+  )
+}
 
 const containerBTN = {
   container: {
     marginTop: MP_DF.small,
   },
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -116,21 +133,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: MP_DF.large,
   },
   cardContainer: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     padding: MP_DF.medium,
     borderRadius: MP_DF.small,
     marginBottom: MP_DF.medium,
     elevation: 2,
   },
   cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   cardHeaderTS: {},
   cardTitle: {
     fontSize: FONT_SIZES.xslarge,
     fontFamily: FONT_FAMILIES.primary,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: COLORS_DF.citrine_brown,
     marginBottom: MP_DF.small,
   },
@@ -142,13 +159,26 @@ const styles = StyleSheet.create({
   img: {
     width: 70,
     height: 70,
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
   title: {
     fontSize: FONT_SIZES.large,
     fontFamily: FONT_FAMILIES.primary,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: COLORS_DF.citrine_brown,
     marginBottom: MP_DF.small,
   },
-});
+  btnAdd: {
+    alignSelf: 'center',
+    backgroundColor: '#fff',
+    width: '100%',
+    height: 62,
+    marginBottom: MP_DF.small,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: COLORS_DF.robin_egg_blue,
+    borderWidth: 1,
+    borderRadius: 5,
+    flexDirection: 'row',
+  },
+})

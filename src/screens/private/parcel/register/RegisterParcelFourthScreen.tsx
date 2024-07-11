@@ -35,6 +35,8 @@ import {
 import {STYLES_GLOBALS} from '../../../../config/themes/stylesGlobals'
 import {UserInterface, UsersContext} from '../../../../states/UserContext'
 import {useSyncData} from '../../../../states/SyncDataContext'
+import {generateUniqueID} from '../../../../OCC/occ'
+import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../../config/const'
 
 interface RegisterParcelFourthScreenProps {
   navigation: any
@@ -42,11 +44,9 @@ interface RegisterParcelFourthScreenProps {
 const RegisterParcelFourthScreen: React.FC<RegisterParcelFourthScreenProps> = ({
   navigation,
 }) => {
-  const user: UserInterface = useContext(UsersContext)
+  const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
   const [gps, setGps] = useState<any>(null)
   const [loading, setLoading] = useState(false)
-  const [imgP2, setImgP2] = useState('')
-  const {addToSync} = useSyncData()
 
   // capture photo
   const photo = async () => {
@@ -75,7 +75,6 @@ const RegisterParcelFourthScreen: React.FC<RegisterParcelFourthScreenProps> = ({
     Geolocation.getCurrentPosition(
       position => {
         setTimeout(() => {
-          setImgP2(img.base64)
           setLoading(false)
           setGps(position)
         }, 1500)
@@ -109,12 +108,19 @@ const RegisterParcelFourthScreen: React.FC<RegisterParcelFourthScreenProps> = ({
   }
 
   const onSubmit = () => {
-    const parcelTemp = JSON.parse(storage.getString('parcelTemp') || '{}')
-    const parcels = JSON.parse(storage.getString('parcels') || '[]')
+    const parcelTemp = JSON.parse(
+      storage.getString(STORAGE_KEYS.parcelTemp) || '{}',
+    )
+    const parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
     const secondPoint = [gps?.coords?.latitude, gps?.coords.longitude]
-    const addParcel = [...parcels, {...parcelTemp, secondPoint, syncUp: true}]
-    storage.set('parcels', JSON.stringify(addParcel))
-    navigation.navigate('TabPrivate')
+    const newParcel = {
+      ...parcelTemp,
+      secondPoint,
+      id: parcels.length + 1,
+    }
+    const addParcel = [...parcels, newParcel]
+    storage.set(STORAGE_KEYS.parcels, JSON.stringify(addParcel))
+    navigation.navigate('MyParcelsScreen')
   }
 
   return (
@@ -122,8 +128,8 @@ const RegisterParcelFourthScreen: React.FC<RegisterParcelFourthScreenProps> = ({
       <View style={styles.container}>
         <HeaderActions title={''} navigation={navigation} />
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          {user.gender == 'M' && <Center_Parcel_M />}
-          {user.gender == 'W' && <Center_Parcel_W />}
+          {user.gender === 'M' && <Center_Parcel_M />}
+          {user.gender === 'W' && <Center_Parcel_W />}
         </View>
         <View style={styles.formContainer}>
           <View style={styles.formInput}>
@@ -148,7 +154,7 @@ const RegisterParcelFourthScreen: React.FC<RegisterParcelFourthScreenProps> = ({
               <Text style={styles.textUnique}>Foto guardada con éxito</Text>
             )}
           </View>
-          <View style={STYLES_GLOBALS.formBtn}>
+          <View style={{paddingBottom: 100}}>
             <Btn
               title={gps === null ? LABELS.capturePhoto : LABELS.next}
               theme={!loading ? 'agrayu' : 'agrayuDisabled'}

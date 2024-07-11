@@ -1,3 +1,4 @@
+import {CommonActions, useNavigation} from '@react-navigation/native'
 import {
   Camera,
   LineLayer,
@@ -6,36 +7,38 @@ import {
   ShapeSource,
   StyleURL,
 } from '@rnmapbox/maps'
-import {
-  Alert,
-  Button,
-  Dimensions,
-  View,
-  StyleSheet,
-  Text,
-  StatusBar,
-  TouchableOpacity,
-} from 'react-native'
 import React, {
-  useState,
-  useRef,
   ComponentProps,
-  useMemo,
   forwardRef,
   useEffect,
-  useContext,
+  useMemo,
+  useRef,
+  useState,
 } from 'react'
-import {storage} from '../../../../config/store/db'
-import {Delete, Add_Location} from '../../../../assets/svg'
-import {GestureHandlerRootView} from 'react-native-gesture-handler'
-import {ReactNativeJoystick} from '@korsolutions/react-native-joystick'
-import {COLORS_DF, THEME_DF} from '../../../../config/themes/default'
-import {BtnSmall} from '../../../../components/button/Button'
-import {useNavigation} from '@react-navigation/native'
+import {
+  Alert,
+  Dimensions,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import {Add_Location, Delete} from '../../../../assets/svg'
 import Close_Map from '../../../../assets/svg/Close_Map.svg'
 import ModalComponent from '../../../../components/modalComponent'
+import {storage} from '../../../../config/store/db'
 import {useSyncData} from '../../../../states/SyncDataContext'
-const heightMap = Dimensions.get('window').height - 30
+import Toast from 'react-native-toast-message'
+// import { setIn } from 'formik'
+import * as turf from '@turf/turf'
+import {title} from 'process'
+import {on} from 'events'
+import {Parcel} from '../../../../states/UserContext'
+import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../../config/const'
+import Geolocation from 'react-native-geolocation-service'
+
+const heightMap = Dimensions.get('window').height
 const widthMap = Dimensions.get('window').width
 
 type Position = [number, number]
@@ -45,6 +48,7 @@ type CrosshairProps = {
   w: number
   onLayout: ComponentProps<typeof View>['onLayout']
 }
+
 const Crosshair = forwardRef<View, CrosshairProps>(
   ({size, w, onLayout}: CrosshairProps, ref) => (
     <View
@@ -116,7 +120,7 @@ const CrosshairOverlay = ({
 }
 
 const lineLayerStyle = {
-  lineColor: '#22C55E',
+  lineColor: '#fff',
   lineWidth: 4,
 }
 
@@ -145,13 +149,24 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
   )
 }
 
-const PoligonJoystick = () => {
-  const parcel = JSON.parse(storage.getString('parcels') || '[]')
+const PoligonJoystick = ({route}: any) => {
+  const params = route.params
+  const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
+  const centerPoint = user?.district?.center_point?.split(' ')
+  const centerX = centerPoint?.[0]?.replace(/,/g, '.') || 0
+  const centerY = centerPoint?.[1]?.replace(/,/g, '.') || 0
+  const parcelsList = JSON.parse(
+    storage.getString(STORAGE_KEYS.parcels) || '[]',
+  )
+  const parcel = parcelsList.find((p: Parcel) => p.id === params?.id)
+  const parcelIndex = parcelsList.findIndex((p: Parcel) => p.id === params?.id)
 
-  const firstPoint = [
-    Number(parcel[0].firstPoint[1]),
-    Number(parcel[0].firstPoint[0]),
-  ] as Position
+  const firstPoint = [Number(centerY), Number(centerX)] as Position
+  const [parcels, setParcels] = useState(parcel)
+  const [firstPointGps, setFirstPointGps] = useState<[number, number] | null>(
+    null,
+  )
+  const [loadInit, setLoadInit] = useState(false)
   const [coordinates, setCoordinates] = useState<Position[]>([])
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
   const [crosshairPos, setCrosshairPos] = useState(firstPoint)
@@ -160,102 +175,226 @@ const PoligonJoystick = () => {
   const coorInitRef = useRef(null)
   const navigation = useNavigation()
   const [showModal, setShowModal] = useState(false)
+  const [editActive, setEditActive] = useState<boolean | number>(false)
+  const [indexEdit, setIndexEdit] = useState(-1)
   const {addToSync} = useSyncData()
+  const [polygonReview, setPolygonReview] = useState<Position[]>([])
   const coordinatesWithLast = useMemo(() => {
     return [...coordinates, lastCoordinate]
   }, [coordinates, lastCoordinate])
 
   const map = useRef<MapView>(null)
   const ref2 = useRef<Camera>(null)
+
   useEffect(() => {
-    // eliminar polygonTemp
-    //storage.delete('polygonTemp')
-    if (parcel[0].polygon) {
-      setCoordinates(parcel[0].polygon)
-    } else {
-      if (storage.getString('polygonTemp')) {
-        const coordinateTemp = JSON.parse(
-          storage.getString('polygonTemp') || '',
-        )
-        setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
-        setCoordinates(coordinateTemp)
-      }
-    }
+    getGps()
+    // if (parcel.polygon) {
+    //   setCoordinates(parcel.polygon)
+    // } else {
+    //   const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
+    //   if (poligonT) {
+    //     const coordinateTemp = JSON.parse(poligonT)
+    //     setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
+    //     setCoordinates(coordinateTemp)
+    //   }
+    // }
   }, [])
 
   useEffect(() => {
-    coorInitRef.current = lastCoordinate
-  }, [coordinates])
+    if (firstPointGps) {
+      setLastCoordinate(firstPointGps)
+      setCrosshairPos(firstPointGps)
+      setCenterCoordinate(firstPointGps)
+      setLoadInit(true)
+    }
+  }, [firstPointGps])
 
-  const handleMove = event => {
-    const {angle, distance} = event
-    const sensitivityFactor = 0.5 // Ajusta el factor de sensibilidad según sea necesario
-    const deadZoneRadius = 20 // Ajusta el tamaño de la zona muerta según sea necesario
+  // capture GPS
+  const getGps = async () => {
+    if (parcel.polygon) {
+      setCoordinates(parcel.polygon)
+      setLoadInit(true)
+      return
+    }
+    const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
 
-    // Aplica sensibilidad y zona muerta
-    const sensitivityAdjustedDistance = distance * sensitivityFactor
-    const x = Math.cos(angle) * sensitivityAdjustedDistance
-    const y = Math.sin(angle) * sensitivityAdjustedDistance
-
-    // Actualiza la posición del joystick
-    setJoystickPosition({x, y})
-
-    console.log(`Joystick moved: angle=${angle}, distance=${distance}`)
-  }
-  const moveMap = (angle, force) => {
-    const angleRad = angle.radian
-
-    const deltaX = Math.cos(angleRad) * ((force * widthMap) / 2)
-    const deltaY = Math.sin(angleRad) * ((force * heightMap) / 2)
-
-    const initialLng = coorInitRef.current[0]
-    const initialLat = coorInitRef.current[1]
-
-    // Calcular las nuevas coordenadas
-    const newLat = initialLat + deltaY / 111111
-    const newLng =
-      initialLng + deltaX / (111111 * Math.cos((initialLat * Math.PI) / 180))
-    setCenterCoordinate([newLng, newLat])
+    if (poligonT) {
+      const coordinateTemp = JSON.parse(poligonT)
+      setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
+      setCoordinates(coordinateTemp)
+      setLoadInit(true)
+      return
+    }
+    Geolocation.getCurrentPosition(
+      position => {
+        const point = [
+          position.coords.longitude,
+          position.coords.latitude,
+        ] as Position
+        setFirstPointGps(point)
+      },
+      error => {
+        console.log(error)
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+      },
+    )
   }
 
   const deletePoint = () => {
-    if (coordinates.length > 1) {
+    if (coordinates.length > 0) {
       setCoordinates(prev => {
         const newCoordinates = prev.slice(0, -1)
-        storage.set('polygonTemp', JSON.stringify(newCoordinates))
+        storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(newCoordinates))
         return newCoordinates
       })
     }
   }
 
+  const savePoligonAcept = () => {
+    //setCoordinates(polygonReview)
+    const newParcel = {
+      ...parcel,
+      polygon:
+        polygonReview.length !== 0
+          ? polygonReview
+          : [...coordinatesWithLast, coordinatesWithLast[0]],
+    }
+    parcelsList[parcelIndex] = newParcel
+    storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcelsList))
+
+    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
+    const syncUpNew = [
+      ...syncUp,
+      {type: SYNC_UP_TYPES.parcels, data: newParcel},
+    ]
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+
+    setParcels(parcels)
+    setShowModal(true)
+  }
+
+  const savePoligon = () => {
+    const polygon = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [polygonReview],
+      },
+    } as any
+    const area = turf?.area(polygon)
+    const areaInHectares = (area / 10000)?.toFixed(2)
+    Toast.show({
+      type: 'actionToast',
+      text1: 'Revisa y edita el polígono luego ya  no podrá ser editado',
+      autoHide: false,
+      props: {
+        onPress: () => {},
+        btnText: 'Editar el polígono',
+        exPress: () => savePoligonAcept(),
+        btnExPress: 'Guardar',
+        title: `Área aproximada: ${areaInHectares} has`,
+      },
+    })
+  }
+
   const onSubmit = () => {
     if (coordinatesWithLast.length < 5) {
-      Alert.alert('Error', 'El polígono debe tener al menos 4 puntos')
+      Toast.show({
+        type: 'actionToast',
+        autoHide: true,
+        visibilityTime: 3000,
+        text1: 'El polígono debe tener al menos 4 puntos',
+        props: {
+          onPress: () => {},
+          btnText: 'OK',
+          hideCancel: true,
+        },
+      })
       return
     }
-
-    const newParcel = {
-      ...parcel[0],
-      polygon: [...coordinatesWithLast, coordinatesWithLast[0]],
-      syncUp: false,
-    }
-
-    setShowModal(true)
-
-    setTimeout(() => {
-      addToSync(JSON.stringify([newParcel]), 'parcels')
-      storage.delete('polygonTemp')
-    }, 7000)
+    const polygon = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[...coordinatesWithLast, coordinatesWithLast[0]]],
+      },
+    } as any
+    const area = turf?.area(polygon)
+    const areaInHectares = (area / 10000)?.toFixed(2)
+    Toast.show({
+      type: 'actionToast',
+      text1: 'Revisa y edita el polígono luego ya  no podrá ser editado',
+      autoHide: false,
+      props: {
+        onPress: () => review(),
+        btnText: 'Editar el polígono',
+        exPress: () => savePoligonAcept(),
+        btnExPress: 'Guardar',
+        title: `Área aproximada: ${areaInHectares} has`,
+      },
+    })
   }
+
+  const review = () => {
+    setPolygonReview([...coordinatesWithLast, coordinatesWithLast[0]])
+    setEditActive(true)
+    Toast.show({
+      type: 'modalMapToast',
+      text1: '',
+      autoHide: false,
+    })
+  }
+
   const back = () => {
     navigation.goBack()
   }
+
   const closeModal = () => {
     setShowModal(false)
-    navigation.navigate('DrawPolygonScreen')
+    storage.delete(STORAGE_KEYS.polygonTemp)
+    // Evitar el retroceso de la pantalla de dibujo
+    const currentRoutes = navigation?.getState()?.routes
+    const newRoutes: any = currentRoutes?.slice(0, -2)
+    newRoutes?.push({
+      name: 'DrawPolygonScreen',
+      params: {id: params?.id},
+    })
+    navigation.dispatch(
+      CommonActions.reset({
+        index: newRoutes.length - 1,
+        routes: newRoutes,
+      }),
+    )
+    // addToSync(JSON.stringify(parcels), 'parcels')
   }
 
-  return (
+  const onSelected = (e: any) => {
+    const coordinates = e.geometry.coordinates
+
+    // setLastCoordinate(e.geometry.coordinates as Position)
+    // encontrar el punto en el array de coordenadas
+    const index = polygonReview.findIndex(
+      (c: Position) => c[0] === coordinates[0] && c[1] === coordinates[1],
+    )
+    if (index !== -1) {
+      setTimeout(() => {
+        setIndexEdit(index)
+      }, 500)
+    }
+  }
+
+  /*   useFocusEffect(
+    useCallback(() => {
+      return () => {
+        storage.delete("polygonTemp");
+      };
+    }, [])
+  ); */
+
+  return loadInit ? (
     <View style={{flex: 1}}>
       <StatusBar backgroundColor="#8F3B06" barStyle="light-content" />
       <ModalComponent
@@ -266,15 +405,20 @@ const PoligonJoystick = () => {
       />
       <View style={styles.containerButtonUp}>
         <TouchableOpacity onPress={back} style={styles.buttonClose}>
-          <Close_Map height={40} width={40} />
+          <Close_Map height={38} width={38} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={onSubmit} style={styles.buttonSave}>
-          <Text style={styles.textButtonSave}>Guardar</Text>
+        <TouchableOpacity
+          onPress={editActive ? savePoligon : onSubmit}
+          style={styles.buttonSave}>
+          <Text style={styles.textButtonSave}>
+            {editActive ? 'Guardar polígono' : 'Dibujo finalizado'}
+          </Text>
         </TouchableOpacity>
       </View>
       <MapView
         ref={map}
         styleURL={StyleURL.Satellite}
+        // styleURL="https://api.maptiler.com/maps/satellite/style.json?key=fh2hRVLtuNuRzkTOINtk"
         style={{
           height: heightMap,
           width: widthMap,
@@ -289,46 +433,105 @@ const PoligonJoystick = () => {
             crosshairPos,
           )
           if (crosshairCoords) {
-            setLastCoordinate(crosshairCoords as Position)
+            if (!editActive) {
+              setLastCoordinate(crosshairCoords as Position)
+            }
+            if (editActive) {
+              const newPolygon = polygonReview
+              newPolygon[indexEdit] = crosshairCoords as Position
+              if (indexEdit === 0 || indexEdit === polygonReview.length - 1) {
+                newPolygon[0] = crosshairCoords as Position
+                newPolygon[polygonReview.length - 1] =
+                  crosshairCoords as Position
+              } else {
+                newPolygon[indexEdit] = crosshairCoords as Position
+              }
+              setPolygonReview(newPolygon)
+              setLastCoordinate(crosshairCoords as Position)
+            }
           }
         }}>
-        {<CrosshairOverlay onCenter={c => setCrosshairPos(c)} />}
-        {<Polygon coordinates={coordinatesWithLast} />}
-        {coordinatesWithLast.map((c, i) => {
-          return (
-            <PointAnnotation
-              key={i.toString()}
-              id={i.toString()}
-              coordinate={[c[0], c[1]]}>
-              <View
-                style={{
-                  height: 10,
-                  width: 10,
-                  backgroundColor: 'white',
-                  borderRadius: 5,
+        {!editActive && (
+          <>
+            <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />
+            {coordinatesWithLast.length > 1 && (
+              <Polygon coordinates={coordinatesWithLast} />
+            )}
+            {coordinatesWithLast.map((c, i) => (
+              <PointAnnotation
+                // onSelected={onSelected}
+                key={i.toString()}
+                id={i.toString()}
+                coordinate={[c[0], c[1]]}>
+                <View
+                  style={{
+                    height: 15,
+                    width: 15,
+                    backgroundColor: 'white',
+                    borderRadius: 5,
+                  }}
+                />
+              </PointAnnotation>
+            ))}
+            <Camera
+              ref={ref2}
+              defaultSettings={{
+                centerCoordinate: firstPoint,
+                zoomLevel: 17,
+              }}
+              minZoomLevel={12}
+              maxZoomLevel={20}
+              animationMode={'flyTo'}
+              animationDuration={100}
+              centerCoordinate={centerCoordinate}
+            />
+          </>
+        )}
+        {editActive && (
+          <>
+            <Polygon coordinates={polygonReview} />
+            {polygonReview.map((c, i) => (
+              <PointAnnotation
+                onSelected={e => {
+                  if (indexEdit === -1) {
+                    setCenterCoordinate([
+                      e.geometry.coordinates[0],
+                      e.geometry.coordinates[1],
+                    ])
+                    onSelected(e)
+                  }
                 }}
-              />
-            </PointAnnotation>
-          )
-        })}
-        <Camera
-          ref={ref2}
-          defaultSettings={{
-            centerCoordinate: firstPoint,
-            zoomLevel: 17,
-          }}
-          animationMode={'flyTo'}
-          animationDuration={100}
-          centerCoordinate={centerCoordinate}
-        />
+                key={i.toString()}
+                id={i.toString()}
+                coordinate={[c[0], c[1]]}>
+                <View
+                  style={{
+                    height: 15,
+                    width: 15,
+                    backgroundColor: 'white',
+                    borderRadius: 5,
+                  }}
+                />
+              </PointAnnotation>
+            ))}
+            <Camera
+              ref={ref2}
+              // defaultSettings={{
+              //   centerCoordinate: polygonReview[indexEdit],
+              //   zoomLevel: 17,
+              // }}
+              minZoomLevel={14}
+              maxZoomLevel={18}
+              animationMode={'flyTo'}
+              animationDuration={500}
+              centerCoordinate={centerCoordinate}
+            />
+          </>
+        )}
       </MapView>
-      <GestureHandlerRootView
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: -250,
-        }}>
-        <View style={styles.containerButton}>
+
+      <View style={styles.containerButton}>
+        {!editActive ? (
           <TouchableOpacity
             onPress={() => {
               deletePoint()
@@ -336,86 +539,73 @@ const PoligonJoystick = () => {
             style={styles.iconButton}>
             <Delete />
           </TouchableOpacity>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <ReactNativeJoystick
-              color={'#D4D7D5'}
-              radius={75}
-              onMove={data => {
-                if (data.angle && data.force) {
-                  moveMap(data.angle, data.force)
-                }
-              }}
-            />
-          </View>
-
-          <TouchableOpacity
-            onPress={() => {
+        ) : (
+          <View />
+        )}
+        <TouchableOpacity
+          onPress={() => {
+            if (!editActive) {
               const DATA = [...coordinates, lastCoordinate]
-              storage.set('polygonTemp', JSON.stringify(DATA))
+              storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
               setCoordinates(DATA)
-            }}
-            style={styles.iconButton}>
-            <Add_Location />
-          </TouchableOpacity>
-        </View>
-      </GestureHandlerRootView>
+            } else {
+              setIndexEdit(-1)
+            }
+          }}
+          style={styles.iconButton}>
+          <Add_Location />
+        </TouchableOpacity>
+      </View>
     </View>
+  ) : (
+    <></>
   )
 }
+
 const styles = StyleSheet.create({
   iconButton: {
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 7,
     backgroundColor: '#D4D7D5',
-    width: '10%',
-    height: '45%',
-    padding: 30,
+    height: 60,
+    width: 60,
   },
   containerButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 200,
+    width: Dimensions.get('window').width,
+    height: 40,
     paddingHorizontal: 25,
-  },
-  buttonSave: {
-    width: '25%',
-    height: '45%',
-    top: 5,
-    justifyContent: 'center',
-    backgroundColor: '#D4D7D5',
-    borderRadius: 7,
-    alignItems: 'center',
-    marginRight: 25,
+    marginTop: -130,
   },
   containerButtonUp: {
     position: 'absolute',
-    top: 10,
+    top: 40,
     zIndex: 99999,
-    height: 100,
-    paddingVertical: 5,
-    alignItems: 'center',
-    marginRight: 25,
+    paddingHorizontal: 25,
     justifyContent: 'space-between',
     flexDirection: 'row',
-    width: '100%',
+    width: Dimensions.get('window').width,
   },
-  buttonClose: {
-    width: '25%',
-    height: '45%',
-    alignItems: 'center',
-    top: 10,
+  buttonClose: {},
+  buttonSave: {
+    top: 0,
+    height: 40,
+    alignContent: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 25,
+    borderBottomEndRadius: 7,
+    borderBottomStartRadius: 7,
+    backgroundColor: '#D4D7D5',
   },
   textButtonSave: {
     fontSize: 15,
     alignSelf: 'center',
     color: 'black',
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
 })
+
 export default PoligonJoystick

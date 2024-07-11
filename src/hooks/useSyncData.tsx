@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import {storage} from '../config/store/db'
-import useApi from '../hooks/useApi'
+import useApi from './useApi'
 
 type DataType = {
   [key: string]: any
@@ -10,14 +10,10 @@ const useSync = (
   accessToken: string,
   setLoadingSync: any,
   setErrorSync: any,
+  setErrorWhattsap: any,
 ) => {
   const [dataToSync, setDataToSync] = useState<DataType>({})
   const [hasDataToSync, setHasDataToSync] = useState<boolean>(false)
-
-  useEffect(() => {
-    console.log('accessToken:', accessToken)
-    console.log('Has data to sync:', hasDataToSync)
-  }, [hasDataToSync])
 
   const fetchAllKeysAndSetDataToSync = async () => {
     try {
@@ -36,7 +32,7 @@ const useSync = (
             let value = JSON.parse(storage.getString(key) || '[]')
 
             for (let index = 0; index < value.length; index++) {
-              if (value[index]['syncUp'] === false) {
+              if (value[index].syncUp === false) {
                 acc[key] = !value.syncUp
                 break // Sale del bucle si encuentra un valor igual a false
               }
@@ -52,8 +48,6 @@ const useSync = (
   }
 
   const addToSync = (newData: any, storageKey: string) => {
-    console.log('addToSync', newData, storageKey)
-
     try {
       storage.set(storageKey, newData)
 
@@ -68,17 +62,14 @@ const useSync = (
         }))
       } else {
         for (let index = 0; index < newData.length; index++) {
-          if (newData[index]['syncUp'] === false) {
+          if (newData[index].syncUp === false) {
             setDataToSync(prevData => {
-              console.log('data para ver:', prevData, newData)
-
               if (true) {
                 return {
                   ...prevData,
                   [storageName]: !newData.syncUp,
                 }
               } else {
-                return prevData // No hay cambios, devuelve prevData sin modificar
               }
             })
             break // Sale del bucle si encuentra un valor igual a false
@@ -94,6 +85,7 @@ const useSync = (
     setLoadingSync,
     setErrorSync,
     addToSync,
+    setErrorWhattsap,
   )
 
   const toSyncData = async (key: string) => {
@@ -102,20 +94,17 @@ const useSync = (
         case 'userSync':
           createProducer(key)
           break
-
         case 'user':
           createProducer(key)
           break
         case 'createFarm':
-          console.log('createFarm', dataToSync.parcels)
-
           if (dataToSync.parcels) {
             createFarm()
           }
-
           break
         case 'createSale':
           createSale()
+          break
         default:
           break
       }
@@ -126,7 +115,6 @@ const useSync = (
 
   useEffect(() => {
     const checkDataToSync = () => {
-      console.log('checkDataToSync', dataToSync)
       for (const key in dataToSync) {
         if (dataToSync.hasOwnProperty(key)) {
           if (dataToSync[key]) {

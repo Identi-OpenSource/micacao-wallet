@@ -103,7 +103,7 @@ const STYLE_BTN = (theme: BTN_THEME_DF) => {
       CL = [COLORS_DF.robin_egg_blue, COLORS_DF.lightGray];
       break;
     case "agrayuDisabled":
-      CL = [COLORS_DF.lightBlue, COLORS_DF.isabelline];
+      CL = [COLORS_DF.lightBlue, COLORS_DF.white];
       break;
     case "transparent":
       CL = [COLORS_DF.transparent, COLORS_DF.citrine_brown];
@@ -208,7 +208,7 @@ const STYLE_BTN_SMALL = (theme: BTN_THEME_DF) => {
       CL = [COLORS_DF.robin_egg_blue, COLORS_DF.cacao];
       break;
     case "agrayuDisabled":
-      CL = [COLORS_DF.greenAgrayuDisabled, COLORS_DF.lightBlue];
+      CL = [COLORS_DF.lightBlue, COLORS_DF.lightBlue];
       break;
     default:
       CL = [COLORS_DF.primary, COLORS_DF.secondary];
