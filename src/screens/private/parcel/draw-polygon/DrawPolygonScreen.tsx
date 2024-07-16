@@ -606,7 +606,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
                 </Text>
               </View>
               <View style={{marginTop: 15}}>
-                <Text>vendidos a </Text>
+                <Text>Total en ventas</Text>
               </View>
               <View
                 style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
@@ -643,7 +643,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
                 </Text>
               </View>
               <View style={{marginTop: 15}}>
-                <Text>vendidos a </Text>
+                <Text>Total en ventas</Text>
               </View>
               <View
                 style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
