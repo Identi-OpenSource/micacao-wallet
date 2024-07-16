@@ -28,7 +28,12 @@ import {storage} from '../../../config/store/db'
 import useInternetConnection from '../../../hooks/useInternetConnection'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
 import useFetchData, {HEADERS} from '../../../hooks/useFetchData'
-import {fundingWallet, writeTransaction} from '../../../OCC/occ'
+import {
+  fundingWallet,
+  getDataWallet,
+  newWallet,
+  writeTransaction,
+} from '../../../OCC/occ'
 import Spinner from 'react-native-loading-spinner-overlay'
 
 export const HomeProvScreen = () => {
@@ -41,57 +46,17 @@ export const HomeProvScreen = () => {
   // storage.set(STORAGE_KEYS.sales, JSON.stringify([]))
   useFocusEffect(
     useCallback(() => {
+      // console.log('testWallet', newWallet())
       isConnected && init()
     }, [isConnected]),
   )
 
   const init = async () => {
     await loadData()
-    // await asyncDataOld()
     await asyncData()
     await fundingW()
-    // setLoadDataAsync(true)
     await writeBlockchain()
-    // setLoadDataAsync(false)
   }
-  // const asyncDataOld = async () => {
-  //   const loadData = JSON.parse(
-  //     storage.getString(STORAGE_KEYS.loadData) || '{}',
-  //   )
-  //   if (loadData?.syncUpOld === 'v1') {
-  //     return
-  //   }
-  //   const dataoOld = JSON.parse(storage.getString(STORAGE_KEYS?.syncUp) || '[]')
-  //   const syncUpUser = [{type: SYNC_UP_TYPES.user, data: dataoOld}]
-  //   storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpUser))
-
-  //   const parcels = JSON.parse(storage.getString(STORAGE_KEYS?.parcels) || '[]')
-  //   for (let index = 0; index < parcels.length; index++) {
-  //     const element = parcels[index]
-  //     if (element.polygon) {
-  //       const syncUp = JSON.parse(
-  //         storage.getString(STORAGE_KEYS.syncUp) || '[]',
-  //       )
-  //       const syncUpNew = [
-  //         ...syncUp,
-  //         {type: SYNC_UP_TYPES.parcels, data: element},
-  //       ]
-  //       storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
-  //     }
-  //   }
-  //   const sales = JSON.parse(storage.getString(STORAGE_KEYS?.sales) || '[]')
-  //   for (let index = 0; index < sales.length; index++) {
-  //     const element = sales[index]
-  //     const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
-  //     const syncUpNew = [...syncUp, {type: SYNC_UP_TYPES.sales, data: element}]
-  //     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
-  //   }
-  //   const data = JSON.parse(storage.getString(STORAGE_KEYS?.loadData) || '{}')
-  //   storage.set(
-  //     STORAGE_KEYS?.loadData,
-  //     JSON.stringify({...data, syncUpOld: 'v1'}),
-  //   )
-  // }
 
   const loadData = async () => {
     // revisar si hay actualización en las variables de env
@@ -122,27 +87,16 @@ export const HomeProvScreen = () => {
   }
 
   const fundingW = async () => {
-    // const funding = await fundingWallet(wallet.wallet.walletOFC)
-    const dataExt = JSON.parse(storage.getString(STORAGE_KEYS.dataExt) || '{}')
-    // console.log('dataExt', dataExt)
-    const differenceInMilliseconds = Math.abs(
-      dataExt?.fundingWallet - new Date().getTime(),
-    )
-    const differenceInHours = differenceInMilliseconds / 3600000
-    if (!isConnected || differenceInHours < 720) {
+    if (!isConnected) {
+      return
+    }
+    const dataWallet = await getDataWallet(wallet?.wallet?.walletOFC)
+    if (dataWallet?.data?.balance > 1000) {
       return
     }
     const funding = await fundingWallet(wallet?.wallet?.walletOFC)
     const isFunding = funding?.status === 200
-    if (!isFunding) {
-      return
-    }
-    // console.log('fundingWallet')
     storage.set('wallet', JSON.stringify({...wallet, isFunding}))
-    storage.set(
-      STORAGE_KEYS.dataExt,
-      JSON.stringify({...dataExt, fundingWallet: new Date().getTime()}),
-    )
   }
 
   const asyncData = async () => {
@@ -184,6 +138,16 @@ export const HomeProvScreen = () => {
         }
         const resp = await sendFetch(url, data)
         if (resp) {
+          const parcels = JSON.parse(
+            storage.getString(STORAGE_KEYS.parcels) || '[]',
+          )
+          const parcelIndex = parcels.findIndex(
+            (parcel: any) => parcel?.id === element?.data?.id,
+          )
+          if (parcelIndex !== -1) {
+            parcels[parcelIndex] = {...parcels[parcelIndex], syncUp: true}
+            storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
+          }
           indexAsync.push(index)
         }
         // console.log('creando farm =>', resp)
@@ -201,6 +165,17 @@ export const HomeProvScreen = () => {
         }
         const resp = await sendFetch(url, data)
         if (resp) {
+          const sales = JSON.parse(
+            storage.getString(STORAGE_KEYS.sales) || '[]',
+          )
+          const saleIndex = sales.findIndex(
+            (sale: any) => sale?.idSale === element?.data?.idSale,
+          )
+          if (saleIndex !== -1) {
+            sales[saleIndex] = {...sales[saleIndex], syncUp: true}
+            storage.set(STORAGE_KEYS.sales, JSON.stringify(sales))
+          }
+
           const writeBlockchain = JSON.parse(
             storage.getString(STORAGE_KEYS.writeBlockchain) || '[]',
           )
@@ -230,7 +205,6 @@ export const HomeProvScreen = () => {
     const wallet = JSON.parse(storage.getString(STORAGE_KEYS.wallet) || '{}')
     const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
     const parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
-
     if (!dataWrite.length || !isConnected || !wallet.isFunding) {
       return
     }
@@ -473,161 +447,3 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 })
-
-// export const HomeProvScreen = () => {
-//   const user: UserInterface = useContext(UsersContext)
-//   const internetConnection = useContext(ConnectionContext)
-//   const wallet = JSON.parse(storage.getString('wallet') || '{}')
-
-//   const {isConnected} = internetConnection
-//   const {toSyncData, dataToSync, loadingSync} = useSyncData()
-//   const {
-//     postKafeSistemas,
-//     getKafeSistemas,
-//     postKafeData,
-//     getKafeData,
-//     loadingKafe,
-//   } = useKafeContext()
-//   const {accessToken} = useAuth()
-//   const [syncUp, setSyncUp] = useState(false)
-//   const [loadinSync, setLoadingSync] = useState(false)
-//   const [wa, setWa] = useState(null) as any
-
-//   useFocusEffect(
-//     useCallback(() => {
-//       const onBackPress = () => {
-//         // Evita que se ejecute el comportamiento predeterminado de Android
-//         return true // true para indicar que el evento de retroceso ha sido manejado
-//       }
-
-//       // Agrega un listener para el evento de retroceso de Android
-//       const backHandler = BackHandler.addEventListener(
-//         'hardwareBackPress',
-//         onBackPress,
-//       )
-
-//       if (Object.keys(wallet).length > 0) {
-//         if (wallet.isFunding) {
-//           //  writeWallet()
-//         } else {
-//           //  funding()
-//         }
-//       }
-
-//       // Limpia el listener cuando la pantalla pierde el enfoque
-//       return () => backHandler.remove()
-//     }, []),
-//   )
-
-//   const funding = async () => {
-//     const funding = await fundingWallet(wallet.wallet.walletOFC).catch(
-//       error => {
-//         console.log(error)
-//         return error
-//       },
-//     )
-//     const isFunding = funding.status === 200
-//     const wallet_a = wallet.wallet
-//     storage.set('wallet', JSON.stringify({wallet: wallet_a, isFunding}))
-//   }
-
-//   // useEffect(() => {
-//   //   //Test KS
-//   //   // testKS()
-
-//   //   if (isConnected && dataToSync.parcels) {
-//   //     toSyncData('createFarm')
-//   //   }
-//   // }, [isConnected, dataToSync?.parcels])
-
-//   // useEffect(() => {
-//   //   //Test KS
-//   //   // testKS()
-//   //   if (isConnected && dataToSync.sales) {
-//   //     toSyncData('createSale')
-//   //   }
-//   // }, [isConnected, dataToSync?.sales])
-
-//   // const testKS = async () => {
-//   //   const dni = '2222222'
-//   //   const encrypted = await dniEncrypt(dni)
-//   //   console.log('encrypted', encrypted)
-//   //   const dniDecrypt = await dniText(encrypted.dni)
-//   //   // const dniDecrypt = await dniText(dniDecrypt)
-//   //   console.log('dniDecrypt', dniDecrypt)
-//   //   /* TEST:
-//   //   para el hash 6d4cf5ae259c7efdae041e7ac6ac41d7 es 98765432
-//   //   para el hash 46143ba1e97976f3cb1abcdfc99924f3 es 2222222
-//   //   */
-//   // }
-
-//   const getWallet = () => {
-//     const wallet = newWallet()
-//     const isFunding = true
-//     const walletObj = {wallet, isFunding}
-//     setWa(walletObj.wallet)
-//   }
-
-//   const writeWallet = async () => {
-//     const userData = JSON.parse(storage.getString('user') || '{}')
-//     const parcels_array = JSON.parse(storage.getString('parcels') || '[]')
-//     const sales = JSON.parse(storage.getString('sales') || '[]')
-//     const [TX, newSales] = await writeTransaction(wallet.wallet.wif, {
-//       userData,
-//       parcels_array,
-//       sales,
-//     }).catch(error => {
-//       console.log(error)
-//       return [null, null]
-//     })
-//     if (TX) {
-//       console.log(TX)
-//       storage.set('sales', JSON.stringify(newSales))
-//     }
-//   }
-
-//   // useEffect(() => {
-//   //   if (
-//   //     !loadingKafe &&
-//   //     Object.keys(postKafeData).length === 0 &&
-//   //     isConnected &&
-//   //     user.country?.code === 'PE'
-//   //   ) {
-//   //     postKafeSistemas()
-//   //   }
-//   // }, [isConnected])
-
-//   /*
-//   useEffect(() => {
-//     let interval;
-
-//     interval = setInterval(() => {
-//       if (!loadingKafe && isConnected && user.country?.code === "PE") {
-//         getKafeSistemas();
-//       }
-//     }, 300000);
-//     return () => clearInterval(interval);
-//   }, [isConnected]); */
-
-//   return (
-//     <SafeArea bg={'isabelline'}>
-//       <ScrollView>
-//         {!loadinSync ? (
-//           <View style={styles.container}>
-//             <ConnectionStatus isConnected={isConnected || false} />
-//             <Header {...user} />
-//             <Body
-//               syncUp={syncUp}
-//               accessToken={accessToken}
-//               getWallet={getWallet}
-//               writeWallet={writeWallet}
-//               isConnected={isConnected || false}
-//             />
-//           </View>
-//         ) : (
-//           <LoadingSave msg={TEXTS.textAF} />
-//         )}
-//       </ScrollView>
-//     </SafeArea>
-//   )
-// }

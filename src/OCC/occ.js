@@ -37,12 +37,19 @@ export const newWallet = () => {
   }
 }
 
+export const getDataWallet = async wallet => {
+  const url = `${Config?.WALLET_EXPLORER}/${wallet}/?noTxList=1`
+  return await axios.get(url).catch(error => {
+    console.log('error getDataWallet => ', error)
+    return error
+  })
+}
+
 export const fundingWallet = async wallet => {
-  // console.log('wallet', wallet)
   const url = `${Config?.WALLET_FUND}/fund/${wallet}`
   console.log('WALLET_FUND', url)
   return await axios.get(url).catch(error => {
-    console.log('error fundingWallet => ', error)
+    console.log('fundingWallet => ', error)
     return error
   })
 }

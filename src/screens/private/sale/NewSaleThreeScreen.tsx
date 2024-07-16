@@ -1,5 +1,6 @@
-import {useNavigation} from '@react-navigation/native'
 import React, {useEffect, useState} from 'react'
+import {useNavigation} from '@react-navigation/native'
+import uuid from 'react-native-uuid'
 import {
   ActivityIndicator,
   Dimensions,
@@ -90,7 +91,7 @@ export const NewSaleThreeScreen = () => {
       storage.getString(STORAGE_KEYS.saleTemp) || '{}',
     )
     const sales = JSON.parse(storage.getString(STORAGE_KEYS.sales) || '[]')
-    const sale = {...saleTemp, mes: date}
+    const sale = {...saleTemp, mes: date, idSale: uuid.v4()}
     storage.set(STORAGE_KEYS.sales, JSON.stringify([...sales, sale]))
     storage.delete(STORAGE_KEYS.saleTemp)
 

@@ -40,27 +40,33 @@ export const RegisterOkScreen = () => {
   }
   const initial = async () => {
     setStep({step: 1, msg: 'Creando billetera'})
+    await delay(2000)
     const wallet = newWallet()
     if (wallet.walletOFC === null) {
       errorToas('¡Error al crear la billetera! Por favor, intente de nuevo.')
       return
     }
-    await delay(1500)
     setStep({step: 2, msg: 'Agregando fondos'})
+    await delay(2000)
     const funding = await fundingWallet(wallet.walletOFC)
     const isFunding = funding.status === 200
     storage.set(STORAGE_KEYS.wallet, JSON.stringify({wallet, isFunding}))
-    await delay(1000)
     setStep({step: 3, msg: 'Descargando mapa'})
-    await descargarMapa()
-    await delay(3000)
+    const mapOk = await descargarMapa()
+    if (!mapOk) {
+      navigation.goBack()
+      Toast.show({
+        type: 'msgToast',
+        text1: 'Error al descargar el mapa, por favor intente de nuevo',
+        autoHide: false,
+      })
+    }
+    await delay(2000)
     storage.set(STORAGE_KEYS.user, JSON.stringify({...user, isLogin: true}))
     const syncUp = [{type: SYNC_UP_TYPES.user, data: user}]
     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUp))
     setStep({step: 4, msg: 'Inicio de sesión'})
-    // Se deveria sincronizar la app con el servidor
-    // addToSync(JSON.stringify({...user, isLogin: true, syncUp: true}), 'user')
-    await delay(1500)
+    await delay(2000)
     const login = JSON.parse(storage.getString('user') || '{}')
     dispatch({type: 'login', payload: login})
   }
@@ -80,26 +86,43 @@ export const RegisterOkScreen = () => {
       minZoom: 10,
       maxZoom: 24,
     }
-    // console.log('map', map)
-    // console.log('options', options)
-    // console.log('options', options)
-    await Mapbox.offlineManager
-      .createPack(
-        options,
-        (region, status) => {
-          const percentage = status.percentage.toFixed(2)
-          setStep({
-            step: 3,
-            msg: 'Descargando mapa ' + percentage + '%',
-          })
-        },
-        error => {
-          console.log('Error al crear el pack:', error)
-        },
-      )
-      .catch(() => {
-        console.log('Error al descargar el mapa')
-      })
+    return new Promise<boolean>((resolve, reject) => {
+      Mapbox.offlineManager
+        .createPack(
+          options,
+          (region, status) => {
+            const percentage = status.percentage.toFixed(2)
+            console.log('Descargando', percentage)
+            setStep({
+              step: 3,
+              msg: 'Descargando mapa ' + percentage + '%',
+            })
+            if (status.percentage === 100) {
+              resolve(true)
+            }
+          },
+          error => {
+            console.log('Error al crear el pack:', error)
+            resolve(false)
+          },
+        )
+        .catch(error => {
+          console.log('Error al descargar el mapa')
+          // eliminar todos los packs
+          Mapbox.offlineManager
+            .getPacks()
+            .then(packs => {
+              for (let index = 0; index < packs.length; index++) {
+                const pack = packs[index]
+                Mapbox.offlineManager.deletePack(pack.name)
+              }
+            })
+            .catch(error => {
+              console.log('Error al eliminar packs:', error)
+            })
+          resolve(false)
+        })
+    })
   }
 
   return (

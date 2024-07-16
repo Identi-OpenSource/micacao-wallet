@@ -38,6 +38,11 @@ import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../../config/const'
 import {Parcel} from '../../../../states/UserContext'
 type Position = [number, number]
 
+const maxAcceptableAccuracy = 50 // meters
+const maxAcceptableDistance = 30 // meters
+const velocidadMinima = 0.5 // m/s
+const velocidadMaxima = 10 // m/s
+
 const lineLayerStyle = {
   lineColor: '#fff',
   lineWidth: 3,
@@ -66,6 +71,28 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
       <LineLayer id={'line-layer'} style={lineLayerStyle} />
     </ShapeSource>
   )
+}
+
+function carcularDistancia(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+) {
+  // Función para calcular la distancia en metros entre dos puntos geográficos (fórmula haversine)
+  const R = 6371e3 // Radio de la Tierra en metros
+  const φ1 = (lat1 * Math.PI) / 180 // Convertir latitudes a radianes
+  const φ2 = (lat2 * Math.PI) / 180
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+  const dist = R * c // Distancia en metros
+  return dist
 }
 
 const GradientLineRecorrer = ({route}: any) => {
@@ -137,24 +164,57 @@ const GradientLineRecorrer = ({route}: any) => {
   useEffect(() => {
     let watchId: any = null
     if (started) {
+      let lastValidPosition: any = null
       watchId = Geolocation.watchPosition(
         position => {
-          setCoordinates((prevPositions: any[]) => {
-            const DATA = [
-              ...prevPositions,
-              [position.coords.longitude, position.coords.latitude],
-            ]
-            storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
-            return DATA
-          })
-          setCam([position.coords.longitude, position.coords.latitude])
+          console.log('posición actual:', position)
+          const {latitude, longitude, accuracy} = position.coords
+          const timestamp = position.timestamp
+          if (accuracy <= maxAcceptableAccuracy) {
+            if (lastValidPosition === null) {
+              // Guardar la primera posición como válida
+              lastValidPosition = {latitude, longitude, timestamp}
+              console.log(
+                `Primera posición válida registrada: Latitud: ${latitude}, Longitud: ${longitude}`,
+              )
+            } else if (lastValidPosition) {
+              console.log('lastValidPosition', lastValidPosition)
+              const distance = carcularDistancia(
+                lastValidPosition?.latitude,
+                lastValidPosition?.longitude,
+                latitude,
+                longitude,
+              )
+              // calcula el tiempo entre los dos puntos
+              const timeTranscurred =
+                (timestamp - lastValidPosition?.timestamp) / 1000
+              const velocidad = distance / timeTranscurred
+              if (
+                distance <= maxAcceptableDistance &&
+                velocidad >= velocidadMinima &&
+                velocidad <= velocidadMaxima
+              ) {
+                // Guardar la última posición como válida
+                setCoordinates((prevPositions: any[]) => {
+                  const DATA = [...prevPositions, [longitude, latitude]]
+                  storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
+                  return DATA
+                })
+                lastValidPosition = {latitude, longitude, timestamp}
+              }
+            }
+          } else {
+            console.log('punto no aceptable')
+          }
+          setCam([longitude, latitude])
         },
         error => {
           console.log(error)
         },
         {
           enableHighAccuracy: true,
-          distanceFilter: 1,
+          distanceFilter: 3,
+          fastestInterval: 5000,
           interval: 1000,
         },
       )

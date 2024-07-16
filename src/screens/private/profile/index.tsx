@@ -26,6 +26,7 @@ import {PinRequest} from '../../../components/pin-request/PinRequest'
 const {width} = Dimensions.get('window')
 import Share from 'react-native-share'
 import {Buffer} from 'buffer'
+import uuid from 'react-native-uuid'
 import RNFS from 'react-native-fs'
 import Toast from 'react-native-toast-message'
 import {dniText} from '../../../OCC/occ'
@@ -133,7 +134,7 @@ const ProfileScreen = () => {
         )
         parcelsList.push(element)
         storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcelsList))
-        if (element.polygon) {
+        if (element?.polygon && element?.syncUp === undefined) {
           const syncUp = JSON.parse(
             storage.getString(STORAGE_KEYS.syncUp) || '[]',
           )
@@ -147,19 +148,24 @@ const ProfileScreen = () => {
       storage.delete(STORAGE_KEYS.sales)
       for (let index = 0; index < sales.length; index++) {
         const element = sales[index]
+        if (element.idSale === undefined) {
+          element.idSale = uuid.v4()
+        }
         const salesList = JSON.parse(
           storage.getString(STORAGE_KEYS.sales) || '[]',
         )
         salesList.push(element)
         storage.set(STORAGE_KEYS.sales, JSON.stringify(salesList))
-        const syncUp = JSON.parse(
-          storage.getString(STORAGE_KEYS.syncUp) || '[]',
-        )
-        const syncUpNew = [
-          ...syncUp,
-          {type: SYNC_UP_TYPES.sales, data: element},
-        ]
-        storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+        if (element?.syncUp === undefined || element?.syncUp === false) {
+          const syncUp = JSON.parse(
+            storage.getString(STORAGE_KEYS.syncUp) || '[]',
+          )
+          const syncUpNew = [
+            ...syncUp,
+            {type: SYNC_UP_TYPES.sales, data: element},
+          ]
+          storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
+        }
       }
       Toast.show({
         type: 'msgToast',
