@@ -7,7 +7,10 @@ import {
   ShapeSource,
   StyleURL,
 } from '@rnmapbox/maps'
-import {activateKeepAwake} from '@sayem314/react-native-keep-awake'
+import {
+  activateKeepAwake,
+  deactivateKeepAwake,
+} from '@sayem314/react-native-keep-awake'
 import React, {
   ComponentProps,
   forwardRef,
@@ -36,6 +39,7 @@ import * as turf from '@turf/turf'
 import {Add_Location} from '../../../../assets/svg'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../../config/const'
 import {Parcel} from '../../../../states/UserContext'
+import {LoadingSave} from '../../../../components/loading/LoadinSave'
 type Position = [number, number]
 
 const maxAcceptableAccuracy = 50 // meters
@@ -250,7 +254,9 @@ const GradientLineRecorrer = ({route}: any) => {
       setCam(firstPointGps)
       setLastCoordinate(firstPointGps)
       setCrosshairPos(firstPointGps)
-      setLoadInit(true)
+      setTimeout(() => {
+        setLoadInit(true)
+      }, 5000)
     }
   }, [firstPointGps])
 
@@ -543,219 +549,231 @@ const GradientLineRecorrer = ({route}: any) => {
     lineWidth: 4,
   }
 
-  return loadInit ? (
-    <View style={{flex: 1}}>
-      <StatusBar backgroundColor="#8F3B06" barStyle="light-content" />
+  return (
+    <>
+      {!loadInit && (
+        <View
+          style={{
+            height: heightMap,
+            width: widthMap,
+            position: 'absolute',
+            zIndex: 10000000,
+            backgroundColor: COLORS_DF.isabelline,
+          }}>
+          <LoadingSave msg="Buscando tu ubicación" />
+        </View>
+      )}
+      <View style={{flex: 1}}>
+        <StatusBar backgroundColor="#8F3B06" barStyle="light-content" />
 
-      <ModalComponent
-        isVisible={showModal}
-        label={'¡El mapa de tu parcela ha sido guardado!'}
-        closeModal={closeModal}
-        buttonText={'Continuar'}
-      />
-      <View style={styles.containerButtonUp}>
-        <TouchableOpacity onPress={back} style={styles.buttonClose}>
-          <Close_Map height={38} width={38} />
-        </TouchableOpacity>
-      </View>
-      <MapView
-        ref={map}
-        styleURL={StyleURL.Satellite}
-        style={{
-          height: heightMap,
-          width: widthMap,
-        }}
-        scaleBarEnabled={false}
-        rotateEnabled={false}
-        attributionEnabled={false}
-        compassEnabled={false}
-        logoEnabled={false}
-        onCameraChanged={async () => {
-          const crosshairCoords = await map.current?.getCoordinateFromView(
-            crosshairPos,
-          )
-          if (crosshairCoords) {
-            if (!editActive) {
-              setLastCoordinate(crosshairCoords as Position)
-            }
-            if (editActive) {
-              const newPolygon = polygonReview
-              newPolygon[indexEdit] = crosshairCoords as Position
-              if (indexEdit === 0 || indexEdit === polygonReview.length - 1) {
-                newPolygon[0] = crosshairCoords as Position
-                newPolygon[polygonReview.length - 1] =
-                  crosshairCoords as Position
-              } else {
-                newPolygon[indexEdit] = crosshairCoords as Position
+        <ModalComponent
+          isVisible={showModal}
+          label={'¡El mapa de tu parcela ha sido guardado!'}
+          closeModal={closeModal}
+          buttonText={'Continuar'}
+        />
+        <View style={styles.containerButtonUp}>
+          <TouchableOpacity onPress={back} style={styles.buttonClose}>
+            <Close_Map height={38} width={38} />
+          </TouchableOpacity>
+        </View>
+        <MapView
+          ref={map}
+          styleURL={StyleURL.Satellite}
+          style={{
+            height: heightMap,
+            width: widthMap,
+          }}
+          scaleBarEnabled={false}
+          rotateEnabled={false}
+          attributionEnabled={false}
+          compassEnabled={false}
+          logoEnabled={false}
+          onCameraChanged={async () => {
+            const crosshairCoords = await map.current?.getCoordinateFromView(
+              crosshairPos,
+            )
+            if (crosshairCoords) {
+              if (!editActive) {
+                setLastCoordinate(crosshairCoords as Position)
               }
-              setPolygonReview(newPolygon)
-              setLastCoordinate(crosshairCoords as Position)
+              if (editActive) {
+                const newPolygon = polygonReview
+                newPolygon[indexEdit] = crosshairCoords as Position
+                if (indexEdit === 0 || indexEdit === polygonReview.length - 1) {
+                  newPolygon[0] = crosshairCoords as Position
+                  newPolygon[polygonReview.length - 1] =
+                    crosshairCoords as Position
+                } else {
+                  newPolygon[indexEdit] = crosshairCoords as Position
+                }
+                setPolygonReview(newPolygon)
+                setLastCoordinate(crosshairCoords as Position)
+              }
             }
-          }
-        }}>
-        {!editActive && (
-          <>
-            <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />
-            {<Polygon coordinates={coordinatesWithLast} />}
-            {polygonReview.map((c, i) => (
-              <PointAnnotation
-                onSelected={e => {
-                  if (indexEdit === -1) {
-                    setCenterCoordinate([
-                      e.geometry.coordinates[0],
-                      e.geometry.coordinates[1],
-                    ])
-                    onSelected(e)
-                  }
-                }}
-                key={i.toString()}
-                id={i.toString()}
-                coordinate={[c[0], c[1]]}>
-                <View
-                  style={{
-                    height: 15,
-                    width: 15,
-                    backgroundColor: 'white',
-                    borderRadius: 5,
-                  }}
-                />
-              </PointAnnotation>
-            ))}
-            {coordinatesWithLast.map((c, i) => {
-              const lastIndex = coordinates.length - 1
-              return (
+          }}>
+          {!editActive && (
+            <>
+              <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />
+              {<Polygon coordinates={coordinatesWithLast} />}
+              {polygonReview.map((c, i) => (
                 <PointAnnotation
-                  key={i.toString() + coordinates.length}
+                  onSelected={e => {
+                    if (indexEdit === -1) {
+                      setCenterCoordinate([
+                        e.geometry.coordinates[0],
+                        e.geometry.coordinates[1],
+                      ])
+                      onSelected(e)
+                    }
+                  }}
+                  key={i.toString()}
                   id={i.toString()}
-                  coordinate={[c[0], c[1]]}
-                  draggable={i === 0} // Only make the first point draggable
-                  onDragEnd={e =>
-                    onDragEnd(i, [
-                      e.geometry.coordinates[0],
-                      e.geometry.coordinates[1],
-                    ])
-                  }>
+                  coordinate={[c[0], c[1]]}>
                   <View
                     style={{
-                      height: 10,
-                      width: 10,
-                      backgroundColor: lastIndex === i ? 'white' : 'white',
+                      height: 15,
+                      width: 15,
+                      backgroundColor: 'white',
                       borderRadius: 5,
                     }}
                   />
                 </PointAnnotation>
-              )
-            })}
-            <Camera zoomLevel={17} minZoomLevel={14} centerCoordinate={cam} />
-          </>
-        )}
-        {editActive && (
-          <>
-            <Polygon coordinates={polygonReview} />
-            {polygonReview.map((c, i) => (
-              <PointAnnotation
-                onSelected={e => {
-                  if (indexEdit === -1) {
-                    setCenterCoordinate([
-                      e.geometry.coordinates[0],
-                      e.geometry.coordinates[1],
-                    ])
-                    onSelected(e)
+              ))}
+              {coordinatesWithLast.map((c, i) => {
+                const lastIndex = coordinates.length - 1
+                return (
+                  <PointAnnotation
+                    key={i.toString() + coordinates.length}
+                    id={i.toString()}
+                    coordinate={[c[0], c[1]]}
+                    draggable={i === 0} // Only make the first point draggable
+                    onDragEnd={e =>
+                      onDragEnd(i, [
+                        e.geometry.coordinates[0],
+                        e.geometry.coordinates[1],
+                      ])
+                    }>
+                    <View
+                      style={{
+                        height: 10,
+                        width: 10,
+                        backgroundColor: lastIndex === i ? 'white' : 'white',
+                        borderRadius: 5,
+                      }}
+                    />
+                  </PointAnnotation>
+                )
+              })}
+              <Camera zoomLevel={17} minZoomLevel={14} centerCoordinate={cam} />
+            </>
+          )}
+          {editActive && (
+            <>
+              <Polygon coordinates={polygonReview} />
+              {polygonReview.map((c, i) => (
+                <PointAnnotation
+                  onSelected={e => {
+                    if (indexEdit === -1) {
+                      setCenterCoordinate([
+                        e.geometry.coordinates[0],
+                        e.geometry.coordinates[1],
+                      ])
+                      onSelected(e)
+                    }
+                  }}
+                  key={i.toString()}
+                  id={i.toString()}
+                  coordinate={[c[0], c[1]]}>
+                  <View
+                    style={{
+                      height: 15,
+                      width: 15,
+                      backgroundColor: 'white',
+                      borderRadius: 5,
+                    }}
+                  />
+                </PointAnnotation>
+              ))}
+              <Camera
+                ref={ref2}
+                minZoomLevel={14}
+                maxZoomLevel={18}
+                animationMode={'flyTo'}
+                animationDuration={500}
+                centerCoordinate={centerCoordinate}
+              />
+            </>
+          )}
+        </MapView>
+        <View
+          style={{
+            position: 'absolute',
+            bottom: MP_DF.large,
+            width: '100%',
+            minHeight: 50,
+            paddingHorizontal: MP_DF.large,
+            zIndex: 1000000,
+            justifyContent: 'space-between',
+          }}>
+          {!editActive && (
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginBottom: MP_DF.large,
+              }}>
+              <BtnIcon
+                theme={'transparent'}
+                icon={!started ? 'person-walking-arrow-right' : 'hand'}
+                size={48}
+                iconColor={COLORS_DF.greenAgrayu}
+                onPress={() => {
+                  !started ? setStarted(true) : setStarted(false)
+                }}
+              />
+
+              <BtnIcon
+                theme={'transparent'}
+                icon={'person-walking-arrow-loop-left'}
+                size={48}
+                iconColor={COLORS_DF.greenAgrayu}
+                onPress={() => {
+                  deletePoint()
+                }}
+              />
+            </View>
+          )}
+          {editActive && (
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                marginBottom: MP_DF.large,
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (!editActive) {
+                    const DATA = [...coordinates, lastCoordinate]
+                    storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
+                    setCoordinates(DATA)
+                  } else {
+                    setIndexEdit(-1)
                   }
                 }}
-                key={i.toString()}
-                id={i.toString()}
-                coordinate={[c[0], c[1]]}>
-                <View
-                  style={{
-                    height: 15,
-                    width: 15,
-                    backgroundColor: 'white',
-                    borderRadius: 5,
-                  }}
-                />
-              </PointAnnotation>
-            ))}
-            <Camera
-              ref={ref2}
-              minZoomLevel={14}
-              maxZoomLevel={18}
-              animationMode={'flyTo'}
-              animationDuration={500}
-              centerCoordinate={centerCoordinate}
-            />
-          </>
-        )}
-      </MapView>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: MP_DF.large,
-          width: '100%',
-          minHeight: 50,
-          paddingHorizontal: MP_DF.large,
-          zIndex: 1000000,
-          justifyContent: 'space-between',
-        }}>
-        {!editActive && (
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginBottom: MP_DF.large,
-            }}>
-            <BtnIcon
-              theme={'transparent'}
-              icon={!started ? 'person-walking-arrow-right' : 'hand'}
-              size={48}
-              iconColor={COLORS_DF.greenAgrayu}
-              onPress={() => {
-                !started ? setStarted(true) : setStarted(false)
-              }}
-            />
-
-            <BtnIcon
-              theme={'transparent'}
-              icon={'person-walking-arrow-loop-left'}
-              size={48}
-              iconColor={COLORS_DF.greenAgrayu}
-              onPress={() => {
-                deletePoint()
-              }}
-            />
-          </View>
-        )}
-        {editActive && (
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              marginBottom: MP_DF.large,
-            }}>
-            <TouchableOpacity
-              onPress={() => {
-                if (!editActive) {
-                  const DATA = [...coordinates, lastCoordinate]
-                  storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
-                  setCoordinates(DATA)
-                } else {
-                  setIndexEdit(-1)
-                }
-              }}
-              style={styles.iconButton}>
-              <Add_Location />
-            </TouchableOpacity>
-          </View>
-        )}
-        <Btn
-          title={!editActive ? 'Guardar polígono' : 'Dibujo finalizado'}
-          onPress={() => (!editActive ? onSubmit() : savePoligon())}
-          theme="agrayu"
-        />
+                style={styles.iconButton}>
+                <Add_Location />
+              </TouchableOpacity>
+            </View>
+          )}
+          <Btn
+            title={!editActive ? 'Guardar polígono' : 'Dibujo finalizado'}
+            onPress={() => (!editActive ? onSubmit() : savePoligon())}
+            theme="agrayu"
+          />
+        </View>
       </View>
-    </View>
-  ) : (
-    <></>
+    </>
   )
 }
 const styles = StyleSheet.create({

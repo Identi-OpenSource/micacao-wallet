@@ -16,6 +16,10 @@ import {UserDispatchContext} from '../../../states/UserContext'
 import Toast from 'react-native-toast-message'
 import {useNavigation} from '@react-navigation/native'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
+import {
+  activateKeepAwake,
+  deactivateKeepAwake,
+} from '@sayem314/react-native-keep-awake'
 Mapbox.setAccessToken(Config?.MAPBOX_ACCESS_TOKEN || '')
 
 export const RegisterOkScreen = () => {
@@ -24,7 +28,25 @@ export const RegisterOkScreen = () => {
   const user = JSON.parse(storage.getString('user') || '{}')
   const map = user?.district
   const navigation = useNavigation()
+  let isCancelled = false
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+  useEffect(() => {
+    // eliminar mapa
+    Mapbox.offlineManager.getPacks().then(packs => {
+      for (let index = 0; index < packs.length; index++) {
+        const pack = packs[index]
+        Mapbox.offlineManager.deletePack(pack.name)
+      }
+    })
+
+    activateKeepAwake()
+
+    return () => {
+      isCancelled = true
+      deactivateKeepAwake()
+    }
+  }, [])
 
   useEffect(() => {
     initial()
@@ -60,6 +82,10 @@ export const RegisterOkScreen = () => {
         text1: 'Error al descargar el mapa, por favor intente de nuevo',
         autoHide: false,
       })
+      return
+    }
+    if (isCancelled) {
+      return
     }
     await delay(2000)
     storage.set(STORAGE_KEYS.user, JSON.stringify({...user, isLogin: true}))
@@ -95,7 +121,10 @@ export const RegisterOkScreen = () => {
             console.log('Descargando', percentage)
             setStep({
               step: 3,
-              msg: 'Descargando mapa ' + percentage + '%',
+              msg:
+                'Descargando mapa ' +
+                percentage +
+                '%\n\nEspere que termine la descarga',
             })
             if (status.percentage === 100) {
               resolve(true)
