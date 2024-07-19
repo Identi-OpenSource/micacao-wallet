@@ -1,29 +1,30 @@
+/* eslint-disable react-native/no-inline-styles */
 import {CommonActions, useNavigation} from '@react-navigation/native'
 import {
   Camera,
+  CircleLayer,
   LineLayer,
   MapView,
   PointAnnotation,
   ShapeSource,
   StyleURL,
 } from '@rnmapbox/maps'
-import {
-  activateKeepAwake,
-  deactivateKeepAwake,
-} from '@sayem314/react-native-keep-awake'
+import {activateKeepAwake} from '@sayem314/react-native-keep-awake'
 import React, {
   ComponentProps,
   forwardRef,
+  Fragment,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
 import {
-  Alert,
+  ActivityIndicator,
   Dimensions,
   StatusBar,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native'
@@ -33,23 +34,27 @@ import {Btn, BtnIcon} from '../../../../components/button/Button'
 import ModalComponent from '../../../../components/modalComponent'
 import {storage} from '../../../../config/store/db'
 import {COLORS_DF, MP_DF} from '../../../../config/themes/default'
-import {useSyncData} from '../../../../states/SyncDataContext'
 import Toast from 'react-native-toast-message'
 import * as turf from '@turf/turf'
 import {Add_Location} from '../../../../assets/svg'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../../config/const'
 import {Parcel} from '../../../../states/UserContext'
 import {LoadingSave} from '../../../../components/loading/LoadinSave'
+
+const heightMap = Dimensions.get('window').height
+const widthMap = Dimensions.get('window').width
 type Position = [number, number]
 
-const maxAcceptableAccuracy = 50 // meters
-const maxAcceptableDistance = 30 // meters
-const velocidadMinima = 0.5 // m/s
-const velocidadMaxima = 10 // m/s
+const maxAcceptableAccuracy = 100
+const maxAcceptableDistance = 50
 
 const lineLayerStyle = {
   lineColor: '#fff',
   lineWidth: 3,
+}
+const pointLayerStyle = {
+  circleColor: '#fff', // Rojo, para que sea visible en la mayoría de los fondos
+  circleRadius: 6,
 }
 
 const Polygon = ({coordinates}: {coordinates: Position[]}) => {
@@ -73,7 +78,109 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
   return (
     <ShapeSource id={'shape-source-id-0'} shape={features}>
       <LineLayer id={'line-layer'} style={lineLayerStyle} />
+      <CircleLayer id="point-layer" style={pointLayerStyle} />
     </ShapeSource>
+  )
+}
+
+const PolygonR = ({coordinates}: {coordinates: Position[]}) => {
+  const features: GeoJSON.FeatureCollection = useMemo(() => {
+    return {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          id: 'a-feature',
+          geometry: {
+            type: 'LineString',
+            coordinates,
+          },
+          properties: {},
+        } as const,
+      ],
+    }
+  }, [coordinates])
+
+  return (
+    <ShapeSource id={'shape-source-id-0'} shape={features}>
+      <LineLayer id={'line-layer'} style={lineLayerStyle} />
+    </ShapeSource>
+  )
+}
+
+type CrosshairProps = {
+  size: number
+  w: number
+  onLayout: ComponentProps<typeof View>['onLayout']
+}
+
+const Crosshair = forwardRef<View, CrosshairProps>(
+  ({size, w, onLayout}: CrosshairProps, ref) => (
+    <View
+      onLayout={onLayout}
+      ref={ref}
+      style={{
+        width: 2 * size + 1,
+        height: 2 * size + 1,
+      }}>
+      <View
+        style={{
+          position: 'absolute',
+          left: size,
+          top: 0,
+          bottom: 0,
+          borderColor: 'white',
+          borderWidth: w,
+        }}
+      />
+      <View
+        style={{
+          position: 'absolute',
+          top: size,
+          left: 0,
+          right: 0,
+          borderColor: 'white',
+          borderWidth: w,
+        }}
+      />
+    </View>
+  ),
+)
+
+const CrosshairOverlay = ({
+  onCenter,
+}: {
+  onCenter: (x: [number, number]) => void
+}) => {
+  const ref = useRef<View>(null)
+
+  if (ref.current != null) {
+    // console.log('=> ref.current', ref.current != null)
+  }
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 100,
+        alignContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      pointerEvents="none">
+      <Crosshair
+        size={20}
+        w={1.0}
+        ref={ref}
+        onLayout={e => {
+          const {x, y, width, height} = e.nativeEvent.layout
+          onCenter([x + width / 2.0, y + height / 2.0])
+        }}
+      />
+    </View>
   )
 }
 
@@ -116,13 +223,11 @@ const GradientLineRecorrer = ({route}: any) => {
     null,
   )
   const [loadInit, setLoadInit] = useState(false)
-  const {addToSync} = useSyncData()
   const [coordinates, setCoordinates] = useState<Position[]>([])
   const [cam, setCam] = useState<Position>(firstPoint)
   const [started, setStarted] = useState(false)
   const navigation = useNavigation()
   const [showModal, setShowModal] = useState(false)
-  const [zoomLevel, setZoomLevel] = useState(17)
 
   const [polygonReview, setPolygonReview] = useState<Position[]>([])
   const [editActive, setEditActive] = useState<boolean | number>(false)
@@ -131,10 +236,8 @@ const GradientLineRecorrer = ({route}: any) => {
   const [lastCoordinate, setLastCoordinate] = useState<Position>(firstPoint)
   const [crosshairPos, setCrosshairPos] = useState(firstPoint)
   const [parcels, setParcels] = useState(parcel)
+  const [gpsError, setGpsError] = useState(false)
   const ref2 = useRef<Camera>(null)
-
-  const heightMap = Dimensions.get('window').height
-  const widthMap = Dimensions.get('window').width
 
   const coordinatesWithLast = useMemo(() => {
     return [...coordinates]
@@ -142,47 +245,26 @@ const GradientLineRecorrer = ({route}: any) => {
 
   const map = useRef<MapView>(null)
 
-  const [ejecutado, setEjecutado] = useState(false)
-
   useEffect(() => {
-    if (!ejecutado) {
-      activateKeepAwake()
-      setEjecutado(true)
-    }
-  }, [ejecutado])
-
-  useEffect(() => {
-    if (parcel.polygon) {
-      setCoordinates(parcel.polygon)
-    } else {
-      if (storage.getString(STORAGE_KEYS.polygonTemp)) {
-        const coordinateTemp = JSON.parse(
-          storage.getString(STORAGE_KEYS.polygonTemp) || '',
-        )
-        setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
-        setCoordinates(coordinateTemp)
-      }
-    }
+    activateKeepAwake()
+    getGps()
   }, [])
 
   useEffect(() => {
     let watchId: any = null
     if (started) {
+      setGpsError(started)
       let lastValidPosition: any = null
       watchId = Geolocation.watchPosition(
         position => {
-          console.log('posición actual:', position)
+          // console.log('posición actual:', position)
           const {latitude, longitude, accuracy} = position.coords
           const timestamp = position.timestamp
           if (accuracy <= maxAcceptableAccuracy) {
             if (lastValidPosition === null) {
               // Guardar la primera posición como válida
               lastValidPosition = {latitude, longitude, timestamp}
-              console.log(
-                `Primera posición válida registrada: Latitud: ${latitude}, Longitud: ${longitude}`,
-              )
             } else if (lastValidPosition) {
-              console.log('lastValidPosition', lastValidPosition)
               const distance = carcularDistancia(
                 lastValidPosition?.latitude,
                 lastValidPosition?.longitude,
@@ -190,15 +272,16 @@ const GradientLineRecorrer = ({route}: any) => {
                 longitude,
               )
               // calcula el tiempo entre los dos puntos
-              const timeTranscurred =
-                (timestamp - lastValidPosition?.timestamp) / 1000
-              const velocidad = distance / timeTranscurred
+              // const timeTranscurred =
+              //   (timestamp - lastValidPosition?.timestamp) / 1000
+              // const velocidad = distance / timeTranscurred
               if (
-                distance <= maxAcceptableDistance &&
+                distance <= maxAcceptableDistance /* &&
                 velocidad >= velocidadMinima &&
-                velocidad <= velocidadMaxima
+                velocidad <= velocidadMaxima */
               ) {
                 // Guardar la última posición como válida
+                setGpsError(false)
                 setCoordinates((prevPositions: any[]) => {
                   const DATA = [...prevPositions, [longitude, latitude]]
                   storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
@@ -213,13 +296,14 @@ const GradientLineRecorrer = ({route}: any) => {
           setCam([longitude, latitude])
         },
         error => {
+          setGpsError(true)
           console.log(error)
         },
         {
           enableHighAccuracy: true,
-          distanceFilter: 3,
+          distanceFilter: 5,
           fastestInterval: 5000,
-          interval: 1000,
+          interval: 5000,
         },
       )
     }
@@ -230,33 +314,12 @@ const GradientLineRecorrer = ({route}: any) => {
   }, [started])
 
   useEffect(() => {
-    // eliminar polygonTemp
-    //storage.delete("polygonTemp");
-    getGps()
-
-    // if (parcel.polygon) {
-    //   setCoordinates(parcel.polygon)
-    // } else {
-    //   if (storage.getString(STORAGE_KEYS.polygonTemp)) {
-    //     const coordinateTemp = JSON.parse(
-    //       storage.getString(STORAGE_KEYS.polygonTemp) || '',
-    //     )
-    //     setCoordinates(coordinateTemp)
-    //   }
-    // }
-  }, [])
-
-  useEffect(() => {
     if (firstPointGps) {
-      setLastCoordinate(firstPointGps)
       setCrosshairPos(firstPointGps)
       setCenterCoordinate(firstPointGps)
       setCam(firstPointGps)
       setLastCoordinate(firstPointGps)
       setCrosshairPos(firstPointGps)
-      setTimeout(() => {
-        setLoadInit(true)
-      }, 5000)
     }
   }, [firstPointGps])
 
@@ -264,7 +327,9 @@ const GradientLineRecorrer = ({route}: any) => {
   const getGps = async () => {
     if (parcel.polygon) {
       setCoordinates(parcel.polygon)
-      setLoadInit(true)
+      setTimeout(() => {
+        setLoadInit(true)
+      }, 5000)
       return
     }
     const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
@@ -273,9 +338,15 @@ const GradientLineRecorrer = ({route}: any) => {
       setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
       setCam(coordinateTemp[coordinateTemp.length - 1])
       setCoordinates(coordinateTemp)
-      setLoadInit(true)
+      setTimeout(() => {
+        setLoadInit(true)
+      }, 5000)
       return
     }
+    gpsFristPoint()
+  }
+
+  const gpsFristPoint = () => {
     Geolocation.getCurrentPosition(
       position => {
         const point = [
@@ -283,6 +354,10 @@ const GradientLineRecorrer = ({route}: any) => {
           position.coords.latitude,
         ] as Position
         setFirstPointGps(point)
+
+        setTimeout(() => {
+          setLoadInit(true)
+        }, 5000)
       },
       error => {
         console.log(error)
@@ -389,29 +464,6 @@ const GradientLineRecorrer = ({route}: any) => {
     })
   }
 
-  // const onSubmit = () => {
-  //   if (coordinatesWithLast.length < 5) {
-  //     Alert.alert('Error', 'El polígono debe tener al menos 4 puntos')
-  //     return
-  //   }
-  //   // Guardar en la lista de polígonos
-  //   const newParcel = {
-  //     ...parcel,
-  //     polygon: [...coordinatesWithLast, coordinatesWithLast[0]],
-  //     syncUp: false,
-  //   }
-
-  //   setShowModal(true)
-
-  //   let parcels = parcel
-  //   parcels[index] = newParcel
-
-  //   setTimeout(() => {
-  //     addToSync(JSON.stringify(parcels), 'parcels')
-  //     storage.delete('polygonTemp')
-  //   }, 7000)
-  // }
-
   const closeModal = () => {
     setShowModal(false)
     storage.delete(STORAGE_KEYS.polygonTemp)
@@ -430,10 +482,12 @@ const GradientLineRecorrer = ({route}: any) => {
     )
     // addToSync(JSON.stringify(parcels), 'parcels')
   }
+
   const back = () => {
     // storage.delete(STORAGE_KEYS.polygonTemp)
     navigation.goBack()
   }
+
   const deletePoint = () => {
     if (coordinates.length > 0) {
       setCoordinates(prev => {
@@ -454,13 +508,15 @@ const GradientLineRecorrer = ({route}: any) => {
   }
 
   const onSelected = (e: any) => {
-    const coordinates = e.geometry.coordinates
+    const coordinates = [e[0], e[1]]
+    console.log('coordinates', e)
 
     // setLastCoordinate(e.geometry.coordinates as Position)
     // encontrar el punto en el array de coordenadas
     const index = polygonReview.findIndex(
       (c: Position) => c[0] === coordinates[0] && c[1] === coordinates[1],
     )
+    console.log('onSelected', index)
     if (index !== -1) {
       setTimeout(() => {
         setIndexEdit(index)
@@ -468,99 +524,11 @@ const GradientLineRecorrer = ({route}: any) => {
     }
   }
 
-  type CrosshairProps = {
-    size: number
-    w: number
-    onLayout: ComponentProps<typeof View>['onLayout']
-  }
-
-  const Crosshair = forwardRef<View, CrosshairProps>(
-    ({size, w, onLayout}: CrosshairProps, ref) => (
-      <View
-        onLayout={onLayout}
-        ref={ref}
-        style={{
-          width: 2 * size + 1,
-          height: 2 * size + 1,
-        }}>
-        <View
-          style={{
-            position: 'absolute',
-            left: size,
-            top: 0,
-            bottom: 0,
-            borderColor: 'white',
-            borderWidth: w,
-          }}
-        />
-        <View
-          style={{
-            position: 'absolute',
-            top: size,
-            left: 0,
-            right: 0,
-            borderColor: 'white',
-            borderWidth: w,
-          }}
-        />
-      </View>
-    ),
-  )
-
-  const CrosshairOverlay = ({
-    onCenter,
-  }: {
-    onCenter: (x: [number, number]) => void
-  }) => {
-    const ref = useRef<View>(null)
-
-    if (ref.current != null) {
-      // console.log('=> ref.current', ref.current != null)
-    }
-    return (
-      <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 100,
-          alignContent: 'center',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        pointerEvents="none">
-        <Crosshair
-          size={20}
-          w={1.0}
-          ref={ref}
-          onLayout={e => {
-            const {x, y, width, height} = e.nativeEvent.layout
-            onCenter([x + width / 2.0, y + height / 2.0])
-          }}
-        />
-      </View>
-    )
-  }
-
-  const lineLayerStyle = {
-    lineColor: '#fff',
-    lineWidth: 4,
-  }
-
   return (
     <>
       {!loadInit && (
-        <View
-          style={{
-            height: heightMap,
-            width: widthMap,
-            position: 'absolute',
-            zIndex: 10000000,
-            backgroundColor: COLORS_DF.isabelline,
-          }}>
-          <LoadingSave msg="Buscando tu ubicación" />
+        <View style={styles.loading}>
+          <LoadingSave msg="" />
         </View>
       )}
       <View style={{flex: 1}}>
@@ -576,14 +544,23 @@ const GradientLineRecorrer = ({route}: any) => {
           <TouchableOpacity onPress={back} style={styles.buttonClose}>
             <Close_Map height={38} width={38} />
           </TouchableOpacity>
+          {gpsError && (
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: 10,
+                alignItems: 'center',
+              }}>
+              <ActivityIndicator size={18} color={'#fff'} />
+              <Text style={styles.searchGps}>Buscando tu ubicación</Text>
+            </View>
+          )}
         </View>
         <MapView
           ref={map}
           styleURL={StyleURL.Satellite}
-          style={{
-            height: heightMap,
-            width: widthMap,
-          }}
+          style={styles.map}
           scaleBarEnabled={false}
           rotateEnabled={false}
           attributionEnabled={false}
@@ -614,9 +591,9 @@ const GradientLineRecorrer = ({route}: any) => {
           }}>
           {!editActive && (
             <>
-              <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />
               {<Polygon coordinates={coordinatesWithLast} />}
-              {polygonReview.map((c, i) => (
+              {/* <CrosshairOverlay onCenter={c => setCrosshairPos(c)} /> */}
+              {/* {polygonReview.map((c, i) => (
                 <PointAnnotation
                   onSelected={e => {
                     if (indexEdit === -1) {
@@ -639,8 +616,8 @@ const GradientLineRecorrer = ({route}: any) => {
                     }}
                   />
                 </PointAnnotation>
-              ))}
-              {coordinatesWithLast.map((c, i) => {
+              ))} */}
+              {/* {coordinatesWithLast.map((c, i) => {
                 const lastIndex = coordinates.length - 1
                 return (
                   <PointAnnotation
@@ -656,45 +633,49 @@ const GradientLineRecorrer = ({route}: any) => {
                     }>
                     <View
                       style={{
-                        height: 10,
-                        width: 10,
+                        ...styles.pointAnnotation,
                         backgroundColor: lastIndex === i ? 'white' : 'white',
-                        borderRadius: 5,
                       }}
                     />
                   </PointAnnotation>
                 )
-              })}
-              <Camera zoomLevel={17} minZoomLevel={14} centerCoordinate={cam} />
+              })} */}
+              <Camera
+                zoomLevel={18}
+                minZoomLevel={14}
+                centerCoordinate={cam}
+                animationMode="easeTo"
+              />
             </>
           )}
           {editActive && (
             <>
-              <Polygon coordinates={polygonReview} />
-              {polygonReview.map((c, i) => (
-                <PointAnnotation
-                  onSelected={e => {
-                    if (indexEdit === -1) {
-                      setCenterCoordinate([
-                        e.geometry.coordinates[0],
-                        e.geometry.coordinates[1],
-                      ])
-                      onSelected(e)
+              <PolygonR coordinates={polygonReview} />
+              <CrosshairOverlay onCenter={c => setCrosshairPos(c)} />
+              {polygonReview.map((c, i) => {
+                return (
+                  <PointAnnotation
+                    children={
+                      <View
+                        style={{
+                          height: 12,
+                          width: 12,
+                          backgroundColor: 'white',
+                          position: 'absolute',
+                          borderRadius: 10,
+                        }}
+                      />
                     }
-                  }}
-                  key={i.toString()}
-                  id={i.toString()}
-                  coordinate={[c[0], c[1]]}>
-                  <View
-                    style={{
-                      height: 15,
-                      width: 15,
-                      backgroundColor: 'white',
-                      borderRadius: 5,
+                    onSelected={e => {
+                      setCenterCoordinate([c[0], c[1]])
+                      onSelected([c[0], c[1]])
                     }}
+                    key={i.toString()}
+                    id={i.toString()}
+                    coordinate={[c[0], c[1]]}
                   />
-                </PointAnnotation>
-              ))}
+                )
+              })}
               <Camera
                 ref={ref2}
                 minZoomLevel={14}
@@ -706,23 +687,9 @@ const GradientLineRecorrer = ({route}: any) => {
             </>
           )}
         </MapView>
-        <View
-          style={{
-            position: 'absolute',
-            bottom: MP_DF.large,
-            width: '100%',
-            minHeight: 50,
-            paddingHorizontal: MP_DF.large,
-            zIndex: 1000000,
-            justifyContent: 'space-between',
-          }}>
+        <View style={styles.containerButton3}>
           {!editActive && (
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginBottom: MP_DF.large,
-              }}>
+            <View style={styles.containerButton3A}>
               <BtnIcon
                 theme={'transparent'}
                 icon={!started ? 'person-walking-arrow-right' : 'hand'}
@@ -745,12 +712,7 @@ const GradientLineRecorrer = ({route}: any) => {
             </View>
           )}
           {editActive && (
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-end',
-                marginBottom: MP_DF.large,
-              }}>
+            <View style={styles.containerButton2}>
               <TouchableOpacity
                 onPress={() => {
                   if (!editActive) {
@@ -777,6 +739,26 @@ const GradientLineRecorrer = ({route}: any) => {
   )
 }
 const styles = StyleSheet.create({
+  pointAnnotation: {
+    color: 'white',
+  },
+  map: {
+    height: heightMap,
+    width: widthMap,
+  },
+  loading: {
+    height: heightMap,
+    width: widthMap,
+    position: 'absolute',
+    zIndex: 10000000,
+    backgroundColor: COLORS_DF.isabelline,
+  },
+  searchGps: {
+    fontSize: 18,
+    alignSelf: 'center',
+    color: '#fff',
+    marginTop: 10,
+  },
   containerButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -785,7 +767,25 @@ const styles = StyleSheet.create({
     marginBottom: 200,
     paddingHorizontal: 25,
   },
-
+  containerButton3: {
+    position: 'absolute',
+    bottom: MP_DF.large,
+    width: '100%',
+    minHeight: 50,
+    paddingHorizontal: MP_DF.large,
+    zIndex: 1000000,
+    justifyContent: 'space-between',
+  },
+  containerButton3A: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: MP_DF.large,
+  },
+  containerButton2: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: MP_DF.large,
+  },
   containerButtonUp: {
     position: 'absolute',
     top: 40,

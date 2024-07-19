@@ -232,6 +232,7 @@ export const HomeProvScreen = () => {
   // console.log('sales', sales)
   // console.log('user', user)
   // storage.delete(STORAGE_KEYS.parcels)
+  // storage.delete(STORAGE_KEYS.polygonTemp)
   // storage.delete(STORAGE_KEYS.sales)
   // storage.delete(STORAGE_KEYS.syncUp)
 

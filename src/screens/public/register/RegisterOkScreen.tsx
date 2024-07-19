@@ -32,13 +32,7 @@ export const RegisterOkScreen = () => {
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
   useEffect(() => {
-    // eliminar mapa
-    Mapbox.offlineManager.getPacks().then(packs => {
-      for (let index = 0; index < packs.length; index++) {
-        const pack = packs[index]
-        Mapbox.offlineManager.deletePack(pack.name)
-      }
-    })
+    handlePackError()
 
     activateKeepAwake()
 
@@ -98,60 +92,69 @@ export const RegisterOkScreen = () => {
   }
 
   const descargarMapa = async () => {
-    const minx_point = parseFloat(map.minx_point.replace(/,/g, '.'))
-    const maxx_point = parseFloat(map.maxx_point.replace(/,/g, '.'))
-    const miny_point = parseFloat(map.miny_point.replace(/,/g, '.'))
-    const maxy_point = parseFloat(map.maxy_point.replace(/,/g, '.'))
-    const options = {
-      name: 'MapTests',
-      styleURL: Mapbox.StyleURL.Satellite,
-      bounds: [
-        [minx_point, miny_point],
-        [maxx_point, maxy_point],
-      ] as [[number, number], [number, number]],
-      minZoom: 10,
-      maxZoom: 24,
-    }
-    return new Promise<boolean>((resolve, reject) => {
-      Mapbox.offlineManager
-        .createPack(
-          options,
-          (region, status) => {
-            const percentage = status.percentage.toFixed(2)
-            console.log('Descargando', percentage)
-            setStep({
-              step: 3,
-              msg:
-                'Descargando mapa ' +
-                percentage +
-                '%\n\nEspere que termine la descarga',
-            })
-            if (status.percentage === 100) {
-              resolve(true)
-            }
-          },
-          error => {
-            console.log('Error al crear el pack:', error)
-            resolve(false)
-          },
-        )
-        .catch(error => {
-          console.log('Error al descargar el mapa')
-          // eliminar todos los packs
-          Mapbox.offlineManager
-            .getPacks()
-            .then(packs => {
-              for (let index = 0; index < packs.length; index++) {
-                const pack = packs[index]
-                Mapbox.offlineManager.deletePack(pack.name)
+    try {
+      const minx_point = parseFloat(map.minx_point.replace(/,/g, '.'))
+      const maxx_point = parseFloat(map.maxx_point.replace(/,/g, '.'))
+      const miny_point = parseFloat(map.miny_point.replace(/,/g, '.'))
+      const maxy_point = parseFloat(map.maxy_point.replace(/,/g, '.'))
+      const options = {
+        name: 'MapTests',
+        styleURL: Mapbox.StyleURL.Satellite,
+        bounds: [
+          [minx_point, miny_point],
+          [maxx_point, maxy_point],
+        ] as [[number, number], [number, number]],
+        minZoom: 10,
+        maxZoom: 24,
+      }
+      return new Promise<boolean>((resolve, reject) => {
+        Mapbox.offlineManager
+          .createPack(
+            options,
+            (region, status) => {
+              const percentage = status.percentage.toFixed(2)
+              console.log('Descargando', percentage)
+              setStep({
+                step: 3,
+                msg:
+                  'Descargando mapa ' +
+                  percentage +
+                  '%\n\nEspere que termine la descarga',
+              })
+              if (status.percentage === 100) {
+                resolve(true)
               }
-            })
-            .catch(error => {
-              console.log('Error al eliminar packs:', error)
-            })
-          resolve(false)
-        })
-    })
+            },
+            error => {
+              console.log('Error al crear el pack:', error)
+              resolve(false)
+            },
+          )
+          .catch(error => {
+            console.log('Error al descargar el mapa')
+            // eliminar todos los packs
+            handlePackError()
+            resolve(false)
+          })
+      })
+    } catch (error) {
+      console.log('Error en la función descargarMapa:', error)
+      handlePackError()
+      return false
+    }
+  }
+
+  const handlePackError = async () => {
+    try {
+      // Eliminar todos los packs
+      const packs = await Mapbox.offlineManager.getPacks()
+      for (let index = 0; index < packs.length; index++) {
+        const pack = packs[index]
+        await Mapbox.offlineManager.deletePack(pack.name)
+      }
+    } catch (error) {
+      console.log('Error al eliminar packs:', error)
+    }
   }
 
   return (
