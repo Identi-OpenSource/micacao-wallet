@@ -35,9 +35,10 @@ import {
   writeTransaction,
 } from '../../../OCC/occ'
 import Spinner from 'react-native-loading-spinner-overlay'
+import Mapbox from '@rnmapbox/maps'
 
 export const HomeProvScreen = () => {
-  const [loadDataAsync, setLoadDataAsync] = useState(false)
+  const [loadDataMap, setLoadDataMap] = useState<[boolean, string]>([false, ''])
   const {isConnected} = useInternetConnection()
   const {loading, fetchData} = useFetchData()
   const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
@@ -53,6 +54,8 @@ export const HomeProvScreen = () => {
 
   const init = async () => {
     await loadData()
+    // await handlePackError()
+    await getMapOffline()
     await asyncData()
     await fundingW()
     await writeBlockchain()
@@ -83,6 +86,114 @@ export const HomeProvScreen = () => {
         STORAGE_KEYS.loadData,
         JSON.stringify({...resp, update: configResp?.last_update}),
       )
+    }
+  }
+
+  // const getMapOffline = async () => {
+  //   const resp = await Mapbox.offlineManager.getPacks()
+  //   if (resp.length > 0) {
+  //     const pack: any = resp[0]
+  //     console.log('pack', pack)
+  //     const percentage = pack.getPercentage()
+  //     if (percentage) {
+  //     }
+  //     console.log('pack', pack.pack.percentage)
+  //   }
+  // }
+
+  const getMapOffline = async () => {
+    // verificar si el mapa MapTests existe y esta descargado al 100%
+    let dowload = false
+    const resp = await Mapbox.offlineManager.getPacks()
+    if (resp.length > 0) {
+      const pack: any = resp[0]
+      const percentage = pack?.pack?.percentage
+      if (percentage === 100) {
+        dowload = true
+      }
+    }
+    !dowload && (await downloadMap())
+  }
+
+  const downloadMap = async () => {
+    console.log('descargando mapa')
+    const map = user?.district
+    const maxRetries = 3
+    let attempt = 0
+    while (attempt < maxRetries) {
+      console.log('descargando mapa: ', attempt)
+      attempt++
+      try {
+        const minx_point = parseFloat(map.minx_point.replace(/,/g, '.'))
+        const maxx_point = parseFloat(map.maxx_point.replace(/,/g, '.'))
+        const miny_point = parseFloat(map.miny_point.replace(/,/g, '.'))
+        const maxy_point = parseFloat(map.maxy_point.replace(/,/g, '.'))
+        const options = {
+          name: 'MapTests',
+          styleURL: Mapbox.StyleURL.Satellite,
+          bounds: [
+            [minx_point, miny_point],
+            [maxx_point, maxy_point],
+          ] as [[number, number], [number, number]],
+          minZoom: 10,
+          maxZoom: 24,
+        }
+        await handlePackError()
+        return new Promise<boolean>((resolve, reject) => {
+          Mapbox.offlineManager
+            .createPack(
+              options,
+              (region, status) => {
+                const percentage = status.percentage.toFixed(2)
+                setLoadDataMap([true, 'Descargando mapa ' + percentage + '%'])
+
+                if (status.percentage === 100) {
+                  setTimeout(() => {
+                    setLoadDataMap([false, ''])
+                    resolve(true)
+                  }, 2000)
+                }
+              },
+              error => {
+                console.log('Error al crear el pack:', error)
+                if (attempt >= maxRetries) {
+                  resolve(false)
+                }
+              },
+            )
+            .catch(error => {
+              console.log('Error al descargar el mapa:', error)
+              if (attempt >= maxRetries) {
+                // Eliminar todos los packs
+                setLoadDataMap([false, ''])
+                handlePackError()
+                resolve(false)
+              }
+            })
+        })
+      } catch (error) {
+        console.log('Error en la función descargarMapa:', error)
+        if (attempt >= maxRetries) {
+          setLoadDataMap([false, ''])
+          handlePackError()
+          return false
+        }
+      }
+    }
+    setLoadDataMap([false, ''])
+    return false
+  }
+
+  const handlePackError = async () => {
+    try {
+      // Eliminar todos los packs
+      const packs = await Mapbox.offlineManager.getPacks()
+      for (let index = 0; index < packs.length; index++) {
+        const pack = packs[index]
+        await Mapbox.offlineManager.deletePack(pack.name)
+      }
+    } catch (error) {
+      console.log('Error al eliminar packs:', error)
     }
   }
 
@@ -247,8 +358,8 @@ export const HomeProvScreen = () => {
       </ScrollView>
       <Spinner
         color={COLORS_DF.robin_egg_blue}
-        visible={loadDataAsync}
-        textContent="Sincronizando datos"
+        visible={loadDataMap[0]}
+        textContent={loadDataMap[1]}
         textStyle={{color: COLORS_DF.citrine_brown}}
         overlayColor="rgba(255, 255, 255, 0.9)"
         size={100}
