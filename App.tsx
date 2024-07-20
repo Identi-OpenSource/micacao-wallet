@@ -22,6 +22,8 @@ import {
   faHand,
   faHandPointer,
   faHouse,
+  faMap,
+  faMapLocation,
   faMinus,
   faPersonWalkingArrowLoopLeft,
   faPersonWalkingArrowRight,
@@ -95,6 +97,8 @@ function App(): React.JSX.Element {
     faPlus,
     faMinus,
     faFloppyDisk,
+    faMap,
+    faMapLocation,
   )
 
   const toastConfig: ToastConfig = {

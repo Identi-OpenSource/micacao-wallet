@@ -9,7 +9,10 @@ import {
   ShapeSource,
   StyleURL,
 } from '@rnmapbox/maps'
-import {activateKeepAwake} from '@sayem314/react-native-keep-awake'
+import {
+  activateKeepAwake,
+  deactivateKeepAwake,
+} from '@sayem314/react-native-keep-awake'
 import React, {
   ComponentProps,
   forwardRef,
@@ -77,8 +80,8 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
 
   return (
     <ShapeSource id={'shape-source-id-0'} shape={features}>
-      <LineLayer id={'line-layer'} style={lineLayerStyle} />
       <CircleLayer id="point-layer" style={pointLayerStyle} />
+      <LineLayer id={'line-layer'} style={lineLayerStyle} />
     </ShapeSource>
   )
 }
@@ -244,16 +247,19 @@ const GradientLineRecorrer = ({route}: any) => {
   }, [coordinates, lastCoordinate])
 
   const map = useRef<MapView>(null)
-
+  console.log('coordinates', coordinates)
   useEffect(() => {
     activateKeepAwake()
     getGps()
+    return () => {
+      deactivateKeepAwake()
+    }
   }, [])
 
   useEffect(() => {
     let watchId: any = null
     if (started) {
-      setGpsError(started)
+      setGpsError(true)
       let lastValidPosition: any = null
       watchId = Geolocation.watchPosition(
         position => {
@@ -264,6 +270,13 @@ const GradientLineRecorrer = ({route}: any) => {
             if (lastValidPosition === null) {
               // Guardar la primera posición como válida
               lastValidPosition = {latitude, longitude, timestamp}
+              setCoordinates((prevPositions: any[]) => {
+                const DATA = [...prevPositions, [longitude, latitude]]
+                storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
+                return DATA
+              })
+              setCam([longitude, latitude])
+              setGpsError(false)
             } else if (lastValidPosition) {
               const distance = carcularDistancia(
                 lastValidPosition?.latitude,
@@ -275,13 +288,13 @@ const GradientLineRecorrer = ({route}: any) => {
               // const timeTranscurred =
               //   (timestamp - lastValidPosition?.timestamp) / 1000
               // const velocidad = distance / timeTranscurred
+              gpsError && setGpsError(false)
               if (
                 distance <= maxAcceptableDistance /* &&
                 velocidad >= velocidadMinima &&
                 velocidad <= velocidadMaxima */
               ) {
                 // Guardar la última posición como válida
-                setGpsError(false)
                 setCoordinates((prevPositions: any[]) => {
                   const DATA = [...prevPositions, [longitude, latitude]]
                   storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(DATA))
@@ -327,10 +340,6 @@ const GradientLineRecorrer = ({route}: any) => {
   const getGps = async () => {
     if (parcel.polygon) {
       setCoordinates(parcel.polygon)
-      setTimeout(() => {
-        setLoadInit(true)
-      }, 5000)
-      return
     }
     const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
     if (poligonT) {
@@ -338,10 +347,6 @@ const GradientLineRecorrer = ({route}: any) => {
       setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
       setCam(coordinateTemp[coordinateTemp.length - 1])
       setCoordinates(coordinateTemp)
-      setTimeout(() => {
-        setLoadInit(true)
-      }, 5000)
-      return
     }
     gpsFristPoint()
   }
@@ -528,7 +533,7 @@ const GradientLineRecorrer = ({route}: any) => {
     <>
       {!loadInit && (
         <View style={styles.loading}>
-          <LoadingSave msg="" />
+          <LoadingSave msg="Buscando tu ubicación" />
         </View>
       )}
       <View style={{flex: 1}}>
@@ -591,7 +596,28 @@ const GradientLineRecorrer = ({route}: any) => {
           }}>
           {!editActive && (
             <>
-              {<Polygon coordinates={coordinatesWithLast} />}
+              {coordinatesWithLast?.length > 2 && (
+                <Polygon coordinates={coordinatesWithLast} />
+              )}
+              {coordinatesWithLast?.length < 3 &&
+                coordinatesWithLast?.length > 0 && (
+                  <PointAnnotation
+                    key={coordinatesWithLast.length + 'id'}
+                    id={coordinatesWithLast.length.toString()}
+                    coordinate={[
+                      coordinatesWithLast[0][0],
+                      coordinatesWithLast[0][1],
+                    ]}>
+                    <View
+                      style={{
+                        height: 15,
+                        width: 15,
+                        backgroundColor: 'white',
+                        borderRadius: 5,
+                      }}
+                    />
+                  </PointAnnotation>
+                )}
               {/* <CrosshairOverlay onCenter={c => setCrosshairPos(c)} /> */}
               {/* {polygonReview.map((c, i) => (
                 <PointAnnotation
