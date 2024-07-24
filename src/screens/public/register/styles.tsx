@@ -1,14 +1,10 @@
-import { StyleSheet } from "react-native";
+import {StyleSheet} from 'react-native'
 import {
   horizontalScale,
   moderateScale,
   verticalScale,
-} from "../../../config/themes/metrics";
-import {
-  COLORS_DF,
-  FONT_FAMILIES,
-  MP_DF,
-} from "../../../config/themes/default";
+} from '../../../config/themes/metrics'
+import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
 
 export const styles = StyleSheet.create({
   container: {
@@ -17,18 +13,18 @@ export const styles = StyleSheet.create({
     paddingTop: 35,
   },
   header: {
-    justifyContent: "flex-start",
-    alignItems: "center",
-    flexDirection: "row",
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   btnIcon: {
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     marginLeft: -6,
   },
   title: {
     fontFamily: FONT_FAMILIES.primary,
     fontSize: moderateScale(25),
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS_DF.citrine_brown,
   },
   formContainer: {
@@ -42,4 +38,4 @@ export const styles = StyleSheet.create({
   formBtn: {
     paddingBottom: verticalScale(MP_DF.xlarge),
   },
-});
+})

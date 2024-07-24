@@ -67,28 +67,15 @@ export const RegisterOkScreen = () => {
     const funding = await fundingWallet(wallet.walletOFC)
     const isFunding = funding.status === 200
     storage.set(STORAGE_KEYS.wallet, JSON.stringify({wallet, isFunding}))
-    // setStep({step: 3, msg: 'Descargando mapa'})
-    // const mapOk = await descargarMapa()
-    // if (!mapOk) {
-    //   navigation.goBack()
-    //   Toast.show({
-    //     type: 'msgToast',
-    //     text1: 'Error al descargar el mapa, por favor intente de nuevo',
-    //     autoHide: false,
-    //   })
-    //   return
-    // }
-    // if (isCancelled) {
-    //   return
-    // }
     await delay(2000)
     storage.set(STORAGE_KEYS.user, JSON.stringify({...user, isLogin: true}))
     const syncUp = [{type: SYNC_UP_TYPES.user, data: user}]
     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUp))
-    setStep({step: 4, msg: 'Inicio de sesión'})
-    await delay(2000)
-    const login = JSON.parse(storage.getString('user') || '{}')
-    dispatch({type: 'login', payload: login})
+    navigation.navigate('DownloadMap', {toGo: 'home'})
+    // setStep({step: 4, msg: 'Inicio de sesión'})
+    // await delay(2000)
+    // const login = JSON.parse(storage.getString('user') || '{}')
+    // dispatch({type: 'login', payload: login})
   }
 
   // const descargarMapa = async () => {
