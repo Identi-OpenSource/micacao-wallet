@@ -94,7 +94,7 @@ export type RootStackParamList = {
   SaleScreen: undefined
   FiveSaleScreen: undefined
   NewSaleFourScreen: undefined
-  DownloadMap: {toGo: string}
+  DownloadMap: {toGo?: string}
   PoligonJoystick: {id?: string}
   GradientLineRecorrerAdd: undefined
   // Solo pruebas
