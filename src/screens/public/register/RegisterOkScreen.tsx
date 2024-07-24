@@ -71,7 +71,7 @@ export const RegisterOkScreen = () => {
     storage.set(STORAGE_KEYS.user, JSON.stringify({...user, isLogin: true}))
     const syncUp = [{type: SYNC_UP_TYPES.user, data: user}]
     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUp))
-    navigation.navigate('DownloadMap', {toGo: 'home'})
+    navigation.navigate('DownloadMap')
     // setStep({step: 4, msg: 'Inicio de sesión'})
     // await delay(2000)
     // const login = JSON.parse(storage.getString('user') || '{}')
