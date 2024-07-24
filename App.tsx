@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   toastContainer: {
-    width: Dimensions.get('window').width - 50,
+    width: Dimensions.get('window').width - 40,
     backgroundColor: '#fff',
     padding: 10,
     paddingTop: 20,

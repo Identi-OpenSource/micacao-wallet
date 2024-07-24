@@ -39,6 +39,23 @@ export const HelpScreen = () => {
       )
     })
   }
+
+  const asyncMapAlert = async () => {
+    Toast.show({
+      type: 'actionToast',
+      text1:
+        '¡Recuerda que necesitas estar conectado a internet!\n\nNo salga de esta pagina hasta completar la descarga del mapa\n\nEn caso de falla intentarlo de nuevo',
+      autoHide: false,
+      props: {
+        title: `Se va a descargar el mapa\n${user?.district?.dist_name}`,
+        onPress: () => {
+          navigation.navigate('DownloadMap', {toGo: 'inicio'})
+        },
+        btnText: 'COMENZAR LA DESCARGA',
+      },
+    })
+  }
+
   const asyncMap = async () => {
     setLoadDataMap(true)
     await handlePackError()
@@ -93,7 +110,8 @@ export const HelpScreen = () => {
         backgroundColor="#8F3B06"
         textColor="white"
       />
-      <View style={{paddingHorizontal: 24, paddingVertical: 25}}>
+      <Text style={styles.version}>MiCacao v{Config.VERSION_NAME}</Text>
+      <View style={styles.body}>
         <Btn
           title={'Conversa con un asesor'}
           theme="agrayu"
@@ -103,20 +121,20 @@ export const HelpScreen = () => {
         />
         <View style={styles.separator} />
         <Btn
-          title={'Sincronizar mapa'}
+          title={'Descargar mapa'}
           theme="agrayu"
           icon={'fa-solid fa-map-location'}
-          onPress={() => asyncMap()}
+          onPress={() => asyncMapAlert()}
           style={{container: {marginVertical: MP_DF.small}}}
         />
         <View style={styles.separator} />
-        <Btn
+        {/* <Btn
           title={'Ver mapa'}
           theme="agrayu"
           icon={'fa-solid fa-map'}
           onPress={() => setMapVisible(true)}
           style={{container: {marginVertical: MP_DF.small}}}
-        />
+        /> */}
         <ScrollView
           style={{flex: 1, minHeight: Dimensions.get('window').height / 2}}
           horizontal={false}
@@ -169,7 +187,6 @@ export const HelpScreen = () => {
           <Text style={styles.subTitle}>Si bla bla bla bla</Text> */}
           <View style={styles.separatorEnd} />
         </ScrollView>
-        <Text style={styles.version}>MiCacao v{Config.VERSION_NAME}</Text>
       </View>
       <Modal
         animationType="slide"
@@ -220,6 +237,10 @@ export const HelpScreen = () => {
 }
 
 const styles = StyleSheet.create({
+  body: {
+    flex: 1,
+    padding: 24,
+  },
   containerTop: {
     position: 'absolute',
     top: 0,
@@ -305,9 +326,9 @@ const styles = StyleSheet.create({
     height: 30,
   },
   version: {
-    fontSize: 10,
+    fontSize: 12,
     color: COLORS_DF.citrine_brown,
     textAlign: 'center',
-    marginTop: MP_DF.medium,
+    marginTop: MP_DF.small,
   },
 })
