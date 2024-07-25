@@ -26,8 +26,8 @@ export const DownloadMap = ({navigation, route}: any) => {
       text1: '¡El mapa se ha descargado correctamente!',
       autoHide: false,
     })
-    console.log('params?.toGo', params?.toGo)
     if (params?.toGo) {
+      navigation.goBack()
       navigation.navigate(params?.toGo)
     } else {
       dispatch({type: 'login', payload: user})
