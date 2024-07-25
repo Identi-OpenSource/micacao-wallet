@@ -247,7 +247,6 @@ const GradientLineRecorrer = ({route}: any) => {
   }, [coordinates, lastCoordinate])
 
   const map = useRef<MapView>(null)
-  console.log('coordinates', coordinates)
   useEffect(() => {
     activateKeepAwake()
     getGps()
@@ -503,25 +502,21 @@ const GradientLineRecorrer = ({route}: any) => {
     }
   }
 
-  const onDragEnd = (index: number, newCoordinate: Position) => {
-    setCoordinates(prev => {
-      const updatedCoordinates = [...prev]
-      updatedCoordinates[index] = newCoordinate
-      storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(updatedCoordinates))
-      return updatedCoordinates
-    })
-  }
+  // const onDragEnd = (index: number, newCoordinate: Position) => {
+  //   setCoordinates(prev => {
+  //     const updatedCoordinates = [...prev]
+  //     updatedCoordinates[index] = newCoordinate
+  //     storage.set(STORAGE_KEYS.polygonTemp, JSON.stringify(updatedCoordinates))
+  //     return updatedCoordinates
+  //   })
+  // }
 
   const onSelected = (e: any) => {
     const coordinates = [e[0], e[1]]
-    console.log('coordinates', e)
 
-    // setLastCoordinate(e.geometry.coordinates as Position)
-    // encontrar el punto en el array de coordenadas
     const index = polygonReview.findIndex(
       (c: Position) => c[0] === coordinates[0] && c[1] === coordinates[1],
     )
-    console.log('onSelected', index)
     if (index !== -1) {
       setTimeout(() => {
         setIndexEdit(index)
