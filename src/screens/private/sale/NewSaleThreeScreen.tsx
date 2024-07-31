@@ -95,8 +95,8 @@ export const NewSaleThreeScreen = () => {
     storage.set(STORAGE_KEYS.sales, JSON.stringify([...sales, sale]))
     storage.delete(STORAGE_KEYS.saleTemp)
 
-    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
-    const syncUpNew = [...syncUp, {type: SYNC_UP_TYPES.sales, data: sale}]
+    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
+    const syncUpNew = {...syncUp, sales: false}
     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
     setTimeout(() => {
       navigation.navigate('NewSaleFourScreen')

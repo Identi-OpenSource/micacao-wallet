@@ -9,6 +9,11 @@ import CryptoJS from 'crypto-js'
 import {STORAGE_KEYS} from '../config/const'
 import {storage} from '../config/store/db'
 
+const WALLET_URL = {
+  base_url: Config?.WALLET_EXPLORER || '',
+  send_url: Config?.WALLET_EXPLORER + 'tx/send',
+}
+
 const KEYS_WALLET = [
   'purchaseDate',
   'farmerAlias',
@@ -88,41 +93,58 @@ export const writeTransaction = async ({wallet, dataWrite, user, parcels}) => {
   const writeOK = []
   const indexDelete = []
   for (let index = 0; index < dataWrite.length; index++) {
-    let sale = dataWrite[index]?.data
-    const purchaseDate = sale?.mes
-    const hashDNI = await CryptoJS.SHA256(DNI + purchaseDate)?.toString()
-    const parcel = parcels?.find(p => p?.id === sale?.parcela)
-    const polygon = convertAPolygonString(parcel?.polygon)
-    const farmerPlot = await CryptoJS.SHA256(polygon)?.toString()
-    const batch = {
-      bnfp: {value: hashDNI, unique: true},
-      purchaseDate,
-      farmerAlias: user?.name?.trim()?.split(' ')[0],
-      farmerPlot,
-      DNI: hashDNI,
-      variety: `CACAO (${sale?.type})`,
-      moistureLevel: `TYPO (${sale?.type})`,
-      premiumPaid: '1',
-      COOPMaterialNumber: '',
-      COOPMaterialName: `CACAO (${sale?.type})`,
-      PONumber: '',
-      POPosition: '',
-      plannedDeliveryDate: purchaseDate,
-      shipsTo: '',
-    }
-    const res = bitGoUTXO.ECPair.fromWIF(
-      wallet?.wallet?.wif,
-      bitGoUTXO?.networks?.kmd,
-      true,
-    )
-    const ec_pairs = get_all_ecpairs(batch, res)
-    const tx1 = await send_batch_transactions(ec_pairs, batch, res)
-    const isSend = countMatches(KEYS_WALLET, tx1)
-    if (isSend) {
-      writeOK.push(true)
-      indexDelete.push(index)
-    } else {
-      writeOK.push(false)
+    let sale = dataWrite[index]
+    if (!sale?.syncUpOCC) {
+      const purchaseDate = sale?.mes
+      // console.log('parcel', sale)
+      const hashDNI = await CryptoJS.SHA256(DNI + purchaseDate)?.toString()
+      const parcel = parcels?.find(p => p?.id === sale?.parcela)
+      const polygon = convertAPolygonString(parcel?.polygon)
+      const farmerPlot = await CryptoJS.SHA256(polygon)?.toString()
+      const batch = {
+        bnfp: {value: hashDNI, unique: true},
+        purchaseDate,
+        farmerAlias: user?.name?.trim()?.split(' ')[0],
+        farmerPlot,
+        DNI: hashDNI,
+        variety: `CACAO (${sale?.type})`,
+        moistureLevel: `TYPO (${sale?.type})`,
+        premiumPaid: '1',
+        COOPMaterialNumber: '',
+        COOPMaterialName: `CACAO (${sale?.type})`,
+        PONumber: '',
+        POPosition: '',
+        plannedDeliveryDate: purchaseDate,
+        shipsTo: '',
+      }
+      // console.log('wallet', wallet)
+      // console.log('batch', batch)
+      const res = bitGoUTXO.ECPair.fromWIF(
+        wallet?.wallet?.wif,
+        bitGoUTXO?.networks?.kmd,
+        true,
+      )
+      const ec_pairs = get_all_ecpairs(batch, res)
+      const tx1 = await send_batch_transactions(ec_pairs, batch, res)
+      console.log('txid res: ', tx1)
+      const isSend = countMatches(KEYS_WALLET, tx1)
+      if (isSend) {
+        writeOK.push(true)
+        indexDelete.push(index)
+        const salesList = JSON.parse(
+          storage.getString(STORAGE_KEYS.sales) || '[]',
+        )
+        // index salesList
+        const saleIndex = salesList.findIndex(
+          sal => sal?.idSale === sale?.idSale,
+        )
+        if (saleIndex !== -1) {
+          salesList[saleIndex] = {...salesList[saleIndex], syncUpOCC: true}
+          storage.set(STORAGE_KEYS.sales, JSON.stringify(salesList))
+        }
+      } else {
+        writeOK.push(false)
+      }
     }
   }
   // filtra los elementos que no se han enviado

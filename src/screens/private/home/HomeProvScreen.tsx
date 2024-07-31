@@ -23,39 +23,30 @@ import {
   MP_DF,
   getFontSize,
 } from '../../../config/themes/default'
-import {UserInterface} from '../../../states/UserContext'
+import {Parcel, UserInterface} from '../../../states/UserContext'
 import {storage} from '../../../config/store/db'
 import useInternetConnection from '../../../hooks/useInternetConnection'
 import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
 import useFetchData, {HEADERS} from '../../../hooks/useFetchData'
-import {
-  fundingWallet,
-  getDataWallet,
-  newWallet,
-  writeTransaction,
-} from '../../../OCC/occ'
-import Spinner from 'react-native-loading-spinner-overlay'
-import Mapbox from '@rnmapbox/maps'
+import {fundingWallet, getDataWallet, writeTransaction} from '../../../OCC/occ'
+// import Spinner from 'react-native-loading-spinner-overlay'
 
 export const HomeProvScreen = () => {
-  const [loadDataMap, setLoadDataMap] = useState<[boolean, string]>([false, ''])
+  // const [loadDataMap, setLoadDataMap] = useState<[boolean, string]>([false, ''])
+  // const parcel = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '{}')
+  const {fetchData} = useFetchData()
   const {isConnected} = useInternetConnection()
-  const {loading, fetchData} = useFetchData()
   const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
   const wallet = JSON.parse(storage.getString(STORAGE_KEYS.wallet) || '{}')
-  // storage.set(STORAGE_KEYS.writeBlockchain, JSON.stringify([]))
-  // storage.set(STORAGE_KEYS.sales, JSON.stringify([]))
+
   useFocusEffect(
     useCallback(() => {
-      // console.log('testWallet', newWallet())
       isConnected && init()
     }, [isConnected]),
   )
 
   const init = async () => {
     await loadData()
-    // await handlePackError()
-    // await getMapOffline()
     await asyncData()
     await fundingW()
     await writeBlockchain()
@@ -89,102 +80,6 @@ export const HomeProvScreen = () => {
     }
   }
 
-  // const getMapOffline = async () => {
-  //   // verificar si el mapa MapTests existe y esta descargado al 100%
-  //   let dowload = false
-  //   const resp = await Mapbox.offlineManager.getPacks()
-  //   if (resp.length > 0) {
-  //     const pack: any = resp[0]
-  //     const percentage = pack?.pack?.percentage
-  //     if (percentage === 100) {
-  //       dowload = true
-  //     }
-  //   }
-  //   !dowload && (await downloadMap())
-  // }
-
-  // const downloadMap = async () => {
-  //   console.log('descargando mapa')
-  //   const map = user?.district
-  //   const maxRetries = 3
-  //   let attempt = 0
-  //   while (attempt < maxRetries) {
-  //     console.log('descargando mapa: ', attempt)
-  //     attempt++
-  //     try {
-  //       const minx_point = parseFloat(map.minx_point.replace(/,/g, '.'))
-  //       const maxx_point = parseFloat(map.maxx_point.replace(/,/g, '.'))
-  //       const miny_point = parseFloat(map.miny_point.replace(/,/g, '.'))
-  //       const maxy_point = parseFloat(map.maxy_point.replace(/,/g, '.'))
-  //       const options = {
-  //         name: 'MapTests',
-  //         styleURL: Mapbox.StyleURL.Satellite,
-  //         bounds: [
-  //           [minx_point, miny_point],
-  //           [maxx_point, maxy_point],
-  //         ] as [[number, number], [number, number]],
-  //         minZoom: 10,
-  //         maxZoom: 24,
-  //       }
-  //       await handlePackError()
-  //       return new Promise<boolean>((resolve, reject) => {
-  //         Mapbox.offlineManager
-  //           .createPack(
-  //             options,
-  //             (region, status) => {
-  //               const percentage = status.percentage.toFixed(2)
-  //               setLoadDataMap([true, 'Descargando mapa ' + percentage + '%'])
-
-  //               if (status.percentage === 100) {
-  //                 setTimeout(() => {
-  //                   setLoadDataMap([false, ''])
-  //                   resolve(true)
-  //                 }, 2000)
-  //               }
-  //             },
-  //             error => {
-  //               console.log('Error al crear el pack:', error)
-  //               if (attempt >= maxRetries) {
-  //                 resolve(false)
-  //               }
-  //             },
-  //           )
-  //           .catch(error => {
-  //             console.log('Error al descargar el mapa:', error)
-  //             if (attempt >= maxRetries) {
-  //               // Eliminar todos los packs
-  //               setLoadDataMap([false, ''])
-  //               handlePackError()
-  //               resolve(false)
-  //             }
-  //           })
-  //       })
-  //     } catch (error) {
-  //       console.log('Error en la función descargarMapa:', error)
-  //       if (attempt >= maxRetries) {
-  //         setLoadDataMap([false, ''])
-  //         handlePackError()
-  //         return false
-  //       }
-  //     }
-  //   }
-  //   setLoadDataMap([false, ''])
-  //   return false
-  // }
-
-  // const handlePackError = async () => {
-  //   try {
-  //     // Eliminar todos los packs
-  //     const packs = await Mapbox.offlineManager.getPacks()
-  //     for (let index = 0; index < packs.length; index++) {
-  //       const pack = packs[index]
-  //       await Mapbox.offlineManager.deletePack(pack.name)
-  //     }
-  //   } catch (error) {
-  //     console.log('Error al eliminar packs:', error)
-  //   }
-  // }
-
   const fundingW = async () => {
     if (!isConnected) {
       return
@@ -198,103 +93,103 @@ export const HomeProvScreen = () => {
     storage.set('wallet', JSON.stringify({...wallet, isFunding}))
   }
 
+  /*
+  El objeto de syncUp contiene banderas de que es lo que se va a sincronizar
+  syncUp = {
+  parcels: false,
+  sales: false,
+  user: false,
+  }
+  */
   const asyncData = async () => {
     if (!isConnected) {
       return
     }
-    const indexAsync: number[] = []
-    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
-    for (let index = 0; index < syncUp?.length; index++) {
-      const element = syncUp[index]
-      if (element.type === SYNC_UP_TYPES.user) {
-        console.log('creando productor =>', element.data)
-        // console.log('creando productor =>', 'Start')
-        const url = `${Config?.BASE_URL}/create_producer`
-        const data = {
-          dni: element.data.dni,
-          name: element.data.name,
-          phone: element.data.phone,
-          gender: element.data.gender === 'M' ? 'MALE' : 'FEMALE',
-          countryid: element.data.country?.country_id,
-        }
-        const resp = await sendFetch(url, data)
-
-        if (resp) {
-          indexAsync.push(index)
-        }
-        // console.log('creando productor =>', resp)
+    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
+    if (!syncUp.user) {
+      const url = `${Config?.BASE_URL}/create_producer`
+      const data = {
+        dni: user?.dni,
+        name: user?.name,
+        phone: user?.phone,
+        gender: user?.gender === 'M' ? 'MALE' : 'FEMALE',
+        countryid: user?.country?.country_id,
       }
-      if (element.type === SYNC_UP_TYPES.parcels) {
-        // console.log('creando farm =>', 'Start')
-        const url = `${Config?.BASE_URL}/create_farm`
-        const data = {
-          id: element?.data?.id,
-          farm_name: element?.data?.name,
-          hectares: element?.data?.hectares,
-          polygon_coordinates: element?.data?.polygon?.toString(),
-          dni_cacao_producer: user.dni,
-          countryid: user.country?.country_id,
-        }
-        const resp = await sendFetch(url, data)
-        if (resp) {
-          const parcels = JSON.parse(
-            storage.getString(STORAGE_KEYS.parcels) || '[]',
-          )
-          const parcelIndex = parcels.findIndex(
-            (parcel: any) => parcel?.id === element?.data?.id,
-          )
-          if (parcelIndex !== -1) {
-            parcels[parcelIndex] = {...parcels[parcelIndex], syncUp: true}
-            storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
-          }
-          indexAsync.push(index)
-        }
-        // console.log('creando farm =>', resp)
-      }
-      if (element.type === SYNC_UP_TYPES.sales) {
-        // console.log('creando venta =>', 'Start')
-        const url = `${Config?.BASE_URL}/create_activities`
-        const data = {
-          dni_cacao_producer: user.dni,
-          id_farm: element?.data?.parcela,
-          id_activity_type: 4, // para ventas siempre es 4
-          dry_weight: element?.data?.type === 'SECO' ? element?.data?.kl : 0,
-          baba_weight: element?.data?.type === 'BABA' ? element?.data?.kl : 0,
-          cacao_type: element?.data?.type?.toLowerCase(),
-        }
-        const resp = await sendFetch(url, data)
-        if (resp) {
-          const sales = JSON.parse(
-            storage.getString(STORAGE_KEYS.sales) || '[]',
-          )
-          const saleIndex = sales.findIndex(
-            (sale: any) => sale?.idSale === element?.data?.idSale,
-          )
-          if (saleIndex !== -1) {
-            sales[saleIndex] = {...sales[saleIndex], syncUp: true}
-            storage.set(STORAGE_KEYS.sales, JSON.stringify(sales))
-          }
-
-          const writeBlockchain = JSON.parse(
-            storage.getString(STORAGE_KEYS.writeBlockchain) || '[]',
-          )
-          writeBlockchain.push(element)
-          storage.set(
-            STORAGE_KEYS.writeBlockchain,
-            JSON.stringify(writeBlockchain),
-          )
-          indexAsync.push(index)
-        }
-        // console.log('creando venta =>', resp)
+      const resp = await sendFetch(url, data)
+      console.log('creando productor =>', user?.dni, resp)
+      if (resp) {
+        syncUp.user = true
       }
     }
-
-    const newSyncUp = syncUp?.filter((element: any, index: number) => {
-      if (!indexAsync?.includes(index)) {
-        return element
+    if (!syncUp.parcels) {
+      const url = `${Config?.BASE_URL}/create_farm`
+      const farms = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
+      const isAsync = []
+      for (let index = 0; index < farms.length; index++) {
+        const farm = farms[index]
+        const data = {
+          id: farm?.id,
+          farm_name: farm?.name,
+          hectares: farm?.hectares,
+          polygon_coordinates: farm?.polygon?.toString(),
+          dni_cacao_producer: user?.dni,
+          countryid: user.country?.country_id,
+          ndv_applied: farm?.ndfValid || false,
+          legal_approval: farm?.pdtValid || false,
+        }
+        const resp = await sendFetch(url, data)
+        if (resp) {
+          isAsync.push(true)
+          console.log('creando farm =>', farm?.id, resp)
+        }
       }
-    })
-    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(newSyncUp))
+      if (isAsync.length === farms.length) {
+        syncUp.parcels = true
+        console.log('async farm =>', isAsync.length)
+      }
+    }
+    if (!syncUp.sales) {
+      const url = `${Config?.BASE_URL}/create_activities`
+      const sales = JSON.parse(storage.getString(STORAGE_KEYS.sales) || '[]')
+      let isAsync = true
+      for (let index = 0; index < sales.length; index++) {
+        const sale = sales[index]
+        if (!sale?.syncUp) {
+          const data = {
+            dni_cacao_producer: user?.dni,
+            id_farm: sale?.parcela,
+            id_activity_type: 4, // para ventas siempre es 4
+            dry_weight: sale?.type === 'SECO' ? sale?.kl : 0,
+            baba_weight: sale?.type === 'BABA' ? sale?.kl : 0,
+            cacao_type: sale?.type?.toLowerCase(),
+          }
+          const resp = await sendFetch(url, data)
+          if (resp) {
+            const saleIndex = sales.findIndex(
+              (sal: any) => sal?.idSale === sale?.idSale,
+            )
+            if (saleIndex !== -1) {
+              sales[saleIndex] = {...sales[saleIndex], syncUp: true}
+              storage.set(STORAGE_KEYS.sales, JSON.stringify(sales))
+            }
+            const writeBlockchain = JSON.parse(
+              storage.getString(STORAGE_KEYS.writeBlockchain) || '[]',
+            )
+            writeBlockchain.push(sale)
+            storage.set(
+              STORAGE_KEYS.writeBlockchain,
+              JSON.stringify(writeBlockchain),
+            )
+            console.log('creando venta =>', sale?.idSale, resp)
+          } else {
+            isAsync = false
+          }
+        }
+      }
+      syncUp.sales = isAsync
+      console.log('async sales =>', isAsync)
+    }
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify({...syncUp}))
   }
 
   const writeBlockchain = async () => {
@@ -307,6 +202,7 @@ export const HomeProvScreen = () => {
     if (!dataWrite.length || !isConnected || !wallet.isFunding) {
       return
     }
+
     const write = await writeTransaction({
       wallet,
       dataWrite,
@@ -322,7 +218,6 @@ export const HomeProvScreen = () => {
       {method: 'POST', headers: HEADERS(), data},
       true,
     )
-    // console.log('sendFetch', data)
     return resp?.response?.status ? false : true
   }
 
@@ -334,6 +229,7 @@ export const HomeProvScreen = () => {
   // storage.delete(STORAGE_KEYS.polygonTemp)
   // storage.delete(STORAGE_KEYS.sales)
   // storage.delete(STORAGE_KEYS.syncUp)
+  // storage.delete(STORAGE_KEYS.writeBlockchain)
 
   return (
     <SafeArea bg={'isabelline'}>
@@ -344,14 +240,14 @@ export const HomeProvScreen = () => {
           <Body />
         </View>
       </ScrollView>
-      <Spinner
+      {/* <Spinner
         color={COLORS_DF.robin_egg_blue}
         visible={loadDataMap[0]}
         textContent={loadDataMap[1]}
         textStyle={{color: COLORS_DF.citrine_brown}}
         overlayColor="rgba(255, 255, 255, 0.9)"
         size={100}
-      />
+      /> */}
     </SafeArea>
   )
 }

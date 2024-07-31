@@ -33,7 +33,7 @@ export const HelpScreen = () => {
   const navigation = useNavigation()
   const {loading, fetchData} = useFetchData()
   const onPress = () => {
-    Linking.openURL('whatsapp://send?phone=+5117064556').catch(() => {
+    Linking.openURL(`whatsapp://send?phone=${Config.WS_NUMBER}`).catch(() => {
       Linking.openURL(
         'https://play.google.com/store/apps/details?id=com.whatsapp',
       )
