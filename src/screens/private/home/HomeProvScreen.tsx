@@ -2,7 +2,7 @@
 import Config from 'react-native-config'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback} from 'react'
 import {
   Image,
   ScrollView,
@@ -23,10 +23,10 @@ import {
   MP_DF,
   getFontSize,
 } from '../../../config/themes/default'
-import {Parcel, UserInterface} from '../../../states/UserContext'
+import {UserInterface} from '../../../states/UserContext'
 import {storage} from '../../../config/store/db'
 import useInternetConnection from '../../../hooks/useInternetConnection'
-import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../config/const'
+import {KF_STATES, STORAGE_KEYS} from '../../../config/const'
 import useFetchData, {HEADERS} from '../../../hooks/useFetchData'
 import {fundingWallet, getDataWallet, writeTransaction} from '../../../OCC/occ'
 // import Spinner from 'react-native-loading-spinner-overlay'
@@ -101,6 +101,21 @@ export const HomeProvScreen = () => {
   user: false,
   }
   */
+
+  const optionsNDF = (parcel: any) => {
+    if (parcel?.gfw?.status === 'Completed') {
+      console.log('optionsNDF', parcel?.gfw)
+      const NFL =
+        parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
+          'Natural Forest Loss (ha) (Beta)'
+        ] || null
+      if (Number(NFL) < 6) {
+        return true
+      }
+      return false
+    }
+  }
+
   const asyncData = async () => {
     if (!isConnected) {
       return
@@ -134,8 +149,8 @@ export const HomeProvScreen = () => {
           polygon_coordinates: farm?.polygon?.toString(),
           dni_cacao_producer: user?.dni,
           countryid: user.country?.country_id,
-          ndv_applied: farm?.ndfValid || false,
-          legal_approval: farm?.pdtValid || false,
+          ndv_applied: optionsNDF(farm),
+          legal_approval: farm?.kf?.Code === KF_STATES.accepted || false,
         }
         const resp = await sendFetch(url, data)
         if (resp) {
