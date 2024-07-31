@@ -340,9 +340,9 @@ const GradientLineRecorrer = ({route}: any) => {
     if (parcel.polygon) {
       setCoordinates(parcel.polygon)
     }
-    const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
-    if (poligonT) {
-      const coordinateTemp = JSON.parse(poligonT)
+    const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || '[]'
+    const coordinateTemp = JSON.parse(poligonT)
+    if (coordinateTemp.length > 0) {
       setCenterCoordinate(coordinateTemp[coordinateTemp.length - 1])
       setCam(coordinateTemp[coordinateTemp.length - 1])
       setCoordinates(coordinateTemp)
@@ -386,10 +386,7 @@ const GradientLineRecorrer = ({route}: any) => {
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcelsList))
 
     const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
-    const syncUpNew = [
-      ...syncUp,
-      {type: SYNC_UP_TYPES.parcels, data: newParcel},
-    ]
+    const syncUpNew = {...syncUp, parcels: false}
     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
     setParcels(parcels)
     setShowModal(true)

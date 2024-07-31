@@ -134,14 +134,14 @@ const ProfileScreen = () => {
         )
         parcelsList.push(element)
         storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcelsList))
-        if (element?.polygon && element?.syncUp === undefined) {
+        if (element?.polygon) {
           const syncUp = JSON.parse(
-            storage.getString(STORAGE_KEYS.syncUp) || '[]',
+            storage.getString(STORAGE_KEYS.syncUp) || '{}',
           )
-          const syncUpNew = [
+          const syncUpNew = {
             ...syncUp,
-            {type: SYNC_UP_TYPES.parcels, data: element},
-          ]
+            parcels: false,
+          }
           storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
         }
       }
@@ -160,10 +160,9 @@ const ProfileScreen = () => {
           const syncUp = JSON.parse(
             storage.getString(STORAGE_KEYS.syncUp) || '[]',
           )
-          const syncUpNew = [
+          const syncUpNew = {
             ...syncUp,
-            {type: SYNC_UP_TYPES.sales, data: element},
-          ]
+          }
           storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
         }
       }
@@ -290,11 +289,11 @@ const ProfileScreen = () => {
     delete userData.isLogin
     delete userData.syncUp
     // recorrer sales y eliminar la key syncUpOCC de cada elemento con un map
-    sales.map((sale: any) => {
-      delete sale.syncUpOCC
-      delete sale.syncUp
-      return sale
-    })
+    // sales.map((sale: any) => {
+    //   delete sale.syncUpOCC
+    //   delete sale.syncUp
+    //   return sale
+    // })
     // lo mismo para parcels
     parcels_array.map((parcel: any) => {
       delete parcel.syncUp

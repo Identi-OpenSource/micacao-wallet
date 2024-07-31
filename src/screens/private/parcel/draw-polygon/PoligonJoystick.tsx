@@ -212,7 +212,7 @@ const PoligonJoystick = ({route}: any) => {
       }, 3000)
       return
     }
-    const poligonT = storage.getString(STORAGE_KEYS.polygonTemp) || ''
+    const poligonT = storage.getString(STORAGE_KEYS?.polygonTemp) || '[]'
     const coordinateTemp = JSON.parse(poligonT)
 
     if (coordinateTemp.length > 0) {
@@ -267,10 +267,7 @@ const PoligonJoystick = ({route}: any) => {
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcelsList))
 
     const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '[]')
-    const syncUpNew = [
-      ...syncUp,
-      {type: SYNC_UP_TYPES.parcels, data: newParcel},
-    ]
+    const syncUpNew = {...syncUp, parcels: false}
     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
 
     setParcels(parcels)

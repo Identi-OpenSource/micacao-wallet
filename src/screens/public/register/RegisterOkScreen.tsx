@@ -69,7 +69,7 @@ export const RegisterOkScreen = () => {
     storage.set(STORAGE_KEYS.wallet, JSON.stringify({wallet, isFunding}))
     await delay(2000)
     storage.set(STORAGE_KEYS.user, JSON.stringify({...user, isLogin: true}))
-    const syncUp = [{type: SYNC_UP_TYPES.user, data: user}]
+    const syncUp = {user: false}
     storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUp))
     navigation.navigate('DownloadMap')
     // setStep({step: 4, msg: 'Inicio de sesión'})

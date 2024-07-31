@@ -14,14 +14,12 @@ export interface UserInterface {
   country?: any
 }
 export interface Parcel {
-  name: string
-  id: string
+  id?: string
+  name?: string
   nameParcel?: string
   hectares?: number
-  location?: {
-    latitude: number
-    longitude: number
-  }
+  pdtValid?: boolean
+  ndfValid?: boolean
   polygon?: any
 }
 export interface saleInterface {

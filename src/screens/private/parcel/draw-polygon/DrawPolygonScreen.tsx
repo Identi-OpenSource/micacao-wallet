@@ -490,8 +490,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
-    console.log('resp', resp)
-    if (resp?.response?.status) {
+    if (resp?.Hash === undefined || resp?.Hash === '' || resp?.Hash === null) {
       return
     }
     // agregar la respuesta a la parcela
@@ -503,6 +502,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
     navigation.navigate('DrawPolygonScreen', {id: id})
   }
+  // console.log('parcel', parcel.kf)
   const getKafeSistemas = async () => {
     // hacer esto solo si se hizo el post y send es mayor a 24 horas y si  statys es On Hold
     if (
@@ -526,7 +526,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
-    if (resp?.response?.status) {
+    if (resp?.Hash === undefined || resp?.Hash === '' || resp?.Hash === null) {
       return
     }
     const updatedParcel = {

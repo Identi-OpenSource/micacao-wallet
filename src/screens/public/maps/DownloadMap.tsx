@@ -6,6 +6,10 @@ import {storage} from '../../../config/store/db'
 import Mapbox, {offlineManager} from '@rnmapbox/maps'
 import {UserDispatchContext} from '../../../states/UserContext'
 import Toast from 'react-native-toast-message'
+import {
+  activateKeepAwake,
+  deactivateKeepAwake,
+} from '@sayem314/react-native-keep-awake'
 
 export const DownloadMap = ({navigation, route}: any) => {
   const params = route.params
@@ -15,7 +19,11 @@ export const DownloadMap = ({navigation, route}: any) => {
   const district = user?.district?.dist_name
 
   useEffect(() => {
+    activateKeepAwake()
     init()
+    return () => {
+      deactivateKeepAwake()
+    }
   }, [])
 
   const init = async () => {
