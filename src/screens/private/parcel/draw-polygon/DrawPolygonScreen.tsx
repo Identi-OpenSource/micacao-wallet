@@ -1,20 +1,16 @@
 /* eslint-disable react-native/no-inline-styles */
 import Config from 'react-native-config'
-import {useNavigation} from '@react-navigation/native'
 import {Card} from '@rneui/base'
-import {CheckBox} from '@rneui/themed'
 import Mapbox, {
-  Callout,
   Camera,
   CircleLayer,
   FillLayer,
   LineLayer,
   MapView,
-  PointAnnotation,
   ShapeSource,
   StyleURL,
 } from '@rnmapbox/maps'
-import React, {useContext, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {
   Dimensions,
   ScrollView,
@@ -33,17 +29,12 @@ import {
   FONT_FAMILIES,
   FONT_SIZES,
   MP_DF,
-  THEME_DF,
 } from '../../../../config/themes/default'
-import {ConnectionContext} from '../../../../states/_ConnectionContext'
-import {useGfwContext} from '../../../../states/GfwContext'
-import {useKafeContext} from '../../../../states/KafeContext'
 import DrawPolyline from './DrawPolyline'
 import * as turf from '@turf/turf'
 import {Parcel} from '../../../../states/UserContext'
 import {KF_STATES, STORAGE_KEYS} from '../../../../config/const'
 import useFetchData from '../../../../hooks/useFetchData'
-import {dniEncrypt} from '../../../../OCC/occ'
 
 // if (Config.MAPBOX_ACCESS_TOKEN) {
 Mapbox.setAccessToken(Config?.MAPBOX_ACCESS_TOKEN || '')
@@ -230,6 +221,12 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     }
     parcels[indexParcel] = updatedParcel
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
+    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
+    const syncUpNew = {
+      ...syncUp,
+      parcels: false,
+    }
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
     navigation.navigate('DrawPolygonScreen', {id: id})
   }
 
@@ -258,6 +255,12 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     }
     parcels[indexParcel] = updatedParcel
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
+    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
+    const syncUpNew = {
+      ...syncUp,
+      parcels: false,
+    }
+    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
     Toast.show({
       type: 'msgToast',
       text1: 'Solicitud enviada. Puedes verificar el estado más tarde.',
@@ -291,7 +294,12 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       }
       parcels[indexParcel] = updatedParcel
       storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
-
+      const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
+      const syncUpNew = {
+        ...syncUp,
+        parcels: false,
+      }
+      storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
       Toast.show({
         type: 'msgToast',
         text1: 'El estado de la solicitud es: ' + resp.status,
@@ -310,6 +318,12 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       }
       parcels[indexParcel] = updatedParcel
       storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
+      const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
+      const syncUpNew = {
+        ...syncUp,
+        parcels: false,
+      }
+      storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
     }
     navigation.navigate('DrawPolygonScreen', {id: id})
   }
@@ -490,6 +504,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
+    // console.log('resp', resp)
     if (resp?.Hash === undefined || resp?.Hash === '' || resp?.Hash === null) {
       return
     }
