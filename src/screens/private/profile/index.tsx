@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native'
 import * as ImagePicker from 'react-native-image-picker'
-import {Arrow_Right, Happy, IconProfile, Person} from '../../../assets/svg'
+import {Arrow_Right, Happy, IconProfile, Person, Sad} from '../../../assets/svg'
 import HeaderComponent from '../../../components/Header'
 import {storage} from '../../../config/store/db'
 import {COLORS_DF, FONT_FAMILIES, MP_DF} from '../../../config/themes/default'
@@ -77,7 +77,7 @@ const ProfileScreen = () => {
 
     fetchImageUri()
   }, [])
-  // 18326988
+
   useEffect(() => {
     if (pinAproved && showRequestPin[1] === 'export') {
       saveJSONDownload()
@@ -120,6 +120,19 @@ const ProfileScreen = () => {
       const fileContent = await RNFS.readFile(fileUri, 'utf8')
       const json = JSON.parse(fileContent)
       const userLogin = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
+      const dniFormat = json.user.dni
+      const userDNILoginText = await dniText(userLogin.dni)
+      if (dniFormat !== userDNILoginText) {
+        Toast.show({
+          type: 'msgToast',
+          text1: 'El archivo pertenece a un usuario diferente',
+          autoHide: false,
+          props: {
+            icon: <Sad height={70} width={70} />,
+          },
+        })
+        return
+      }
       const parcels = json.parcels
       const sales = json.sales
       storage.set(
