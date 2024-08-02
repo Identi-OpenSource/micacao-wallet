@@ -28,7 +28,12 @@ import {storage} from '../../../config/store/db'
 import useInternetConnection from '../../../hooks/useInternetConnection'
 import {KF_STATES, STORAGE_KEYS} from '../../../config/const'
 import useFetchData, {HEADERS} from '../../../hooks/useFetchData'
-import {fundingWallet, getDataWallet, writeTransaction} from '../../../OCC/occ'
+import {
+  dniEncrypt,
+  fundingWallet,
+  getDataWallet,
+  writeTransaction,
+} from '../../../OCC/occ'
 // import Spinner from 'react-native-loading-spinner-overlay'
 
 export const HomeProvScreen = () => {
@@ -41,6 +46,7 @@ export const HomeProvScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      // dniTest('25567997')
       isConnected && init()
     }, [isConnected]),
   )
@@ -245,6 +251,10 @@ export const HomeProvScreen = () => {
   // storage.delete(STORAGE_KEYS.sales)
   // storage.delete(STORAGE_KEYS.syncUp)
   // storage.delete(STORAGE_KEYS.writeBlockchain)
+  // const dniTest = async dni => {
+  //   const dniText = await dniEncrypt(dni)
+  //   console.log('dniText', dniText)
+  // }
 
   return (
     <SafeArea bg={'isabelline'}>

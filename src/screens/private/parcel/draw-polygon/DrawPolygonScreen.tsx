@@ -138,10 +138,16 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
 
   useEffect(() => {
     centerMap()
-    postKafeSistemas()
-    getKafeSistemas()
-    rePostGfw()
+    init()
   }, [])
+
+  const init = async () => {
+    // setLoading(true)
+    await postKafeSistemas()
+    await getKafeSistemas()
+    await rePostGfw()
+    // setLoading(false)
+  }
 
   const centerMap = () => {
     const feature = {
@@ -184,10 +190,10 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     const now = new Date()
     const diferencia = now?.getTime() - send?.getTime()
     const horas = diferencia / (1000 * 60 * 60)
-
     if (
-      parcel?.gfw === 'undefined' ||
-      parcel?.gfw?.status !== 'Pending' ||
+      parcel?.gfw === undefined ||
+      (parcel?.gfw?.status !== 'Pending' &&
+        parcel?.gfw?.status !== undefined) ||
       horas < 24
     ) {
       return
@@ -210,6 +216,8 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
+
+    console.log('resp', resp)
 
     if (resp?.response?.status) {
       return
@@ -240,6 +248,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       start_date: '2020-01-01',
       end_date: new Date().toISOString().split('T')[0],
     }
+    console.log('postGfw', formData)
     const resp = await fetchData(url, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -286,7 +295,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
-
+    console.log('resp', resp)
     if (resp?.listId && resp.status !== 'Pending') {
       const updatedParcel = {
         ...parcel,
@@ -477,7 +486,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   }
 
   const postKafeSistemas = async () => {
-    if (parcel?.kf !== undefined) {
+    if (parcel?.kf?.Hash) {
       return
     }
     const polygonCoordinates = parcel.polygon
@@ -504,7 +513,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
-    // console.log('resp', resp)
+
     if (resp?.Hash === undefined || resp?.Hash === '' || resp?.Hash === null) {
       return
     }
@@ -523,11 +532,11 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     if (
       parcel?.kf === undefined ||
       parcel?.kf?.Code === 2 ||
-      Date.now() - new Date(parcel?.kf?.send).getTime() < 24 * 60 * 60 * 1000
+      Date.now() - new Date(parcel?.kf?.send).getTime() > 24 * 60 * 60 * 1000
     ) {
       return
     }
-
+    console.log('getKafeSistemas')
     const url = `${Config?.BASE_URL}/field_state/${user.dni}`
     const KAFE_SISTEMAS_KEY = Config?.KAFE_SISTEMAS_KEY || ''
     const resp = await fetchData(
