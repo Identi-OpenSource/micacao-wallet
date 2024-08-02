@@ -183,7 +183,9 @@ export const HomeProvScreen = () => {
             dry_weight: sale?.type === 'SECO' ? sale?.kl : 0,
             baba_weight: sale?.type === 'BABA' ? sale?.kl : 0,
             cacao_type: sale?.type?.toLowerCase(),
+            register_at: sale?.mes,
           }
+          console.log('data', data)
           const resp = await sendFetch(url, data)
           if (resp) {
             const saleIndex = sales.findIndex(
