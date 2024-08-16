@@ -744,7 +744,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
                 }
                 if (parcel?.gfw?.status === 'Completed') {
                   toasMessage(
-                    'Validación de no deforestación aprobada, perdida de bosque natural: ' +
+                    'Validación de no deforestación completada, perdida de bosque natural: ' +
                       calculateDeforestationPercentage(
                         Number(
                           parcel?.gfw?.data?.deforestation_kpis[0][
