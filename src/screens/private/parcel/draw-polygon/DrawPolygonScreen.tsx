@@ -295,7 +295,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
-    console.log('resp', resp)
+    // console.log('resp', resp)
     if (resp?.listId && resp.status !== 'Pending') {
       const updatedParcel = {
         ...parcel,
@@ -353,11 +353,24 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
 
   const optionsUiGFW = (): [string, string, any] => {
     if (parcel?.gfw?.status === 'Completed') {
-      const NFL =
-        parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
-          'Natural Forest Loss (ha) (Beta)'
-        ] || null
-      if (Number(NFL) < 6) {
+      // const NFL =
+      //   parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
+      //     'Natural Forest Loss (ha) (Beta)'
+      //   ] || null
+      const forestationPercentage = calculateDeforestationPercentage(
+        Number(
+          parcel?.gfw?.data?.deforestation_kpis[0][
+            'Natural Forest Coverage (HA) (Beta)'
+          ],
+        ),
+        Number(
+          parcel?.gfw?.data?.deforestation_kpis[0][
+            'Natural Forest Loss (ha) (Beta)'
+          ],
+        ),
+      ).toFixed(2)
+
+      if (Number(forestationPercentage) <= 5) {
         return [
           '#22C55E',
           'Validación no deforestación Aprobado',
@@ -365,9 +378,9 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
         ]
       }
       return [
-        '#22C55E',
+        '#EF4444',
         'Validación no deforestación No Aprobado',
-        <Happy width={70} height={70} />,
+        <Sad width={70} height={70} />,
       ]
 
       // const classify = classifyDeforestation(
