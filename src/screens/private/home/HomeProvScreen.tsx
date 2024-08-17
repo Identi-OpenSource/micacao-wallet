@@ -110,16 +110,33 @@ export const HomeProvScreen = () => {
 
   const optionsNDF = (parcel: any) => {
     if (parcel?.gfw?.status === 'Completed') {
-      console.log('optionsNDF', parcel?.gfw)
-      const NFL =
-        parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
-          'Natural Forest Loss (ha) (Beta)'
-        ] || null
-      if (Number(NFL) < 6) {
+      const forestationPercentage = calculateDeforestationPercentage(
+        Number(
+          parcel?.gfw?.data?.deforestation_kpis[0][
+            'Natural Forest Coverage (HA) (Beta)'
+          ],
+        ),
+        Number(
+          parcel?.gfw?.data?.deforestation_kpis[0][
+            'Natural Forest Loss (ha) (Beta)'
+          ],
+        ),
+      ).toFixed(2)
+      if (Number(forestationPercentage) <= 5) {
         return true
       }
       return false
     }
+  }
+
+  const calculateDeforestationPercentage = (
+    coberturaBosque: number,
+    perdidaBosque: number,
+  ) => {
+    if (coberturaBosque === 0) {
+      return 0
+    }
+    return (perdidaBosque / coberturaBosque) * 100
   }
 
   const asyncData = async () => {
@@ -158,6 +175,7 @@ export const HomeProvScreen = () => {
           ndv_applied: optionsNDF(farm),
           legal_approval: farm?.kf?.Code === KF_STATES.accepted || false,
         }
+        console.log('ndv_applied', data)
         const resp = await sendFetch(url, data)
         if (resp) {
           isAsync.push(true)
@@ -185,7 +203,7 @@ export const HomeProvScreen = () => {
             cacao_type: sale?.type?.toLowerCase(),
             register_at: sale?.mes,
           }
-          console.log('data', data)
+          // console.log('data', data)
           const resp = await sendFetch(url, data)
           if (resp) {
             const saleIndex = sales.findIndex(
@@ -203,14 +221,14 @@ export const HomeProvScreen = () => {
               STORAGE_KEYS.writeBlockchain,
               JSON.stringify(writeBlockchain),
             )
-            console.log('creando venta =>', sale?.idSale, resp)
+            // console.log('creando venta =>', sale?.idSale, resp)
           } else {
             isAsync = false
           }
         }
       }
       syncUp.sales = isAsync
-      console.log('async sales =>', isAsync)
+      // console.log('async sales =>', isAsync)
     }
     storage.set(STORAGE_KEYS.syncUp, JSON.stringify({...syncUp}))
   }
