@@ -21,7 +21,7 @@ import {
 } from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay'
 import Toast from 'react-native-toast-message'
-import {Baba, Error, Happy, Sad, Seco} from '../../../../assets/svg'
+import {Baba, Error, Happy, Sad, Seco, Warning} from '../../../../assets/svg'
 import HeaderComponent from '../../../../components/Header'
 import {storage} from '../../../../config/store/db'
 import {
@@ -36,10 +36,8 @@ import {Parcel} from '../../../../states/UserContext'
 import {KF_STATES, STORAGE_KEYS} from '../../../../config/const'
 import useFetchData from '../../../../hooks/useFetchData'
 
-// if (Config.MAPBOX_ACCESS_TOKEN) {
 Mapbox.setAccessToken(Config?.MAPBOX_ACCESS_TOKEN || '')
 
-// }
 const {width, height} = Dimensions.get('window')
 type Position = [number, number]
 
@@ -90,12 +88,22 @@ const Polygon = ({coordinates}: {coordinates: Position[]}) => {
   )
 }
 
+export const calculateDeforestationPercentage = (
+  coberturaBosque: number,
+  perdidaBosque: number,
+) => {
+  if (coberturaBosque === 0) {
+    return 0
+  }
+  return (perdidaBosque / coberturaBosque) * 100
+}
+
 export const DrawPolygonScreen = ({route, navigation}: any) => {
   const params = route.params
   const id = params?.id
   const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
-  const parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
-  const parcel = parcels.find((p: Parcel) => p.id === id)
+  let parcels = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '[]')
+  let parcel = parcels.find((p: Parcel) => p.id === id)
   const indexParcel = parcels.findIndex((p: Parcel) => p.id === id)
   const centerPoint = user?.district?.center_point?.split(' ')
   const centerX = centerPoint?.[0]?.replace(/,/g, '.') || 0
@@ -104,6 +112,10 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   const secondPoint = [Number(centerY), Number(centerX)] as Position
 
   const [centerCoordinate, setCenterCoordinate] = useState<Position>(firstPoint)
+  const [stateGFW, setStateGFW] = useState<[string, string]>([
+    'post',
+    'Realiza la solicitud de verificación de no deforestación',
+  ])
   const [zoomLevel, setZoomLevel] = useState(17)
   const {loading, fetchData} = useFetchData()
   const map = useRef<MapView>(null)
@@ -142,11 +154,62 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
   }, [])
 
   const init = async () => {
-    // setLoading(true)
     await postKafeSistemas()
     await getKafeSistemas()
-    await rePostGfw()
-    // setLoading(false)
+    GFW_STATUS(parcel)
+  }
+
+  const GFW_STATUS = (par: any) => {
+    const forestationPercentage = calculateDeforestationPercentage(
+      Number(
+        parcel?.gfw?.data?.deforestation_kpis[0][
+          'Natural Forest Coverage (HA) (Beta)'
+        ],
+      ),
+      Number(
+        parcel?.gfw?.data?.deforestation_kpis[0][
+          'Natural Forest Loss (ha) (Beta)'
+        ],
+      ),
+    )
+    if (par?.gfw === undefined) {
+      return
+    }
+    if (par?.gfw?.send) {
+      const send = new Date(par.gfw.send)
+      const now = new Date()
+      const diferencia = now.getTime() - send.getTime()
+      const horas = diferencia / (1000 * 60 * 60)
+      if (par?.gfw?.listId && horas < 24 && par?.gfw?.status === 'Pending') {
+        setStateGFW([
+          'get',
+          'Se está evaluando la solicitud de verificación de no deforestación, por favor consulte en unos minutos',
+        ])
+        return
+      }
+    }
+    if (forestationPercentage <= 5) {
+      setStateGFW([
+        'valid',
+        `Validación de no deforestación aprobada, perdida de bosque natural: ${forestationPercentage.toFixed(
+          2,
+        )}%`,
+      ])
+      return
+    }
+    if (forestationPercentage > 5) {
+      setStateGFW([
+        'noValid',
+        `Validación de no deforestación no aprobada, perdida de bosque natural: ${forestationPercentage.toFixed(
+          2,
+        )}%`,
+      ])
+      return
+    }
+    setStateGFW([
+      'noValid',
+      'Validación de no deforestación no aprobada, error en el análisis',
+    ])
   }
 
   const centerMap = () => {
@@ -183,63 +246,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     setCenterCoordinate([center[0], center[1]])
   }
 
-  // console.log('parcel', parcel)
-
-  const rePostGfw = async () => {
-    const send = new Date(parcel?.gfw?.send)
-    const now = new Date()
-    const diferencia = now?.getTime() - send?.getTime()
-    const horas = diferencia / (1000 * 60 * 60)
-    if (
-      parcel?.gfw === undefined ||
-      (parcel?.gfw?.status !== 'Pending' &&
-        parcel?.gfw?.status !== undefined) ||
-      horas < 24
-    ) {
-      return
-    }
-    //@braudin debe venir desde el servidor
-    const url = `${Config?.URL_GFW}/upload`
-    const formData = {
-      coordinates: parcel.polygon
-        .map((coordenada: Position) => `${coordenada[0]} ${coordenada[1]}`)
-        .join(';'),
-      start_date: '2020-01-01',
-      end_date: new Date().toISOString().split('T')[0],
-    }
-    const resp = await fetchData(
-      url,
-      {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        data: formData,
-      },
-      true,
-    )
-
-    console.log('resp', resp)
-
-    if (resp?.response?.status) {
-      return
-    }
-    // agregar la respuesta a la parcela
-    const updatedParcel = {
-      ...parcel,
-      gfw: {...resp, send: new Date().toISOString()},
-    }
-    parcels[indexParcel] = updatedParcel
-    storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
-    const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
-    const syncUpNew = {
-      ...syncUp,
-      parcels: false,
-    }
-    storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
-    navigation.navigate('DrawPolygonScreen', {id: id})
-  }
-
   const postGfw = async () => {
-    //@braudin debe venir desde el servidor
     const url = `${Config?.URL_GFW}/upload`
     const formData = {
       coordinates: parcel.polygon
@@ -248,7 +255,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       start_date: '2020-01-01',
       end_date: new Date().toISOString().split('T')[0],
     }
-    console.log('postGfw', formData)
     const resp = await fetchData(url, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -257,13 +263,14 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     if (resp?.response?.status) {
       return
     }
-    // agregar la respuesta a la parcela
     const updatedParcel = {
       ...parcel,
       gfw: {...resp, send: new Date().toISOString()},
     }
     parcels[indexParcel] = updatedParcel
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
+    parcel = updatedParcel
+    GFW_STATUS(parcel)
     const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
     const syncUpNew = {
       ...syncUp,
@@ -279,12 +286,9 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
         btnText: 'OK',
       },
     })
-    // recargar el componente
-    navigation.navigate('DrawPolygonScreen', {id: id})
   }
 
   const getGfw = async () => {
-    //@braudin debe venir desde el servidor
     const idlistId = parcel?.gfw?.listId
     const url = `${Config?.URL_GFW}/${idlistId}`
     const resp = await fetchData(
@@ -295,13 +299,14 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       },
       true,
     )
-    // console.log('resp', resp)
     if (resp?.listId && resp.status !== 'Pending') {
       const updatedParcel = {
         ...parcel,
         gfw: resp,
       }
       parcels[indexParcel] = updatedParcel
+      parcel = updatedParcel
+      GFW_STATUS(parcel)
       storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
       const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
       const syncUpNew = {
@@ -326,6 +331,8 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
         gfw: {...parcel.gfw, status: 'Error ' + resp.response?.data?.type, msg},
       }
       parcels[indexParcel] = updatedParcel
+      parcel = updatedParcel
+      GFW_STATUS(parcel)
       storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
       const syncUp = JSON.parse(storage.getString(STORAGE_KEYS.syncUp) || '{}')
       const syncUpNew = {
@@ -334,155 +341,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       }
       storage.set(STORAGE_KEYS.syncUp, JSON.stringify(syncUpNew))
     }
-    navigation.navigate('DrawPolygonScreen', {id: id})
-  }
-
-  const optionsUiKs = () => {
-    switch (parcel?.kf?.Code) {
-      case KF_STATES.accepted:
-        return ['#22C55E', 'Estado de titularidad aprobado']
-      case KF_STATES.rejected:
-        return ['#EF4444', 'Estado de titularidad no aprobado']
-      case KF_STATES.failure:
-        return ['#EF4444', 'Estado de titularidad fallido']
-      case KF_STATES.pending:
-      default:
-        return ['#F59E0B', 'Estado de titularidad en espera ']
-    }
-  }
-
-  const optionsUiGFW = (): [string, string, any] => {
-    if (parcel?.gfw?.status === 'Completed') {
-      // const NFL =
-      //   parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
-      //     'Natural Forest Loss (ha) (Beta)'
-      //   ] || null
-      const forestationPercentage = calculateDeforestationPercentage(
-        Number(
-          parcel?.gfw?.data?.deforestation_kpis[0][
-            'Natural Forest Coverage (HA) (Beta)'
-          ],
-        ),
-        Number(
-          parcel?.gfw?.data?.deforestation_kpis[0][
-            'Natural Forest Loss (ha) (Beta)'
-          ],
-        ),
-      ).toFixed(2)
-
-      if (Number(forestationPercentage) <= 5) {
-        return [
-          '#22C55E',
-          'Validación no deforestación Aprobado',
-          <Happy width={70} height={70} />,
-        ]
-      }
-      return [
-        '#EF4444',
-        'Validación no deforestación No Aprobado',
-        <Sad width={70} height={70} />,
-      ]
-
-      // const classify = classifyDeforestation(
-      //   Number(
-      //     parcel?.gfw?.data?.deforestation_kpis?.[0]?.[
-      //       'Natural Forest Coverage (HA) (Beta)'
-      //     ],
-      //   ),
-      //   Number(
-      //     parcel?.gfw?.data?.deforestation_kpis?.[0][
-      //       'Natural Forest Loss (ha) (Beta)'
-      //     ],
-      //   ),
-      //   Number(
-      //     parcel?.gfw?.data?.deforestation_kpis?.[0]['Negligible Risk (%)'],
-      //   ),
-      // )
-
-      // return [
-      //   classify[1],
-      //   'Validación no deforestación ' + classify[0],
-      //   classify[2],
-      // ]
-    }
-    if (parcel?.gfw?.status?.includes('Error')) {
-      return [
-        '#EF4444',
-        'Validación no deforestación ' + 'No Aceptado',
-        <Sad height={70} width={70} />,
-      ]
-    }
-    return [
-      '#F59E0B',
-      'Validación no deforestación Pendiente',
-      <Error width={70} height={70} />,
-    ]
-  }
-
-  // const classifyDeforestation = (
-  //   coberturaBosque: number,
-  //   perdidaBosque: number,
-  //   riesgoInsignificante: number,
-  // ): [string, string, any] => {
-  //   // Clasificación de la cobertura de bosque natural
-  //   let coberturaClasificacion
-  //   if (coberturaBosque > 0) {
-  //     coberturaClasificacion = 'Alta'
-  //   } else {
-  //     coberturaClasificacion = 'Baja'
-  //   }
-
-  //   // Clasificación de la pérdida de bosque natural
-  //   let perdidaClasificacion
-  //   if (perdidaBosque === 0) {
-  //     perdidaClasificacion = 'Ninguna'
-  //   } else {
-  //     perdidaClasificacion = 'Alta'
-  //   }
-
-  //   // Clasificación del riesgo insignificante
-  //   let riesgoClasificacion
-  //   if (riesgoInsignificante === 0) {
-  //     riesgoClasificacion = 'Aceptado'
-  //   } else {
-  //     riesgoClasificacion = 'No Aceptado'
-  //   }
-
-  //   // Clasificación final basada en los tres indicadores
-  //   if (
-  //     coberturaClasificacion === 'Alta' &&
-  //     perdidaClasificacion === 'Ninguna' &&
-  //     riesgoClasificacion === 'Aceptado'
-  //   ) {
-  //     return ['Aceptado', '#22C55E', <Happy width={70} height={70} />]
-  //   } else {
-  //     return ['No Aceptado', '#EF4444', <Sad width={70} height={70} />]
-  //   }
-  // }
-
-  const btnGFW = () => {
-    if (parcel?.gfw?.status === 'Pending') {
-      return true
-    }
-    if (
-      parcel?.gfw?.status === 'Completed' ||
-      parcel?.gfw?.status?.includes('Error')
-    ) {
-      return false
-    }
-    return true
-  }
-
-  const calculateDeforestationPercentage = (
-    coberturaBosque: number,
-    perdidaBosque: number,
-  ) => {
-    // console.log('coberturaBosque', coberturaBosque)
-    // console.log('perdidaBosque', perdidaBosque)
-    if (coberturaBosque === 0) {
-      return 0
-    }
-    return (perdidaBosque / coberturaBosque) * 100
   }
 
   const toasMessage = (msg: string, icon?: any) => {
@@ -506,7 +364,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
       .map((coordenada: Position) => `${coordenada[1]} ${coordenada[0]}`)
       .join(', ')
     const wktPolygon = `POLYGON((${polygonCoordinates}))`
-    // @braudin debe venir desde el servidor
     const url = Config?.API_KAFE_SISTEMAS || ''
     const API_KEY_KAFE_SISTEMAS = Config?.API_KEY_KAFE_SISTEMAS || ''
 
@@ -530,7 +387,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     if (resp?.Hash === undefined || resp?.Hash === '' || resp?.Hash === null) {
       return
     }
-    // agregar la respuesta a la parcela
     const updatedParcel = {
       ...parcel,
       kf: {...resp, send: new Date().toISOString()},
@@ -539,9 +395,8 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     storage.set(STORAGE_KEYS.parcels, JSON.stringify(parcels))
     navigation.navigate('DrawPolygonScreen', {id: id})
   }
-  // console.log('parcel', parcel.kf)
+
   const getKafeSistemas = async () => {
-    // hacer esto solo si se hizo el post y send es mayor a 24 horas y si  statys es On Hold
     if (
       parcel?.kf === undefined ||
       parcel?.kf?.Code === 2 ||
@@ -549,7 +404,7 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     ) {
       return
     }
-    console.log('getKafeSistemas')
+
     const url = `${Config?.BASE_URL}/field_state/${user.dni}`
     const KAFE_SISTEMAS_KEY = Config?.KAFE_SISTEMAS_KEY || ''
     const resp = await fetchData(
@@ -575,16 +430,23 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
     navigation.navigate('DrawPolygonScreen', {id: id})
   }
 
+  const optionsUiKs = () => {
+    switch (parcel?.kf?.Code) {
+      case KF_STATES.accepted:
+        return ['#22C55E', 'Estado de titularidad aprobado']
+      case KF_STATES.rejected:
+        return ['#EF4444', 'Estado de titularidad no aprobado']
+      case KF_STATES.failure:
+        return ['#EF4444', 'Estado de titularidad fallido']
+      case KF_STATES.pending:
+      default:
+        return ['#F59E0B', 'Estado de titularidad en espera ']
+    }
+  }
+
   return (
-    <View
-      style={{
-        flex: 1,
-      }}>
-      <ScrollView
-        style={{
-          flex: 1,
-          backgroundColor: COLORS_DF.isabelline,
-        }}>
+    <View style={{flex: 1}}>
+      <ScrollView style={{flex: 1, backgroundColor: COLORS_DF.isabelline}}>
         <HeaderComponent
           label="Mis parcelas"
           goBack={true}
@@ -693,10 +555,10 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
           </View>
           <Text style={styles.title}>Mapa de parcela {parcel?.name}</Text>
         </View>
-        {btnGFW() && (
+        {stateGFW[0] !== 'valid' && (
           <View style={styles.containerButtonGFW}>
             <TouchableOpacity
-              onPress={() => (parcel?.gfw === undefined ? postGfw() : getGfw())}
+              onPress={() => (stateGFW[0] === 'post' ? postGfw() : getGfw())}
               activeOpacity={0.8}
               style={{
                 backgroundColor: COLORS_DF.robin_egg_blue,
@@ -706,9 +568,10 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
                 marginTop: 15,
               }}>
               <Text style={styles.textGfw}>
-                {parcel?.gfw === undefined
-                  ? 'Solicitar verificación No Deforestación'
-                  : 'Consultar verificación No Deforestación'}
+                {(stateGFW[0] === 'post' || stateGFW[0] === 'noValid') &&
+                  'Solicitar verificación No Deforestación'}
+                {stateGFW[0] === 'get' &&
+                  'Consultar la verificación No Deforestación'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -734,48 +597,48 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
               </Text>
             </View>
           )}
-          {parcel?.gfw && (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => {
-                if (parcel?.gfw?.status?.includes('Error')) {
-                  toasMessage(parcel?.gfw?.msg, <Sad height={70} width={70} />)
-                  return
-                }
-                if (parcel?.gfw?.status === 'Completed') {
-                  toasMessage(
-                    'Validación de no deforestación completada, perdida de bosque natural: ' +
-                      calculateDeforestationPercentage(
-                        Number(
-                          parcel?.gfw?.data?.deforestation_kpis[0][
-                            'Natural Forest Coverage (HA) (Beta)'
-                          ],
-                        ),
-                        Number(
-                          parcel?.gfw?.data?.deforestation_kpis[0][
-                            'Natural Forest Loss (ha) (Beta)'
-                          ],
-                        ),
-                      ).toFixed(2) +
-                      '%',
-                    optionsUiGFW()[2],
-                  )
-                  return
-                }
-              }}
-              style={{
-                backgroundColor: optionsUiGFW()[0],
-                alignItems: 'center',
-                borderRadius: 5,
-                marginBottom: 15,
-                height: 32,
-                justifyContent: 'center',
-              }}>
-              <Text style={{color: '#fff', fontSize: 16, fontWeight: 'bold'}}>
-                {optionsUiGFW()[1]}
-              </Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              if (stateGFW[0] === 'post') {
+                toasMessage(stateGFW[1], <Warning height={70} width={70} />)
+                return
+              }
+              if (stateGFW[0] === 'get') {
+                toasMessage(stateGFW[1], <Warning height={70} width={70} />)
+                return
+              }
+              if (stateGFW[0] === 'noValid') {
+                toasMessage(stateGFW[1], <Sad height={70} width={70} />)
+                return
+              }
+              if (stateGFW[0] === 'valid') {
+                toasMessage(stateGFW[1], <Happy height={70} width={70} />)
+                return
+              }
+            }}
+            style={{
+              backgroundColor:
+                stateGFW[0] === 'valid'
+                  ? '#22C55E'
+                  : stateGFW[0] === 'noValid'
+                  ? '#EF4444'
+                  : '#F59E0B',
+              alignItems: 'center',
+              borderRadius: 5,
+              marginBottom: 15,
+              height: 32,
+              justifyContent: 'center',
+            }}>
+            <Text style={{color: '#fff', fontSize: 16, fontWeight: 'bold'}}>
+              {(stateGFW[0] === 'post' || stateGFW[0] === 'get') &&
+                'Verificación de no deforestación pendiente'}
+              {stateGFW[0] === 'noValid' &&
+                'Validación de no deforestación no aprobada'}
+              {stateGFW[0] === 'valid' &&
+                'Validación de no deforestación aprobada'}
+            </Text>
+          </TouchableOpacity>
           <MapView
             ref={map}
             // key={coordinates.length}
@@ -804,11 +667,6 @@ export const DrawPolygonScreen = ({route, navigation}: any) => {
               animationMode={'easeTo'}
             />
           </MapView>
-          {/* <Text style={styles.textData}>Área: {parcel?.hectares || 0} Has</Text>
-          <Text style={styles.textData}>Propiedad: Pendiente</Text>
-          <Text style={styles.textData}>
-            Deforestación: {parcel?.gfw?.status}
-          </Text> */}
         </Card>
       </ScrollView>
     </View>

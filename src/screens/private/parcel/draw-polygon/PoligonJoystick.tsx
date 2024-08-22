@@ -18,6 +18,7 @@ import React, {
 } from 'react'
 import {
   Dimensions,
+  PermissionsAndroid,
   StatusBar,
   StyleSheet,
   Text,
@@ -31,7 +32,7 @@ import {storage} from '../../../../config/store/db'
 import Toast from 'react-native-toast-message'
 import * as turf from '@turf/turf'
 import {Parcel} from '../../../../states/UserContext'
-import {STORAGE_KEYS, SYNC_UP_TYPES} from '../../../../config/const'
+import {STORAGE_KEYS} from '../../../../config/const'
 import Geolocation from 'react-native-geolocation-service'
 import {
   activateKeepAwake,
@@ -123,7 +124,7 @@ const lineLayerStyle = {
   lineWidth: 4,
 }
 const pointLayerStyle = {
-  circleColor: '#fff', // Rojo, para que sea visible en la mayoría de los fondos
+  circleColor: '#fff',
   circleRadius: 6,
 }
 
@@ -223,6 +224,7 @@ const PoligonJoystick = ({route}: any) => {
       }, 3000)
       return
     }
+    checkPermission()
     Geolocation.getCurrentPosition(
       position => {
         const point = [
@@ -244,6 +246,30 @@ const PoligonJoystick = ({route}: any) => {
     )
   }
 
+  const checkPermission = async () => {
+    try {
+      const result = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      )
+
+      if (result === false) {
+        navigation.goBack()
+        Toast.show({
+          type: 'msgToast',
+          autoHide: true,
+          visibilityTime: 3000,
+          text1: 'Falta el permiso de ubicación',
+          props: {
+            onPress: () => {},
+            btnText: 'OK',
+          },
+        })
+      }
+    } catch (error) {
+      console.error('Error checking location permission:', error)
+    }
+  }
+
   const deletePoint = () => {
     if (coordinates.length > 0) {
       setCoordinates(prev => {
@@ -255,7 +281,6 @@ const PoligonJoystick = ({route}: any) => {
   }
 
   const savePoligonAcept = () => {
-    //setCoordinates(polygonReview)
     const newParcel = {
       ...parcel,
       polygon:
@@ -371,9 +396,6 @@ const PoligonJoystick = ({route}: any) => {
 
   const onSelected = (e: any) => {
     const coordinates = e.geometry.coordinates
-
-    // setLastCoordinate(e.geometry.coordinates as Position)
-    // encontrar el punto en el array de coordenadas
     const index = polygonReview.findIndex(
       (c: Position) => c[0] === coordinates[0] && c[1] === coordinates[1],
     )
@@ -414,7 +436,6 @@ const PoligonJoystick = ({route}: any) => {
         <MapView
           ref={map}
           styleURL={StyleURL.Satellite}
-          // styleURL="https://api.maptiler.com/maps/satellite/style.json?key=fh2hRVLtuNuRzkTOINtk"
           style={{
             height: heightMap,
             width: widthMap,
