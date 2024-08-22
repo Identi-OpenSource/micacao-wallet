@@ -116,13 +116,24 @@ npm start -- --reset-cache
 
 Estamos encantados de recibir contribuciones de la comunidad para mejorar **MiCacao**. Si estás interesado en contribuir, aquí te mostramos algunas maneras en las que puedes hacerlo:
 
-- **Informar errores**: Si encuentras un error o problema en la aplicación, por favor, repórtalo a través del [sistema de issues](https://github.com/identi-digital/micacao-app/issues). Asegúrate de proporcionar detalles sobre el problema, cómo reproducirlo y cualquier información adicional que pueda ser útil para corregirlo.
-
 - **Sugerir una característica**: Si tienes una idea para una nueva funcionalidad que podría mejorar la aplicación, abre un issue en el repositorio para discutir tu sugerencia. Nos encantaría escuchar tus ideas y colaborar en su implementación.
 
-- **Respondiendo a los problemas**: Ayuda a la comunidad respondiendo a los problemas abiertos en el repositorio. Si tienes experiencia en la solución de problemas específicos, tus sugerencias y soluciones serán muy apreciadas.
+      Para contribuir, sigue estos pasos:
 
-- **Implementación de correcciones de errores y mejoras**: Si deseas corregir un error o implementar una mejora, primero revisa los issues abiertos para ver si alguien más ya está trabajando en ello. Si no es así, crea un issue para anunciar tu intención de trabajar en la corrección o mejora y luego envía un pull request cuando hayas terminado.
+      1. Haz un "fork" de este repositorio.
+      2. Crea una nueva rama para tu función o corrección (`git checkout -b feature/nueva-funcion`).
+      3. Realiza tus cambios y realiza commits descriptivos (`git commit -m 'Agrega nueva función'`).
+      4. Envía tus cambios al repositorio forkeado (`git push origin feature/nueva-funcion`).
+      5. Abre un Pull Request en este repositorio desde tu rama forkeada.
+
+      Revisaremos tu contribución lo antes posible
+      ¡Esperamos tus sugerencias y mejoras!
+
+- **Implementación de correcciones de errores y mejoras**: Si deseas corregir un error o implementar una mejora, primero revisa los issues abiertos para ver si alguien más ya está trabajando en ello. Si no es así, crea un issue para anunciar tu intención de trabajar en la corrección o mejora y luego envía un pull request cuando hayas terminado, para contribuir a la mejora del proyecto sigue los pasos del punto anterior.
+
+- **Informar errores**: Si encuentras un error o problema en la aplicación, por favor, repórtalo a través del [sistema de issues](https://github.com/identi-digital/micacao-app/issues). Asegúrate de proporcionar detalles sobre el problema, cómo reproducirlo y cualquier información adicional que pueda ser útil para corregirlo.
+
+- **Respondiendo a los problemas**: Ayuda a la comunidad respondiendo a los problemas abiertos en el repositorio. Si tienes experiencia en la solución de problemas específicos, tus sugerencias y soluciones serán muy apreciadas.
 
 ¡Gracias por tu interés en contribuir a **MiCacao**! Tu ayuda es invaluable para mejorar la herramienta y apoyar a los productores de cacao en Colombia y Perú.
 
