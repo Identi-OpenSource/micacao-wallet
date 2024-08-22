@@ -1,9 +1,11 @@
 <p align="center">
-  <img src="https://static.wixstatic.com/media/ebdd7b_b5544ac1b9d542cb8dfd9ddd84a0609f~mv2.png/v1/fill/w_195,h_61,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/4.png" alt="Descripción de la imagen" width="300" style="background-color: white; border-radius: 10px; padding: 10px;">
+  <a href="https://www.micacao.org/">
+    <img src="https://static.wixstatic.com/media/ebdd7b_b5544ac1b9d542cb8dfd9ddd84a0609f~mv2.png/v1/fill/w_195,h_61,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/4.png" alt="Descripción de la imagen" width="300" style="background-color: white; border-radius: 10px; padding: 10px;">
+  </a>
 </p>
 
 <p align="center">
-El proyecto MiCacao busca desarrollar una herramienta de trazabilidad para productores y comercializadores de cacao en Perú y Colombia, garantizando el cumplimiento de la normativa europea sobre productos libres de deforestación.
+  El proyecto <a href="https://www.micacao.org/" style="text-decoration: none;">MiCacao</a> busca desarrollar una herramienta de trazabilidad para productores y comercializadores de cacao en Perú y Colombia, garantizando el cumplimiento de la normativa europea sobre productos libres de deforestación.
 </p>
 
 # MiCacao App
@@ -11,6 +13,12 @@ El proyecto MiCacao busca desarrollar una herramienta de trazabilidad para produ
 **MiCacao** es una innovadora aplicación **wallet de trazabilidad** desarrollada en React Native, diseñada para empoderar a los productores de cacao en Colombia y Perú, brindándoles control total sobre su información. La aplicación permite gestionar de manera eficiente todos los aspectos relacionados con la producción de cacao, asegurando el cumplimiento de la normativa europea sobre productos libres de deforestación.
 
 Aunque **MiCacao** está diseñada en React Native, actualmente **solo es compatible con sistemas Android** en sus versiones API level 29 y superiores. Esto asegura que la aplicación funcione de manera óptima en dispositivos Android modernos, garantizando a los usuarios una experiencia estable y eficiente mientras gestionan su información y procesos de producción.
+
+<p align="center">
+  <a href="https://play.google.com/store/search?q=micacao&c=apps&hl=es_419&pli=1">
+    DESCARGAR EN GOOGLE PLAY STORE COLOMBIA Y PERÚ
+  </a>
+</p>
 
 ## Funcionalidades Principales
 
