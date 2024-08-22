@@ -25,6 +25,7 @@ import React, {
 import {
   ActivityIndicator,
   Dimensions,
+  PermissionsAndroid,
   StatusBar,
   StyleSheet,
   Text,
@@ -326,6 +327,7 @@ const GradientLineRecorrer = ({route}: any) => {
   }, [started])
 
   useEffect(() => {
+    checkPermission()
     if (firstPointGps) {
       setCrosshairPos(firstPointGps)
       setCenterCoordinate(firstPointGps)
@@ -348,6 +350,30 @@ const GradientLineRecorrer = ({route}: any) => {
       setCoordinates(coordinateTemp)
     }
     gpsFristPoint()
+  }
+
+  const checkPermission = async () => {
+    try {
+      const result = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      )
+
+      if (result === false) {
+        navigation.goBack()
+        Toast.show({
+          type: 'msgToast',
+          autoHide: true,
+          visibilityTime: 3000,
+          text1: 'Falta el permiso de ubicación',
+          props: {
+            onPress: () => {},
+            btnText: 'OK',
+          },
+        })
+      }
+    } catch (error) {
+      console.error('Error checking location permission:', error)
+    }
   }
 
   const gpsFristPoint = () => {

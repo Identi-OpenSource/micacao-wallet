@@ -28,17 +28,9 @@ import {storage} from '../../../config/store/db'
 import useInternetConnection from '../../../hooks/useInternetConnection'
 import {KF_STATES, STORAGE_KEYS} from '../../../config/const'
 import useFetchData, {HEADERS} from '../../../hooks/useFetchData'
-import {
-  dniEncrypt,
-  fundingWallet,
-  getDataWallet,
-  writeTransaction,
-} from '../../../OCC/occ'
-// import Spinner from 'react-native-loading-spinner-overlay'
+import {fundingWallet, getDataWallet, writeTransaction} from '../../../OCC/occ'
 
 export const HomeProvScreen = () => {
-  // const [loadDataMap, setLoadDataMap] = useState<[boolean, string]>([false, ''])
-  // const parcel = JSON.parse(storage.getString(STORAGE_KEYS.parcels) || '{}')
   const {fetchData} = useFetchData()
   const {isConnected} = useInternetConnection()
   const user = JSON.parse(storage.getString(STORAGE_KEYS.user) || '{}')
@@ -98,15 +90,6 @@ export const HomeProvScreen = () => {
     const isFunding = funding?.status === 200
     storage.set('wallet', JSON.stringify({...wallet, isFunding}))
   }
-
-  /*
-  El objeto de syncUp contiene banderas de que es lo que se va a sincronizar
-  syncUp = {
-  parcels: false,
-  sales: false,
-  user: false,
-  }
-  */
 
   const optionsNDF = (parcel: any) => {
     if (parcel?.gfw?.status === 'Completed') {
@@ -262,7 +245,6 @@ export const HomeProvScreen = () => {
     return resp?.response?.status ? false : true
   }
 
-  // pruebas
   // const sales = JSON.parse(storage.getString(STORAGE_KEYS.sales) || '[]')
   // console.log('sales', sales)
   // console.log('user', user)

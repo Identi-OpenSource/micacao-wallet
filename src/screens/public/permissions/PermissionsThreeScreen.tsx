@@ -1,12 +1,6 @@
 import {useNavigation} from '@react-navigation/native'
 import React from 'react'
-import {
-  PermissionsAndroid,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
+import {PermissionsAndroid, StyleSheet, View} from 'react-native'
 import {LocationPermision, Location_M, Location_W} from '../../../assets/svg'
 import {Btn} from '../../../components/button/Button'
 import {SafeArea} from '../../../components/safe-area/SafeArea'
